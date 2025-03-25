@@ -17,4 +17,6 @@ get_changed_files:
     paths:
       - changed_files.txt
   only:
-    - master
+    - stage
+  tags:
+    - cdreader-gitlab    
