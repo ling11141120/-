@@ -1,0 +1,22 @@
+stages:
+  - compare
+
+get_changed_files:
+  stage: compare
+  script:
+    # 获取完整仓库历史（避免浅克隆导致无法比较分支）
+    - git fetch origin master:master
+    - git fetch origin stage:stage
+    # 对比 master 和 stage 分支的差异，提取文件名
+    - git diff --name-only master...stage > changed_files.txt
+    # 显示结果（可选）
+    - cat changed_files.txt
+    # 将文件名存入变量，供后续使用（可选）
+    - export CHANGED_FILES=$(cat changed_files.txt)
+  artifacts:
+    paths:
+      - changed_files.txt
+  rules:
+    - if: $CI_COMMIT_REF_NAME == 'stage'  # 仅当提交到 stage 分支时触发
+  tags:
+    - cdreader-gitlab
