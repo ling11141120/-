@@ -19,4 +19,4 @@ get_changed_files:
   only:
     - stage
   tags:
-    - cdreader-gitlab    
+    - test_1    
