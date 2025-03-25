@@ -18,5 +18,3 @@ get_changed_files:
       - changed_files.txt
   only:
     - master
-  tags:
-    - cdreader-gitlab
