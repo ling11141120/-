@@ -16,7 +16,7 @@ get_changed_files:
   artifacts:
     paths:
       - changed_files.txt
-  rules:
-    - if: $CI_COMMIT_REF_NAME == 'stage'  # 仅当提交到 stage 分支时触发
+  only:
+    - master
   tags:
     - cdreader-gitlab
