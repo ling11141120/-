@@ -34,6 +34,7 @@ generate_json:
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(echo "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
         echo $safe_file_content
+        echo "Processing $file..."
 
         # 正确闭合 JSON 结构
         curl -X POST \
