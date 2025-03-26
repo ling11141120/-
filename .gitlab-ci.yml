@@ -11,6 +11,7 @@ get_changed_files:
     - git diff --name-only master...stage > changed_files.txt
     # 显示结果（可选）
     - cat changed_files.txt
+    - echo "提交信息：$CI_COMMIT_MESSAGE"
     # 将文件名存入变量，供后续使用（可选）
     - export CHANGED_FILES=$(cat changed_files.txt)
   artifacts:
