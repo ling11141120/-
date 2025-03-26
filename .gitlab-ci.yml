@@ -26,7 +26,7 @@ generate_json:
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
-      echo 1
+      
 
       # 动态生成 JSON 数组
       file_infos=()
