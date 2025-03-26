@@ -45,8 +45,9 @@ generate_json:
 
       # 拼接 JSON 数组
       file_infos_json=$(IFS=, ; echo "[${file_infos[*]}]")
+      echo "json信息1"
       echo $file_infos_json
-
+      echo "json信息2"
 
 
       # 发送请求
