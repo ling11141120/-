@@ -50,7 +50,7 @@ generate_json:
 
       # 发送请求
       curl -X POST \
-        http://192.168.21.192:8866/base/outter/bigData/commit \
+        http://192.168.21.192:8866/bigData/webhook/commit \
         -H "Content-Type: application/json" \
         -d "{
           \"commitBy\": \"Administrator\",
