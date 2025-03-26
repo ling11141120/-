@@ -17,7 +17,7 @@ generate_json:
 
       # 将文件名存入变量，供后续使用
       export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
-
+      echo $CHANGED_FILES 
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
