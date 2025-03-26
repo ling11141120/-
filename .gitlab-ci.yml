@@ -33,7 +33,7 @@ generate_json:
       for file in "${CHANGED_FILES[@]}"; do
         # 读取文件内容并转义双引号和换行符
         ls -l
-        cat "$file"
+        echo "$file"
         ls -l
         file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
         
