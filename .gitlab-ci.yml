@@ -1,45 +1,58 @@
 stages:
-  - compare
+  - deploy
 
-get_changed_files:
-  stage: compare
+generate_json:
+  stage: deploy
   script:
-    # 获取完整仓库历史（避免浅克隆导致无法比较分支）
-    - git fetch origin master:master
-    - git fetch origin stage:stage
-    
-    # 对比 master 和 stage 分支的差异，提取文件名
-    - git diff --name-only master...stage > changed_files.txt
-    
-    # 显示结果（可选）
-    - cat changed_files.txt
-    - echo "提交信息：$CI_COMMIT_MESSAGE"
+    - |
 
-    # 将文件名存入变量，供后续使用（可选）
-    - export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
+      # 获取完整仓库历史（避免浅克隆导致无法比较分支）
+      git fetch origin master:master
+      git fetch origin stage:stage
 
-    # 获取当前提交的详细信息（包含提交人）
-    - author_line=$(git log -1 --pretty=format:'%an')
-    - echo "提交信息：$author_line"
 
-    # 动态生成 JSON 数组
-    - file_infos=()
-    - for file in "${CHANGED_FILES[@]}"; do
-        # 读取文件内容并转义特殊字符
-        file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
-  
-        # 构建 JSON 对象
+      # 对比 master 和 stage 分支的差异，提取文件名
+      git diff --name-only master...stage > changed_files.txt
+
+
+      # 将文件名存入变量，供后续使用
+      export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
+
+
+      # 获取当前提交的详细信息（包含提交人）
+      author_line=$(git log -1 --pretty=format:'%an')
+
+
+      # 动态生成 JSON 数组
+      file_infos=()
+      for file in "${CHANGED_FILES[@]}"; do
+        # 读取文件内容并转义双引号和换行符
+        file_content=$(sed 's/"/\\"/g; s/$/\\n/' "$file" | tr -d '\n')
+        
+        # 构建 JSON 对象（避免 YAML 解析冲突）
         file_infos+=("
           {
             \"fileName\": \"$file\",
             \"fileContent\": \"$file_content\"
           }")
-    done
+      done
 
+      # 拼接 JSON 数组
+      file_infos_json=$(IFS=, ; echo "[${file_infos[*]}]")
+
+      # 发送请求
+      curl -X POST \
+        http://192.168.21.192:8866/base/outter/bigData/commit \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"commitBy\": \"Administrator\",
+          \"commitInfo\": \"更新文件\",
+          \"fileInfos\": $file_infos_json
+        }"
   artifacts:
     paths:
       - changed_files.txt
   only:
     - stage
   tags:
-    - kunlun-runner    
+    - kunlun-runner
