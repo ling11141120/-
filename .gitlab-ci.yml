@@ -34,8 +34,8 @@ generate_json:
         # 读取文件内容并转义双引号和换行符
         ls -l
         echo "$file"
-        ls -l
         file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
+        ls -l
         
         # 构建 JSON 对象（避免 YAML 解析冲突）
         file_infos+=("
