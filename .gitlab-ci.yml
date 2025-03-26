@@ -16,11 +16,25 @@ get_changed_files:
     - echo "提交信息：$CI_COMMIT_MESSAGE"
 
     # 将文件名存入变量，供后续使用（可选）
-    - export CHANGED_FILES=$(cat changed_files.txt)
+    - export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
 
     # 获取当前提交的详细信息（包含提交人）
     - author_line=$(git log -1 --pretty=format:'%an')
     - echo "提交信息：$author_line"
+
+    # 动态生成 JSON 数组
+    - file_infos=()
+    - for file in "${CHANGED_FILES[@]}"; do
+        # 读取文件内容并转义特殊字符
+        file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
+  
+        # 构建 JSON 对象
+        file_infos+=("
+          {
+            \"fileName\": \"$file\",
+            \"fileContent\": \"$file_content\"
+          }")
+    done
 
   artifacts:
     paths:
