@@ -28,7 +28,7 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
 
       echo $author_line
-      ls
+      ls -l
       cat ads_bi_dc_user_statistic_ad_info_di.sql
 
 
