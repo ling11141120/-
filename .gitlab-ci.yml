@@ -27,7 +27,7 @@ generate_json:
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
 
-      echo $(author_line)
+      echo $author_line
       ls
       cat ads_bi_dc_user_statistic_ad_info_di.sql
 
