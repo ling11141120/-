@@ -33,7 +33,7 @@ generate_json:
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         echo $safe_commit_message
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        echo $safe_commit_message
+        echo $safe_file_content
       done
       
   artifacts:
