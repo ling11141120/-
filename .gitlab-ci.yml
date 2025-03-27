@@ -40,16 +40,16 @@ generate_json:
       curl -X POST \
         http://192.168.21.192:8866/bigData/webhook/commit \
         -H "Content-Type: application/json" \
-        -d "{
-          \"commitBy\": \"$author_line\",
-          \"commitInfo\": \"$safe_commit_message\",
-          \"uuid\": \"$CI_COMMIT_SHA\",
-           \"isEnd\": true,
-           \"fileInfo\": {
-           \"fileName\": \"$file\",
-           \"content\": \"$safe_file_content\"
-           }
-        }"  # 闭合 JSON 和引号
+        -d '{
+          "commitBy": "$author_line",
+          "commitInfo": "$safe_commit_message",
+          "uuid": "$CI_COMMIT_SHA",
+          "isEnd": true,
+          "fileInfo": {
+          "fileName": "$file",
+          "fileContent": "$safe_file_content"
+          }
+        }'  # 闭合 JSON 和引号
       done
       
   artifacts:
