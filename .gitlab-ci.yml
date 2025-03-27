@@ -54,7 +54,6 @@ generate_json:
   artifacts:
     paths:
       - changed_files.txt
-      - request.json
   only:
     - stage
   tags:
