@@ -31,8 +31,15 @@ generate_json:
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-        #echo $safe_commit_message
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+
+
+        echo $author_line
+        echo $safe_commit_message        
+        echo $CI_COMMIT_SHA
+        echo $i
+        echo $safe_file_content      
+        
         
         # 正确闭合 JSON 结构
         curl -X POST \
