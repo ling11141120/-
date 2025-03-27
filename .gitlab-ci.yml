@@ -46,7 +46,7 @@ generate_json:
           http://192.168.21.192:8866/bigData/webhook/commit \
           -H "Content-Type: application/json" \
           -d '{
-            "commitBy": "$author_line",
+            "commitBy": $author_line,
             "commitInfo": "$safe_commit_message",
             "uuid": "$CI_COMMIT_SHA",
             "isEnd": true,
