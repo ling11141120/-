@@ -32,15 +32,15 @@ for file in "${CHANGED_FILES[@]}"; do
   safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
   safe_file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
 
-echo 1
+echo test1
 echo $author_line
-echo 2
+echo test2
 echo $safe_commit_message
-echo 3
+echo test3
 echo $CI_COMMIT_SHA
-echo 4
+echo test4
 echo $file
-echo 5
+echo test5
 echo $safe_file_content
 
 
