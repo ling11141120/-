@@ -38,7 +38,7 @@ generate_json:
         echo 20250327
         
         # 将JSON保存到临时文件
-        cat > /tmp/request.json <<EOF
+        cat > request.json <<EOF
         {
           "commitBy": "$author_line",
           "commitInfo": "$safe_commit_message",
@@ -51,6 +51,8 @@ generate_json:
         }
         EOF
         
+        
+        cat request.json
         # 发送请求
         curl -X POST \
           http://192.168.21.192:8866/bigData/webhook/commit \
@@ -61,7 +63,7 @@ generate_json:
   artifacts:
     paths:
       - changed_files.txt
-      - /tmp/request.json
+      - request.json
   only:
     - stage
   tags:
