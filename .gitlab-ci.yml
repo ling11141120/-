@@ -37,25 +37,31 @@ generate_json:
         echo $CI_COMMIT_SHA
         echo 20250327
         
-      # 正确闭合 JSON 结构
-      curl -X POST \
-        http://192.168.21.192:8866/bigData/webhook/commit \
-        -H "Content-Type: application/json" \
-        -d '{
+        # 将JSON保存到临时文件
+        cat > /tmp/request.json <<EOF
+        {
           "commitBy": "$author_line",
           "commitInfo": "$safe_commit_message",
           "uuid": "$CI_COMMIT_SHA",
           "isEnd": true,
           "fileInfo": {
-          "fileName": "$file",
-          "fileContent": "$safe_file_content"
+            "fileName": "$i",
+            "content": "$safe_file_content"
           }
-        }'  # 闭合 JSON 和引号
+        }
+        EOF
+        
+        # 发送请求
+        curl -X POST \
+          http://192.168.21.192:8866/bigData/webhook/commit \
+          -H "Content-Type: application/json" \
+          -d @/tmp/request.json        
       done
       
   artifacts:
     paths:
       - changed_files.txt
+      - /tmp/request.json
   only:
     - stage
   tags:
