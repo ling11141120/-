@@ -44,7 +44,7 @@ generate_json:
             "uuid": "$CI_COMMIT_SHA",
             "isEnd": true,
             "fileInfo": {
-            "fileName": "$file",
+            "fileName": "$i",
             "fileContent": "$safe_file_content"
             }
           }'  # 闭合 JSON 和引号
