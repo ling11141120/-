@@ -10,8 +10,6 @@ generate_json:
       git fetch origin master:master
       git fetch origin stage:stage
 
-      jq --version
-
       # 对比 master 和 stage 分支的差异，提取文件名
       git diff --name-only master...stage > changed_files.txt
 
