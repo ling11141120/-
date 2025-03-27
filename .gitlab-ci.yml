@@ -29,7 +29,10 @@ generate_json:
       echo $author_line
       echo devops
       # 遍历数组
-      sh -x test.sh $author_line $CI_COMMIT_MESSAG $CI_COMMIT_SHA $CHANGED_FILES
+      #sh -x test.sh $author_line $CI_COMMIT_MESSAG $CI_COMMIT_SHA $CHANGED_FILES
+      sh -x test.sh
+      
+      
       
   artifacts:
     paths:
