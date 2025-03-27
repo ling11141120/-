@@ -1,0 +1,22 @@
+CREATE TABLE `audit_log` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `process_instance_id` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '审批实例ID',
+  `audit_type` tinyint(1) NOT NULL COMMENT '审批类型',
+  `project_id` varchar(64) COLLATE utf8mb4_bin NOT NULL COMMENT '应用ID',
+  `project_env_id` varchar(64) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '环境ID',
+  `project_service_id` varchar(64) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '服务ID',
+  `cluster_address` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '集群',
+  `namespace` varchar(20) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '命令空间',
+  `dingding_audit_status` tinyint(1) DEFAULT '0' COMMENT '钉钉审核状态 0-等待审核 1-审核成功 2-审核失败',
+  `devops_audit_status` tinyint(1) DEFAULT '0' COMMENT '审核状态 0-等待审核 1-审核成功 2-审核失败',
+  `devops_audit_remark` varchar(300) COLLATE utf8mb4_bin DEFAULT NULL COMMENT '运维审核备注',
+  `run_status` tinyint(1) DEFAULT '0' COMMENT '执行状态 0-待执行 1-执行成功 2-执行失败 3-发布执行 4-已取消',
+  `version` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '版本',
+  `attach` varchar(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '附加信息',
+  `create_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `update_by` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '更新人',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_process_instance_id` (`process_instance_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='审批记录表'
