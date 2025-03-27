@@ -47,12 +47,12 @@ generate_json:
           -H "Content-Type: application/json" \
           -d '{
             \"commitBy\": \"$author_line\",
-            "commitInfo": \"$safe_commit_message\",
-            "uuid": "$CI_COMMIT_SHA",
-            "isEnd": true,
-            "fileInfo": {
-            "fileName": "$i",
-            "fileContent": "$safe_file_content"
+            \"commitInfo\": \"$safe_commit_message\",
+            \"uuid\": \"$CI_COMMIT_SHA\",
+            \"isEnd\": true,
+            \"fileInfo\": {
+            \"fileName\": \"$i\",
+            \"fileContent\": \"$safe_file_content\"
             }
           }'  # 闭合 JSON 和引号
       done
