@@ -6,7 +6,7 @@ generate_json:
   script:
     #- sh -x test.sh
     - |
-    
+      MY_ARRAY=(1 2 3 4 5 6 )
       for i in ${MY_ARRAY[@]}; do
         echo "Building $i";
         # Do something with $i
