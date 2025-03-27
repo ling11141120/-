@@ -13,6 +13,18 @@ for file in "${CHANGED_FILES[@]}"; do
   safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
   safe_file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
 
+echo 1
+echo $author_line
+echo 2
+echo $safe_commit_message
+echo 3
+echo $CI_COMMIT_SHA
+echo 4
+echo $file
+echo 5
+echo $safe_file_content
+
+
   # 正确闭合 JSON 结构
   curl -X POST \
     http://192.168.21.192:8866/bigData/webhook/commit \
