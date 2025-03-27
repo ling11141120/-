@@ -30,7 +30,7 @@ echo shell1
 for file in "${CHANGED_FILES[@]}"; do
   # 转义变量中的特殊字符（如双引号）
   safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-  safe_file_content=$(cat "$file" | sed 's/"/\\"/g' | tr '\n' ' ')
+  safe_file_content=$(cat "$file")
 
 echo test1
 echo $author_line
