@@ -35,6 +35,7 @@ generate_json:
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
         echo $safe_file_content
         echo $CI_COMMIT_SHA
+        echo 20250327
         
       # 正确闭合 JSON 结构
       curl -X POST \
