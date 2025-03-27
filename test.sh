@@ -20,6 +20,8 @@ for file in "${CHANGED_FILES[@]}"; do
     -d "{
       \"commitBy\": \"$author_line\",
       \"commitInfo\": \"$safe_commit_message\",
+      \"uuid\": \"$safe_commit_message\",
+      \"isEnd\": true,
       \"fileInfo\": {
       \"fileName\": \"$file\",
       \"content\": \"$safe_file_content\"
