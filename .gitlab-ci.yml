@@ -5,7 +5,9 @@ generate_json:
   stage: deploy
   script:
     #- sh -x test.sh
-    - for i in ${MY_ARRAY[@]}; do
+    - |
+    
+      for i in ${MY_ARRAY[@]}; do
         echo "Building $i";
         # Do something with $i
       done  
