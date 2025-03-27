@@ -29,32 +29,26 @@ generate_json:
       echo $author_line
 
       # 遍历数组
-      for i in ${CHANGED_FILES[@]}; do
+      for i in "${CHANGED_FILES[@]}"; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-        safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-
-
-        echo $author_line
-        echo $safe_commit_message        
-        echo $CI_COMMIT_SHA
-        echo $i
-        echo $safe_file_content      
-        
-        
-        # 正确闭合 JSON 结构
+        safe_file_content=$(sed 's/"/\\"/g; s/\\$/\\\\/g; s/\x1B\[[0-9;]*[a-zA-Z]//g' "$i" | tr -d '\n')
+  
         curl -X POST \
           http://192.168.21.192:8866/bigData/webhook/commit \
           -H "Content-Type: application/json" \
-          -d '{
-            "commitBy": "$author_line",
-            "commitInfo": "$safe_commit_message",
-            "uuid": "$CI_COMMIT_SHA",
-            "isEnd": true,
-            "fileInfo": {
-            "fileName": "$i",
-            "fileContent": "$safe_file_content"
-            }
-          }'  # 闭合 JSON 和引号
+          -d "$(cat <<EOF
+      {
+        "commitBy": "$author_line",
+        "commitInfo": "$safe_commit_message",
+        "uuid": "$CI_COMMIT_SHA",
+        "isEnd": true,
+        "fileInfo": {
+          "fileName": "$i",
+          "fileContent": "$safe_file_content"
+        }
+      }
+      EOF
+          )"
       done
       
   artifacts:
