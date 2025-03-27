@@ -4,33 +4,7 @@ stages:
 generate_json:
   stage: deploy
   script:
-    - |
-
-      # 获取完整仓库历史（避免浅克隆导致无法比较分支）
-      git fetch origin master:master
-      git fetch origin stage:stage
-
-
-      # 对比 master 和 stage 分支的差异，提取文件名
-      git diff --name-only master...stage > changed_files.txt
-
-
-      # 显示结果（可选）
-      #cat changed_files.txt
-      echo "提交信息：$CI_COMMIT_MESSAGE"
-
-
-      # 将文件名存入变量，供后续使用
-      export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
-      echo $CHANGED_FILES 
-
-      # 获取当前提交的详细信息（包含提交人）
-      author_line=$(git log -1 --pretty=format:'%an')
-      echo $author_line
-      echo devops
-      # 遍历数组
-      #sh -x test.sh $author_line $CI_COMMIT_MESSAG $CI_COMMIT_SHA $CHANGED_FILES
-      sh -x test.sh
+    - sh -x test.sh
       
       
       
