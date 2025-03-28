@@ -49,6 +49,7 @@ generate_json:
       EOF
           )"
       done
+
       
   artifacts:
     paths:
