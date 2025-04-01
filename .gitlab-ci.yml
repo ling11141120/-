@@ -35,7 +35,7 @@ generate_json:
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
         
-        
+        echo "计算器"
         if [ "$count" -eq $((len - 1)) ]; then
           isend_status=ture
         else
