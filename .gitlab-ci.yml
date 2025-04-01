@@ -41,7 +41,8 @@ generate_json:
         else
           isend_status=false
         fi
-        ((count++))        
+        ((count++))     
+        echo "计算"
   
   
         curl -X POST \
