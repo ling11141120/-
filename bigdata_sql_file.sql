@@ -9,3 +9,5 @@ CREATE TABLE `bigdata_sql_file` (
   `update_time` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='大数据sql工单文件'
+
+//测试下sql
