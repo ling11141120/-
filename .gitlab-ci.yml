@@ -33,7 +33,7 @@ generate_json:
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
   
         curl -X POST \
-          http://192.168.21.192:8866/bigData/webhook/commit \
+          https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
           -H "Content-Type: application/json" \
           -d "$(cat <<EOF
       {
@@ -49,6 +49,7 @@ generate_json:
       EOF
           )"
       done
+
       
   artifacts:
     paths:
