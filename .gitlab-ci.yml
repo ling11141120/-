@@ -27,10 +27,22 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
+      count=0
+      len=${#CHANGED_FILES[@]}
+      
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+        
+        
+        if [ "$count" -eq $((len - 1)) ]; then
+          isend_status=ture
+        else
+          isend_status=false
+        fi
+        ((count++))        
+  
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
@@ -40,7 +52,7 @@ generate_json:
         "commitBy": "$author_line",
         "commitInfo": "$safe_commit_message",
         "uuid": "$CI_COMMIT_SHA",
-        "isEnd": true,
+        "isEnd": "$isend_status",
         "fileInfo": {
           "fileName": "$i",
           "fileContent": "$safe_file_content"
