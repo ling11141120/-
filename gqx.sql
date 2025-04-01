@@ -1,1 +1,1 @@
-SELECT * from ab_experiment.ab_auto_recode dddd
+SELECT * from ab_experiment.ab_auto_recode tt
