@@ -7,7 +7,7 @@ CREATE TABLE `ads_bi_dc_user_statistic_ad_info_di` (
   `dc_account` bigint(20) NULL COMMENT "机构投放账号",
   `core` int(11) NULL COMMENT "corever",
   `mt` int(11) NULL COMMENT "终端",
-  `user_type` int(11) NULL COMMENT "用户类型:1 新用户 0老用户123123",
+  `user_type` int(11) NULL COMMENT "用户类型:1 新用户 0老用户",
   `new_user_count` int(11) NULL COMMENT "新增用户数",
   `pay_user_count` int(11) NULL COMMENT "新增用户数",
   `pay_order_count` int(11) NULL COMMENT "订单数",
