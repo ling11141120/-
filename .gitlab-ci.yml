@@ -49,7 +49,7 @@ generate_json:
             --arg commitInfo "$safe_commit_message" \
             --arg uuid "$CI_COMMIT_SHA" \
             --argjson isEnd "$is_end" \
-            --arg fileName "$file" \
+            --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
       done
