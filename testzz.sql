@@ -94,7 +94,7 @@ from (
 inner join (
     select dt, product_id, user_id
     from dws.dws_user_wide_active_ed
-    where dt = '${bf_1_dt}' and product_id   in (3311,3322,3333,3366,3371,3388,3501,3511)
+    where dt = '${bf_1_dt}' and product_id   in (3311,3322,3333,3366,3371,3388,3501,351135113511351135113511)
 )b on  (a.last_day_of_month = date_sub(b.dt, interval 60 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
        (a.last_day_of_month = date_sub(b.dt, interval 90 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
        (a.last_day_of_month = date_sub(b.dt, interval 120 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
