@@ -52,6 +52,9 @@ generate_json:
             --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
+
+
+        ((index++))
       done
 
       
