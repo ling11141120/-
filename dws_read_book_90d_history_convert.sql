@@ -14,7 +14,7 @@ sql="
 insert into dws.dws_read_book_90d
 select '${today}' as dt, site_id, book_id, bitmap_union(to_bitmap(user_id)) as read_user_90d
 from dws.dws_read_user_readbook_1d
-where dt >= date_sub('${today}', interval 90 day)
+where dt >= date_sub('${today}', interval 93 day)
   and dt < '${today}'
 group by site_id, book_id;
 "
