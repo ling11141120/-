@@ -121,7 +121,7 @@ from (   -- ----------------------rmt?????-----------------------
            and user_period in (3)
      and product_id   in (3311,3322,3333,3366,3371,3388,3501,)
      )a
-left join ( -- ----------------------?????-----------------------
+left join ( -- ----------------------?
     select dt, product_id, user_id,mt,corever
     from dws.dws_user_wide_active_ed
     where dt >= date_sub('${bf_1_dt}', interval 31 day)
