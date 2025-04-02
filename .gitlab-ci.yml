@@ -44,7 +44,8 @@ generate_json:
         i="${CHANGED_FILES[index]}"
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         #safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        safe_file_content=$(sed 's/"/\\"/g' "$file")
+        safe_file_content=$(cat "$i" | sed 's/"/\\"/g')
+        #safe_file_content=$(sed 's/"/\\"/g' "$file")
         
 
         if [ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ]; then
