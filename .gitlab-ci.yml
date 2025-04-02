@@ -30,14 +30,15 @@ generate_json:
 
 
       declare -i index=0
-      total=${#CHANGED_FILES[@]}
+      length=${#CHANGED_FILES[@]}
+      echo "数组长度: $length"
       
       
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
+        #is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
         
         echo $is_end
   
