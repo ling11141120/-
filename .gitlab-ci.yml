@@ -31,7 +31,6 @@ generate_json:
 
       declare -i index=0
       total=${#CHANGED_FILES[@]}
-      echo "数组长度: $total"
       
       
       # 遍历数组
@@ -53,8 +52,6 @@ generate_json:
             --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
-
-
       done
 
       
