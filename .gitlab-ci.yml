@@ -127,7 +127,7 @@ auto_merge_mr:
       
       # 2. 仅当可合并时执行自动合并
       if [ "$MR_STATUS" = "can_be_merged" ]; then
-        curl --request PUT --header "PRIVATE-TOKEN: Bbh_-quZT5VeCYWNqtGh" --header "Content-Type: application/json" --data "merge_commit_message=Auto-merged via CI (Pipeline $CI_PIPELINE_ID)" "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"
+        curl --request GET --header "PRIVATE-TOKEN: Bbh_-quZT5VeCYWNqtGh" --header "Content-Type: application/json" --data "merge_commit_message=Auto-merged via CI (Pipeline $CI_PIPELINE_ID)" "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"
       else
         echo "存在合并冲突，无法自动合并"
         exit 1
