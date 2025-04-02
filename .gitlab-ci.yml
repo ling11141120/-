@@ -44,7 +44,7 @@ generate_json:
       # 遍历数组
       for index in "${CHANGED_FILES[@]}"; do
       
-        i="${CHANGED_FILES[index]}"
+        i=${CHANGED_FILES[index]}
         echo "Building $i"
         
         
