@@ -29,31 +29,25 @@ generate_json:
         CHANGED_FILES+=("$line")
       done < changed_files.txt      
       
-      
-      echo "总文件数: ${#CHANGED_FILES[@]}"
-      printf "文件: %s\n" "${CHANGED_FILES[@]}"
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-      #count=0
-      total=${#CHANGED_FILES[@]}
-      echo "数组长度: $total"
+
+      echo "总文件数: ${#CHANGED_FILES[@]}"
+      printf "文件: %s\n" "${CHANGED_FILES[@]}"
+
       
       # 遍历数组
       for index in "${!CHANGED_FILES[@]}"; do
-      
         i="${CHANGED_FILES[index]}"
-        echo "Building $i"
-        
-        
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-        safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        #is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
-        #is_end=$([ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ] && echo true || echo false)
+        #safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+        safe_file_content=$(cat "$i" | sed 's/"/\\"/g')
+        #safe_file_content=$(sed 's/"/\\"/g' "$file")
         
-        
+
         if [ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ]; then
           is_end=true
         else
@@ -61,8 +55,6 @@ generate_json:
         fi
         echo "文件: $i | 是否最后一次: $is_end"
         
-
-        echo $is_end
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
@@ -75,7 +67,6 @@ generate_json:
             --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
-
 
       done
 
