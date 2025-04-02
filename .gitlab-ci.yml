@@ -19,7 +19,7 @@ validate_source_branch:
     refs:
       - merge_requests # 仅针对合并请求触发
     variables:  # 增加目标分支条件
-      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
+      - $CI_MERGE_REQUEST_TARGET_BRANCH == "master"
     
   tags:
     - kunlun-runner
