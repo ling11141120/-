@@ -12,7 +12,7 @@ generate_json:
       git fetch origin stage:stage
 
       # 对比 master 和 stage 分支的差异，提取文件名
-      git diff --name-only master...stage > changed_files.txt
+      git diff --name-only master...stage | grep -v ".gitlab-ci.yml" > changed_files.txt
 
 
       # 显示结果（可选）
@@ -21,13 +21,10 @@ generate_json:
 
 
       # 将文件名存入变量，供后续使用
-      mapfile -t CHANGED_FILES < <(grep -v ".gitlab-ci.yml" changed_files.txt)
+      readarray -t CHANGED_FILES < changed_files.txt
       echo "总文件数: ${#CHANGED_FILES[@]}"
       printf "文件: %s\n" "${CHANGED_FILES[@]}"
       
-      readarray -t CHANGED_FILES < <(grep -v ".gitlab-ci.yml" changed_files.txt)
-      echo "总文件数: ${#CHANGED_FILES[@]}"
-      printf "文件: %s\n" "${CHANGED_FILES[@]}"      
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
