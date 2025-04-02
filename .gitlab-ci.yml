@@ -8,10 +8,10 @@ validate_source_branch:
   script:
     - |
       # 仅当合并到 master 时触发检查
-      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "master" ]; then
+      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" == "master" ]; then
         # 校验源分支是否为 stage
-        if [ "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" != "stage" ]; then
-          echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+        if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" != "stage" ]; then
+          echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_TARGET_BRANCH"
           exit 1
         fi
       fi
