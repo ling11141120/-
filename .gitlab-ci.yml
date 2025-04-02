@@ -43,7 +43,7 @@ generate_json:
         "commitBy": "$author_line",
         "commitInfo": "$safe_commit_message",
         "uuid": "$CI_COMMIT_SHA",
-        "isEnd": "$isend_status",
+        "isEnd": true,
         "fileInfo": {
           "fileName": "$i",
           "fileContent": "$safe_file_content"
