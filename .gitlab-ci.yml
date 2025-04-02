@@ -38,7 +38,6 @@ generate_json:
       echo $author_line
 
 
-      #declare -i index=0
       total=${#CHANGED_FILES[@]}
       echo "数组长度: $total"
       
