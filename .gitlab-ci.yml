@@ -16,7 +16,9 @@ generate_json:
 
 
       # 显示结果（可选）
+      echo 1
       cat changed_files.txt
+      echo 2
       echo "提交信息：$CI_COMMIT_MESSAGE"
 
 
