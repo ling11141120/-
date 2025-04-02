@@ -88,7 +88,7 @@ generate_json:
         
   
         curl -X POST \
-          https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
+          https://kunlun-api.changdu.vip/bigData/webhook/commit \
           -H "Content-Type: application/json" \
           -d "$(jq -n \
             --arg commitBy "$author_line" \
