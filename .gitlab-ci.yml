@@ -31,14 +31,18 @@ generate_json:
   stage: deploy
   script:
     - |
-      set -eo pipefail
+      #set -eo pipefail
 
       # 获取完整仓库历史（避免浅克隆导致无法比较分支）
+      echo "数字：1"
       git fetch origin master:master
+      echo "数字：2"
       git fetch origin stage:stage
+      echo "数字：3"
 
       # 对比 master 和 stage 分支的差异，提取文件名
       git diff --name-only master...stage | grep -v ".gitlab-ci.yml" > changed_files.txt
+      echo "数字：4"
 
       # 显示结果（可选）
       cat changed_files.txt
