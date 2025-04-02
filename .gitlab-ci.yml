@@ -27,7 +27,7 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-      
+      jq -version
       # 遍历数组
       for i in "${CHANGED_FILES[@]}"; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
@@ -53,7 +53,6 @@ generate_json:
           )"
       done
 
-    jq -version
       
   artifacts:
     paths:
