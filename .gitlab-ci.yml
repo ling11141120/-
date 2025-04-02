@@ -37,14 +37,14 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-      count=0
+      #count=0
       total=${#CHANGED_FILES[@]}
       echo "数组长度: $total"
       
       # 遍历数组
-      for i in "${CHANGED_FILES[@]}"; do
+      for index in "${CHANGED_FILES[@]}"; do
       
-        #i=${CHANGED_FILES[index]}
+        i="${CHANGED_FILES[index]}"
         echo "Building $i"
         
         
@@ -54,16 +54,12 @@ generate_json:
         #is_end=$([ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ] && echo true || echo false)
         
         
-        echo "count=$count"
-        echo "$total"
-        if [ "$count" -eq $((total - 1)) ]; then
-            is_end=true
-            echo $is_end
+        if [ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ]; then
+          is_end=true
         else
-            is_end=false
-            echo $is_end
+          is_end=false
         fi
-        ((count++))
+        echo "文件: $i | 是否最后一次: $is_end"
         
 
         echo $is_end
