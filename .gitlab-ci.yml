@@ -33,7 +33,7 @@ generate_json:
 
       declare -i index=0
       total=${#CHANGED_FILES[@]}
-      #echo "数组长度: $total"
+      echo "数组长度: $total"
       
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
