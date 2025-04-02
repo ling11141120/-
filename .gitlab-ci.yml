@@ -16,7 +16,10 @@ validate_source_branch:
         fi
       fi
   only:
-    - merge_requests  # 仅针对合并请求触发
+    refs:
+      - merge_requests # 仅针对合并请求触发
+    variables:  # 增加目标分支条件
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"
     
   tags:
     - kunlun-runner
