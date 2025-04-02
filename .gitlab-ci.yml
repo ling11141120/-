@@ -54,7 +54,7 @@ generate_json:
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
 
 
-        ((index++))
+        (( index++ ))
       done
 
       
