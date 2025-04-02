@@ -32,25 +32,20 @@ generate_json:
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-    
+        is_end=true
         
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
           -H "Content-Type: application/json" \
-          -d "$(cat <<EOF
-      {
-        "commitBy": "$author_line",
-        "commitInfo": "$safe_commit_message",
-        "uuid": "$CI_COMMIT_SHA",
-        "isEnd": true,
-        "fileInfo": {
-          "fileName": "$i",
-          "fileContent": "$safe_file_content"
-        }
-      }
-      EOF
-          )"
+          -d "$(jq -n \
+            --arg commitBy "$author_line" \
+            --arg commitInfo "$safe_commit_message" \
+            --arg uuid "$CI_COMMIT_SHA" \
+            --argjson isEnd "$is_end" \
+            --arg fileName "$file" \
+            --arg fileContent "$safe_file_content" \
+            '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
       done
 
       
