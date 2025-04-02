@@ -21,8 +21,8 @@ LEFT JOIN
 (
 SELECT 
 l.project_id,
-count(*) c3 from workflow_deploy_logs l,project_env p where l.project_env_id = p.id and p.is_pro = 1 and l.create_time >= "2024-07-01 00:00:00" and deploy_source = 2 GROUP BY l.project_id
+count(*) c3 from workflow_deploy_logs l,project_env p where l.project_env_id = p.id and p.is_pro = 1 and l.create_time >= "2024-07-30 00:00:00" and deploy_source = 2 GROUP BY l.project_id
 ) t3 on t1.project_id = t3.project_id
 LEFT JOIN (SELECT project_id,id from project_env where is_pro = 1 and namespace="stage") t4 on t1.project_id = t4.project_id
 
-test123123123
+
