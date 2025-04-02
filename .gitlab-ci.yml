@@ -33,16 +33,17 @@ generate_json:
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
       echo "提交人：$author_line"
-
-
+      echo "提交信息：$CI_COMMIT_MESSAGE"
       echo "总文件数: ${#CHANGED_FILES[@]}"
       printf "文件: %s\n" "${CHANGED_FILES[@]}"
+
+      safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')      
+      echo "提交哈希值：$safe_commit_message"
 
       
       # 遍历数组
       for index in "${!CHANGED_FILES[@]}"; do
         i="${CHANGED_FILES[index]}"
-        safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         #safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g')
         
