@@ -134,7 +134,6 @@ auto_merge_mr:
       fi
       
       
-      
   only:
     refs:
       - merge_requests  # 仅针对合并请求触发（旧版本语法）
