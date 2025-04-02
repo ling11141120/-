@@ -37,10 +37,6 @@ generate_json:
       echo "数字：1"
       git fetch origin master:master
       echo "数字：2"
-      git checkout stage
-      git reset --hard origin/stage  # 强制将本地分支指向远程提交
-      git pull origin stage 
-      
       git fetch origin stage:stage
       echo "数字：3"
 
