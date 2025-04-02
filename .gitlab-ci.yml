@@ -7,14 +7,16 @@ validate_source_branch:
   stage: test  # 在流水线最早期阶段执行
   script:
     - |
-      # 仅当合并到 master 时触发检查
-      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" == "master" ]; then
-        # 校验源分支是否为 stage
-        if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" != "stage" ]; then
-          echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_TARGET_BRANCH"
-          exit 1
-        fi
+      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" != "master" ]; then
+        echo "错误：此检查仅适用于合并到 master 分支的请求"
+        exit 1
       fi
+
+      if [ "$CI_MERGE_REQUEST_SOURCE_BRANCH" != "stage" ]; then
+        echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH"
+        exit 1
+      fi      
+      
   only:
     refs:
       - merge_requests # 仅针对合并请求触发
