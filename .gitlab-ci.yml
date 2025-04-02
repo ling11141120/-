@@ -1,3 +1,8 @@
+stages:
+  - test
+  - deploy
+
+
 validate_source_branch:
   stage: test  # 在流水线最早期阶段执行
   script:
