@@ -10,8 +10,8 @@ validate_source_branch:
           exit 1
         fi
       fi
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"  # 仅针对合并请求触发
+  only:
+    - merge_requests  # 仅针对合并请求触发
     
   tags:
     - kunlun-runner
