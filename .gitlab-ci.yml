@@ -1,5 +1,31 @@
 stages:
+  - test
   - deploy
+
+
+validate_source_branch:
+  stage: test  # 在流水线最早期阶段执行
+  script:
+    - |
+      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH" != "master" ]; then
+        echo "错误：此检查仅适用于合并到 master 分支的请求"
+        exit 1
+      fi
+
+      if [ "$CI_MERGE_REQUEST_SOURCE_BRANCH" != "stage" ]; then
+        echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH"
+        exit 1
+      fi      
+      
+  only:
+    refs:
+      - merge_requests # 仅针对合并请求触发
+    variables:  # 增加目标分支条件
+      - $CI_MERGE_REQUEST_TARGET_BRANCH == "master"
+    
+  tags:
+    - kunlun-runner
+
 
 generate_json:
   stage: deploy
@@ -8,38 +34,55 @@ generate_json:
       set -eo pipefail
 
       # 获取完整仓库历史（避免浅克隆导致无法比较分支）
+      echo "数字：1"
       git fetch origin master:master
+      echo "数字：1"
       git fetch origin stage:stage
 
       # 对比 master 和 stage 分支的差异，提取文件名
-      git diff --name-only master...stage > changed_files.txt
-
+      git diff --name-only master...stage | grep -v ".gitlab-ci.yml" > changed_files.txt
 
       # 显示结果（可选）
       cat changed_files.txt
       echo "提交信息：$CI_COMMIT_MESSAGE"
 
 
-      # 将文件名存入变量，供后续使用
-      export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
-      echo $CHANGED_FILES 
+      # 将文件名存入数组，供后续使用
+      #export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
+      #readarray -t CHANGED_FILES < changed_files.txt
+      
+      CHANGED_FILES=()
+      while IFS= read -r line; do
+        CHANGED_FILES+=("$line")
+      done < changed_files.txt      
+      
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
-      echo $author_line
+      echo "提交人：$author_line"
 
+      safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')      
+      echo "提交信息：$safe_commit_message"
 
-      declare -i index=0
-      total=${#CHANGED_FILES[@]}
-      
+      echo "总文件数: ${#CHANGED_FILES[@]}"
+      printf "文件: %s\n" "${CHANGED_FILES[@]}"
+      echo "提交哈希值：$CI_COMMIT_SHA"
+
       
       # 遍历数组
-      for i in ${CHANGED_FILES[@]}; do
-        safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-        safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
+      for index in "${!CHANGED_FILES[@]}"; do
+        i="${CHANGED_FILES[index]}"
+        #safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+        safe_file_content=$(cat "$i" | sed 's/"/\\"/g')
         
-        echo $is_end
+
+        if [ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ]; then
+          is_end=true
+        else
+          is_end=false
+        fi
+        echo "for循环文件: $i | 是否最后一次: $is_end"
+        
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
@@ -52,6 +95,7 @@ generate_json:
             --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
+
       done
 
       
