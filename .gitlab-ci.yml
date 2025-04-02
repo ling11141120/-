@@ -39,6 +39,7 @@ generate_json:
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
         is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
         
+        echo $is_end
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
