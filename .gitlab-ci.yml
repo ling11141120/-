@@ -29,7 +29,7 @@ generate_json:
 
       
       # 遍历数组
-      for i in ${CHANGED_FILES[@]}; do
+      for i in "${CHANGED_FILES[@]}"; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
     
@@ -53,6 +53,7 @@ generate_json:
           )"
       done
 
+    jq -version
       
   artifacts:
     paths:
