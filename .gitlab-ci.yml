@@ -10,7 +10,6 @@ validate_source_branch:
           exit 1
         fi
       fi
-workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"  # 仅针对合并请求触发
     
