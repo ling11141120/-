@@ -52,7 +52,7 @@ generate_json:
         else
           is_end=false
         fi
-        echo "\n文件: $i | 是否最后一次: $is_end"
+        echo "文件: $i | 是否最后一次: $is_end"
         
   
         curl -X POST \
