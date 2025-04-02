@@ -37,7 +37,7 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-
+      count=0
       total=${#CHANGED_FILES[@]}
       echo "数组长度: $total"
       
@@ -46,7 +46,13 @@ generate_json:
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
         #is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
-        is_end=$([ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ] && echo true || echo false)
+        #is_end=$([ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ] && echo true || echo false)
+        
+        if [ "$count" -eq $((total - 1)) ]; then
+            is_end=true
+        else
+            is_end=false
+        fi
         
         echo $is_end
   
