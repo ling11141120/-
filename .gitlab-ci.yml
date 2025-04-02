@@ -58,8 +58,10 @@ generate_json:
         echo "$total"
         if [ "$count" -eq $((total - 1)) ]; then
             is_end=true
+            echo $is_end
         else
             is_end=false
+            echo $is_end
         fi
         ((count++))
         
