@@ -152,4 +152,4 @@ inner join (
        (a.last_day_of_month = date_sub(b.dt, interval 120 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever) or
        (a.last_day_of_month = date_sub(b.dt, interval 150 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever) or
        (a.last_day_of_month = date_sub(b.dt, interval 180 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever)
-group by 1, 2, 3,4,5,6,7,15,16;
+group by 1, 2, 3,4,5,6,7,15,16,123123;
