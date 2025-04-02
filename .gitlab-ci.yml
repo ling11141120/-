@@ -1,5 +1,4 @@
-stages:
-  - deploy
+
 
 generate_json:
   stage: deploy
