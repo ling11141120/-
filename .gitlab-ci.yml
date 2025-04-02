@@ -22,17 +22,17 @@ generate_json:
 
       # 将文件名存入变量，供后续使用
       mapfile -t CHANGED_FILES < <(grep -v ".gitlab-ci.yml" changed_files.txt)
-      echo $CHANGED_FILES 
+      echo "总文件数: ${#CHANGED_FILES[@]}"
+      printf "文件: %s\n" "${CHANGED_FILES[@]}"
+      
+      readarray -t CHANGED_FILES < <(grep -v ".gitlab-ci.yml" changed_files.txt)
+      echo "总文件数: ${#CHANGED_FILES[@]}"
+      printf "文件: %s\n" "${CHANGED_FILES[@]}"      
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-
-      declare -i index=0
-      length=${#CHANGED_FILES[@]}
-      echo "数组长度: $length"
-      
       
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
