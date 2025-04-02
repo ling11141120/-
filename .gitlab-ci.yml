@@ -42,7 +42,7 @@ generate_json:
       echo "数组长度: $total"
       
       # 遍历数组
-      for index in "${CHANGED_FILES[@]}"; do
+      for index in "${!CHANGED_FILES[@]}"; do
       
         i="${CHANGED_FILES[index]}"
         echo "Building $i"
