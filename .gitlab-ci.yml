@@ -27,12 +27,16 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
-      jq --version
+
+      declare -i index=0
+      total=${#CHANGED_FILES[@]}
+      
+      
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        is_end=true
+        is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
         
   
         curl -X POST \
