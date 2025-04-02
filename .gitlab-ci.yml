@@ -23,10 +23,7 @@ generate_json:
 
 
       # 将文件名存入变量，供后续使用
-      CHANGED_FILES=()
-      while IFS= read -r line; do
-        CHANGED_FILES+=("$line")
-      done < changed_files.txt
+      export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
 
 
       echo "总文件数: ${#CHANGED_FILES[@]}"
