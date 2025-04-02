@@ -10,6 +10,8 @@ validate_source_branch:
           exit 1
         fi
       fi
+  tags:
+    - kunlun-runner
 
 
 generate_json:
