@@ -5,6 +5,7 @@ generate_json:
   stage: deploy
   script:
     - |
+      set -eo pipefail
 
       # 获取完整仓库历史（避免浅克隆导致无法比较分支）
       git fetch origin master:master
@@ -27,27 +28,30 @@ generate_json:
       author_line=$(git log -1 --pretty=format:'%an')
       echo $author_line
 
+
+      declare -i index=0
+      total=${#CHANGED_FILES[@]}
+      
+      
       # 遍历数组
       for i in ${CHANGED_FILES[@]}; do
         safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
         safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+        is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
+        
+        echo $is_end
   
         curl -X POST \
           https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
           -H "Content-Type: application/json" \
-          -d "$(cat <<EOF
-      {
-        "commitBy": "$author_line",
-        "commitInfo": "$safe_commit_message",
-        "uuid": "$CI_COMMIT_SHA",
-        "isEnd": true,
-        "fileInfo": {
-          "fileName": "$i",
-          "fileContent": "$safe_file_content"
-        }
-      }
-      EOF
-          )"
+          -d "$(jq -n \
+            --arg commitBy "$author_line" \
+            --arg commitInfo "$safe_commit_message" \
+            --arg uuid "$CI_COMMIT_SHA" \
+            --argjson isEnd "$is_end" \
+            --arg fileName "$i" \
+            --arg fileContent "$safe_file_content" \
+            '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
       done
 
       
