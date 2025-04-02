@@ -53,6 +53,9 @@ generate_json:
         #is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
         #is_end=$([ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ] && echo true || echo false)
         
+        
+        echo "count=$count"
+        echo "$total"
         if [ "$count" -eq $((total - 1)) ]; then
             is_end=true
         else
