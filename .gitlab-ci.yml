@@ -5,6 +5,7 @@ generate_json:
   stage: deploy
   script:
     - |
+      set -eo pipefail
 
       # 获取完整仓库历史（避免浅克隆导致无法比较分支）
       git fetch origin master:master
