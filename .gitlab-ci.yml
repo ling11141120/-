@@ -12,7 +12,7 @@ generate_json:
       git fetch origin stage:stage
 
       # 对比 master 和 stage 分支的差异，提取文件名
-      git diff --name-only master...stage | grep -v ".gitlab-ci.yml" > changed_files.txt
+      git diff --name-only master...stage > changed_files.txt
 
 
       # 显示结果（可选）
