@@ -115,7 +115,7 @@ from (
            and last_day_of_month <= '${bf_1_dt}'
            and period_types = 3
            and user_period in (3)
-     and product_id   in (3311,3322,3333,3366,3371,3388,3501,3511,3511)
+     and product_id   in (3311,3322,3333,3366,3371,3388,3501,3511)
      )a
 inner join (
     select dt, product_id, user_id,mt,corever
