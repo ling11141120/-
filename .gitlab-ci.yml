@@ -11,8 +11,8 @@ validate_source_branch:
       # 仅当目标分支是 master 时执行检查
       if [ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" = "master" ]; then
         # 检查源分支是否以 "stage/" 开头（如 stage/feature-x）
-        if [[ ! "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" = stage ]]; then
-          echo "错误：仅允许从 stage/ 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+        if [[ ! "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" = "stage" ]]; then
+          echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
           exit 1
         fi
       fi
