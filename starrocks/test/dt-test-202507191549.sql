@@ -19,6 +19,8 @@ with amt as
 	and product_id  not in (6833)
 	and time_types = 1
 	GROUP BY 1,2,3,4,5,6),
+
+
 	
 -- -----------先关联开启状态的广告单元id配置数据------------------------------
 	amt_1 as (
