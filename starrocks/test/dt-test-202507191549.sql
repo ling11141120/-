@@ -18,7 +18,7 @@ with amt as
 	dt>=  '{bf_4_dt}'
 	and product_id  not in (6833)
 	and time_types = 1
-	GROUP BY 1,2,3,4,5,6),
+	GROUP BY 1,2,3,4,5,6,7),
 
 
 
