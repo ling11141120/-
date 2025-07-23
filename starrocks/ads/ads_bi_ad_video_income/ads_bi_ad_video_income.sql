@@ -118,7 +118,7 @@ select a.dt
       ,ad_show_type
       ,positions
       ,ads_name
-      ,mt
+      ,mt   as mt
       ,core as corever
       ,appver
       ,round(max(b.ad_request)*(sum(cnt)/max(b.all_cnt)),0)        as ad_request
