@@ -203,3 +203,5 @@ select a.dt
    and a.dt >='${bf_4_dt}'
  group by 1,2,3,4,5,6,7,8
 ;
+
+
