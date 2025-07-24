@@ -79,6 +79,6 @@ with amt as (SELECT dt
                                                             )
             group by 1,2,3,4,5,6,7,8
           )
-          select '${bf_1_dt}' as dt, product_id, mt, corever, ads_nmae, ad_show_type, 'test_20250724_1' as position_id, tps, ad_amt, ad_request_cnt, matched_request_cnt, impression_cnt, click_cnt, now() as etl_tm from amt_1
-union all select '${bf_1_dt}' as dt, product_id, mt, corever, ads_nmae, ad_show_type, 'test_20250724_1' as position_id, tps, ad_amt, ad_request_cnt, matched_request_cnt, impression_cnt, click_cnt, now() as etl_tm from amt_2
+          select '${bf_1_dt}' as dt, product_id, mt, corever, ads_nmae, ad_show_type, 'test_20250724_2' as position_id, tps, ad_amt, ad_request_cnt, matched_request_cnt, impression_cnt, click_cnt, now() as etl_tm from amt_1
+union all select '${bf_1_dt}' as dt, product_id, mt, corever, ads_nmae, ad_show_type, 'test_20250724_2' as position_id, tps, ad_amt, ad_request_cnt, matched_request_cnt, impression_cnt, click_cnt, now() as etl_tm from amt_2
 ;
