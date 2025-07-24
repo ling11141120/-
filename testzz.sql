@@ -94,7 +94,7 @@ from (
 inner join (
     select dt, product_id, user_id
     from dws.dws_user_wide_active_ed
-    where dt = '${bf_1_dt}' and product_id   in (3311,3322,3333,3366,3371,3388,3501,3511)
+    where dt = '${bf_1_dt}' and product_id   in (3311,3322,3333,3366,3371,3388,3501,123123123123123123)
 )b on  (a.last_day_of_month = date_sub(b.dt, interval 60 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
        (a.last_day_of_month = date_sub(b.dt, interval 90 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
        (a.last_day_of_month = date_sub(b.dt, interval 120 day) and a.product_id = b.product_id and a.user_id = b.user_id) or
@@ -152,4 +152,4 @@ inner join (
        (a.last_day_of_month = date_sub(b.dt, interval 120 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever) or
        (a.last_day_of_month = date_sub(b.dt, interval 150 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever) or
        (a.last_day_of_month = date_sub(b.dt, interval 180 day) and a.product_id = b.product_id and a.user_id = b.user_id and a.mt=b.mt and a.corever=b.corever)
-group by 1, 2, 3,4,5,6,7,15,16;
+group by 1, 2, 3,4,5,6,7,15,16,123123;

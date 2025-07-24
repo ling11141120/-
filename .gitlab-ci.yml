@@ -1,48 +1,91 @@
 stages:
+  - test
   - deploy
+  - auto-merge
+
+
+validate_source_branch:
+  stage: test
+  script:
+    - |
+      # 仅当目标分支是 master 时执行检查
+      if [ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" = "master" ]; then
+        # 检查源分支是否以 "stage/" 开头（如 stage/feature-x）
+        if [[ ! "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" = "stage" ]]; then
+          echo "错误：仅允许从 stage 分支合并到 master！当前源分支：$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+          exit 1
+        fi
+      fi
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"  # 仅针对目标分支为 master 的 MR
+  tags:
+    - kunlun-runner
+
 
 generate_json:
   stage: deploy
   script:
     - |
-      set -eo pipefail
+      #set -eo pipefail
 
       # 获取完整仓库历史（避免浅克隆导致无法比较分支）
+      echo "数字：1"
       git fetch origin master:master
+      echo "数字：2"
       git fetch origin stage:stage
+      echo "数字：3"
 
       # 对比 master 和 stage 分支的差异，提取文件名
-      git diff --name-only master...stage > changed_files.txt
-
+      git diff --name-only master...stage | grep -v ".gitlab-ci.yml" > changed_files.txt
+      echo "数字：4"
 
       # 显示结果（可选）
       cat changed_files.txt
       echo "提交信息：$CI_COMMIT_MESSAGE"
 
 
-      # 将文件名存入变量，供后续使用
-      export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
-      echo $CHANGED_FILES 
+      # 将文件名存入数组，供后续使用
+      #export CHANGED_FILES=$(cat changed_files.txt | grep -v ".gitlab-ci.yml")
+      #readarray -t CHANGED_FILES < changed_files.txt
+      
+      CHANGED_FILES=()
+      while IFS= read -r line; do
+        CHANGED_FILES+=("$line")
+      done < changed_files.txt      
+      
 
       # 获取当前提交的详细信息（包含提交人）
       author_line=$(git log -1 --pretty=format:'%an')
-      echo $author_line
+      echo "提交人：$author_line"
 
+      safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')      
+      echo "提交信息：$safe_commit_message"
 
-      declare -i index=0
-      total=${#CHANGED_FILES[@]}
-      
+      echo "总文件数: ${#CHANGED_FILES[@]}"
+      printf "文件: %s\n" "${CHANGED_FILES[@]}"
+      echo "提交哈希值：$CI_COMMIT_SHA"
+
       
       # 遍历数组
-      for i in ${CHANGED_FILES[@]}; do
-        safe_commit_message=$(echo "$CI_COMMIT_MESSAGE" | sed 's/"/\\"/g')
-        safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
-        is_end=$([ "$index" -eq $((total - 1)) ] && echo true || echo false)
+      for index in "${!CHANGED_FILES[@]}"; do
+        i="${CHANGED_FILES[index]}"
+        #safe_file_content=$(cat "$i" | sed 's/"/\\"/g' | tr '\n' ' ')
+        safe_file_content=$(cat "$i" | sed 's/"/\\"/g')
         
-        echo $is_end
+
+        if [ "$index" -eq $((${#CHANGED_FILES[@]} - 1)) ]; then
+          is_end=true
+        else
+          is_end=false
+        fi
+        echo "for循环文件: $i | 是否最后一次: $is_end"
+        
   
         curl -X POST \
-          https://kunlun-manager-cn-new-test.changdu.ltd/bigData/webhook/commit \
+          https://kunlun-api.changdu.vip/bigData/webhook/commit \
           -H "Content-Type: application/json" \
           -d "$(jq -n \
             --arg commitBy "$author_line" \
@@ -52,6 +95,7 @@ generate_json:
             --arg fileName "$i" \
             --arg fileContent "$safe_file_content" \
             '{commitBy: $commitBy, commitInfo: $commitInfo, uuid: $uuid, isEnd: $isEnd, fileInfo: {fileName: $fileName, fileContent: $fileContent}}')"
+
       done
 
       
@@ -62,3 +106,49 @@ generate_json:
     - stage
   tags:
     - kunlun-runner
+    
+    
+auto_merge_mr:
+  stage: auto-merge
+  script:
+    - |
+      # 1. 检查合并冲突状态（GitLab 11.x 需手动调用 API 检测）
+      echo "MR_STATUS=1"
+      MR_STATUS=$(curl -s --header "PRIVATE-TOKEN: Bbh_-quZT5VeCYWNqtGh" \
+        "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}" | jq -r '.merge_status')
+      echo "MR_STATUS=$MR_STATUS"
+      echo "当前 MR IID: ${CI_MERGE_REQUEST_IID}"
+      echo "API 请求 URL: https://gitlab.baidu.com/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"      
+      echo "当前 PIPELINE IID: $CI_PIPELINE_ID"
+      
+      
+      # 2. 仅当可合并时执行自动合并
+      if [ "$MR_STATUS" = "can_be_merged" ]; then
+        curl --request PUT \
+          --header "PRIVATE-TOKEN: Bbh_-quZT5VeCYWNqtGh" \
+          --header "Content-Type: application/json" \
+          --data '{
+            "merge_commit_message": "Auto-merged via CI",
+            "merge_when_pipeline_succeeds": true
+        }' \
+        "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"
+      else
+        echo "存在合并冲突，无法自动合并"
+        exit 1
+      fi
+      
+      
+      
+  only:
+    refs:
+      - merge_requests  # 仅针对合并请求触发（旧版本语法）
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"  # 目标分支为 master
+  when: on_success
+  tags:
+    - kunlun-runner    
+    
+    
+    
+    
+    
