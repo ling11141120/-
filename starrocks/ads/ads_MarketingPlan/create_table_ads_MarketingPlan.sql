@@ -1,0 +1,62 @@
+CREATE TABLE ads.ads_MarketingPlan (
+   `dt` date NOT NULL COMMENT "统计日期",
+   `Id` bigint(20) NOT NULL COMMENT "主键ID",
+   `book_id` varchar(128) NOT NULL COMMENT "书籍ID",
+   `book_code` varchar(128) NULL COMMENT "书籍编码",
+   `book_code_xl` varchar(128) NULL COMMENT "书籍编码系列",
+   `current_language` varchar(128) NOT NULL COMMENT "投放语言",
+   `source_chl` varchar(128) NULL COMMENT "媒体",
+   `test_status` int(11) NULL DEFAULT "0" COMMENT "测试状态 0=未开始|1=测试中|2=已结束 3=停投  -1表示null或者空串",
+   `code_lv` varchar(20) NULL COMMENT "最高阶段投放等级 A|S|SS",
+   `code_stage` int(11) NULL  COMMENT "测试阶段 海阅最大3阶 海剧最大2阶 国剧就1阶",
+   `plan_round` int(11) NOT NULL COMMENT "测试轮次1|2|3",
+   `begin_date` datetime NOT NULL COMMENT "开始日期",
+   `end_date` datetime NOT NULL COMMENT "结束日期",
+   `bf_1_dt_spend` decimal(20,2) NULL COMMENT "昨天的花费",
+   `7_day_spend` decimal(20,2) NULL COMMENT "近30天的花费",
+   `30_day_spend` decimal(20,2) NULL COMMENT "近30天的花费",
+   `360_day_spend` decimal(20,2)  NULL COMMENT "近360天的花费",
+   `stage3_date` datetime NULL COMMENT "进入三阶日期",
+   `stage3_spend` decimal(20,2)  NULL COMMENT "进入3阶后的累计花费",
+   `etl_time` datetime NOT NULL COMMENT "数据清洗时间"
+) ENGINE = OLAP
+PRIMARY KEY(`dt`,`Id`)
+COMMENT "市场测推表"
+PARTITION BY RANGE(`dt`)
+(PARTITION p202401 VALUES [("2024-01-01"), ("2024-02-01")),
+PARTITION p202402 VALUES [("2024-02-01"), ("2024-03-01")),
+PARTITION p202403 VALUES [("2024-03-01"), ("2024-04-01")),
+PARTITION p202404 VALUES [("2024-04-01"), ("2024-05-01")),
+PARTITION p202405 VALUES [("2024-05-01"), ("2024-06-01")),
+PARTITION p202406 VALUES [("2024-06-01"), ("2024-07-01")),
+PARTITION p202407 VALUES [("2024-07-01"), ("2024-08-01")),
+PARTITION p202408 VALUES [("2024-08-01"), ("2024-09-01")),
+PARTITION p202409 VALUES [("2024-09-01"), ("2024-10-01")),
+PARTITION p202410 VALUES [("2024-10-01"), ("2024-11-01")),
+PARTITION p202411 VALUES [("2024-11-01"), ("2024-12-01")),
+PARTITION p202412 VALUES [("2024-12-01"), ("2025-01-01")),
+PARTITION p202501 VALUES [("2025-01-01"), ("2025-02-01")),
+PARTITION p202502 VALUES [("2025-02-01"), ("2025-03-01")),
+PARTITION p202503 VALUES [("2025-03-01"), ("2025-04-01")),
+PARTITION p202504 VALUES [("2025-04-01"), ("2025-05-01")),
+PARTITION p202505 VALUES [("2025-05-01"), ("2025-06-01")),
+PARTITION p202506 VALUES [("2025-06-01"), ("2025-07-01")),
+PARTITION p202507 VALUES [("2025-07-01"), ("2025-08-01")),
+PARTITION p202508 VALUES [("2025-08-01"), ("2025-09-01")),
+PARTITION p202509 VALUES [("2025-09-01"), ("2025-10-01")),
+PARTITION p202510 VALUES [("2025-10-01"), ("2025-11-01")))
+DISTRIBUTED BY HASH(`dt`,`Id`) BUCKETS 7
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "book_id",
+"dynamic_partition.enable" = "true",
+"dynamic_partition.time_unit" = "MONTH",
+"dynamic_partition.time_zone" = "Asia/Shanghai",
+"dynamic_partition.start" = "-120",
+"dynamic_partition.end" = "3",
+"dynamic_partition.prefix" = "p",
+"in_memory" = "false",
+"storage_format" = "DEFAULT",
+"enable_persistent_index" = "true",
+"compression" = "LZ4"
+);
