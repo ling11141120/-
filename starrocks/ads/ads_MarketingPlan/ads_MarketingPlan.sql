@@ -1,4 +1,4 @@
-INSERT INTO ads.ads_MarketingPlan
+INSERT INTO ads.ads_MarketingPlan_new
 with tmp_product AS (
     select
         distinct ProductId
