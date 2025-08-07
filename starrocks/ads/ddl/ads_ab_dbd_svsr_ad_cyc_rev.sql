@@ -19,6 +19,7 @@ create table if not exists ads.ads_ab_dbd_svsr_ad_cyc_rev (
 primary key (dt, core, project_id, period_type)
 comment 'AB测试-运营看板-海剧海阅广告周期收益表'
 partition by date_trunc('month', dt)
+distributed by hash(dt, core, project_id, period_type)
 properties (
     "replication_num" = "3",
     "enable_persistent_index" = "true",
