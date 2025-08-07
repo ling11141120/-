@@ -1,53 +1,82 @@
 ----------------------------------------------------------------
 -- 目标表： ads.ads_ab_dbd_svsr_ad_cyc_rev
 -- 功能： AB测试-运营看板-海剧海阅广告周期收益表
--- 更新方式： 当日-按小时增量更新
+-- 更新方式： 按小时增量更新
 -- 负责人： qhr
 -- 开发日期： 2023-08-06
 ----------------------------------------------------------------
 
-with base1 as (
-    select dt
-          ,coalesce(corever, -99)       as core
-          ,coalesce(period_type, '-99') as period_type
-          ,sum(coalesce(amt,0))         as amt
-      from ads.ads_sv_ad_efficiency_report
-     where dt between date_sub('${dt}', interval 120 day) and '${dt}'
-     group by dt, corever, period_type
+WITH base1 AS (
+    SELECT dt
+          ,COALESCE(corever, -99)          AS core
+          ,COALESCE(period_type, '-99')    AS period_type
+          ,SUM(COALESCE(amt, 0))           AS amt
+      FROM ads.ads_sv_ad_efficiency_report
+     WHERE dt BETWEEN DATE_SUB('${dt}', INTERVAL 120 DAY) AND '${dt}'
+  GROUP BY 1, 2, 3
+), base2 AS (
+    SELECT dt
+          ,CASE WHEN corever = '-99' OR corever = '其他' OR corever IS NULL THEN -99
+                ELSE CAST(corever AS INT)
+            END                                   AS core
+          ,COALESCE(period_type, '-99')           AS period_type
+          ,SUM(COALESCE(ad_revenue_amount, 0))    AS amt
+      FROM ads.ads_ad_user_space_conversion_detail
+     WHERE dt BETWEEN DATE_SUB('${dt}', INTERVAL 120 DAY) AND '${dt}'
+  GROUP BY 1, 2, 3
+), union_base AS (
+    SELECT dt, core, 3 AS project_id, period_type, amt FROM base1
+     UNION ALL
+    SELECT dt, core, 1 AS project_id, period_type, amt FROM base2
+), join_future AS (
+    SELECT a1.dt
+          ,a1.core
+          ,a1.project_id
+          ,a1.period_type
+          ,a1.amt                    AS day0_amt
+          ,a2.dt                     AS future_dt
+          ,a2.amt                    AS future_amt
+          ,DATEDIFF(a2.dt, a1.dt)    AS days_after
+      FROM union_base                AS a1    -- 当天
+      JOIN union_base                AS a2    -- 未来
+        ON a2.core        = a1.core
+       AND a2.project_id  = a1.project_id
+       AND a2.period_type = a1.period_type
+       AND a2.dt BETWEEN a1.dt AND DATE_ADD(a1.dt, INTERVAL 120 DAY)
+), grouped AS (
+    SELECT dt
+          ,core
+          ,project_id
+          ,period_type
+          ,day0_amt
+          ,ARRAY_SORTBY(arr_amt, arr_dt) AS arr_dt_amt
+      FROM (SELECT dt
+                  ,core
+                  ,project_id
+                  ,period_type
+                  ,MAX(CASE WHEN days_after = 0 THEN day0_amt END)                          AS day0_amt
+                  ,ARRAY_AGG(CASE WHEN days_after BETWEEN 0 AND 120 THEN future_dt END)     AS arr_dt
+                  ,ARRAY_AGG(CASE WHEN days_after BETWEEN 0 AND 120 THEN future_amt END)    AS arr_amt
+              FROM join_future
+          GROUP BY 1, 2, 3, 4
+           )    AS a1
 )
-, base2 as (
-    select dt
-          ,case when corever = '-99' or corever = '其他' or corever is null then -99
-                else cast(corever as int)
-            end                                  as core
-          ,coalesce(period_type, '-99')          as period_type
-          ,sum(coalesce(ad_revenue_amount,0))    as amt
-      from ads.ads_ad_user_space_conversion_detail
-     where dt between date_sub('${dt}', interval 120 day) and '${dt}'
-     group by dt, corever, period_type
-)
-, union_base as (
-    select dt, core, 3 as project_id, period_type, amt from base1
-     union all
-    select dt, core, 1 as project_id, period_type, amt from base2
-)
-insert into ads.ads_ab_dbd_svsr_ad_cyc_rev
-select '${dt}'                                                                         as dt
-      ,core                                                                            as core
-      ,project_id                                                                      as project_id
-      ,period_type                                                                     as period_type
-      ,sum(case when dt = '${dt}' then amt else 0 end)                                 as day0_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 1 day)   then amt else 0 end)    as day1_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 2 day)   then amt else 0 end)    as day2_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 3 day)   then amt else 0 end)    as day3_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 7 day)   then amt else 0 end)    as day7_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 15 day)  then amt else 0 end)    as day15_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 21 day)  then amt else 0 end)    as day21_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 30 day)  then amt else 0 end)    as day30_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 45 day)  then amt else 0 end)    as day45_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 60 day)  then amt else 0 end)    as day60_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 90 day)  then amt else 0 end)    as day90_amount_byad
-      ,sum(case when dt >= date_sub('${dt}', interval 120 day) then amt else 0 end)    as day120_amount_byad
-  from union_base
- group by core, project_id, period_type
+-- INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
+SELECT dt                                                                                                     AS dt
+      ,core                                                                                                   AS core
+      ,project_id                                                                                             AS project_id
+      ,period_type                                                                                            AS period_type
+      ,day0_amt                                                                                               AS day0_amount_byad
+      ,CASE WHEN arr_dt_amt[2]   IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 2))   ELSE NULL END    AS day1_amount_byad
+      ,CASE WHEN arr_dt_amt[3]   IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 3))   ELSE NULL END    AS day2_amount_byad
+      ,CASE WHEN arr_dt_amt[4]   IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 4))   ELSE NULL END    AS day3_amount_byad
+      ,CASE WHEN arr_dt_amt[8]   IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 8))   ELSE NULL END    AS day7_amount_byad
+      ,CASE WHEN arr_dt_amt[16]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 16))  ELSE NULL END    AS day15_amount_byad
+      ,CASE WHEN arr_dt_amt[22]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 22))  ELSE NULL END    AS day21_amount_byad
+      ,CASE WHEN arr_dt_amt[31]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 31))  ELSE NULL END    AS day30_amount_byad
+      ,CASE WHEN arr_dt_amt[46]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 46))  ELSE NULL END    AS day45_amount_byad
+      ,CASE WHEN arr_dt_amt[61]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 61))  ELSE NULL END    AS day60_amount_byad
+      ,CASE WHEN arr_dt_amt[91]  IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 91))  ELSE NULL END    AS day90_amount_byad
+      ,CASE WHEN arr_dt_amt[121] IS NOT NULL THEN ARRAY_SUM(ARRAY_SLICE(arr_dt_amt, 1, 121)) ELSE NULL END    AS day120_amount_byad
+  FROM grouped
 ;
