@@ -61,7 +61,7 @@ WITH base1 AS (
           GROUP BY 1, 2, 3, 4
            )    AS a1
 )
--- INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
+INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
 SELECT dt                                                                                                     AS dt
       ,core                                                                                                   AS core
       ,project_id                                                                                             AS project_id
