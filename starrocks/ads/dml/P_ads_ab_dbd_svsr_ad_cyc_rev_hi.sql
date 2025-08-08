@@ -6,6 +6,7 @@
 -- 开发日期： 2023-08-06
 ----------------------------------------------------------------
 
+INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
 WITH base1 AS (
     SELECT dt
           ,COALESCE(corever, -99)          AS core
@@ -49,7 +50,7 @@ WITH base1 AS (
           ,project_id
           ,period_type
           ,day0_amt
-          ,ARRAY_SORTBY(arr_amt, arr_dt) AS arr_dt_amt
+          ,ARRAY_SORTBY(arr_amt, arr_dt)                                                    AS arr_dt_amt
       FROM (SELECT dt
                   ,core
                   ,project_id
@@ -58,10 +59,9 @@ WITH base1 AS (
                   ,ARRAY_AGG(CASE WHEN days_after BETWEEN 0 AND 120 THEN future_dt END)     AS arr_dt
                   ,ARRAY_AGG(CASE WHEN days_after BETWEEN 0 AND 120 THEN future_amt END)    AS arr_amt
               FROM join_future
-          GROUP BY 1, 2, 3, 4
-           )    AS a1
+             GROUP BY 1, 2, 3, 4
+           )                                                                                AS a1
 )
-INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
 SELECT dt                                                                                                     AS dt
       ,core                                                                                                   AS core
       ,project_id                                                                                             AS project_id
