@@ -8,7 +8,7 @@
 
 INSERT INTO ads.ads_ab_dbd_svsr_ad_cyc_rev
 WITH base1 AS (
-    SELECT dt
+    SELECT dt                              AS dt
           ,COALESCE(corever, -99)          AS core
           ,COALESCE(period_type, '-99')    AS period_type
           ,SUM(COALESCE(amt, 0))           AS amt
