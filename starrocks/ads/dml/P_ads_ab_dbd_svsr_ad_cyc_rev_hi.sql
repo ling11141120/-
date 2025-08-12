@@ -26,9 +26,19 @@ WITH base1 AS (
      WHERE dt BETWEEN DATE_SUB('${dt}', INTERVAL 120 DAY) AND '${dt}'
   GROUP BY 1, 2, 3
 ), union_base AS (
-    SELECT dt, core, 3 AS project_id, period_type, amt FROM base1
+    SELECT dt
+          ,core
+          ,3     AS project_id    -- 海剧
+          ,period_type
+          ,amt
+      FROM base1
      UNION ALL
-    SELECT dt, core, 1 AS project_id, period_type, amt FROM base2
+    SELECT dt
+          ,core
+          ,1     AS project_id    -- 海阅
+          ,period_type
+          ,amt
+      FROM base2
 ), join_future AS (
     SELECT a1.dt
           ,a1.core
