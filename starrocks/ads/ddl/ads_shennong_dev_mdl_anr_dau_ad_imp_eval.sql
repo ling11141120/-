@@ -2,9 +2,11 @@ drop table if exists ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval;
 create table if not exists ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
      dt                  date             not null    comment '日期'
     ,biz_type_cd         int              not null    comment '业务类型编码'
+    ,product_id          bigint           not null    comment 'product_id'
     ,core                int              not null    comment 'core'
     ,dev_mdl             varchar(100)     not null    comment '设备型号'
     ,biz_type_name       varchar(10)                  comment '业务类型名称'
+    ,prd_name            varchar(50)                  comment '产品名称'
     ,mfr                 varchar(100)                 comment '厂商'
     ,anr_ocr_dt          date                         comment 'ANR发生日期'
     ,anr_fch_dt          date                         comment 'ANR抓取日期'
@@ -22,10 +24,10 @@ create table if not exists ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
     ,med_sdk_ad_amt      decimal(20,5)                comment '聚合SDK广告收入'
     ,med_sdk_ad_rpc      decimal(20,5)                comment '聚合SDK广告人均单价'
 )
-primary key (dt, biz_type_cd ,core ,dev_mdl)
+primary key (dt, biz_type_cd, product_id, core ,dev_mdl)
 comment '神农-机型ANR日活广告影响评估'
 partition by date_trunc('month',dt)
-distributed by hash (dt, biz_type_cd, core, dev_mdl)
+distributed by hash (dt, biz_type_cd, product_id, core, dev_mdl)
 properties("replication_num" = "3",
            "enable_persistent_index" = "true",
            "replicated_storage" = "true",
