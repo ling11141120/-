@@ -18,6 +18,7 @@ create table if not exists ods.ods_tidb_qadata_gp_app_version_country_anr (
     ,AnrRate       decimal(15,5)                           comment 'ANR率'
     ,SessionCount  varchar(60)                             comment '会话数'
     ,UpdateTime    datetime                                comment '数据更新时间'
+    ,AnrTime       datetime                                comment 'ANR日期'
     ,sr_createtime datetime      default current_timestamp comment 'starrocks数据注入时间'
     ,sr_updatetime datetime      default current_timestamp comment 'starrocks数据更新时间'
 )
