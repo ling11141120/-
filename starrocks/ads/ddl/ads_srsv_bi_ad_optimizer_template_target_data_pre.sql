@@ -1,0 +1,61 @@
+CREATE TABLE ads.ads_srsv_bi_ad_optimizer_template_target_data_pre (
+     source2           varchar(255)   NOT NULL COMMENT ""
+    ,project_code      int(11)        NOT NULL COMMENT ""
+    ,core              int(11)        NOT NULL COMMENT ""
+    ,dt                date           NOT NULL COMMENT ""
+    ,book_id           bigint(20)     NOT NULL COMMENT ""
+    ,template_id       int(11)        NOT NULL COMMENT ""
+    ,product           varchar(255)            COMMENT ""
+    ,days              int(11)                 COMMENT ""
+    ,weekdays          int(11)                 COMMENT ""
+    ,book_code         varchar(255)            COMMENT ""
+    ,languageid        int(11)                 COMMENT ""
+    ,current_language2 varchar(255)            COMMENT ""
+    ,template_name     varchar(255)            COMMENT ""
+    ,adset_num         int(11)                 COMMENT ""
+    ,spend             decimal(10, 2)          COMMENT ""
+    ,d0_amt            decimal(10, 2)          COMMENT ""
+    ,std_amt           decimal(10, 2)          COMMENT ""
+    ,reg_num           int(11)                 COMMENT ""
+    ,reg_num_all       decimal(10, 2)          COMMENT ""
+    ,reg_num_new       decimal(10, 2)          COMMENT ""
+    ,new_amt_rate      decimal(10, 2)          COMMENT ""
+    ,old_spend         decimal(10, 2)          COMMENT ""
+    ,old_d0_amt        decimal(10, 2)          COMMENT ""
+    ,old_std_amt       decimal(10, 2)          COMMENT ""
+    ,days_book         int(11)                 COMMENT ""
+    ,regnum_new_7d     decimal(10, 2)          COMMENT ""
+    ,regnum_all_7d     decimal(10, 2)          COMMENT ""
+    ,spend_10d         decimal(10, 2)          COMMENT ""
+    ,adset_num_10d     decimal(10, 2)          COMMENT ""
+    ,days_10d          decimal(10, 2)          COMMENT ""
+    ,d0_amt_10d        decimal(10, 2)          COMMENT ""
+    ,std_amt_10d       decimal(10, 2)          COMMENT ""
+    ,d0_amt_all        decimal(10, 2)          COMMENT ""
+    ,std_amt_all       decimal(10, 2)          COMMENT ""
+    ,d0_amt_pow        decimal(10, 2)          COMMENT ""
+    ,std_amt_pow       decimal(10, 2)          COMMENT ""
+    ,d0_amt_pow_old    decimal(10, 2)          COMMENT ""
+    ,std_amt_pow_old   decimal(10, 2)          COMMENT ""
+    ,d0_amt_af         decimal(10, 2)          COMMENT ""
+    ,std_amt_af        decimal(10, 2)          COMMENT ""
+    ,code_stage        int(11)                 COMMENT ""
+    ,code_lv           varchar(255)            COMMENT ""
+    ,test_status       int(11)                 COMMENT ""
+    ,begin_date        date                    COMMENT ""
+    ,end_date          date                    COMMENT ""
+    ,off_begindate     date                    COMMENT ""
+    ,off_enddate       date                    COMMENT ""
+    ,etl_tm            datetime                COMMENT "数据清洗时间"
+)
+PRIMARY KEY(source2, project_code, core, dt, book_id, template_id)
+COMMENT "模板维度基建上限前置表-底表一"
+DISTRIBUTED BY HASH(dt) BUCKETS 3
+PROPERTIES ("replication_num" = "3",
+            "bloom_filter_columns" = "dt, core, project_code, template_id, source2, book_id",
+            "in_memory" = "false",
+            "enable_persistent_index" = "true",
+            "replicated_storage" = "true",
+            "compression" = "LZ4"
+)
+;
