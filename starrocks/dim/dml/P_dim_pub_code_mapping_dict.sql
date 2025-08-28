@@ -1,3 +1,12 @@
+----------------------------------------------------------------
+-- 程序功能： 公共码表
+-- 程序名： P_dim_pub_code_mapping_dict
+-- 目标表： dim.dim_pub_code_mapping_dict
+-- 负责人： qhr
+-- 开发日期： 2023-08-24
+-- 备注： 更新（修改 / 新增）请联系qhr！
+----------------------------------------------------------------
+
 insert into dim.dim_pub_code_mapping_dict values
  ('pub','biz_type_cd','1','业务类型编码','海阅',null,null,null,null)
 ,('pub','biz_type_cd','3','业务类型编码','国剧',null,null,null,null)
