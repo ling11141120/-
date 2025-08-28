@@ -1,7 +1,8 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_shuangwen_tidb_en_shortstorybook
+-- 来源实例： old_tidb_source
 -- 来源表： sharpengine_ads_global.NewbookRankOptimizerSchedule
--- 同步方式： 实时同步
+-- 采集工具： 极光-定时批量
 -- 负责人： qhr
 -- 创建日期： 2023-08-13
 ----------------------------------------------------------------

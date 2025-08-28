@@ -1,7 +1,7 @@
 insert into ads.ads_content_author_book_capacity_stat_di
 -- 短剧翻译（取字数）
 with type1_tmp as (
-    SELECT concat(substring(cast(a.BillDate as varchar),1,4)
+    select concat(substring(cast(a.BillDate as varchar),1,4)
                   ,'-'
                   ,substring(cast(a.BillDate as varchar),5,2)
                   ,'-01'
@@ -25,7 +25,7 @@ with type1_tmp as (
 )
 -- 短剧审核抽查&初译审核（取字数）
 , type2_tmp as (
-    SELECT concat(substring(cast(a.BillDate as varchar),1,4)
+    select concat(substring(cast(a.BillDate as varchar),1,4)
                   ,'-'
                   ,substring(cast(a.BillDate as varchar),5,2)
                   ,'-01'

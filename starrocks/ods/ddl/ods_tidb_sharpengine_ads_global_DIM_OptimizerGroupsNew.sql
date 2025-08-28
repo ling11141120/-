@@ -1,7 +1,8 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_tidb_sharpengine_ads_global_DIM_OptimizerGroupsNew
+-- 来源实例： new_tidb_source
 -- 来源表： sharpengine_ads_global.DIM_OptimizerGroupsNew
--- 同步方式： 实时同步
+-- 采集工具： SeaTunnel
 -- 负责人： qhr
 -- 创建日期： 2023-08-13
 ----------------------------------------------------------------
