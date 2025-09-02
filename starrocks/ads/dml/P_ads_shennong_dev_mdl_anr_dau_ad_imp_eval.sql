@@ -239,7 +239,7 @@ select a1.dt                  -- 日期
       ,a2.web_rpc             -- web广告人均单价
       ,a2.med_sdk_ad_amt      -- 聚合SDK广告收入
       ,a2.med_sdk_rpc         -- 聚合SDK广告人均单价
-  from mdl_anr    as a1
+  from mdl_anr                                              as a1
   left join ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
     on a2.dt >= date_sub('${bf_1_dt}', interval 10 day)
    and a2.dt < '${bf_1_dt}'

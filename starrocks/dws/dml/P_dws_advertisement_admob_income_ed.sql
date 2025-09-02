@@ -1,20 +1,20 @@
-DELETE FROM dws.dws_advertisement_admob_income_ed WHERE dt >= '${bf_4_dt}';
+delete from dws.dws_advertisement_admob_income_ed WHERE dt >= '${bf_4_dt}';
 
-INSERT INTO dws.dws_advertisement_admob_income_ed
-SELECT a.dt
+insert into dws.dws_advertisement_admob_income_ed
+select a.dt
       ,a.product_id
       ,a.account
       ,a.ads_nmae
       ,a.ad_unit
       ,a.mt
-      ,CASE WHEN a.core IN (0, 1) THEN 1 ELSE a.core END AS corever
+      ,case when a.core in (0, 1) then 1 else a.core end as corever
       ,a.time_types
-      ,SUM(a.ad_requests)         AS ad_requests
-      ,SUM(a.matched_requests)    AS matched_requests
-      ,SUM(a.impressions)         AS impressions
-      ,SUM(a.clicks)              AS clicks
-      ,SUM(a.ad_amount)           AS ad_amount
-      ,NOW() AS etl_time
+      ,sum(a.ad_requests)         as ad_requests
+      ,sum(a.matched_requests)    as matched_requests
+      ,sum(a.impressions)         as impressions
+      ,sum(a.clicks)              as clicks
+      ,sum(a.ad_amount)           as ad_amount
+      ,now() AS etl_time
       ,a.appver
   FROM (SELECT a.dt
               ,c.product_id
@@ -25,11 +25,11 @@ SELECT a.dt
               ,c.core
               ,a.appver
               ,a.time_types
-              ,SUM(a.ad_requests)         AS ad_requests
-              ,SUM(a.matched_requests)    AS matched_requests
-              ,SUM(a.impressions)         AS impressions
-              ,SUM(a.clicks)              AS clicks
-              ,SUM(a.ad_amount)           AS ad_amount
+              ,sum(a.ad_requests)         AS ad_requests
+              ,sum(a.matched_requests)    AS matched_requests
+              ,sum(a.impressions)         AS impressions
+              ,sum(a.clicks)              AS clicks
+              ,sum(a.ad_amount)           AS ad_amount
           FROM dwd.dwd_advertisement_admob_income a
           JOIN dim.dim_admobapp_view c
             ON a.App = c.appid
