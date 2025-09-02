@@ -1,65 +1,76 @@
--- -----------------admob的广告收入---------------------------------------
-INSERT INTO ads.ads_bi_ad_video_income
-WITH us AS (SELECT dt
-                  ,product_id
-                  ,ads_nmae
-                  ,ad_unit
-                  ,mt
-                  ,corever
-                  ,appver
-                  ,SUM(a.ad_requests)                       AS ad_requests
-                  ,SUM(a.matched_requests)                  AS matched_requests
-                  ,SUM(a.impressions)                       AS impressions
-                  ,SUM(a.clicks)                            AS clicks
-                  ,SUM(a.ad_amount)                         AS ad_amount
-              FROM dws.dws_advertisement_admob_income_ed    AS a
-             WHERE product_id = 6833
-               AND time_types = 1
-               AND dt >= '${bf_4_dt}'
-             GROUP BY 1,2,3,4,5,6,7
-            )
--- ---------------------只取配置表里有的收入数据-------------------------------------
+----------------------------------------------------------------
+-- 程序功能： 海外短剧广告收入统计表
+-- 程序名： P_ads_bi_ad_video_income
+-- 目标表： ads.ads_bi_ad_video_income
+-- 负责人： qhr/cm
+-- 开发日期： 
+----------------------------------------------------------------
+
+-- admob的广告收入
+insert into ads.ads_bi_ad_video_income
+with us as (
+    select dt
+          ,product_id
+          ,ads_nmae
+          ,ad_unit
+          ,mt
+          ,corever
+          ,appver
+          ,sum(a.ad_requests)                       as ad_requests
+          ,sum(a.matched_requests)                  as matched_requests
+          ,sum(a.impressions)                       as impressions
+          ,sum(a.clicks)                            as clicks
+          ,sum(a.ad_amount)                         as ad_amount
+      from dws.dws_advertisement_admob_income_ed    as a
+     where product_id = 6833
+       and time_types = 1
+       and dt >= '${bf_4_dt}'
+     group by 1,2,3,4,5,6,7
+)
+-- 只取配置表里有的收入数据
 -- 优先匹配开启的广告单元id  获取广告类型，广告位置等
-,p as (select us.dt
-             ,us.product_id
-             ,us.ads_nmae
-             ,us.ad_unit
-             ,us.mt
-             ,us.corever
-             ,us.appver
-             ,us.ad_requests
-             ,us.matched_requests
-             ,us.impressions
-             ,us.clicks
-             ,us.ad_amount
-             ,b.ads_type
-             ,b.position_id
-         from us
-         left join dim.dim_short_video_ads_unit_adid_view b
-           on us.ad_unit = b.unit_adid
-          and b.status = 1
-      )
--- 再将没有匹配到的广告单元id 去匹配关闭的广告单元id---
-,n as (select p.dt
-             ,p.product_id
-             ,p.ads_nmae
-             ,p.ad_unit
-             ,p.mt
-             ,p.corever
-             ,p.appver
-             ,p.ad_requests
-             ,p.matched_requests
-             ,p.impressions
-             ,p.clicks
-             ,p.ad_amount
-             ,b.ads_type
-             ,b.position_id
-         from p
-        inner join dim.dim_short_video_ads_unit_adid_view b
-           on p.ad_unit = b.unit_adid
-          and b.status in (0,2)
-        where p.position_id is null 
-      )
+,p as (
+    select us.dt
+          ,us.product_id
+          ,us.ads_nmae
+          ,us.ad_unit
+          ,us.mt
+          ,us.corever
+          ,us.appver
+          ,us.ad_requests
+          ,us.matched_requests
+          ,us.impressions
+          ,us.clicks
+          ,us.ad_amount
+          ,b.ads_type
+          ,b.position_id
+      from us
+      left join dim.dim_short_video_ads_unit_adid_view b
+        on us.ad_unit = b.unit_adid
+       and b.status = 1
+)
+-- 再将没有匹配到的广告单元id 去匹配关闭的广告单元id
+,n as (
+    select p.dt
+          ,p.product_id
+          ,p.ads_nmae
+          ,p.ad_unit
+          ,p.mt
+          ,p.corever
+          ,p.appver
+          ,p.ad_requests
+          ,p.matched_requests
+          ,p.impressions
+          ,p.clicks
+          ,p.ad_amount
+          ,b.ads_type
+          ,b.position_id
+      from p
+     inner join dim.dim_short_video_ads_unit_adid_view b
+        on p.ad_unit = b.unit_adid
+       and b.status in (0,2)
+     where p.position_id is null 
+)
 select a.dt
       ,a.product_id
       ,a.ads_type
@@ -82,8 +93,7 @@ select a.dt
  group by 1,2,3,4,5,6,7,8
 ;
 
-
-----------max的广告收入---------------
+-- max的广告收入
 insert into ads.ads_bi_ad_video_income
 select dt
       ,product_id
@@ -111,7 +121,7 @@ select dt
  group by 1,2,3,4,5,6,7,8
 ;
 
---  新增了一些抓取api的数据 starmobi
+-- 新增了一些抓取api的数据 starmobi
 insert into ads.ads_bi_ad_video_income
 select a.dt
       ,product_id
@@ -156,7 +166,7 @@ select a.dt
                            ,sum(Imp)              as ad_show_count
                            ,sum(Click)            as ad_click_count
                            ,0                     as all_cnt
-                       from ods.ods_tidb_mobkingaddata a
+                       from ods.ods_tidb_mobkingaddata
                       where Date>='${bf_4_dt}'
                         and ProjectType =1
                       group by 1

@@ -7,7 +7,9 @@
 -- 备注： 更新（修改 / 新增）请联系qhr！
 ----------------------------------------------------------------
 
-insert into dim.dim_pub_code_mapping_dict values
+insert into dim.dim_pub_code_mapping_dict
+(app_plat,cd_col,cd_val,cd_col_desc,cd_val_desc,p_cd_col,p_cd_col_desc,p_cd_val,p_cd_desc)
+values
  ('pub','biz_type_cd','1','业务类型编码','海阅',null,null,null,null)
 ,('pub','biz_type_cd','3','业务类型编码','国剧',null,null,null,null)
 ,('pub','biz_type_cd','2','业务类型编码','海剧',null,null,null,null)
@@ -73,4 +75,6 @@ insert into dim.dim_pub_code_mapping_dict values
 ,('pub','lang_abbr','my','语言缩写','马来西亚语',null,null,null,null)
 ,('pub','lang_abbr','tr','语言缩写','土耳其语',null,null,null,null)
 ,('pub','lang_abbr','vi','语言缩写','越南语',null,null,null,null)
+('pub','mt','1','移动终端','安卓',null,null,null,null)
+('pub','mt','4','移动终端','IOS',null,null,null,null)
 ;

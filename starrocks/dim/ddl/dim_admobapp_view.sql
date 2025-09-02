@@ -1,31 +1,32 @@
-CREATE or REPLACE VIEW dim.dim_admobapp_view (
-     id              COMMENT "自增id"
-    ,name            COMMENT "名字"
-    ,appid           COMMENT "appid"
-    ,display_name    COMMENT "名称"
-    ,account         COMMENT "广告账户"
-    ,plat_form       COMMENT "平台"
-    ,create_time     COMMENT "创建时间"
-    ,update_time     COMMENT "更新时间"
-    ,mt              COMMENT "设备"
-    ,core            COMMENT "core"
-    ,product_id      COMMENT "产品id"
-    ,appname         COMMENT "关联App信息"
-    ,appstore_id     COMMENT "关联App包名"
+create or replace view dim.dim_admobapp_view (
+     id              comment "自增id"
+    ,name            comment "名字"
+    ,appid           comment "appid"
+    ,display_name    comment "名称"
+    ,account         comment "广告账户"
+    ,plat_form       comment "平台"
+    ,create_time     comment "创建时间"
+    ,update_time     comment "更新时间"
+    ,mt              comment "设备"
+    ,core            comment "core"
+    ,product_id      comment "产品id"
+    ,appname         comment "关联app信息"
+    ,appstore_id     comment "关联app包名"
 )
-COMMENT "admobapp信息表" AS
-SELECT AppId
+comment "admobapp信息表"
+as
+select AppId
       ,Name
       ,AppId
-      ,DisplayName    AS display_name
+      ,DisplayName    as display_name
       ,Account
-      ,Platform       AS plat_form
-      ,CreatedTime    AS create_time
-      ,UpdatedTime    AS update_time
+      ,Platform       as plat_form
+      ,CreatedTime    as create_time
+      ,UpdatedTime    as update_time
       ,Mt
       ,Core
-      ,ProductId      AS product_id
+      ,ProductId      as product_id
       ,AppName
-      ,AppStoreId     AS appstore_id
- FROM ods.ods_tidb_sharpengine_ads_global_admobapp
+      ,AppStoreId     as appstore_id
+  from ods.ods_tidb_sharpengine_ads_global_admobapp
 ;
