@@ -1,32 +1,59 @@
 insert into dws.dws_user_short_video_wide_active_period_ed
 -- -----------------------ctt活跃用户的主表 ------------------------
 with active as (
-    select
-        a.dt, a.product_id, a.user_id, a.corever, a.mt, a.current_language, a.current_language2,
-        a.reg_country, a.country_level, a.reg_time, a.reg_days, a.sex, a.is_acc_login, a.is_has_email, a.popularize_series_code,
-        case when a.reg_days=0 then 'D0'
-             when a.reg_days>=1 and a.reg_days<=7 then 'D1-D7'
-             when a.reg_days>=8 and a.reg_days<=30 then 'D8-D30'
-             when a.reg_days>=31 and b.user_id is not null then 'D31+_stock_user'
-             when a.reg_days>=31 and b.user_id is null then 'D31+_backflow_user'
-             else 'D31+_backflow_user' end as user_type,
-        if(b.user_id is not null,1,0) as is_l7_active
-    from (
-             select
-                 dt, product_id, user_id, corever, mt, current_language, current_language2,
-                 reg_country, country_level, reg_time, reg_days, sex, is_acc_login, is_has_email, popularize_series_code
-             from dws.dws_user_short_video_wide_active_ed
+    select a.dt
+          ,a.product_id
+          ,a.user_id
+          ,a.corever
+          ,a.mt
+          ,a.current_language
+          ,a.current_language2
+          ,a.reg_country
+          ,a.country_level
+          ,a.reg_time
+          ,a.reg_days
+          ,a.sex
+          ,a.is_acc_login
+          ,a.is_has_email
+          ,a.popularize_series_code
+          ,case when a.reg_days=0                             then 'D0'
+                when a.reg_days>=1  and a.reg_days<=7         then 'D1-D7'
+                when a.reg_days>=8  and a.reg_days<=30        then 'D8-D30'
+                when a.reg_days>=31 and b.user_id is not null then 'D31+_stock_user'
+                when a.reg_days>=31 and b.user_id is null     then 'D31+_backflow_user'
+                else 'D31+_backflow_user'
+            end                             as user_type
+          ,if(b.user_id is not null,1,0)    as is_l7_active
+      from (select dt
+                  ,product_id
+                  ,user_id
+                  ,corever
+                  ,mt
+                  ,current_language
+                  ,current_language2
+                  ,reg_country
+                  ,country_level
+                  ,reg_time
+                  ,reg_days
+                  ,sex
+                  ,is_acc_login
+                  ,is_has_email
+                  ,popularize_series_code
+              from dws.dws_user_short_video_wide_active_ed
              where dt = '${bf_1_dt}'
-         ) a
-             left join (
-        select product_id, user_id
-        from dws.dws_user_short_video_wide_active_ed
-        where dt >= date_sub('${bf_1_dt}',interval 7 day) and dt < '${bf_1_dt}'
-        group by product_id, user_id
-    ) b on a.product_id=b.product_id and a.user_id=b.user_id
-),
-
-rmt as (
+           )         as a
+      left join (select product_id
+                       ,user_id
+                   from dws.dws_user_short_video_wide_active_ed
+                  where dt >= date_sub('${bf_1_dt}', interval 7 day) 
+                    and dt < '${bf_1_dt}'
+                  group by product_id
+                       ,user_id
+                )    as b
+        on a.product_id=b.product_id 
+       and a.user_id=b.user_id
+)
+,rmt as (
  select
      product_id, user_id, max(dt) as install_dt
  from dws.dws_srsv_wide_user_type_info_di

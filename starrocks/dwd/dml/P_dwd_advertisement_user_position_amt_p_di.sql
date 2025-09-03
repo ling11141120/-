@@ -2,7 +2,7 @@
 -- 程序功能： 阅读及海剧用户广告展现位置收益表
 -- 程序名： P_dws_advertisement_user_position_amt_ed
 -- 目标表： dws.dws_advertisement_user_position_amt_ed
--- 负责人： qhr/cm
+-- 开发人： qhr/cm
 -- 开发日期： 
 ----------------------------------------------------------------
 
@@ -11,21 +11,21 @@ delete from dwd.dwd_advertisement_user_position_amt_p_di where dt>= '${bf_1_dt}'
 -- 阅读
 insert into dwd.dwd_advertisement_user_position_amt_p_di
 with tmp_data as (
-    select productid                                                                                                                                 as product_id
-          ,userid                                                                                                                                    as user_id
-          ,mod(appId DIV 1000,1000)                                                                                                                  as core
-          ,mt                                                                                                                                        as mt
-          ,appver                                                                                                                                    as appver
-          ,CreateTime                                                                                                                                as create_time
-          ,replace(substring_index(replace(substr(s0,instr(s0,'"adUnitId":')),'"adUnitId":',''),',',1),'"','' )                                      as ad_unit
-          ,substring_index(replace(substr(s0,instr(s0,'"positionId":')),'"positionId":',''),',',1)                                                   as position_id
-          ,replace(substring_index(replace(substr(s0,instr(s0,'"platform":')),'"platform":',''),',',1),'"','' )                                      as platform
-          ,replace(substring_index(replace(substr(s0,instr(s0,'"precisionType":')),'"precisionType":',''),',',1),'"','' )                            as precisionType
-          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)                                                                          as valueMicros
-          ,replace(substring_index(replace(substr(s0,instr(s0,'"mediationAdapterClassName":')),'"mediationAdapterClassName":',''),',',1),'"','' )    as platform_source
-          ,substring_index(replace(substr(s0,instr(s0,'"main_strategy_id":')),'"main_strategy_id":',''),',',1)                                       as main_strategy_id
-          ,substring_index(replace(substr(s0,instr(s0,'"ad_strategy_id":')),'"ad_strategy_id":',''),',',1)                                           as event_strategy_id
-          ,substring_index(replace(substr(s0,instr(s0,'"programme_id":')),'"programme_id":',''),',',1)                                               as programme_id
+    select productid                                                                                                              as product_id
+          ,userid                                                                                                                 as user_id
+          ,mod(appId DIV 1000,1000)                                                                                               as core
+          ,mt                                                                                                                     as mt
+          ,appver                                                                                                                 as appver
+          ,CreateTime                                                                                                             as create_time
+          ,trim(get_json_string(parse_json(s0), "$.adUnitId"))                                                                    as ad_unit
+          ,trim(coalesce(get_json_string(parse_json(s0), "$.positionId"),get_json_string(parse_json(s0), "$.ad_position_id")))    as position_id
+          ,trim(get_json_string(parse_json(s0), "$.platform"))                                                                    as platform
+          ,trim(get_json_string(parse_json(s0), "$.precisionType"))                                                               as precisionType
+          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)                                                       as valueMicros
+          ,trim(get_json_string(parse_json(s0), "$.mediationAdapterClassName"))                                                   as platform_source
+          ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                                                            as main_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                                                              as event_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.programme_id"))                                                                as programme_id
       from ods_log.ods_readerlog_xx_log_commonactionlog
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -46,9 +46,13 @@ with tmp_data as (
           ,a.main_strategy_id                             as main_strategy_id
           ,a.event_strategy_id                            as event_strategy_id
           ,a.programme_id                                 as programme_id
-          ,sum(case when a.core = 4 then case when mt = 1 and (platform='Admob' or platform is null or platform='') then a.valueMicros
-                                              else a.valueMicros/1000000.0
+          ,sum(case when a.core = 4 then case when platform='Admob' or platform is null or platform='' then a.valueMicros/1000000.0
+                                              else a.valueMicros
                                           end
+                                        -- a.valueMicros/1000000.0
+                                        --  case when mt = 1 and (platform='Admob' or platform is null or platform='') then a.valueMicros
+                                        --       else a.valueMicros/1000000.0
+                                        --   end
                     else case when mt = 4 and (platform='Admob' or platform is null or platform='') then a.valueMicros/1000000.0
                               else a.valueMicros
                           end
@@ -93,7 +97,8 @@ select a.dt                   as dt
       ,a.programme_id         as programme_id
       ,a.amount               as ad_position_amt
       ,now()                  as etl_tm
-  from (  -- 旧版本数据没有 position_id 关联取最小位置的广告数据
+  from (
+        -- 旧版本数据没有 position_id 关联取最小位置的广告数据
         select amt.dt
               ,amt.product_id
               ,amt.user_id
@@ -222,14 +227,14 @@ with us as (
           ,us.ads_source                          as ads_source
           ,us.main_strategy_id                    as main_strategy_id
           ,us.event_strategy_id                   as event_strategy_id
-      from us 
+      from us
       left join (
           -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
           select unit_adid, position_id, ads_type
             from dim.dim_short_video_ads_unit_adid_view
            qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1
       ) b 
-        on us.ad_unit = b.unit_adid    
+        on us.ad_unit = b.unit_adid
      where us.position > 0 
 ) 
 , n as (

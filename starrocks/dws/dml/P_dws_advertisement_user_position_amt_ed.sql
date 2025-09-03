@@ -2,7 +2,7 @@
 -- 程序功能： 阅读及海剧用户广告展现位置收益表
 -- 程序名： P_dws_advertisement_user_position_amt_ed
 -- 目标表： dws.dws_advertisement_user_position_amt_ed
--- 负责人： qhr
+-- 开发人： qhr
 -- 开发日期： 
 ----------------------------------------------------------------
 
