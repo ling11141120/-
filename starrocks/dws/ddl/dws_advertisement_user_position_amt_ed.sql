@@ -24,20 +24,21 @@ DUPLICATE KEY(dt, product_id)
 COMMENT "阅读及海外短剧--分广告类型、位置用户粒度广告展现收益表（海外短剧暂时没有分位置）"
 PARTITION BY RANGE(dt)
 DISTRIBUTED BY HASH(dt, product_id, user_id) BUCKETS 3 
-PROPERTIES ("replication_num" = "3",
-            "bloom_filter_columns" = "user_id",
-            "dynamic_partition.enable" = "true",
-            "dynamic_partition.time_unit" = "month",
-            "dynamic_partition.time_zone" = "Asia/Shanghai",
-            "dynamic_partition.start" = "-2147483648",
-            "dynamic_partition.end" = "3",
-            "dynamic_partition.prefix" = "p",
-            "dynamic_partition.buckets" = "3",
-            "dynamic_partition.history_partition_num" = "0",
-            "dynamic_partition.start_day_of_month" = "1",
-            "in_memory" = "false",
-            "enable_persistent_index" = "true",
-            "replicated_storage" = "true",
-            "compression" = "LZ4"
+PROPERTIES (
+    "replication_num" = "3",
+    "bloom_filter_columns" = "user_id",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "month",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-2147483648",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "3",
+    "dynamic_partition.history_partition_num" = "0",
+    "dynamic_partition.start_day_of_month" = "1",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
 )
 ;

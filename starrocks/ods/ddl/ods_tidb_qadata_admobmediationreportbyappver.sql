@@ -2,6 +2,7 @@
 -- 目标表： ods.ods_tidb_qadata_admobmediationreportbyappver
 -- 来源实例： old_tidb_source
 -- 来源表： qadata.AdMobMediationReportByAppver
+-- 来源负责： 陈思杰
 -- 采集工具： SeaTunnel
 -- 开发人： qhr
 -- 开发日期： 2025-07-02
@@ -9,7 +10,7 @@
 
 DROP TABLE IF EXISTS ods.ods_tidb_qadata_admobmediationreportbyappver;
 CREATE TABLE ods.ods_tidb_qadata_admobmediationreportbyappver (
-     dt               DATE             NOT NULL                  COMMENT "日期，date字段"
+     dt               DATE             NOT NULL                  COMMENT "日期,date字段"
     ,Id               BIGINT(20)       NOT NULL                  COMMENT ""
     ,DATE             VARCHAR(10)                                COMMENT "日期"
     ,AD_UNIT          VARCHAR(128)                               COMMENT "广告单元"
@@ -19,7 +20,7 @@ CREATE TABLE ods.ods_tidb_qadata_admobmediationreportbyappver (
     ,APP              VARCHAR(128)                               COMMENT "APP"
     ,AD_REQUESTS      INT(11)                                    COMMENT "请求的数量。该值是一个整数。"
     ,CLICKS           INT(11)                                    COMMENT "用户点击广告的次数。该值是一个整数。"
-    ,ESTIMATED_EARNINGS BIGINT(20)                               COMMENT "AdMob 发布商的估算收入 例如，6.50 美元将表示为 6500000"
+    ,ESTIMATED_EARNINGS BIGINT(20)                               COMMENT "AdMob 发布商的估算收入 例如,6.50 美元将表示为 6500000"
     ,IMPRESSIONS      INT(11)                                    COMMENT "向用户展示的广告总数。该值是一个整数。"
     ,MATCHED_REQUESTS INT(11)                                    COMMENT "响应请求而返回广告的次数。该值是一个整数。"
     ,MATCH_RATE       DOUBLE                                     COMMENT "匹配的广告请求与总广告请求的比率。该值是双精度（近似）十进制值。"
