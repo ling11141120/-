@@ -29,7 +29,7 @@ with expo as (
                                                  ,a.book_lang_id
                                                  ,a.book_id
                                                  ,a.user_id
-                                                 ,a1.mt
+                                                 ,a.mt
                                          order by b.dt desc)    as rn
               from (select dt
                           ,product_id
@@ -50,7 +50,7 @@ with expo as (
                           ,corever
                           ,book_id
                           ,user_id
-                          ,mt
+                          ,coalesce(mt, '-99')              as mt
                       from dws.dws_flow_item_exposure_ed    as a
                      where dt >= '${bf_3_dt}' 
                        and dt < '${dt}' 
@@ -103,7 +103,7 @@ with expo as (
               from (
                     -- 点击书籍
                     select dt
-                          ,app_product_id       as product_id
+                          ,app_product_id         as product_id
                           ,case when right(book_id, 3) = '410' then 6    -- 通过书籍后三位siteid判断书籍语言，剩余判断不出来的书归为上报的current_language语言
                                 when right(book_id, 3) = '409' then 5
                                 when right(book_id, 3) = '322' then 3
@@ -117,11 +117,11 @@ with expo as (
                                 when right(book_id, 3) = '419' then 9
                                 when app_product_id = 3333 then 2        -- 繁体的书
                                 else app_lang_id                         -- 剩余判断不出来的书归为上报的current_language语言
-                            end                 as book_lang_id
-                          ,app_core_ver         as corever
+                            end                   as book_lang_id
+                          ,app_core_ver           as corever
                           ,book_id
-                          ,mt
-                          ,identity_login_id    as user_id
+                          ,coalesce(mt, '-99')    as mt
+                          ,identity_login_id      as user_id
                       from dwd.dwd_sensors_production_itemclick_view
                      where dt >= '${bf_3_dt}'
                        and dt < '${dt}'
