@@ -82,4 +82,8 @@ call_dolphinscheduler_api:
     - if: '$CI_COMMIT_BRANCH == "master"' # 仅在master分支上触发
       when: on_success # 仅在之前阶段成功时执行
   tags:
+<<<<<<< HEAD
     - kunlun-runner
+=======
+    - kunlun-runner
+>>>>>>> dev
