@@ -62,12 +62,12 @@ with z1 as (
                           ,sum(day7_amount+day7_amount_by_ad)    as d7_amt
                           ,sum(day0_first_pay_num)               as payers_num
                       from dwd.dwd_ad_fb_ad_roi_install_referrer_timezone_di_view
-                    where source_chl in ('facebook','fbs2s','tt','tiktok app')
-                      and create_time >= days_add(curdate(),-365)
-                    group by 1,2,3,4,5,6,7,8
-                  )                                             as x
-            where cost_amount > 0
-          )                                                     as a
+                     where source_chl in ('facebook','fbs2s','tt','tiktok app')
+                       and create_time >= days_add(curdate(),-365)
+                     group by 1,2,3,4,5,6,7,8
+                  )                                              as x
+             where cost_amount > 0
+           )                                                     as a
       -- 书籍id
       join (select product_id
                   ,ad_set_id
@@ -85,13 +85,13 @@ with z1 as (
                           ,if(upper(ads_type) like '%SPC%','SPC', '')    as is_spc
                           ,count(1) cnt
                       from ads.ads_advertisement_adext_view
-                    group by 1,2,3,4,5,6,7
-                  )                                                     as x
+                     group by 1,2,3,4,5,6,7
+                   )                                                     as x
             group by 1,2,3,4,5,6
-          )                                                             as e
+           )                                                             as e
         on a.product_id=e.product_id
-      and a.ad_set_id=e.ad_set_id
-    group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+       and a.ad_set_id=e.ad_set_id
+     group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
 )
 
 -- 语言，代号，创编模板
@@ -121,45 +121,45 @@ with z1 as (
           ,UPPER(pt.abbreviation)                              as current_language2
           ,t.template_name                                     as template_name
           ,t.template_id                                       as template_id
-        from z1    as a
-        left join (select book_id       -- 书籍id
-                        ,site_id2
-                        ,book_code     -- 代号
-                        ,languageid    -- 投放语言
-                    from dim.dim_shuangwen_book_read_consume_info    -- 海阅
-                    group by 1,2,3,4
-                  )                                            as b
-          on a.book_id=b.book_id
-        and a.product=1
-        left join (select series_id
-                        ,language                    -- 投放语言
-                        ,source_series_code          -- 代号
-                    from dim.dim_sv_series_hi         -- 海剧
-                    group by 1,2,3
-                  )                                            as s
-          on a.book_id=s.series_id
-        and a.product=2
-        left join (select langid          -- 语言id
-                        ,abbreviation    -- 语言代号
-                    from  dim.DIM_ProductType
-                  )                                            as pt
-          on if(a.product=2,s.language,b.languageid) = pt.langid
-        join (select distinct a.task_id                        -- 创编任务
-                    ,a.ad_set_id
-                    ,b.template_id                             -- 创编模板
-                    ,c.name                as template_name    -- 模板名称
-                    ,c.source_chl
-                from (select distinct task_id    -- 创编任务
-                            ,ad_set_id           -- 广告组
+      from z1                                                  as a
+      left join (select book_id       -- 书籍id
+                       ,site_id2
+                       ,book_code     -- 代号
+                       ,languageid    -- 投放语言
+                  from dim.dim_shuangwen_book_read_consume_info    -- 海阅
+                  group by 1,2,3,4
+                )                                              as b
+        on a.book_id=b.book_id
+       and a.product=1
+      left join (select series_id
+                       ,language                -- 投放语言
+                       ,source_series_code      -- 代号
+                   from dim.dim_sv_series_hi    -- 海剧
+                  group by 1,2,3
+                )                                              as s
+        on a.book_id=s.series_id
+       and a.product=2
+      left join (select langid          -- 语言id
+                       ,abbreviation    -- 语言代号
+                   from dim.DIM_ProductType
+                )                                              as pt
+        on if(a.product=2,s.language,b.languageid) = pt.langid
+      join (select distinct a.task_id                                              -- 创编任务
+                  ,a.ad_set_id
+                  ,b.template_id                                                   -- 创编模板
+                  ,c.name                                      as template_name    -- 模板名称
+                  ,c.source_chl
+              from (select distinct task_id    -- 创编任务
+                          ,ad_set_id           -- 广告组
                       from ads.ads_creation_ad_set_task_log_view
-                      where status =1
-                    )                                         as a
-                left join ads.ads_creation_ad_set_task_view    as b
-                  on a.task_id=b.id
-                left join ads.ads_creation_template_view       as c
-                  on b.template_id=c.id
-            )                                                 as t
-          on case when a.is_spc in('SPC') then a.ad_camp_id else a.ad_set_id end=t.ad_set_id
+                     where status =1
+                   )                                           as a
+              left join ads.ads_creation_ad_set_task_view      as b
+                on a.task_id=b.id
+              left join ads.ads_creation_template_view         as c
+                on b.template_id=c.id
+           )                                                   as t
+        on case when a.is_spc in('SPC') then a.ad_camp_id else a.ad_set_id end=t.ad_set_id
 )
 
 -- 优化师及创编相关维度信息
@@ -207,26 +207,26 @@ with z1 as (
             end                 as is_new_group_ce      -- 是否有创编新组
       from z2    as a1
       left join (select b1.prj_cd
-                      ,b1.src_med
-                      ,b1.prd_cd
-                      ,b1.lang_abbr
-                      ,b1.opt_eid
-                      ,b1.opt_name
-                      ,day7_amt
-                  from tmp.dim_srsv_auto_spl_wo_plan_view                                  as b1
-                  left join (select c1.ads_optimizer
+                       ,b1.src_med
+                       ,b1.prd_cd
+                       ,b1.lang_abbr
+                       ,b1.opt_eid
+                       ,b1.opt_name
+                       ,day7_amt
+                   from tmp.dim_srsv_auto_spl_wo_plan_view                                  as b1
+                   left join (select c1.ads_optimizer
                                     ,sum(c1.cost_amount)                                    as day7_amt
                                 from ads.ads_bi_ad_cost_recharge_view                       as c1
-                              where dt between date_sub(curdate(), interval 6 day) and curdate()
-                                and coalesce(ads_optimizer, 'unknown') not in ('unknown', 'inste_bf760b83b9c349c7bbf2b221ac673d25', 'inste_5e3bc147ee9e45bd8479e3f149735bd3')
-                              group by c1.ads_optimizer
-                            )                                                               as b2
-                    on b1.opt_eid = b2.ads_optimizer
+                               where dt between date_sub(curdate(), interval 6 day) and curdate()
+                                 and coalesce(ads_optimizer, 'unknown') not in ('unknown', 'inste_bf760b83b9c349c7bbf2b221ac673d25', 'inste_5e3bc147ee9e45bd8479e3f149735bd3')
+                               group by c1.ads_optimizer
+                             )                                                              as b2
+                     on b1.opt_eid = b2.ads_optimizer
                 qualify dense_rank() over(partition by b1.prj_cd, b1.src_med, b1.prd_cd, b1.lang_abbr order by b2.day7_amt desc) = 1    -- 同一组媒体+代号存在多个优化师取近7天花费最高的
                 )                                                                           as a2
         on a1.product = a2.prj_cd
-      and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a2.src_med
-      and concat(regexp_replace(a1.book_code,'[-–—‐‒].*$',''), '-', upper(a1.current_language2)) = concat(a2.prd_cd, '-', upper(a2.lang_abbr))
+       and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a2.src_med
+       and concat(regexp_replace(a1.book_code,'[-–—‐‒].*$',''), '-', upper(a1.current_language2)) = concat(a2.prd_cd, '-', upper(a2.lang_abbr))
       left join (select ProjectCode
                        ,CodeId
                        ,SourceChl
@@ -234,65 +234,65 @@ with z1 as (
                    from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan
                   where isDel = 0
                 qualify row_number() over(partition by ProjectCode, CodeId, SourceChl order by BeginDate desc) = 1
-                )                                                                          as a3
+                )                                                                           as a3
         on a1.product = a3.ProjectCode
-      and a1.book_id = a3.CodeId
-      and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a3.SourceChl
+       and a1.book_id = a3.CodeId
+       and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a3.SourceChl
       left join (select b3.ProjectCode
-                      ,b3.SourceChl
-                      ,b3.CodeId
-                      ,b4.TemplateId
-                      ,min(b3.DateKey) as fst_ce_dt
-                  from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationAutoTask         as b3
-                  join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanTask         as b4
-                    on b3.Id = b4.AdsCreationAutoTaskId
+                       ,b3.SourceChl
+                       ,b3.CodeId
+                       ,b4.TemplateId
+                       ,min(b3.DateKey)    as fst_ce_dt
+                   from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationAutoTask         as b3
+                   join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanTask         as b4
+                     on b3.Id = b4.AdsCreationAutoTaskId
                   group by 1,2,3,4
                 )                                                                           as a4
         on a1.product = a4.ProjectCode
-      and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a4.SourceChl
-      and a1.book_id = a4.CodeId
-      and a1.template_id = a4.TemplateId
-      and a1.dt = a4.fst_ce_dt
+       and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a4.SourceChl
+       and a1.book_id = a4.CodeId
+       and a1.template_id = a4.TemplateId
+       and a1.dt = a4.fst_ce_dt
       left join (select b5.ProjectCode
                       ,b5.SourceChl
                       ,b5.CodeId
                       ,b6.TemplateId
                       ,b6.InitAdSetCount
-                  from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlan             as b5
-                  join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanItem         as b6
-                    on b5.PlanId = b6.PlanId
+                   from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlan             as b5
+                   join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanItem         as b6
+                     on b5.PlanId = b6.PlanId
                   where b5.PlanStatus = 1
                     and b5.DelFlag = 0
                     and b6.DelFlag = 0
                     and COALESCE(b5.CodeId,'') <> ''
                 )                                                                           as a5
         on a1.product = a5.ProjectCode
-      and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a5.SourceChl
-      and a1.book_id = a5.CodeId
-      and a1.template_id = a5.TemplateId
+       and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a5.SourceChl
+       and a1.book_id = a5.CodeId
+       and a1.template_id = a5.TemplateId
       left join (select b7.ProjectCode
                       ,b8.SourceChl
                       ,b8.CodeId
                       ,b7.TemplateId
-                      ,count(distinct b10.AdSetId)                                         as AdSetCount
-                  from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanTask         as b7
-                  join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationAutoTask         as b8
-                    on b7.AdsCreationAutoTaskId = b8.Id
-                  left join ods.ods_tidb_sharpengine_ads_global_AdsCreationAdSetTask       as b9
-                    on b7.PlanTaskId = b9.PlanTaskId
+                      ,count(distinct b10.AdSetId)                                          as AdSetCount
+                   from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanTask         as b7
+                   join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationAutoTask         as b8
+                     on b7.AdsCreationAutoTaskId = b8.Id
+                   left join ods.ods_tidb_sharpengine_ads_global_AdsCreationAdSetTask       as b9
+                     on b7.PlanTaskId = b9.PlanTaskId
                     and b9.Status = 1
-                  left join ods.ods_tidb_sharpengine_ads_global_AdsCreationAdSetTaskLog    as b10
-                    on b9.Id = b10.TaskId
+                   left join ods.ods_tidb_sharpengine_ads_global_AdsCreationAdSetTaskLog    as b10
+                     on b9.Id = b10.TaskId
                     and b10.Status = 1
                   where b7.AdsCreationAutoTaskId > 0
                     and b8.DateKey = date(date_sub(curdate(),interval 1 day))
                     and ifnull(b9.CopyFromTaskId,0)=0
                   group by 1, 2, 3, 4
                 )                                                                           as a6
-      on a1.product = a6.ProjectCode
-      and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a6.SourceChl
-      and a1.book_id = a6.CodeId
-      and a1.template_id = a6.TemplateId
+        on a1.product = a6.ProjectCode
+       and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a6.SourceChl
+       and a1.book_id = a6.CodeId
+       and a1.template_id = a6.TemplateId
 )
 
 -- 维度：日期、bookid，
@@ -314,81 +314,81 @@ with z1 as (
           ,ifnull(lag(b.reg_num_ios,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_ios_yester
           ,ifnull(lag(b.reg_num,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)        as reg_num_yester
           ,ifnull(lag(b.reg_num_new,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_new_yester
-    from opt_and_ce_info as a
-    left join (select a.product_id
-                    ,if(a.product_id<>6833,0,e.core)    as core
-                    ,e.source_chl
-                    ,e.ad_set_id
-                    ,date(a.install_date)               as dt
-                    ,sum(a.ios_day0_amt)                as ios_day0_amt
-                    ,sum(a.day0_amt)                    as day0_amt
-                    ,sum(a.day0_amt_new)                as day0_amt_new
-                    ,sum(a.reg_num_ios)                 as reg_num_ios
-                    ,sum(a.reg_num)                     as reg_num
-                    ,sum(a.reg_num_new)                 as reg_num_new
-                from ads.ads_bi_ad_new_user_value_ed a
-                join ads.ads_advertisement_adext_view e
-                  on a.product_id=e.product_id
-                  and a.ad_id=e.ad_id
-                where e.source_chl in ('facebook','fbs2s','tt','tiktok app')
-                  and a.install_date>'2024-01-01'
-                  and e.book_id is not null
-                group by 1,2,3,4,5
-              ) b
-      on a.product_id=b.product_id
-    and a.core=b.core
-    and a.ad_set_id=b.ad_set_id
-    and a.dt=b.dt
+      from opt_and_ce_info                                  as a
+      left join (select a.product_id
+                      ,if(a.product_id<>6833,0,e.core)      as core
+                      ,e.source_chl
+                      ,e.ad_set_id
+                      ,date(a.install_date)                 as dt
+                      ,sum(a.ios_day0_amt)                  as ios_day0_amt
+                      ,sum(a.day0_amt)                      as day0_amt
+                      ,sum(a.day0_amt_new)                  as day0_amt_new
+                      ,sum(a.reg_num_ios)                   as reg_num_ios
+                      ,sum(a.reg_num)                       as reg_num
+                      ,sum(a.reg_num_new)                   as reg_num_new
+                   from ads.ads_bi_ad_new_user_value_ed     as a
+                   join ads.ads_advertisement_adext_view    as e
+                     on a.product_id=e.product_id
+                    and a.ad_id=e.ad_id
+                  where e.source_chl in ('facebook','fbs2s','tt','tiktok app')
+                    and a.install_date>'2024-01-01'
+                    and e.book_id is not null
+                  group by 1,2,3,4,5
+                )                                           as b
+        on a.product_id=b.product_id
+       and a.core=b.core
+       and a.ad_set_id=b.ad_set_id
+       and a.dt=b.dt
     -- 最新书籍标准
-    left join (select BookId
-                    ,DateKey
-                    ,SourceChl
-                    ,AdTarget
-                    ,max(if(mt=1,R0Std,null))    as ios_r0_std
-                    ,max(if(mt=4,R0Std,null))    as and_r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_BookRoiStdCfgV2Daily
-                where DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4
-              )                                   as r
-      on r.BookId=a.book_id
-    and r.DateKey=a.dt
-    and r.SourceChl = a.source_chl
-    and IFNULL(r.AdTarget,'') = IFNULL(a.ad_target,'')
-    -- 最新阅读大盘标准
-    left join (select CurrentLanguage2
-                    ,DateKey
-                    ,BookChannel
-                    ,SourceChl
-                    ,AdTarget
-                    ,BookType
-                    ,max(if(mt=1,R0Std,null))  ios_r0_std
-                    ,max(if(mt=4,R0Std,null))  and_r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_PutProductRoiStdCfgV2Daily
-                where BookChannel =1
-                and DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4,5,6
-              )                                   as put
-      on put.CurrentLanguage2=a.languageid
-    and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
-    and put.DateKey=a.dt
-    and put.SourceChl = a.source_chl
-    and IFNULL(put.AdTarget,'') = IFNULL(a.ad_target,'')
-    and put.BookType = a.story_type
+      left join (select BookId
+                      ,DateKey
+                      ,SourceChl
+                      ,AdTarget
+                      ,max(if(mt=1,R0Std,null))     as ios_r0_std
+                      ,max(if(mt=4,R0Std,null))     as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_BookRoiStdCfgV2Daily
+                  where DateKey>days_add(curdate(),-360)
+                  group by 1,2,3,4
+                )                                   as r
+         on r.BookId=a.book_id
+       and r.DateKey=a.dt
+       and r.SourceChl = a.source_chl
+       and IFNULL(r.AdTarget,'') = IFNULL(a.ad_target,'')
+      -- 最新阅读大盘标准
+      left join (select CurrentLanguage2
+                       ,DateKey
+                       ,BookChannel
+                       ,SourceChl
+                       ,AdTarget
+                       ,BookType
+                       ,max(if(mt=1,R0Std,null))     as ios_r0_std
+                       ,max(if(mt=4,R0Std,null))     as and_r0_std
+                    from ods.ods_ads_tidb_sharpengine_ads_global_PutProductRoiStdCfgV2Daily
+                   where BookChannel =1
+                     and DateKey>days_add(curdate(),-360)
+                   group by 1,2,3,4,5,6
+                )                                    as put
+        on put.CurrentLanguage2=a.languageid
+       and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
+       and put.DateKey=a.dt
+       and put.SourceChl = a.source_chl
+       and IFNULL(put.AdTarget,'') = IFNULL(a.ad_target,'')
+       and put.BookType = a.story_type
     -- 海剧分剧标准
     left join (select DateKey
                     ,VideoId
                     ,SourceChl
                     ,AdTarget
-                    ,max(if(mt=1,R0Std,null))  ios_r0_std
-                    ,max(if(mt=4,R0Std,null))  and_r0_std
+                    ,max(if(mt=1,R0Std,null))    as ios_r0_std
+                    ,max(if(mt=4,R0Std,null))    as and_r0_std
                 from ods.ods_ads_tidb_sharpengine_ads_global_VideoRoiStdCfgV2Daily
                 where DateKey>days_add(curdate(),-360)
                 group by 1,2,3,4
-              )                                   r2
+              )                                  as r2
       on r2.VideoId=a.book_id
-    and r2.SourceChl = a.source_chl
-    and r2.DateKey=a.dt
-    and IFNULL(r2.AdTarget,'') = IFNULL(a.ad_target,'')
+     and r2.SourceChl = a.source_chl
+     and r2.DateKey=a.dt
+     and IFNULL(r2.AdTarget,'') = IFNULL(a.ad_target,'')
     -- 海剧标准
     left join (select DateKey
                     ,CurrentLanguage2
@@ -399,11 +399,11 @@ with z1 as (
                 from ods.ods_ads_tidb_sharpengine_ads_global_PutProductVideoRoiStdCfgV2Daily
                 where DateKey>days_add(curdate(),-360)
                 group by 1,2,3,4
-              )                                   put2
+              )                                   as put2
       on put2.CurrentLanguage2=a.languageid
-    and put2.SourceChl = a.source_chl
-    and put2.DateKey=a.dt
-    and IFNULL(put2.AdTarget,'') = IFNULL(a.ad_target,'')
+     and put2.SourceChl = a.source_chl
+     and put2.DateKey=a.dt
+     and IFNULL(put2.AdTarget,'') = IFNULL(a.ad_target,'')
 )
 
 -- 标准和指标处理,core过滤,book_id非null
@@ -739,7 +739,7 @@ select a1.source2
   from z5         as a1
   left join z4    as a2
     on a1.dt = a2.dt
-   and a1.product=a2.product
+   and a1.project_code=a2.product
    and a1.book_id=a2.book_id
    and a1.source2=a2.source2
    and a1.template_id=a2.template_id
