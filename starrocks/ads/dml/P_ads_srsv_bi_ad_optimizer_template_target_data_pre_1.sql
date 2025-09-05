@@ -4,7 +4,7 @@
 -- 目标表： ads.ads_srsv_bi_ad_optimizer_template_target_data_pre_1
 -- 负责人： qhr
 -- 开发日期： 2025-08-15
--- 版本号： v0.0.0
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 -- 维度:日期、新老组，书籍，mt，优化师&组
@@ -575,6 +575,10 @@ with z1 as (
                   ,a.old_d0_amt
                   ,a.old_std_amt
                   ,days_diff(curdate(),a.first_time)                                                                                                                                as days_book
+                  -- 新组 & 老组指标
+                  ,a.spend1
+                  ,a.d0_amt1
+                  ,a.std_amt1
                   -- 近7天new占比
                   ,sum(case when days_diff(a.dt,b.dt)<7 and a.dt>=b.dt then b.reg_num_new end)                                                                                      as regnum_new_7d
                   ,sum(case when days_diff(a.dt,b.dt)<7 and a.dt>=b.dt then b.reg_num_all end)                                                                                      as regnum_all_7d
@@ -596,10 +600,6 @@ with z1 as (
                   -- 后3天达标
                   ,sum(case when b.is_newad=1 and a.dt<b.dt and days_diff(b.dt,a.dt)<4 then (if(b.weekdays>5,0.9,1)*b.d0_amt) end)                                                  as d0_amt_af
                   ,sum(case when b.is_newad=1 and a.dt<b.dt and days_diff(b.dt,a.dt)<4 then (if(b.weekdays>5,0.9,1)*b.std_amt) end)                                                 as std_amt_af
-                  -- 新组 & 老组指标
-                  ,sum(a.spend1)                                                                                                                                                    as spend1
-                  ,sum(a.d0_amt1)                                                                                                                                                   as d0_amt1
-                  ,sum(a.std_amt1)                                                                                                                                                  as std_amt1
                   ,ifnull(sum(case when a.dt>=b.dt and days_diff(a.dt,b.dt)<=14 then (if(b.weekdays>5,0.9,1)*b.d0_amt*pow(0.6,days_diff(a.dt,b.dt)+1)) end),0)                      as d0_amt_pow1
                   ,ifnull(sum(case when a.dt>=b.dt and days_diff(a.dt,b.dt)<=14 then (if(b.weekdays>5,0.9,1)*b.std_amt*pow(0.6,days_diff(a.dt,b.dt)+1)) end),0)                     as std_amt_pow1
               -- 有投放书籍&模板，指标
@@ -649,7 +649,7 @@ with z1 as (
               and a.source2=b.source2
               and a.core=b.core
               and a.template_id=b.template_id
-            group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24
+            group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27
           )                 as a
       -- 测试排期
       left join (select code_id
