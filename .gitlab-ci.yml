@@ -1,7 +1,6 @@
 stages:
   - test
   - auto-merge
-  - notification
 
 validate_source_branch:
   stage: test
