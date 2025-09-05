@@ -32,10 +32,10 @@ auto_merge_mr:
       # 1. 检查合并冲突状态（GitLab 11.x 需手动调用 API 检测）
       echo "MR_STATUS=1"
       MR_STATUS=$(curl -s --header "PRIVATE-TOKEN: Bbh_-quZT5VeCYWNqtGh" \
-        "https://gitlab.baidu.com/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}" | jq -r '.merge_status')
+        "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}" | jq -r '.merge_status')
       echo "MR_STATUS=$MR_STATUS"
       echo "当前 MR IID: ${CI_MERGE_REQUEST_IID}"
-      echo "API 请求 URL: https://gitlab.baidu.com/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"      
+      echo "API 请求 URL: https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"      
       echo "当前 PIPELINE IID: $CI_PIPELINE_ID"
       
       
@@ -48,7 +48,7 @@ auto_merge_mr:
             "merge_commit_message": "Auto-merged via CI",
             "merge_when_pipeline_succeeds": true
         }' \
-        "https://gitlab.baidu.com/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"
+        "https://gitlab.changdu.ltd/api/v4/projects/1156/merge_requests/${CI_MERGE_REQUEST_IID}/merge"
       else
         echo "存在合并冲突，无法自动合并"
         exit 1
@@ -82,8 +82,4 @@ call_dolphinscheduler_api:
     - if: '$CI_COMMIT_BRANCH == "master"' # 仅在master分支上触发
       when: on_success # 仅在之前阶段成功时执行
   tags:
-<<<<<<< HEAD
     - kunlun-runner
-=======
-    - kunlun-runner
->>>>>>> dev
