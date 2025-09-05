@@ -62,25 +62,3 @@ auto_merge_mr:
   tags:
     - kunlun-runner
 
-call_dolphinscheduler_api:
-  stage: notification 
-  script:
-    - |
-      echo "调用dolphinscheduler API: http://192.168.100.219:30667/default/dolphinscheduler/gitCheckout"
-      API_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://192.168.100.219:30667/default/dolphinscheduler/gitCheckout")
-
-      if [ "$API_RESPONSE" = "200" ]; then
-        echo "dolphinscheduler API调用成功"
-      else
-        echo "dolphinscheduler API调用失败，HTTP状态码: $API_RESPONSE"
-        # 这里不退出失败，因为合并已经成功，API调用是附加操作
-      fi
-
-  only:
-    refs:
-      - merge_requests  # 仅针对合并请求触发（旧版本语法）
-    variables:
-      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"  # 目标分支为 master
-  when: on_success
-  tags:
-    - kunlun-runner
