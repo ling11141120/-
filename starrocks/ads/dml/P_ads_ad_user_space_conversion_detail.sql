@@ -3,7 +3,7 @@
 -- 程序名： P_ads_ad_user_space_conversion_detail
 -- 目标表： ads.ads_ad_user_space_conversion_detail
 -- 负责人： qhr
--- 开发日期： 
+-- 开发日期： 2025-09-09
 ----------------------------------------------------------------
 
 insert into ads.ads_ad_user_space_conversion_detail
