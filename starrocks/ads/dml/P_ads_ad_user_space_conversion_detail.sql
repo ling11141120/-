@@ -4,6 +4,7 @@
 -- 目标表： ads.ads_ad_user_space_conversion_detail
 -- 负责人： qhr
 -- 开发日期： 2025-09-09
+-- 版本号： v0.0.2
 ----------------------------------------------------------------
 
 insert into ads.ads_ad_user_space_conversion_detail
@@ -182,8 +183,12 @@ with z1 as (
 select z1.dt
       ,ifnull(cast(z1.login_id as int),-99)    as user_id
       ,ifnull(z1.ad_position_id,-99)           as ad_position_id
-      ,ifnull(z1.ad_strategy_id,'-99')         as ad_strategy_id
-      ,ifnull(z1.main_strategy_id,'-99')       as main_strategy_id
+      ,case when coalesce(z1.ad_strategy_id,'-99') in ('-99', '', '-1') then coalesce(z1.ad_strategy_id,'-99')
+            else z1.ad_strategy_id
+        end                                    as ad_strategy_id
+      ,case when coalesce(z1.main_strategy_id,'-99') in ('-99', '', '-1') then coalesce(z1.main_strategy_id,'-99')
+            else z1.main_strategy_id
+        end                                    as main_strategy_id
       ,case when z1.ad_type = 'ad'    then '普通广告'
             when z1.ad_type = 'h5_ad' then 'h5广告'
             when z1.ad_type = 'task'  then '任务广告'
