@@ -36,5 +36,5 @@ PROPERTIES (
     "enable_persistent_index" = "true",
     "replicated_storage" = "true",
     "compression" = "LZ4"
-  )
+)
 ;

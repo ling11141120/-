@@ -24,7 +24,7 @@ CREATE TABLE ods.ods_tidb_sharpengine_ads_global_admobapp (
     ,AppStoreId      VARCHAR(65533)                             COMMENT "关联App包名"
     ,sr_createtime   DATETIME         DEFAULT CURRENT_TIMESTAMP COMMENT "sr数据创建时间"
     ,sr_updatetime   DATETIME                                   COMMENT "sr数据更新时间"
-) ENGINE = OLAP
+)
 PRIMARY KEY (Id)
 COMMENT "appid对应表"
 DISTRIBUTED BY HASH (Id) BUCKETS 1
