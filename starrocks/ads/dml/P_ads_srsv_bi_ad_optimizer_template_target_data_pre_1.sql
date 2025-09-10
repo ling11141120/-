@@ -214,7 +214,7 @@ with z1 as (
                        ,b1.opt_eid
                        ,b1.opt_name
                        ,day7_amt
-                   from tmp.dim_srsv_auto_spl_wo_plan_view                                  as b1
+                   from dim.dim_srsv_auto_spl_wo_plan_view                                  as b1
                    left join (select c1.ads_optimizer
                                     ,sum(c1.cost_amount)                                    as day7_amt
                                 from ads.ads_bi_ad_cost_recharge_view                       as c1
