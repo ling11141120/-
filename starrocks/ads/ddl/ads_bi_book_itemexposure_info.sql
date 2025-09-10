@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS ads.ads_bi_book_itemexposure_info_tmp;
-CREATE TABLE ads.ads_bi_book_itemexposure_info_tmp (
+DROP TABLE IF EXISTS ads.ads_bi_book_itemexposure_info;
+CREATE TABLE ads.ads_bi_book_itemexposure_info (
      dt              DATE         NOT NULL COMMENT "createtime 分区"
     ,product_id      INT          NOT NULL COMMENT "产品id"
     ,book_lang_id    INT          NOT NULL COMMENT "书籍语言id"
