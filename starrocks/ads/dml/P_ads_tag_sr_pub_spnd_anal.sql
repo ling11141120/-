@@ -8,15 +8,28 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_tag_sr_pub_spnd_anal
-
-     dt                     DATETIME      NOT NULL COMMENT '日期'
-    ,book_id                BIGINT        NOT NULL COMMENT '书籍id'
-    ,lang_cd                INT                    COMMENT '语言编码'
-    ,lang_name              VARCHAR(50)            COMMENT '语言名称'
-    ,rcoin_giftvchr_amt_30d DECIMAL(10,0)          COMMENT '近30日阅币礼券消耗数额'
-    ,rec_time               DATETIME               COMMENT '推荐时间'
-    ,etl_time               DATETIME               COMMENT 'etl时间'
-
--- ①书籍上架时间：在 120 天到 600 天之间    dim_novel_book_info_view.build_time
--- ⑥近30天书籍合计消耗（阅币+礼券）≤10000    dwd_consume_user_consume
-
+select now()                                        as dt                        -- 日期
+      ,a1.book_id                                   as book_id                   -- 书籍id
+      ,a1.language_id                               as lang_cd                   -- 语言编码
+      ,a3.cd_val_desc                               as lang_name                 -- 语言名称
+      ,a2.rcoin_giftvchr_amt_30d                    as rcoin_giftvchr_amt_30d    -- 近30日阅币礼券消耗数额
+      ,date_add(now(), interval 7 day)              as rec_time                  -- 推荐时间
+      ,now()                                        as etl_time                  -- etl时间
+  from dim.dim_novel_book_info_view                 as a1
+  left join (select b1.book_id
+                   ,sum(b1.amount)                  as rcoin_giftvchr_amt_30d
+               from dwd.dwd_consume_user_consume    as b1
+              where b1.dt >= date_sub('${bf_1_dt}', interval 30 day)
+                and b1.dt <= '${bf_1_dt}'
+                and b1.types in (1, 2)    -- 阅币 & 礼券
+              group by 1
+            )                                       as a2
+    on a1.book_id = a2.book_id
+  left join dim.dim_pub_code_mapping_dict           as a3
+    on a1.language_id = a3.cd_val
+   and a3.app_plat = 'pub'
+   and a3.cd_col = 'lang_cd'
+ where a1.build_time >= date_sub('${bf_1_dt}', interval 600 day)
+   and a1.build_time <= date_sub('${bf_1_dt}', interval 120 day)
+   and a2.rcoin_giftvchr_amt_30d <= 10000
+;
