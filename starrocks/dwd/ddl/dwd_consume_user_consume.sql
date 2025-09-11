@@ -1,5 +1,5 @@
-drop table if exists dwd.dwd_consume_user_consume;
-create table dwd.dwd_consume_user_consume (
+DROP TABLE IF EXISTS dwd.dwd_consume_user_consume;
+CREATE TABLE dwd.dwd_consume_user_consume (
      dt            DATE           NOT NULL                 COMMENT "createtime 分区"
     ,product_id    INT(11)        NOT NULL                 COMMENT "产品id"
     ,auto_id       BIGINT(20)     NOT NULL                 COMMENT "自增id"
