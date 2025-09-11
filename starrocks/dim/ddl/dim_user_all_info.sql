@@ -1,3 +1,4 @@
+-- 阅读用户信息
 drop table if exists dim.dim_user_all_info;
 create table dim.dim_user_all_info (
      product_id                        int            not null comment "产品id"

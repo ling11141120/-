@@ -1,3 +1,4 @@
+-- 阅读用户信息
 create or replace view dim.dim_user_userdata_view (
      product_id                       comment "产品id"
     ,id                               comment "用户id"
