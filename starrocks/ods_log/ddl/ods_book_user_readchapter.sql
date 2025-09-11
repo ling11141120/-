@@ -58,19 +58,3 @@ PROPERTIES (
     "compression" = "LZ4"
 )
 ;
-
-
-select sum(a) from ( 
- select count(1) a from readerlog_fr.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_pt.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_ft.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_en.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_ru.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_sp.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_jp.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_id.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_th.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_and2_sync.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_cd2_sync.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_and.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() union all
- select count(1)   from readerlog_cd.log_chapterreaderlog where CreateTime >=DATE_SUB(current_date(), INTERVAL 1 day) and CreateTime < current_date() )a
