@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS ads.ads_bi_user_book_consume_info;
 CREATE TABLE ads.ads_bi_user_book_consume_info (
      dt                    date         NOT NULL   COMMENT "事件分区"
     ,product_id            int(11)                 COMMENT "产品id"
@@ -35,6 +36,6 @@ PROPERTIES (
     "in_memory" = "false",
     "enable_persistent_index" = "true",
     "replicated_storage" = "true",
-    "compression" = "LZ4",
+    "compression" = "LZ4"
 )
 ;
