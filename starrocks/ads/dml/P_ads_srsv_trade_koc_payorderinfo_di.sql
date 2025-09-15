@@ -247,23 +247,23 @@ select c.order_id                                                               
   from (
         -- 海阅的充值订单
         select productid             as product_id
-             ,userid                 as user_id
-             ,orderid                as order_id
-             ,0                      as status
-             ,1                      as project_type
-             ,cast(substring_index(substring_index(substring_index(substring_index(substring_index(packageid,'|',1), 'Ps_Half_'
-                                                                                   , -1
-                                                                                  )
-                                                                                  ,'Ps_Shop_half_'
-                                                                                  ,-1
-                                                                  )
-                                                                  , '_', 1
-                                                  ), '_', -1
-                                  ) as int
-                   )                 as book_id
-             ,createtime             as create_time
-             ,sum(itemcount)         as item_count
-             ,sum(baseamount)/100    as base_amount
+              ,userid                 as user_id
+              ,orderid                as order_id
+              ,0                      as status
+              ,1                      as project_type
+              ,cast(substring_index(substring_index(substring_index(substring_index(substring_index(packageid,'|',1), 'Ps_Half_'
+                                                                                    , -1
+                                                                                   )
+                                                                                   ,'Ps_Shop_half_'
+                                                                                   ,-1
+                                                                   )
+                                                                   , '_', 1
+                                                   ), '_', -1
+                                   ) as int
+                    )                 as book_id
+              ,createtime             as create_time
+              ,sum(itemcount)         as item_count
+              ,sum(baseamount)/100    as base_amount
           from dwd.dwd_sr_user_koc_payorder_view
          where dt>='${bf_30_dt}'
            and dt<='${dt}'
@@ -313,7 +313,7 @@ select c.order_id                                                               
     on a.koccode = b.koc_text 
    and a.dataid = b.resource_id 
   left join (
-             ------------关联海阅、海剧维表，获取书名/剧名
+             -- 关联海阅、海剧维表，获取书名/剧名
              select 1              as project_type
                    ,book_id        as book_id
                    ,book_name      as book_name
@@ -327,7 +327,7 @@ select c.order_id                                                               
                    ,language       as languageid
                from dim.dim_short_video_series_view
               group by 2,3,4
-            ) d
+            )                                                    as d
     on c.project_type = d.project_type
    and c.book_id = d.book_id
  where date(c.create_time) >= '${bf_3_dt}'
@@ -347,7 +347,7 @@ select c.ref_order_id           as ref_order_id
       ,c.story_name             as story_name
       ,c.amount                 as amount
       ,c.base_amount
-      ,c.project_type           as project_type  -- 1:海阅 2：海剧
+      ,c.project_type           as project_type    -- 1:海阅 2：海剧
       ,c.institution_user_id    as institution_user_id
       ,c.star_user_id           as star_user_id
       ,a.create_time            as create_time
@@ -362,7 +362,7 @@ select c.ref_order_id           as ref_order_id
               ,1                      as status
               ,1                      as project_type
               ,null                   as book_id
-              ,refund_time            as create_time  -- 取退款时间
+              ,refund_time            as create_time    -- 取退款时间
               ,sum(itemcount)         as item_count
               ,sum(baseamount)/100    as base_amount
           from dwd.dwd_sr_trade_user_refund_order_di
@@ -388,12 +388,11 @@ select c.ref_order_id           as ref_order_id
          where dt >= '${bf_30_dt}'
            and dt<='${dt}'
            and product_id = 6833
-           --and package_id like '%Ps_Half%'
            and test_flag = 0
            and status = 1 -- 退款订单
          group by 1,2,3,4,5,6,7
-       ) a
- inner join ads.ads_srsv_trade_koc_payorderinfo_di c
+       )                                         as a
+  join ads.ads_srsv_trade_koc_payorderinfo_di    as c
     on a.order_id = c.ref_order_id
    and c.status = 0
  where date(a.create_time) >= '${bf_3_dt}'
