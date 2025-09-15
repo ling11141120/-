@@ -1,5 +1,13 @@
+----------------------------------------------------------------
+-- 程序功能： 阅读-max广告收入数据
+-- 程序名： P_dws_advertisement_applovin_max_ad_amt_ed
+-- 目标表： dws.dws_advertisement_applovin_max_ad_amt_ed
+-- 负责人： qhr
+-- 开发日期： 
+----------------------------------------------------------------
+
 insert into dws.dws_advertisement_applovin_max_ad_amt_ed
--------------------获取带产品id的数据 ---------------------------------------
+-- 获取带产品id的数据
 with amt as (select a.dt
                    ,a.store_id
                    ,b.product_id
@@ -23,8 +31,15 @@ with amt as (select a.dt
                        from dwd.dwd_advertisement_applovin_max_ad_revenue_view a
                       where dt>='${bf_4_dt}' and dt<='${dt}' --  and  max_ad_unit_id  ='057d117266e9cc21'
                     ) a
-               left join (select product_id,appstore_id,mt,core
-                            from (select product_id,appstore_id,mt,core,row_number() over(partition by appstore_id order by update_time desc) as rank_desc
+               left join (select product_id
+                                ,appstore_id
+                                ,mt
+                                ,core
+                            from (select product_id
+                                         ,appstore_id
+                                         ,mt
+                                         ,core
+                                         ,row_number() over(partition by appstore_id order by update_time desc) as rank_desc
                                     from dim.dim_admobapp_view
                                    where core > 0
                                  ) a
