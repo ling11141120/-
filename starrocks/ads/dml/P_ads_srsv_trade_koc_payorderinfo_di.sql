@@ -51,7 +51,8 @@ with koc_data as (
                   ,shopitem               as shop_item
                   ,sum(itemcount)         as item_count
                   ,sum(baseamount)/100    as base_amount
-              from dwd.dwd_sr_user_koc_payorder_view    -- 海阅的充值订单
+              from dwd.dwd_sr_user_koc_payorder_view    as b1    -- 海阅的充值订单
+              left join 
              where dt>='${bf_30_dt}'
                and dt<='${dt}'
                and createtime<date_sub(now(),interval 1 hour)
@@ -74,7 +75,7 @@ with koc_data as (
                   ,sum(item_count)         as item_count 
                   ,sum(base_amount)/100    as base_amount
               from dwd.dwd_trade_short_video_payorder_view    -- 海剧的充值订单
-             where dt >= '${bf_30_dt}' 
+             where dt >= '${bf_30_dt}'
                and dt<='${dt}'
                and create_time<date_sub(now(),interval 1 hour)
                and product_id = 6833 
