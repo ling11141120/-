@@ -31,11 +31,11 @@ with koc_data as (
           ,a1.shop_item                                                                                                    as shop_item
           ,a2.begin_time                                                                                                   as activation_time
           ,a5.reg_country                                                                                                  as country
-      from (select productid              as product_id
-                  ,userid                 as user_id
-                  ,orderid                as order_id
-                  ,0                      as status
-                  ,1                      as project_type
+      from (select b1.productid              as product_id
+                  ,b1.userid                 as user_id
+                  ,b1.orderid                as order_id
+                  ,0                         as status
+                  ,1                         as project_type
                   ,cast(substring_index(substring_index(substring_index(substring_index(substring_index(packageid,'|',1)
                                                                                         , 'Ps_Half_', -1
                                                                                        )
@@ -45,43 +45,50 @@ with koc_data as (
                                                        )
                                         , '_', -1
                                        ) as int
-                       )                  as book_id
-                  ,createtime             as create_time
-                  ,subpaytype             as sub_pay_type
-                  ,shopitem               as shop_item
-                  ,sum(itemcount)         as item_count
-                  ,sum(baseamount)/100    as base_amount
-              from dwd.dwd_sr_user_koc_payorder_view    as b1    -- 海阅的充值订单
-              left join 
-             where dt>='${bf_30_dt}'
-               and dt<='${dt}'
-               and createtime<date_sub(now(),interval 1 hour)
-             group by 1,2,3,4,5,6,7,8,9
+                       )                     as book_id
+                  ,b1.createtime             as create_time
+                  ,b1.subpaytype             as sub_pay_type
+                  ,b1.shopitem               as shop_item
+                  ,b2.unique_cdreader_id     as reg_dev_id    -- 注册时设备id
+                  ,b2.reg_ip                 as reg_ip        -- 注册IP
+                  ,sum(b1.itemcount)         as item_count
+                  ,sum(b1.baseamount)/100    as base_amount
+              from dwd.dwd_sr_user_koc_payorder_view      as b1    -- 海阅的充值订单
+              left join dim.dim_user_account_info_view    as b2
+                on b1.userid = b2.id
+             where b1.dt>='${bf_30_dt}'
+               and b1.dt<='${dt}'
+               and b1.createtime < date_sub(now(),interval 1 hour)
+             group by 1,2,3,4,5,6,7,8,9,10,11
              union all
-            select product_id
-                  ,user_id
-                  ,order_id
-                  ,status
-                  ,2                       as project_type
-                  ,cast(substring_index(substring_index(substring_index(package_id, 'Ps_Half_', -1)
+            select b3.product_id
+                  ,b3.user_id
+                  ,b3.order_id
+                  ,b3.status
+                  ,2                          as project_type
+                  ,cast(substring_index(substring_index(substring_index(b3.package_id, 'Ps_Half_', -1)
                                                         , '_', 1
                                                        )
                                         , '_', -1
                                        ) as int
                        )                   as book_id
-                  ,create_time
-                  ,subpay_type             as sub_pay_type
-                  ,shop_item
-                  ,sum(item_count)         as item_count 
-                  ,sum(base_amount)/100    as base_amount
-              from dwd.dwd_trade_short_video_payorder_view    -- 海剧的充值订单
-             where dt >= '${bf_30_dt}'
-               and dt<='${dt}'
-               and create_time<date_sub(now(),interval 1 hour)
-               and product_id = 6833 
-               and test_flag = 0
-               and status = 0    -- 正常订单
-             group by 1,2,3,4,5,6,7,8,9
+                  ,b3.create_time
+                  ,b3.subpay_type             as sub_pay_type
+                  ,b3.shop_item
+                  ,b4.unique_cdreader_id      as reg_dev_id    -- 注册时设备id
+                  ,b4.ip                      as reg_ip        -- 注册IP
+                  ,sum(b3.item_count)         as item_count 
+                  ,sum(b3.base_amount)/100    as base_amount
+              from dwd.dwd_trade_short_video_payorder_view      as b3    -- 海剧的充值订单
+              left join dim.dim_short_video_user_accountinfo    as b4
+                on b3.user_id = b4.user_id
+             where b3.dt >= '${bf_30_dt}'
+               and b3.dt<='${dt}'
+               and b3.create_time<date_sub(now(),interval 1 hour)
+               and b3.product_id = 6833 
+               and b3.test_flag = 0
+               and b3.status = 0    -- 正常订单
+             group by 1,2,3,4,5,6,7,8,9,10,11
            )                                                        as a1
     join dwd.dwd_srsv_advertisement_koc_attribution_record_view     as a2    -- 订单关联归因表，确认归属koc的订单
       on if(a2.product_id=6833,2,1) = a1.project_type
@@ -90,17 +97,17 @@ with koc_data as (
      and a1.create_time < a2.end_time
     left join (
                -- 关联口令和达人信息表，获取口令和达人等信息
-               select b1.koccode
-                     ,b1.projecttype    as project_type
-                     ,b3.userid         as institution_user_id
-                     ,b1.dataid
-                     ,b2.userid         as star_user_id
-                 from ods.ods_tidb_koc_codeinfo           as b1
-                 left join ods.ods_tidb_koc_starinfo      as b2
-                   on b1.institutionid = b2.institutionid
-                  and b1.starid = b2.id
-                 left join ods.ods_koc_institutioninfo    as b3
-                   on b1.institutionid = b3.id
+               select b5.koccode
+                     ,b5.projecttype    as project_type
+                     ,b7.userid         as institution_user_id
+                     ,b5.dataid
+                     ,b6.userid         as star_user_id
+                 from ods.ods_tidb_koc_codeinfo           as b5
+                 left join ods.ods_tidb_koc_starinfo      as b6
+                   on b5.institutionid = b6.institutionid
+                  and b5.starid = b6.id
+                 left join ods.ods_koc_institutioninfo    as b7
+                   on b5.institutionid = b7.id
               )                                                    as a3
       on a3.koccode = a2.koc_text
      and a3.dataid = a2.resource_id
