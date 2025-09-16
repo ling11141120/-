@@ -48,3 +48,7 @@ PROPERTIES (
     "compression" = "ZSTD"
 )
 ;
+
+alter table ads.ads_srsv_ads_koc_attribution_result_data add column anom_ded_amt DECIMAL(16, 4) COMMENT "异常扣除金额" after ad_amt;
+alter table sharpengine_bi.SyncBi_ads_koc_srsv_bi_attribution_result_data_new add column anom_ded_amt DECIMAL(16, 4) COMMENT "异常扣除金额" after ad_amt;
+-- 订单数算正常订单的订单数
