@@ -1,21 +1,21 @@
-DROP TABLE IF EXISTS ads.ads_bi_user_read_book_info;
-CREATE TABLE ads.ads_bi_user_read_book_info (
-     dt              date          NOT NULL              COMMENT "createtime 分区"
-    ,product_id      int(11)       NOT NULL              COMMENT "产品id"
-    ,user_id         bigint(20)    NOT NULL              COMMENT "用户id"
-    ,book_id         bigint(20)    NOT NULL              COMMENT "书籍id"
-    ,site_id         int(11)                             COMMENT "书籍语言id"
-    ,corever         int(11)                             COMMENT "corever"
-    ,is_channel_book int(11)                             COMMENT "是否引流书籍"
-    ,mt              varchar(255)                        COMMENT "用户终端 0未知 1iphone 4安卓 9书城",
-    ,etl_time        datetime                            COMMENT "etl时间"
-    ,INDEX index_product_id (product_id) USING BITMAP    COMMENT '产品id索引'
+drop table if exists ads.ads_bi_user_read_book_info;
+create table ads.ads_bi_user_read_book_info (
+     dt              date          not null              comment "createtime 分区"
+    ,product_id      int(11)       not null              comment "产品id"
+    ,user_id         bigint(20)    not null              comment "用户id"
+    ,book_id         bigint(20)    not null              comment "书籍id"
+    ,site_id         int(11)                             comment "书籍语言id"
+    ,corever         int(11)                             comment "corever"
+    ,is_channel_book int(11)                             comment "是否引流书籍"
+    ,mt              int(11)                             comment "用户终端"
+    ,etl_time        datetime                            comment "etl时间"
+    ,index index_product_id (product_id) using bitmap    comment '产品id索引'
  )
-PRIMARY KEY (dt, product_id, user_id, book_id)
-COMMENT "运营业务bi报表需求-阅读域用户粒度书籍阅读信息表"
-PARTITION BY date_trunc('month',dt)
-DISTRIBUTED BY HASH (dt, product_id, user_id, book_id) BUCKETS 1
-PROPERTIES (
+primary key (dt, product_id, user_id, book_id)
+comment "运营业务bi报表需求-阅读域用户粒度书籍阅读信息表"
+partition by date_trunc('month',dt)
+distributed by hash (dt, product_id, user_id, book_id) buckets 1
+properties (
     "replication_num" = "3",
     "bloom_filter_columns" = "user_id, book_id",
     "in_memory" = "false",

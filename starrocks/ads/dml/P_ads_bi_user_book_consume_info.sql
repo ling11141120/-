@@ -8,26 +8,26 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_user_book_consume_info
-select a.dt
-      ,a.product_id
-      ,a.book_id
+select a1.dt
+      ,a1.product_id
+      ,a1.book_id
       ,0        as book_name
       ,0        as book_nature
       ,0        as new_cname
       ,0        as build_time
       ,0        as normal_chapter_num_f
-      ,a.user_id
-      ,a.corever
-      ,a.types
-      ,a.amount           -- 消耗货币数
-      ,a.con_chapter_nums -- 消耗章节数
+      ,a1.user_id
+      ,a1.corever
+      ,a1.types
+      ,a1.amount           -- 消耗货币数
+      ,a1.con_chapter_nums -- 消耗章节数
       ,0        as is_read
-      ,case when d.user_id is not null then 1
+      ,case when d1.user_id is not null then 1
             else 0
         end     as is_channel_book
-      ,coalesce(a.mt, '-99')              as mt               -- 新增mt字段
+      ,coalesce(a1.mt, -99)               as mt
       ,now()    as etl_time
-  from dws.dws_consume_user_consume_ed    as a
+  from dws.dws_consume_user_consume_ed    as a1
   left join ( select Product_Id
                     ,user_id
                     ,mt
@@ -37,15 +37,15 @@ select a.dt
                 from dws.dws_user_market_channel_info_detail_td
                where dt='${bf_1_dt}'
                  and last_bookid >0
-            )                             as d
-    on a.product_id =d.product_id
-   and a.book_id =d.last_bookid
-   and a.user_id =d.user_id
-   and a.mt=d.mt
-   and a.corever=d.corever
-   and a.current_language2=d.lang2
- where a.dt>='${bf_1_dt}'
-   and a.dt<'${dt}'
-   and a.product_id not in (8888,7777,3399)
-   and a.types!=5
+            )                             as d1
+    on a1.product_id =d1.product_id
+   and a1.book_id =d1.last_bookid
+   and a1.user_id =d1.user_id
+   and a1.mt=d1.mt
+   and a1.corever=d1.corever
+   and a1.current_language2=d1.lang2
+ where a1.dt>='${bf_1_dt}'
+   and a1.dt<'${dt}'
+   and a1.product_id not in (8888,7777,3399)
+   and a1.types!=5
 ;
