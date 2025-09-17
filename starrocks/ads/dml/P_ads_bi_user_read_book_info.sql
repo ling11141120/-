@@ -8,18 +8,18 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_user_read_book_info
-select a.dt
-      ,a.product_id
-      ,a.user_id
-      ,a.book_id
-      ,a.site_id
-      ,a.corever
-      ,case when d.user_id is not null then 1
+select a1.dt
+      ,a1.product_id
+      ,a1.user_id
+      ,a1.book_id
+      ,a1.site_id
+      ,a1.corever
+      ,case when d1.user_id is not null then 1
             else 0
        end                             as is_channel_book
-      ,coalesce(a.mt, '-99')           as mt                  --新增mt字段
+      ,coalesce(a1.mt, -99)            as mt
       ,now()                           as etl_time
-  from dws.dws_read_user_readbook_ed             as a
+  from dws.dws_read_user_readbook_ed             as a1
   left join (select Product_Id
                    ,user_id
                    ,mt
@@ -29,14 +29,14 @@ select a.dt
                from dws.dws_user_market_channel_info_detail_td
               where dt='${bf_1_dt}'
                 and last_bookid >0
-             )                                   as d
-    on a.product_id =d.product_id
-   and a.book_id =d.last_bookid
-   and a.user_id =d.user_id
-   and a.mt=d.mt
-   and a.corever=d.corever
-   and a.current_language2=d.lang2
- where a.dt>='${bf_1_dt}'
-   and a.dt<'${dt}'
-   and a.product_id not in (8888,7777,3399)
+             )                                   as d1
+    on a1.product_id =d1.product_id
+   and a1.book_id =d1.last_bookid
+   and a1.user_id =d1.user_id
+   and a1.mt=d1.mt
+   and a1.corever=d1.corever
+   and a1.current_language2=d1.lang2
+ where a1.dt>='${bf_1_dt}'
+   and a1.dt<'${dt}'
+   and a1.product_id not in (8888,7777,3399)
 ;
