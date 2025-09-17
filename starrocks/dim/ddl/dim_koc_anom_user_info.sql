@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS tmp.dim_koc_anom_usr_info;
-CREATE TABLE IF NOT EXISTS tmp.dim_koc_anom_usr_info (
-     usr_id              BIGINT       NOT NULL    COMMENT '用户id'
+DROP TABLE IF EXISTS dim.dim_koc_anom_user_info;
+CREATE TABLE dim.dim_koc_anom_user_info (
+     user_id             BIGINT       NOT NULL    COMMENT '用户id'
     ,anom_type_cd        TINYINT      NOT NULL    COMMENT '异常类型编码'
     ,anom_type_name      VARCHAR(50)  NOT NULL    COMMENT '异常类型名称'
     ,anom_status_cd      TINYINT      NOT NULL    COMMENT '异常状态编码'
@@ -12,9 +12,9 @@ CREATE TABLE IF NOT EXISTS tmp.dim_koc_anom_usr_info (
     ,update_time         DATETIME     NOT NULL    COMMENT '更新时间'
     ,etl_time            DATETIME                 COMMENT 'etl时间'
 )
-PRIMARY KEY (usr_id)
+PRIMARY KEY (user_id)
 COMMENT "koc异常用户信息"
-DISTRIBUTED BY HASH(usr_id)
+DISTRIBUTED BY HASH(user_id)
 PROPERTIES (
     "replication_num" = "3",
     "in_memory" = "false",

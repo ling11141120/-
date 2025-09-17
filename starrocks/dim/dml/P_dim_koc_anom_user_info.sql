@@ -1,13 +1,13 @@
 ----------------------------------------------------------------
 -- 程序功能： koc异常用户信息
--- 程序名： P_dim_koc_anom_usr_info
--- 目标表： dim.dim_koc_anom_usr_info
+-- 程序名： P_dim_koc_anom_user_info
+-- 目标表： dim.dim_koc_anom_user_info
 -- 负责人： qhr
 -- 开发日期： 2025-09-15
 ----------------------------------------------------------------
 
-insert into tmp.dim_koc_anom_usr_info
-select a1.user_id                  as usr_id              -- 用户id
+insert into dim.dim_koc_anom_user_info
+select a1.user_id                  as user_id             -- 用户id
       ,a1.anomaly_type             as anom_type_cd        -- 异常类型编码
       ,case when a1.anomaly_type = 1 then '刷券'
             when a1.anomaly_type = 2 then '撞库'
