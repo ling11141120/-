@@ -14,11 +14,11 @@ select a.dt
       ,a.book_id
       ,a.site_id
       ,a.corever
-      ,a.mt
       ,case when d.user_id is not null then 1
             else 0
-       end         as is_channel_book
-      ,now()       as etl_time
+       end                             as is_channel_book
+      ,coalesce(a.mt, '-99')           as mt                  --新增mt字段
+      ,now()                           as etl_time
   from dws.dws_read_user_readbook_ed             as a
   left join (select Product_Id
                    ,user_id
