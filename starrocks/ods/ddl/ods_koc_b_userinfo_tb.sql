@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_koc_b_userinfo_tb
 -- 来源实例： hk-koc-mysql-slave
--- 来源表： koc_db.koc_adltvitem
+-- 来源表： koc_db.b_userinfo_tb
 -- 来源负责： 黄文
 -- 采集工具： SeaTunnel
 -- 开发人： qhr/wxl
