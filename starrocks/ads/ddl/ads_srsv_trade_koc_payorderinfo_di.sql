@@ -21,6 +21,9 @@ CREATE TABLE ads.ads_srsv_trade_koc_payorderinfo_di (
     ,shop_item           INT(11)                                   COMMENT "权益类型"
     ,activation_time     DATETIME                                  COMMENT "激活时间"
     ,country             VARCHAR(100)                              COMMENT "国家"
+    ,is_anom_ord         INT(11)         DEFAULT "0"               COMMENT "是否异常订单"
+    ,reg_dev_id          STRING                                    COMMENT '注册时设备id'
+    ,reg_ip              STRING                                    COMMENT '注册IP'
 )
 PRIMARY KEY(ref_order_id, status)
 COMMENT "KOC订单信息"
@@ -35,3 +38,5 @@ PROPERTIES (
 ;
 
 alter table ads.ads_srsv_trade_koc_payorderinfo_di add column is_anom_ord int(11) default "0" COMMENT "是否异常订单";
+alter table ads.ads_srsv_trade_koc_payorderinfo_di add column reg_dev_id string comment '注册时设备id';
+alter table ads.ads_srsv_trade_koc_payorderinfo_di add column reg_ip string comment '注册IP';
