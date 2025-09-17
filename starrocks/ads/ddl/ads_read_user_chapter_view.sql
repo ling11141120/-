@@ -30,5 +30,5 @@ select dt                                                             as dt
                    ,mt
                from dim.dim_user_all_info
             )                              as b
-         on a.productid=b.product_id
-        and a.userid=b.user_id
+         on a.userid=b.user_id
+        and a.productid=b.product_id
