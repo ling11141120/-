@@ -25,10 +25,7 @@ select dt                                                             as dt
       ,coalesce(mt,'-99')                                             as mt
       ,time                                                           as read_times
   from ods_log.ods_book_user_readchapter   as a
-  left join (select product_id
-                   ,mt
-               from dim.dim_user_all_info
-               group by 1,2
-            )                              as b
-         on a.productid=b.product_id
+  left join dim.dim_user_all_info          as b
+    on a.userid=b.user_id
+   and a.productid=b.product_id
 ;
