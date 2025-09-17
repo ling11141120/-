@@ -33,3 +33,5 @@ PROPERTIES (
     "compression" = "LZ4"
 )
 ;
+
+alter table ads.ads_srsv_trade_koc_payorderinfo_di add column is_anom_ord int(11) default "0" COMMENT "是否异常订单";

@@ -25,6 +25,7 @@ select a.dt
       ,case when d.user_id is not null then 1
             else 0
         end     as is_channel_book
+      ,coalesce(a.mt, '-99')              as mt               -- 新增mt字段
       ,now()    as etl_time
   from dws.dws_consume_user_consume_ed    as a
   left join ( select Product_Id
