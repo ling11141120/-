@@ -1,5 +1,5 @@
 create table ads.ads_temp_sr_antom_charbak_list(
-     dispute_id                     bigint          not null
+     dispute_id                     varchar(255)
     ,chargeback_alert_type          varchar(255)    not null
     ,captureid                      int(11)
     ,defendable                     varchar(255)    not null
@@ -11,7 +11,7 @@ create table ads.ads_temp_sr_antom_charbak_list(
     ,reason_type                    varchar(255)    not null
     ,reason_code                    decimal(10, 2)  not null
     ,dispute_last_updated           datetime        not null
-    ,transaction_id                 bigint          not null
+    ,transaction_id                 varchar(255)    not null
     ,transaction_date               datetime        not null
     ,transaction_currency           varchar(255)    not null
     ,transaction_amount             decimal(10, 2)  not null
