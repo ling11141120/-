@@ -157,8 +157,8 @@ select a1.ref_order_id                   as ref_order_id           -- 订单号
       ,a1.amount                         as amount                 -- 金额数
       ,a1.base_amount                    as base_amount            -- 分成后金额数
       ,a1.project_type                   as project_type           -- 项目类型
-      ,a1.institution_user_id            as institution_user_id    -- 机构用户
-      ,a1.star_user_id                   as star_user_id           -- 达人用户
+      ,a1.institution_user_id            as institution_user_id    -- 机构用户ID
+      ,a1.star_user_id                   as star_user_id           -- 达人用户ID
       ,a1.create_time                    as create_time            -- 创建时间
       ,a1.etl_tm                         as etl_time               -- etl清洗时间
       ,a1.core                           as core                   -- core
@@ -192,8 +192,8 @@ select a2.ref_order_id           as ref_order_id           -- 订单号
       ,a2.amount                 as amount                 -- 金额数
       ,a2.base_amount            as base_amount            -- 分成后金额数
       ,a2.project_type           as project_type           -- 项目类型
-      ,a2.institution_user_id    as institution_user_id    -- 机构用户
-      ,a2.star_user_id           as star_user_id           -- 达人用户
+      ,a2.institution_user_id    as institution_user_id    -- 机构用户ID
+      ,a2.star_user_id           as star_user_id           -- 达人用户ID
       ,a1.create_time            as create_time            -- 创建时间
       ,now()                     as etl_time               -- etl清洗时间
       ,a2.core                   as core                   -- core

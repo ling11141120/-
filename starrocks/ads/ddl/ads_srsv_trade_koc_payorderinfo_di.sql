@@ -9,8 +9,8 @@ CREATE TABLE ads.ads_srsv_trade_koc_payorderinfo_di (
     ,amount              DECIMAL(16, 4)                            COMMENT "金额数"
     ,base_amount         DECIMAL(16, 4)                            COMMENT "分成后金额数"
     ,project_type        INT(11)                                   COMMENT "项目类型 1=网文|2=短剧"
-    ,institution_user_id VARCHAR(65533)                            COMMENT "机构用户 ID"
-    ,star_user_id        VARCHAR(65533)                            COMMENT "达人用户 ID"
+    ,institution_user_id VARCHAR(65533)                            COMMENT "机构用户ID"
+    ,star_user_id        VARCHAR(65533)                            COMMENT "达人用户ID"
     ,create_time         DATETIME                                  COMMENT "创建时间"
     ,etl_time            DATETIME        DEFAULT CURRENT_TIMESTAMP COMMENT "etl清洗时间"
     ,core                INT(11)                                   COMMENT "core"
@@ -36,7 +36,3 @@ PROPERTIES (
     "compression" = "LZ4"
 )
 ;
-
-alter table ads.ads_srsv_trade_koc_payorderinfo_di add column is_anom_ord int(11) default "0" COMMENT "是否异常订单";
-alter table ads.ads_srsv_trade_koc_payorderinfo_di add column reg_dev_id string comment '注册时设备id';
-alter table ads.ads_srsv_trade_koc_payorderinfo_di add column reg_ip string comment '注册IP';
