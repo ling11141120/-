@@ -25,6 +25,8 @@ CREATE TABLE ads.ads_srsv_ads_koc_attribution_result_data (
     ,koc_amt_after_14d    DECIMAL(12, 2)          COMMENT "扣除渠道费之后的充值金额-14天归因"
     ,ad_amt               DECIMAL(12, 2)          COMMENT "广告收入"
     ,etl_tm               DATETIME                COMMENT "清洗时间"
+    ,anom_amt             DECIMAL(16, 4)          COMMENT "异常充值金额"
+    ,ded_chl_anom_amt     DECIMAL(16, 4)          COMMENT "扣除通道费异常充值金额"
 )
 PRIMARY KEY (dt, product_id, adid)
 COMMENT "海阅海剧koc用户回收数据结果表"
@@ -48,7 +50,3 @@ PROPERTIES (
     "compression" = "ZSTD"
 )
 ;
-
-alter table ads.ads_srsv_ads_koc_attribution_result_data add column anom_ded_amt DECIMAL(16, 4) COMMENT "异常扣除金额" after ad_amt;
-alter table sharpengine_bi.SyncBi_ads_koc_srsv_bi_attribution_result_data_new add column anom_ded_amt DECIMAL(16, 4) COMMENT "异常扣除金额" after ad_amt;
--- 订单数算正常订单的订单数
