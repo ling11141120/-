@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_tidb_short_video_payorder
--- 来源实例： old_tidb_source
+-- 来源实例： video-en-mysql-slave
 -- 来源表： short_video.payorder
 -- 采集工具： SeaTunnel
 -- 开发人： qhr
@@ -51,19 +51,20 @@ COMMENT '海外短剧-用户充值表'
 PARTITION BY RANGE(dt)
 (START ("2023-07-05") END ("2023-11-24") EVERY (INTERVAL 1 DAY))
 DISTRIBUTED BY HASH(dt, id) BUCKETS 1
-PROPERTIES ("replication_num" = "3",
-            "bloom_filter_columns" = "userid,orderid",
-            "dynamic_partition.enable" = "true",
-            "dynamic_partition.time_unit" = "day",
-            "dynamic_partition.time_zone" = "Asia/Shanghai",
-            "dynamic_partition.start" = "-2147483648",
-            "dynamic_partition.end" = "3",
-            "dynamic_partition.prefix" = "p",
-            "dynamic_partition.buckets" = "1",
-            "dynamic_partition.history_partition_num" = "0",
-            "in_memory" = "false",
-            "storage_format" = "DEFAULT",
-            "enable_persistent_index" = "true",
-            "compression" = "LZ4"
+PROPERTIES (
+    "replication_num" = "3",
+    "bloom_filter_columns" = "userid,orderid",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "day",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-2147483648",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "1",
+    "dynamic_partition.history_partition_num" = "0",
+    "in_memory" = "false",
+    "storage_format" = "DEFAULT",
+    "enable_persistent_index" = "true",
+    "compression" = "LZ4"
 )
 ;
