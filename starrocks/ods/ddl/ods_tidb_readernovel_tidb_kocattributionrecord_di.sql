@@ -16,7 +16,7 @@
 --        readernovel_tidb_cd2.kocattributionrecord
 --        海剧
 --        short_video_log.kocattributionrecord
--- 来源负责： qhr
+-- 来源负责： 黄文
 -- 采集工具： SeaTunnel
 -- 开发人： qhr
 -- 开发日期： 2025-09-11
