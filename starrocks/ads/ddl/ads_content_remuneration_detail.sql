@@ -1,14 +1,5 @@
-----------------------------------------------------------------
--- 目标表： ads.ads_content_remuneration_detail
--- 功能：实时稿酬
--- 负责人： xjc
--- 开发日期：2025-04-28
-----------------------------------------------------------------
-
-
-
-DROP TABLE IF EXISTS ads_content_remuneration_detail;
-CREATE TABLE IF NOT EXISTS ads_content_remuneration_detail (
+DROP TABLE IF EXISTS ads.ads_content_remuneration_detail;
+CREATE TABLE IF NOT EXISTS ads.ads_content_remuneration_detail (
      md5_key        varchar(65533)     not null        comment "唯一主键"
     ,dt             date               not null        comment "统计日期（完成时间）"
     ,site_id        bigint(20)         not null        comment "语言ID"
@@ -25,10 +16,10 @@ primary key(md5_key)
 comment "实时稿酬"
 distributed by hash(md5_key) buckets 14
 properties (
-            "replication_num" = "3"
-            ,"in_memory" = "false"
-            ,"enable_persistent_index" = "false"
-            ,"replicated_storage" = "true"
-            ,"compression" = "LZ4"
+    "replication_num" = "3"
+    ,"in_memory" = "false"
+    ,"enable_persistent_index" = "false"
+    ,"replicated_storage" = "true"
+    ,"compression" = "LZ4"
 )
 ;

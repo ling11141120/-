@@ -1,14 +1,5 @@
-----------------------------------------------------------------
--- 目标表： ads.ads_content_book_chapter_interpreter_p_di
--- 功能：内容域--书籍章节译员-稿酬表
--- 负责人： xjc
--- 开发日期：2024-08-21
-----------------------------------------------------------------
-
-
-
-DROP TABLE IF EXISTS ads_content_book_chapter_interpreter_p_di;
-CREATE TABLE IF NOT EXISTS ads_content_book_chapter_interpreter_p_di (
+DROP TABLE IF EXISTS ads.ads_content_book_chapter_interpreter_p_di;
+CREATE TABLE IF NOT EXISTS ads.ads_content_book_chapter_interpreter_p_di (
      dt              date                not null        comment "统计时间"
     ,author_id       bigint(20)          not null        comment "作者id"
     ,book_id         bigint(20)          not null        comment "书籍id"
@@ -28,30 +19,22 @@ primary key(dt, author_id, book_id, chapter_id)
 comment "内容域--书籍章节译员-稿酬表"
 partition by range(dt)
 (
-     partition p2020 values [("2020-01-01"), ("2021-01-01"))
-    ,partition p2021 values [("2021-01-01"), ("2022-01-01"))
-    ,partition p2022 values [("2022-01-01"), ("2023-01-01"))
-    ,partition p2023 values [("2023-01-01"), ("2024-01-01"))
-    ,partition p2024 values [("2024-01-01"), ("2025-01-01"))
-    ,partition p2025 values [("2025-01-01"), ("2026-01-01"))
-    ,partition p2026 values [("2026-01-01"), ("2027-01-01"))
-    ,partition p2027 values [("2027-01-01"), ("2028-01-01"))
-    ,partition p2028 values [("2028-01-01"), ("2029-01-01"))
+    partition p2025 values less then  ("2026-01-01")
 )
 distributed by hash(author_id, book_id) buckets 1
 properties (
-            "replication_num" = "3"
-            ,"dynamic_partition.enable" = "true"
-            ,"dynamic_partition.time_unit" = "YEAR"
-            ,"dynamic_partition.time_zone" = "Asia/Shanghai"
-            ,"dynamic_partition.start" = "-7"
-            ,"dynamic_partition.end" = "3"
-            ,"dynamic_partition.prefix" = "p"
-            ,"dynamic_partition.buckets" = "1"
-            ,"dynamic_partition.history_partition_num" = "0"
-            ,"in_memory" = "false"
-            ,"enable_persistent_index" = "true"
-            ,"replicated_storage" = "true"
-            ,"compression" = "LZ4"
+    "replication_num" = "3"
+    ,"dynamic_partition.enable" = "true"
+    ,"dynamic_partition.time_unit" = "YEAR"
+    ,"dynamic_partition.time_zone" = "Asia/Shanghai"
+    ,"dynamic_partition.start" = "-7"
+    ,"dynamic_partition.end" = "3"
+    ,"dynamic_partition.prefix" = "p"
+    ,"dynamic_partition.buckets" = "1"
+    ,"dynamic_partition.history_partition_num" = "0"
+    ,"in_memory" = "false"
+    ,"enable_persistent_index" = "true"
+    ,"replicated_storage" = "true"
+    ,"compression" = "LZ4"
 )
 ;

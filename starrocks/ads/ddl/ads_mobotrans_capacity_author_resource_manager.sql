@@ -1,14 +1,5 @@
-----------------------------------------------------------------
--- 目标表： ads.ads_mobotrans_capacity_author_resource_manager
--- 功能：产能人才资源管理看板
--- 负责人： xjc
--- 开发日期：2023-07-28
-----------------------------------------------------------------
-
-
-
-DROP TABLE IF EXISTS ads_mobotrans_capacity_author_resource_manager;
-CREATE TABLE IF NOT EXISTS ads_mobotrans_capacity_author_resource_manager (
+DROP TABLE IF EXISTS ads.ads_mobotrans_capacity_author_resource_manager;
+CREATE TABLE IF NOT EXISTS ads.ads_mobotrans_capacity_author_resource_manager (
      dt                          date                not null        comment "年分区字段：日期"
     ,site_id                     int(11)             not null        comment "语言id"
     ,role_type                   int(11)             not null        comment "译员角色"
@@ -45,10 +36,10 @@ partition by range(dt)
 )
 distributed by hash(site_id, role_type) buckets 3
 properties (
-            "replication_num" = "3"
-            ,"in_memory" = "false"
-            ,"enable_persistent_index" = "true"
-            ,"replicated_storage" = "true"
-            ,"compression" = "LZ4"
+    "replication_num" = "3"
+    ,"in_memory" = "false"
+    ,"enable_persistent_index" = "true"
+    ,"replicated_storage" = "true"
+    ,"compression" = "LZ4"
 )
 ;
