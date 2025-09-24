@@ -44,7 +44,7 @@ values
 ,('pub','product_id','3371','product_id','俄语阅读','biz_type_cd','业务类型编码','1','海阅')
 ,('pub','product_id','3388','product_id','西语阅读','biz_type_cd','业务类型编码','1','海阅')
 ,('pub','product_id','8211','product_id',null,'biz_type_cd','业务类型编码','1','海阅')
-,('pub','product_id','6773','product_id',null,'biz_type_cd','业务类型编码','1','海阅')
+,('pub','product_id','6773','product_id','国内阅读','biz_type_cd','业务类型编码','1','海阅')
 ,('pub','product_id','6833','product_id','海剧','biz_type_cd','业务类型编码','2','海剧')
 ,('pub','product_id','6883','product_id','国剧','biz_type_cd','业务类型编码','3','国剧')
 ,('pub','product_id','3561','product_id','德语阅读','biz_type_cd','业务类型编码','1','海阅')
@@ -56,6 +56,11 @@ values
 ,('pub','product_id','8858','product_id','新畅读读书',null,null,null,null)    -- cd2
 ,('pub','product_id','7777','product_id','安卓读书',null,null,null,null)      -- and
 ,('pub','product_id','8888','product_id','畅读书城',null,null,null,null)      -- cd
+,('pub','product_id','3531','product_id','韩语阅读','biz_type_cd','业务类型编码','1','海阅')
+,('pub','product_id','3631','product_id','马来西亚语阅读','biz_type_cd','业务类型编码','1','海阅')
+,('pub','product_id','3621','product_id','土耳其语阅读','biz_type_cd','业务类型编码','1','海阅')
+,('pub','product_id','3541','product_id','菲律宾语','biz_type_cd','业务类型编码','1','海阅')
+,('pub','product_id','3611','product_id','孟加拉语阅读','biz_type_cd','业务类型编码','1','海阅')
 ,('pub','lang_abbr','ar','语言缩写','阿拉伯语','lang_cd','语言编号','10','阿拉伯语')
 ,('pub','lang_abbr','kr','语言缩写','韩语','lang_cd','语言编号','14','韩语')
 ,('pub','lang_abbr','th','语言缩写','泰语','lang_cd','语言编号','12','泰语')
