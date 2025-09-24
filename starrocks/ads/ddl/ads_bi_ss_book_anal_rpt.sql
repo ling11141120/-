@@ -1,12 +1,14 @@
 DROP TABLE IF EXISTS ads.ads_bi_ss_book_anal_rpt;
 CREATE TABLE IF NOT EXISTS ads.ads_bi_ss_book_anal_rpt (
      dt              DATE          NOT NULL COMMENT '日期'
+    ,product_id      INT           NOT NULL COMMENT 'product_id'
     ,book_id         BIGINT        NOT NULL COMMENT '书籍id'
     ,lang_cd         INT                    COMMENT '语言编码'
     ,lang_name       VARCHAR(50)            COMMENT '语言名称'
     ,book_cd         VARCHAR(1000)          COMMENT '书籍代号'
     ,book_zh_name    VARCHAR(300)           COMMENT '书籍中文名称'
-    ,book_stat       INT                    COMMENT '书籍状态'
+    ,book_stat_cd    INT                    COMMENT '书籍状态编码'
+    ,book_stat_name  VARCHAR(50)            COMMENT '书籍状态名称'
     ,pub_dt          DATETIME               COMMENT '上架日期'
     ,bgn_trl_dt      DATETIME               COMMENT '开始翻译日期'
     ,cmp_trl_dt      DATETIME               COMMENT '完成翻译日期'
