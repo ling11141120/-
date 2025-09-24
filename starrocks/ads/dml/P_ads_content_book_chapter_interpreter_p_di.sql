@@ -4,7 +4,7 @@
 -- 目标表： ads.ads_content_book_chapter_interpreter_p_di
 -- 负责人： xjc
 -- 开发日期：2025-09-24
--- 版本号： v0.0.0
+-- 版本号： v0.0.0 
 ----------------------------------------------------------------
 
 insert into ads.ads_content_book_chapter_interpreter_p_di
