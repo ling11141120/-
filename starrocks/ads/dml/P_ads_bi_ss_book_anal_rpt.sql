@@ -40,8 +40,8 @@ insert into ads.ads_bi_ss_book_anal_rpt (
     ,amt_30d            -- 近30天收入
     ,amt_7d             -- 近7天收入
 )
--- 短篇书籍维度信息
-with ss_book_dim_info as (
+-- 短篇书籍基本信息
+with ss_book_basic_info as (
     select a1.productid       as product_id
           ,a1.BookID          as book_id
           ,a2.BookLanguage    as lang_cd
@@ -51,7 +51,6 @@ with ss_book_dim_info as (
           ,a1.Status          as book_stat_cd    -- fix: 枚举值只有1，应该不是这个
           ,null               as book_stat_name
           ,a4.build_time      as pub_dt
-          ,a4.create_time     as pub_dt2
       from ods.ods_book_novel_book_m                    as a1
       left join ods.ods_tidb_sharpengine_bi_if_books    as a2
         on a1.productid = a2.productid
