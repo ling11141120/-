@@ -58,9 +58,9 @@ select  '${dt}'                                        as dt
         ,case when a.status in (2, 3) then 1
               when a.status not in (2, 3) and date(d.latest_remuneration) < date_sub('${dt}', interval 90 day) then 2
               else 3
-         end                     as work_status
-        ,a.Remarks               as remarks
-        ,now()                   as etl_time
+         end                                           as work_status
+        ,a.Remarks                                     as remarks
+        ,now()                                         as etl_time
 from (select a.productid         as productid
             ,a.ToLanguage        as ToLanguage
             ,a.AccountId         as AccountId
@@ -99,10 +99,10 @@ from (select a.productid         as productid
                          from ods.ods_tidb_shuangwen_xx_authortorole
                         where Status = 1
                         group by 1, 2, 3
-                      ) b
+                      )               as b
                            on oa.ToLanguage = b.ToLanguage
                           and oa.AccountId = b.AuthorId
-             ) a
+             )                   as a
             left join (select SiteId
                              ,AuthorId
                              ,RoleType
@@ -118,17 +118,17 @@ from (select a.productid         as productid
                                  from ods.ods_tidb_shuangwen_xx_qualityfeedback
                                 where FeedBackType not in (0, 10)
                                   and CreateTime < '${dt}'
-                               ) a
+                               )           as a
                         where a.rn <= 10
                         group by SiteId, AuthorId, RoleType, low_ct/ct
-                      ) c
+                      )          as c
               on a.ToLanguage = c.SiteId
              and a.AccountId = c.AuthorId
              and a.RoleType = c.RoleType
             left join ods.ods_tidb_shuangwen_en_objectauthortotal d
               on a.ToLanguage = d.ToLanguage
              and a.AccountId = d.AuthorId
-     ) a
+     )                                                 as a
 left join (select a.productid                                                                  as productid
                  ,a.ForeignProofreadingId                                                      as authorid
                  ,2                                                                            as roletype
@@ -144,10 +144,10 @@ left join (select a.productid                                                   
                              from ods.ods_tidb_shuangwen_xx_objectchapter
                             where ForeignProofreadingId != 0
                               and date(Cretatime) < '${dt}'
-                          ) a
+                          )                            as a
                     where a.rn = 1
                     group by productid, ForeignProofreadingId
-                  ) a
+                  )                                                                            as a
              left join (select productid
                               ,PersonnelId
                               ,count(distinct ChapterId)    as foreign_dalay_cnt
@@ -156,14 +156,19 @@ left join (select a.productid                                                   
                            and PersonnelId != 0
                            and date(CreateTime) < '${dt}'
                          group by productid, PersonnelId
-                       ) b
+                       )                                                                       as b
                             on a.productid = b.productid
                            and a.ForeignProofreadingId = b.PersonnelId
             union all
-           select a.productid                                                                              as productid
-                 ,a.InterpreterId                                                                          as authorid
-                 ,1                                                                                        as roletype
-                 ,if(b.Interpreter_dalay_cnt is not null, b.Interpreter_dalay_cnt, 0)/a.Interpreter_cnt    as delay_rate
+           select a.productid                               as productid
+                 ,a.InterpreterId                           as authorid
+                 ,1                                         as roletype
+                 ,if(b.Interpreter_dalay_cnt is not null
+                      ,b.Interpreter_dalay_cnt
+                      ,0
+                    )
+                    /
+                    a.Interpreter_cnt                       as delay_rate
              from (select productid
                          ,InterpreterId
                          ,count(distinct ChapterId)    as Interpreter_cnt
@@ -175,10 +180,10 @@ left join (select a.productid                                                   
                              from ods.ods_tidb_shuangwen_xx_objectchapter
                             where InterpreterId != 0
                               and date(Cretatime) < '${dt}'
-                         ) a
+                         )                             as a
                           where a.rn = 1
                           group by productid, InterpreterId
-                  ) a
+                  )                                         as a
              left join (select productid
                               ,PersonnelId
                               ,count(distinct ChapterId)     as Interpreter_dalay_cnt
@@ -187,17 +192,23 @@ left join (select a.productid                                                   
                            and PersonnelId != 0
                            and date(CreateTime) < '${dt}'
                          group by productid, PersonnelId
-                       ) b
+                       )                                    as b
                on a.productid = b.productid
               and a.InterpreterId = b.PersonnelId
-          ) b
+          )                                            as b
   on a.productid = b.productid
  and a.AccountId = b.authorid
  and a.RoleType = b.roletype
 left join (select productid
-                 ,InterpreterId                                                        as authorid
-                 ,1                                                                    as roletype
-                 ,sum(if(MachinePercent/100 >= 0.8, 1, 0))/count(distinct ChapterId)   as alter_err_rate
+                 ,InterpreterId                       as authorid
+                 ,1                                   as roletype
+                 ,sum(if(MachinePercent/100 >= 0.8
+                        ,1
+                        ,0
+                        )
+                     )
+                      /
+                  count(distinct ChapterId)           as alter_err_rate
              from (select productid
                          ,ObjectBookId
                          ,ChapterId
@@ -207,14 +218,20 @@ left join (select productid
              from ods.ods_tidb_shuangwen_xx_objectchapter
             where InterpreterId != 0
               and date(Cretatime) < '${dt}'
-                  ) a
+                  )                                   as a
             where a.rn = 1
             group by productid, InterpreterId
             union all
            select  productid
-                  ,ForeignProofreadingId                                                 as authorid
-                  ,2                                                                     as roletype
-                  ,sum(if(foreign_alter_rate >= 0.8, 1, 0))/count(distinct ChapterId)    as alter_err_rate
+                  ,ForeignProofreadingId              as authorid
+                  ,2                                  as roletype
+                  ,sum(if(foreign_alter_rate >= 0
+                            ,1
+                            ,0
+                         )
+                      )
+                       /
+                   count(distinct ChapterId)          as alter_err_rate
              from (select productid
                          ,ObjectBookId
                          ,ChapterId
@@ -224,14 +241,20 @@ left join (select productid
                      from ods.ods_tidb_shuangwen_xx_objectchapter
                     where ForeignProofreadingId != 0
                       and date(Cretatime) < '${dt}'
-                  ) a
+                  )                                   as a
             where a.rn = 1
             group by productid, ForeignProofreadingId
             union all
            select productid
-                 ,ProofreadingId                                                        as authorid
-                 ,3                                                                     as roletype
-                 ,sum(if(ForeignPercent/100 >= 0.8, 1, 0))/count(distinct ChapterId)    as alter_err_rate
+                 ,ProofreadingId                      as authorid
+                 ,3                                   as roletype
+                 ,sum(if(ForeignPercent/100 >= 0.8
+                        ,1
+                        ,0
+                        )
+                     )
+                      /
+                  count(distinct ChapterId)           as alter_err_rate
              from (select productid
                          ,ObjectBookId
                          ,ChapterId
@@ -241,10 +264,10 @@ left join (select productid
                      from ods.ods_tidb_shuangwen_xx_objectchapter
                     where ProofreadingId != 0
                       and date(Cretatime) < '${dt}'
-                 ) a
+                 )                                    as a
             where a.rn = 1
             group by productid, ProofreadingId
-          ) c
+          )                                            as c
   on a.productid = c.productid
  and a.AccountId = c.authorid
  and a.RoleType = c.roletype
@@ -252,10 +275,24 @@ left join (select to_language
                  ,author_id
                  ,role_type
                  ,latest_remuneration
-                 ,percentile_approx_raw(percentile_union(percentile_hash(font_length_dt)), 0.5)                as median_num
-                 ,sum(if(dt >= date_sub('${dt}', interval 7 day), font_length_dt, 0))                          as font_length_7d
-                 ,sum(if(dt >= date_sub('${dt}', interval 30 day), font_length_dt, 0))/30                      as avg_font_length_30d
-                 ,sum(if(date_format(dt, '%Y-%m') = date_format('${bf_1_dt}', '%Y-%m'), font_length_dt, 0))    as font_length_curmonth
+                 ,percentile_approx_raw(percentile_union(percentile_hash(font_length_dt)), 0.5)    as median_num
+                 ,sum(if(dt >= date_sub('${dt}', interval 7 day)
+                        ,font_length_dt
+                        ,0
+                        )
+                     )                                                                             as font_length_7d
+                 ,sum(if(dt >= date_sub('${dt}', interval 30 day)
+                        ,font_length_dt
+                        ,0
+                        )
+                     )
+                      /
+                      30                                                                           as avg_font_length_30d
+                 ,sum(if(date_format(dt, '%Y-%m') = date_format('${bf_1_dt}', '%Y-%m')
+                        , font_length_dt
+                        , 0
+                        )
+                     )                                                                             as font_length_curmonth
              from (select dt
                          ,to_language
                          ,author_id
@@ -271,13 +308,13 @@ left join (select to_language
                              from dwd.dwd_content_translate_remuneration
                             where remuneration_type = 1
                               and book_id > 0
-                          ) t
+                          )                   as t
                     where dt < '${dt}'
                       and dt >= date_sub('${dt}', interval 90 day)
                     group by 1, 2, 3, 4, 5
-                  ) a
+                  )                                                                                as a
             group by 1, 2, 3, 4
-          ) d
+          )                                            as d
 
   on a.ToLanguage = d.to_language
  and a.AccountId = d.author_id

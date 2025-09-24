@@ -22,18 +22,18 @@ with jt_book_bf_1_dt as (
 )
 ,jt_book_7days_words as (
     select a.book_id
-          ,(a.app_font_length - b.app_font_length)  as 7days_words
-      from jt_book_bf_1_dt a
-      left join jt_book_bf_7_dt b
+          ,(a.app_font_length - b.app_font_length)    as 7days_words
+      from jt_book_bf_1_dt                            as a
+      left join jt_book_bf_7_dt                       as b
         on a.book_id = b.book_id
 )
 ,en_book_chapter as (
-    select a.SwBookId as book_id
-          ,a.ToLanguage as site_id
-          ,SUM(b.Length) as source_chapter_words
-          ,SUM(b.EnLength) as target_chapter_words
-     from ods.ods_tidb_shuangwen_en_objectbook a
-     left join ods.ods_tidb_shuangwen_xx_objectchapter b
+    select a.SwBookId                                     as book_id
+          ,a.ToLanguage                                   as site_id
+          ,SUM(b.Length)                                  as source_chapter_words
+          ,SUM(b.EnLength)                                as target_chapter_words
+     from ods.ods_tidb_shuangwen_en_objectbook            as a
+     left join ods.ods_tidb_shuangwen_xx_objectchapter    as b
        on a.productid = b.productid
       and a.id = b.ObjectBookId
       and b.ChapterNumber <= 10
@@ -52,20 +52,20 @@ select a.dt
       ,e.app_font_length
       ,d.7days_words
       ,now()
-  from ads.ads_content_book_publish_mgr a
-  left join ads.ads_report_book_capacity_rate_stat b
+  from ads.ads_content_book_publish_mgr                 as a
+  left join ads.ads_report_book_capacity_rate_stat      as b
     on a.dt = b.dt
    and a.book_id = b.book_id
-  left join en_book_chapter c
+  left join en_book_chapter                             as c
     on a.book_id = (c.book_id * 1000 + c.site_id)
-  left join dwd.dwd_edit_book_languagebooktotal_da f
+  left join dwd.dwd_edit_book_languagebooktotal_da      as f
     on a.book_id = f.to_book_id
    and f.dt = '${bf_1_dt}'
-  left join jt_book_bf_1_dt e
+  left join jt_book_bf_1_dt                             as e
     on f.from_book_id = e.book_id
-  left join jt_book_7days_words d
+  left join jt_book_7days_words                         as d
     on f.from_book_id = d.book_id
-  left join dim.dim_shuangwen_book_read_consume_info g
+  left join dim.dim_shuangwen_book_read_consume_info    as g
     on a.book_id = g.book_id
  where a.dt = '${bf_1_dt}'
    and a.language_name = '英语'
