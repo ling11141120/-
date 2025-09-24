@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS ods.ods_mysql_zhangzhong_xzz_Book (
     ,EndNum                    int(11)          NOT null DEFAULT "0"      COMMENT ""
     ,CeilingReward             int(11)          NOT null DEFAULT "0"      COMMENT ""
     ,ChapterTime               varchar(150)                               COMMENT ""
-    ,ChapterTimeNum            int(11)          NOT null DEFAULT "0"     COMMENT ""
+    ,ChapterTimeNum            int(11)          NOT null DEFAULT "0"      COMMENT ""
     ,LadderReward              varchar(600)                               COMMENT ""
     ,ContractImgUrl            varchar(1500)                              COMMENT ""
     ,SARFT_Audit               int(11)          NOT null DEFAULT "0"      COMMENT ""
