@@ -37,21 +37,21 @@ with jt_book_bf_1_dt as (
        on a.productid = b.productid
       and a.id = b.ObjectBookId
       and b.ChapterNumber <= 10
-          where a.ToLanguage = 322
-            and a.Status = 1
-          group by a.SwBookId, a.ToLanguage
-     )
-select  a.dt
-      , a.book_id
-      , g.book_code
-      , a.putaway_status
-      , b.first_translate_day
-      , b.proofread_length
-      , c.target_chapter_words
-      , c.source_chapter_words
-      , e.app_font_length
-      , d.7days_words
-      , now()
+    where a.ToLanguage = 322
+      and a.Status = 1
+    group by a.SwBookId, a.ToLanguage
+)
+select a.dt
+      ,a.book_id
+      ,g.book_code
+      ,a.putaway_status
+      ,b.first_translate_day
+      ,b.proofread_length
+      ,c.target_chapter_words
+      ,c.source_chapter_words
+      ,e.app_font_length
+      ,d.7days_words
+      ,now()
   from ads.ads_content_book_publish_mgr a
   left join ads.ads_report_book_capacity_rate_stat b
     on a.dt = b.dt
