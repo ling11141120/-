@@ -41,7 +41,7 @@ CREATE TABLE ods.ods_tidb_sharpengine_bi_if_books (
      ,newcidname             VARCHAR(200)              COMMENT "分类名称"
      ,sr_createtime          DATETIME                  COMMENT "sr入库时间"
      ,sr_updatetime          DATETIME                  COMMENT "sr更新时间"
-) ENGINE=OLAP
+)
 PRIMARY KEY(id)
 COMMENT "内容域--书籍信息表"
 DISTRIBUTED BY HASH(id) BUCKETS 1
