@@ -13,7 +13,7 @@
 ----------------------------------------------------------------
 DROP TABLE IF EXISTS ods.ods_edit_book;
 CREATE TABLE IF NOT EXISTS ods.ods_edit_book (
-    productid               int(11)           NOT NULL               COMMENT "产品id"
+     productid                int(11)          NOT NULL              COMMENT "产品id"
     ,BookId                  bigint(20)        NOT NULL              COMMENT "书籍Id"
     ,BookName                varchar(255)                            COMMENT "书名"
     ,AuthorId                bigint(20)                              COMMENT "作者Id"

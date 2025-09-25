@@ -1,7 +1,17 @@
-CREATE TABLE ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog (
-    `Id`                         bigint(20)      NOT NULL              COMMENT '主键ID'
-    ,`MaterialId`                 bigint(20)     NOT NULL              COMMENT '素材Id'
-    ,`AssetGuid`                  varchar(255)                         COMMENT '素材唯一标识'
+----------------------------------------------------------------
+-- 目标表： ods.ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog
+-- 来源实例： old_starrocks_source
+-- 来源表： sharpengine_ads_asset_prod.MaterialUploadLog
+-- 来源负责： 
+-- 采集工具： 极光-定时批量
+-- 开发人： wx
+-- 开发日期： 2025-09-25
+----------------------------------------------------------------
+DROP TABLE IF EXISTS ods.ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog;
+CREATE TABLE ods.ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog (
+     Id                         bigint(20)      NOT NULL               COMMENT '主键ID'
+    ,MaterialId                 bigint(20)      NOT NULL               COMMENT '素材Id'
+    ,AssetGuid                  varchar(255)                           COMMENT '素材唯一标识'
     ,AssetId                    varchar(255)                           COMMENT '素材中心唯一Id'
     ,MaterialName               varchar(255)                           COMMENT '素材名称'
     ,MaterialFullName           varchar(255)                           COMMENT '素材名称'
@@ -23,7 +33,7 @@ CREATE TABLE ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog (
     ,CosStartTime               datetime                               COMMENT 'COS上传时间',
     ,CosCompleteTime            datetime                               COMMENT 'COS上传完成时间'
     ,BmStartTime                datetime                               COMMENT 'BM上传开始时间'
-    ,BmCompleteTime             datetime                               COMMENT 'BM上传结束时间'
+    ,BmStartTime                datetime                               COMMENT 'BM上传结束时间'
     ,LogType                    int(11)                                COMMENT '上传类型,0=默认|1=批量上传忽略MD5'
     ,Folder                     varchar(255)                           COMMENT '目录Id',
     ,RegionFolder               varchar(255)                           COMMENT '区域文件夹'
