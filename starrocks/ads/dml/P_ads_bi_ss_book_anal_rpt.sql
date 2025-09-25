@@ -14,7 +14,7 @@ insert into ads.ads_bi_ss_book_anal_rpt (
     ,lang_cd            -- 语言编码
     ,lang_name          -- 语言名称
     ,book_cd            -- 书籍代号
-    ,book_zh_name       -- 书籍中文名称
+    ,book_name          -- 书籍名称
     ,book_stat_cd       -- 书籍状态编码
     ,book_stat_name     -- 书籍状态名称
     ,pub_dt             -- 上架日期
@@ -47,15 +47,10 @@ with ss_book_dim_info as (
           ,a2.BookLanguage    as lang_cd
           ,a3.cd_val_desc     as lang_name
           ,a2.bookno          as book_cd
-          ,a1.BookName        as book_zh_name    -- fix: 不是中文名: 
+          ,a1.BookName        as book_name
           ,a1.Status          as book_stat_cd    -- fix: 枚举值只有1，应该不是这个
           ,null               as book_stat_name
           ,a4.build_time      as pub_dt
-          ,case when a5.ChapterNumber = 1 then a5.Cretatime
-            end               as bgn_trl_dt
-          ,a5.PublishTime     as cmp_trl_dt
-          ,datediff(a5.PublishTime,a5.Cretatime) as trl_days
-          ,concat(a2.PublishChapterNum,'/',a6.HasChangeChapter) as trl_prg
       from ods.ods_book_novel_book_m                        as a1
       left join ods.ods_tidb_sharpengine_bi_if_books        as a2
         on a1.productid = a2.productid
@@ -68,12 +63,38 @@ with ss_book_dim_info as (
         on a1.productid = a4.product_id
        and a1.bookid = a4.book_id
        and a4.sexy2 < 4
-      left join ods.ods_tidb_shuangwen_xx_objectchapter     as a5
-       on a1.productid = a5.productid
-      and a1.bookid = a5.bookid
-      left join ods.ods_tidb_shuangwen_en_objectbook        as a6
-       on a1.productid = a6.productid
-      and a1.bookid = a6.bookid
      where a1.StoryType = 1
        and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD')
 )
+-- 书籍章节翻译信息
+, book_chap_trl_info as (
+    select a1.productid
+          ,a1.BookCode
+          ,a4.cd_val                                                                      as lang_cd
+          ,min(a2.CompleteTime)                                                           as bgn_trl_dt
+          ,max(a2.CompleteTime)                                                           as cmp_trl_dt
+          ,datediff(max(a2.CompleteTime), min(a2.CompleteTime))                           as trl_days
+          ,concat(sum(case when a2.IsComplete = 2 then 1 else 0 end ), '/', count(a2.Id)) as trl_prg
+          ,group_concat(distinct a2.InterpreterId)                                        as trl_emp
+          ,group_concat(distinct a2.InterpreterName)                                      as trl_emp_name
+          ,count(a2.Id)                                                                   as ttl_chap_num
+          ,sum(a2.RobotLength)                                                            as mc_trl_wc
+      from ods.ods_tidb_shuangwen_en_objectbook as a1
+      left join ods.ods_tidb_shuangwen_xx_objectchapter as a2
+        on a1.id = a2.objectbookid
+       and a1.productid = a2.productid
+      left join dim.dim_pub_code_mapping_dict as a3
+        on a1.ToLanguage = a3.cd_val
+       and a3.app_plat = 'pub'
+       and a3.cd_col = 'book_lang_cd'
+      left join dim.dim_pub_code_mapping_dict as a4
+        on a3.cd_val_desc = a4.cd_val_desc
+       and a4.app_plat = 'pub'
+       and a4.cd_col = 'lang_cd'
+     where a1.BookCode = 'PD111'
+    --  group by 1, 2, 3
+)
+-- 3322
+-- U4
+-- 410 法语阅读
+-- 375 西语阅读
