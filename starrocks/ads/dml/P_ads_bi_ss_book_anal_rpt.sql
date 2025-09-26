@@ -63,6 +63,7 @@ with ss_book_dim_info as (
           ,a3.normal_chapter_num_f    as pub_chap
           ,a4.Status                  as mat_is_cmp
           ,null                       as ast_cmp_dt      -- todo: 素材完成日期没有关联关系
+          ,null                       as rev_sc_dt       -- todo:
           ,a5.SignTime                as zhtw_sig_ctr_dt
           ,a6.ph2_test_bgn_dt         as ph2_test_bgn_dt
           ,a6.ph1_test_bgn_dt         as ph1_test_bgn_dt
@@ -141,23 +142,27 @@ with ss_book_dim_info as (
 --书籍消费信息
 , book_income_info as (
     select product_id
-          ,bookid
-          ,sum(case when dt >= date_sub(curdate(),interval day(curdate()) - 1 day) and dt <= curdate()
-                    then round((a3.amount / 100)*6.5,2)
+          ,book_id
+          ,sum(case when dt >= date_format('${bf_1_dt}', '%Y-%m-01') and dt <='${bf_1_dt}'
+                    then round((amount / 100)*6.5,2)
                     else 0
                 end
               )               as amt_mon
-          ,sum(case when dt >= date_sub(curdate(),interval 29 day) and dt <= curdate()
-                    then round((a5.amount / 100)*6.5,2)
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 29 day) and dt <= '${bf_1_dt}'
+                    then round((amount / 100)*6.5,2)
                     else 0
                 end
               )               as amt_30d
-          ,sum(case when dt >= date_sub(curdate(),interval 6 day) and dt <= curdate()
-                    then round((a5.amount / 100)*6.5,2)
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 6 day) and dt <= '${bf_1_dt}'
+                    then round((amount / 100)*6.5,2)
                     else 0
                 end
               )               as amt_7d
-      from dws_consume_user_consume_ed as a1
+          ,null               as trl_cost_mon
+      from dws_consume_user_consume_ed
+     where  types = 1
+       and dt >= date_sub('${bf_1_dt}',interval 29 day)
+       and dt <= '${bf_1_dt}'
      group by 1,2
 )
 select a1.dt                 -- 日期
@@ -170,7 +175,7 @@ select a1.dt                 -- 日期
       ,a1.book_stat          -- 书籍状态
       ,a1.pub_dt             -- 上架日期
       ,a2.bgn_trl_dt         -- 开始翻译日期
-      ,a1.cmp_trl_dt         -- 完成翻译日期
+      ,a2.cmp_trl_dt         -- 完成翻译日期
       ,a2.trl_days           -- 翻译天数
       ,a2.trl_prg            -- 翻译进度
       ,a2.trl_emp            -- 译员id
@@ -181,14 +186,21 @@ select a1.dt                 -- 日期
       ,a2.ttl_chap_num       -- 总章节数
       ,a1.pub_chap           -- 发布章节
       ,a1.mat_is_cmp         -- 物料是否齐全
-      ,a1.ast_cmp_dt         -- 素材完成日期
-      ,a1.rev_sc_dt          -- 审核抽查日期
+      ,ast_cmp_dt            -- 素材完成日期
+      ,rev_sc_dt             -- 审核抽查日期
       ,a1.zhtw_sig_ctr_dt    -- 繁体签约日期
       ,a1.ph2_test_bgn_dt    -- 第二阶段测试开始日期
       ,a1.ph1_test_bgn_dt    -- 第一阶段测试开始日期
+      ,trl_cost_mon          -- 本月翻译成本
+      ,a3.amt_mon            -- 本月收入
+      ,a3.amt_30d            -- 近30天收入
+      ,a3.amt_7d             -- 近7天收入
   from ss_book_dim_info           as a1
   left join book_chap_trl_info    as a2
     on a1.product_id = a2.productid
    and a1.book_id = a2.BookCode
    and a1.lang_cd = a2.lang_cd
+  left join book_income_info      as a3
+    on a1.product_id = a3.product_id
+   and a1.book_id = a3.book_id
 ;
