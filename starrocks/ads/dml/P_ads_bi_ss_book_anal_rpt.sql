@@ -44,38 +44,52 @@ insert into ads.ads_bi_ss_book_anal_rpt (
 with ss_book_dim_info as (
     select a1.productid               as product_id
           ,a1.BookID                  as book_id
-          ,a2.BookLanguage            as lang_cd
-          ,a3.cd_val_desc             as lang_name
+          ,a2.lang_cd                 as lang_cd
+          ,a2.lang_name               as lang_name
           ,a2.bookno                  as book_cd
           ,a1.BookName                as book_name
           ,a1.Status                  as book_stat_cd    -- fix: 枚举值只有1，应该不是这个
           ,null                       as book_stat_name
-          ,a4.build_time              as pub_dt
-          ,a4.normal_chapter_num_f    as pub_chap
-          ,a5.Status                  as mat_is_cmp
-      from ods.ods_book_novel_book_m                        as a1
-      left join ods.ods_tidb_sharpengine_bi_if_books        as a2
+          ,a3.build_time              as pub_dt
+          ,a3.normal_chapter_num_f    as pub_chap
+          ,a4.Status                  as mat_is_cmp
+          ,null                       as ast_cmp_dt      -- todo: 素材完成日期没有关联关系
+      from ods.ods_book_novel_book_m                            as a1
+      left join (select b1.productid
+                       ,b1.bookid
+                       ,b1.bookno
+                       ,b1.booknoseries
+                       ,b3.cd_val                               as lang_cd
+                       ,b3.cd_val_desc                          as lang_name
+                   from ods.ods_tidb_sharpengine_bi_if_books    as b1
+                   left join dim.dim_pub_code_mapping_dict      as b2
+                     on b1.BookLanguage = b2.cd_val
+                    and b2.app_plat = 'pub'
+                    and b2.cd_col = 'lang_cd'
+                   left join dim.dim_pub_code_mapping_dict      as b3
+                     on b2.cd_val_desc = b3.cd_val_desc
+                    and b3.app_plat = 'pub'
+                    and b3.cd_col = 'book_lang_cd'
+                )                                               as a2
         on a1.productid = a2.productid
        and a1.bookid = a2.bookid
-      left join dim.dim_pub_code_mapping_dict               as a3
-        on a2.BookLanguage = a3.cd_val
-       and a3.app_plat = 'pub'
-       and a3.cd_col = 'lang_cd'
-      left join dim.dim_shuangwen_book_read_consume_info    as a4
-        on a1.productid = a4.product_id
-       and a1.bookid = a4.book_id
-       and a4.sexy2 < 4
-      left join ods.ods_edit_book                           as a5
-        on a1.productid = a5.productid
-       and a1.bookid = (a5.BookId*1000+a5.SiteId)
+       and a1.SiteId = a2.lang_cd
+      left join dim.dim_shuangwen_book_read_consume_info        as a3
+        on a1.productid = a3.product_id
+       and a1.bookid = a3.book_id
+       and a3.sexy2 < 4
+      left join ods.ods_edit_book                               as a4
+        on a1.productid = a4.productid
+       and a1.bookid = (a4.BookId*1000+a4.SiteId)
      where a1.StoryType = 1
        and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD')
+       and a2.bookno = 'PD110'
 )
 -- 书籍章节翻译信息
 , book_chap_trl_info as (
     select a1.productid
           ,a1.BookCode
-          ,a4.cd_val                                                                         as lang_cd
+          ,a1.ToLanguage                                                                     as lang_cd
           ,min(a2.CompleteTime)                                                              as bgn_trl_dt
           ,max(a2.CompleteTime)                                                              as cmp_trl_dt
           ,datediff(max(a2.CompleteTime), min(a2.CompleteTime))                              as trl_days
@@ -90,14 +104,6 @@ with ss_book_dim_info as (
       left join ods.ods_tidb_shuangwen_xx_objectchapter    as a2
         on a1.id = a2.objectbookid
        and a1.productid = a2.productid
-      left join dim.dim_pub_code_mapping_dict              as a3
-        on a1.ToLanguage = a3.cd_val
-       and a3.app_plat = 'pub'
-       and a3.cd_col = 'book_lang_cd'
-      left join dim.dim_pub_code_mapping_dict              as a4
-        on a3.cd_val_desc = a4.cd_val_desc
-       and a4.app_plat = 'pub'
-       and a4.cd_col = 'lang_cd'
      group by 1, 2, 3
 )
 select a1.product_id
