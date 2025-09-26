@@ -14,7 +14,7 @@ with svsr_ad_amt as (
           ,a1.user_id                                              as user_id
           ,datediff(a2.dt, a1.dt)                                  as diff_dt_num
           ,coalesce(a2.amt,0)                                      as ad_amt
-      from dws.dws_user_short_video_wide_active_period_ed          as a1
+      from dws.dws_user_short_video_wide_active_period_west5_ed    as a1
       left join ads.ads_sv_ad_efficiency_report_west5              as a2    -- 海剧广告效率表(西5区)
         on a2.dt between date_sub('${dt}', interval 120 day) and '${dt}'
        and a2.product_id = 6833

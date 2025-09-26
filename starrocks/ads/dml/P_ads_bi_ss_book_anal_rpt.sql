@@ -40,22 +40,27 @@ insert into ads.ads_bi_ss_book_anal_rpt (
     ,amt_30d            -- 近30天收入
     ,amt_7d             -- 近7天收入
 )
--- 短篇书籍基本信息
-with ss_book_basic_info as (
+-- 短篇书籍维度信息
+with ss_book_dim_info as (
     select a1.productid       as product_id
           ,a1.BookID          as book_id
           ,a2.BookLanguage    as lang_cd
           ,a3.cd_val_desc     as lang_name
           ,a2.bookno          as book_cd
-          ,a1.BookName        as book_zh_name    -- fix: 不是中文名
+          ,a1.BookName        as book_zh_name    -- fix: 不是中文名: 
           ,a1.Status          as book_stat_cd    -- fix: 枚举值只有1，应该不是这个
           ,null               as book_stat_name
           ,a4.build_time      as pub_dt
-      from ods.ods_book_novel_book_m                    as a1
-      left join ods.ods_tidb_sharpengine_bi_if_books    as a2
+          ,case when a5.ChapterNumber = 1 then a5.Cretatime
+            end               as bgn_trl_dt
+          ,a5.PublishTime     as cmp_trl_dt
+          ,datediff(a5.PublishTime,a5.Cretatime) as trl_days
+          ,concat(a2.PublishChapterNum,'/',a6.HasChangeChapter) as trl_prg
+      from ods.ods_book_novel_book_m                        as a1
+      left join ods.ods_tidb_sharpengine_bi_if_books        as a2
         on a1.productid = a2.productid
        and a1.bookid = a2.bookid
-      left join dim.dim_pub_code_mapping_dict           as a3
+      left join dim.dim_pub_code_mapping_dict               as a3
         on a2.BookLanguage = a3.cd_val
        and a3.app_plat = 'pub'
        and a3.cd_col = 'lang_cd'
@@ -63,6 +68,12 @@ with ss_book_basic_info as (
         on a1.productid = a4.product_id
        and a1.bookid = a4.book_id
        and a4.sexy2 < 4
+      left join ods.ods_tidb_shuangwen_xx_objectchapter     as a5
+       on a1.productid = a5.productid
+      and a1.bookid = a5.bookid
+      left join ods.ods_tidb_shuangwen_en_objectbook        as a6
+       on a1.productid = a6.productid
+      and a1.bookid = a6.bookid
      where a1.StoryType = 1
        and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD')
 )
