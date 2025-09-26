@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS ads.ads_bi_ss_book_anal_rpt;
-CREATE TABLE IF NOT EXISTS ads.ads_bi_ss_book_anal_rpt (
+CREATE TABLE ads.ads_bi_ss_book_anal_rpt (
      dt              DATE          NOT NULL COMMENT '日期'
     ,product_id      INT           NOT NULL COMMENT 'product_id'
     ,book_id         BIGINT        NOT NULL COMMENT '书籍id'
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ads.ads_bi_ss_book_anal_rpt (
     ,amt_30d         DECIMAL(10,4)          COMMENT '近30天收入'
     ,amt_7d          DECIMAL(10,4)          COMMENT '近7天收入'
 )
-PRIMARY KEY (dt, book_id)
+PRIMARY KEY (dt, product_id, book_id)
 COMMENT 'bi-短篇书籍分析报表'
 PARTITION BY DATE_TRUNC('month', dt)
 DISTRIBUTED BY HASH(dt, product_id)
