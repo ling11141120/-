@@ -195,7 +195,7 @@ select a1.dt                 -- 日期
   from ss_book_dim_info           as a1
   left join book_chap_trl_info    as a2
     on a1.product_id = a2.productid
-   and a1.book_id = a2.BookCode
+   and a1.book_cd = a2.BookCode
    and a1.lang_cd = a2.lang_cd
   left join book_income_info      as a3
     on a1.product_id = a3.product_id
