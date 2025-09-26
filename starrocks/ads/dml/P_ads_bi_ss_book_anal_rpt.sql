@@ -143,24 +143,21 @@ with ss_book_dim_info as (
 , book_income_info as (
     select product_id
           ,book_id
-          ,sum(case when dt >= date_format('${bf_1_dt}', '%Y-%m-01') and dt <='${bf_1_dt}'
-                    then round((amount / 100)*6.5,2)
+          ,sum(case when dt >= date_format('${bf_1_dt}', '%Y-%m-01') and dt <='${bf_1_dt}' then (amount / 100)*6.5
                     else 0
                 end
-              )               as amt_mon
-          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 29 day) and dt <= '${bf_1_dt}'
-                    then round((amount / 100)*6.5,2)
+              )    as amt_mon
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 29 day) and dt <= '${bf_1_dt}' then (amount / 100)*6.5
                     else 0
                 end
-              )               as amt_30d
-          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 6 day) and dt <= '${bf_1_dt}'
-                    then round((amount / 100)*6.5,2)
+              )    as amt_30d
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 6 day) and dt <= '${bf_1_dt}' then (amount / 100)*6.5
                     else 0
                 end
-              )               as amt_7d
-          ,null               as trl_cost_mon
-      from dws_consume_user_consume_ed
-     where  types = 1
+              )    as amt_7d
+          ,null    as trl_cost_mon
+      from dws.dws_consume_user_consume_ed
+     where types = 1
        and dt >= date_sub('${bf_1_dt}',interval 29 day)
        and dt <= '${bf_1_dt}'
      group by 1,2
