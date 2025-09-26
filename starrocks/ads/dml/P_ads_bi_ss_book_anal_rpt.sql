@@ -98,7 +98,6 @@ with ss_book_dim_info as (
         on a3.cd_val_desc = a4.cd_val_desc
        and a4.app_plat = 'pub'
        and a4.cd_col = 'lang_cd'
-     where a1.BookCode = 'PD111'
      group by 1, 2, 3
 )
 select a1.product_id
