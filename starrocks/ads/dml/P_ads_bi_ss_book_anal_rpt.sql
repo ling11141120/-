@@ -138,6 +138,28 @@ with ss_book_dim_info as (
        and a1.productid = a2.productid
      group by 1, 2, 3
 )
+--书籍消费信息
+, book_income_info as (
+    select product_id
+          ,bookid
+          ,sum(case when dt >= date_sub(curdate(),interval day(curdate()) - 1 day) and dt <= curdate()
+                    then round((a3.amount / 100)*6.5,2)
+                    else 0
+                end
+              )               as amt_mon
+          ,sum(case when dt >= date_sub(curdate(),interval 29 day) and dt <= curdate()
+                    then round((a5.amount / 100)*6.5,2)
+                    else 0
+                end
+              )               as amt_30d
+          ,sum(case when dt >= date_sub(curdate(),interval 6 day) and dt <= curdate()
+                    then round((a5.amount / 100)*6.5,2)
+                    else 0
+                end
+              )               as amt_7d
+      from dws_consume_user_consume_ed as a1
+     group by 1,2
+)
 select a1.dt                 -- 日期
       ,a1.product_id         -- product_id
       ,a1.book_id            -- 书籍id
