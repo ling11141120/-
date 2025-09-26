@@ -1,14 +1,15 @@
 ----------------------------------------------------------------
 -- 目标表：ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan
--- 来源实例：old_starrocks_source
--- 来源表：sharpengine_ads_global.MarketingPlan
+-- 来源实例： new_tidb_source
+-- 来源表： sharpengine_ads_global.MarketingPlan
 -- 来源负责：
 -- 采集工具：极光-定时链路
 -- 开发人：wx
 -- 创建日期：2025-09-24
 ----------------------------------------------------------------
+
 DROP TABLE IF EXISTS ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan;
-CREATE TABLE IF NOT EXISTS ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan (
+CREATE TABLE ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan (
      Id                    bigint(20)     NOT NULL                COMMENT "主键ID"
     ,ProjectCode           int(11)        NOT NULL                COMMENT "项目类型 1=海阅|2=海剧"
     ,CodeId                varchar(128)   NOT NULL                COMMENT "代号ProjectCode为1=书籍ID|ProjectCode为2=短剧ID"
@@ -57,11 +58,12 @@ CREATE TABLE IF NOT EXISTS ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan 
 PRIMARY KEY (Id)
 COMMENT "市场测推表 author:102094(何妨)"
 DISTRIBUTED BY HASH (Id) BUCKETS 1
-PROPERTIES ("replication_num"      = "3",
-            "bloom_filter_columns" = "ProjectCode",
-            "in_memory"            = "false",
-            "enable_persistent_index" = "true",
-            "replicated_storage"   = "true",
-            "compression"          = "LZ4"
+PROPERTIES (
+    "replication_num"      = "3",
+    "bloom_filter_columns" = "ProjectCode",
+    "in_memory"            = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage"   = "true",
+    "compression"          = "LZ4"
 )
 ;
