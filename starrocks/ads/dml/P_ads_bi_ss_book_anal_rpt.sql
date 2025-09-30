@@ -3,7 +3,7 @@
 -- 程序名： P_ads_bi_ss_book_anal_rpt.sql
 -- 目标表： ads.ads_bi_ss_book_anal_rpt
 -- 负责人： qhr/wx
--- 开发日期： 2023-09-24
+-- 开发日期： 2025-09-24
 -- 版本号： v0.0.0
 ----------------------------------------------------------------
 
@@ -62,8 +62,7 @@ with ss_book_dim_info as (
           ,a3.build_time              as pub_dt
           ,a3.normal_chapter_num_f    as pub_chap
           ,a4.Status                  as mat_is_cmp
-          ,null                       as ast_cmp_dt      -- todo: 素材完成日期没有关联关系
-          ,null                       as rev_sc_dt       -- todo:
+          ,a8.ast_cmp_dt              as ast_cmp_dt
           ,a5.SignTime                as zhtw_sig_ctr_dt
           ,a6.ph2_test_bgn_dt         as ph2_test_bgn_dt
           ,a6.ph1_test_bgn_dt         as ph1_test_bgn_dt
@@ -72,6 +71,7 @@ with ss_book_dim_info as (
                        ,b1.bookid
                        ,b1.bookno
                        ,b1.booknoseries
+                       ,b1.BookLanguage
                        ,b2.cd_val         as lang_cd
                        ,b2.cd_val_desc    as lang_name
                    from ods.ods_tidb_sharpengine_bi_if_books                   as b1
@@ -102,7 +102,7 @@ with ss_book_dim_info as (
                        ,min(case when b3.CodeStage = 1 and b3.PlanRound = 1 then b3.BeginDate
                                  else null
                              end
-                           )              as ph1_test_bgn_dt 
+                           )              as ph1_test_bgn_dt
                   from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan    as b3
                  where b3.ProjectCode = 1
                    and b3.IsDel = 0
@@ -115,8 +115,17 @@ with ss_book_dim_info as (
         on a7.dt = '${bf_1_dt}'
        and a1.productid = a7.product_id
        and a1.bookid = a7.to_book_id
+      left join (select b4.Code
+                       ,b4.CurrentLanguage
+                       ,max(b4.BmCompeleteTime)    as ast_cmp_dt
+                   from ods.ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog  as b4
+                  where b4.TgtType=1
+                  group by 1, 2
+                )                                                              as a8
+        on a2.bookno=a8.Code
+       and a2.BookLanguage=a8.CurrentLanguage
      where a1.StoryType = 1
-       and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD')
+       and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD', 'ZD')
 )
 -- 书籍章节翻译信息
 , book_chap_trl_info as (
@@ -133,13 +142,23 @@ with ss_book_dim_info as (
           ,sum(a2.RobotLength)                                                               as qa_wc
           ,sum(a2.ForeignLength)                                                             as pub_wc
           ,count(a2.Id)                                                                      as ttl_chap_num
-      from ods.ods_tidb_shuangwen_en_objectbook            as a1
-      left join ods.ods_tidb_shuangwen_xx_objectchapter    as a2
-        on a1.id = a2.objectbookid
-       and a1.productid = a2.productid
+          ,min(case when a3.RoleType=12 then a3.CreateTime else null end )                   as rev_sc_dt
+          ,sum(case when a3.dt >= date_format('${bf_1_dt}', '%Y-%m-01') and a3.dt <='${bf_1_dt}' and a3.CurrencyType=1 then a3.TotalPrice
+                    when a3.dt >= date_format('${bf_1_dt}', '%Y-%m-01') and a3.dt <='${bf_1_dt}' and a3.CurrencyType=2 then a3.TotalPrice*6.5
+                    else 0
+                end
+              )                                                                              as trl_cost_mon
+      from ods.ods_tidb_shuangwen_en_objectbook                 as a1
+      left join ods.ods_tidb_shuangwen_xx_objectchapter         as a2
+        on a1.productid = a2.productid
+       and a1.id = a2.objectbookid
+      left join ods.ods_tidb_shuangwen_en_translateremuneration as a3
+        on a1.SwBookId = a3.BookId
+       and a1.ToLanguage = a3.ToLanguage
+       and a2.Id = a3.ObjectChapterId
      group by 1, 2, 3
 )
---书籍消费信息
+--书籍本月、近30天、近7天收入信息
 , book_income_info as (
     select product_id
           ,book_id
@@ -155,7 +174,6 @@ with ss_book_dim_info as (
                     else 0
                 end
               )    as amt_7d
-          ,null    as trl_cost_mon
       from dws.dws_consume_user_consume_ed
      where types = 1
        and dt >= date_sub('${bf_1_dt}',interval 29 day)
@@ -200,4 +218,3 @@ select a1.dt                 -- 日期
   left join book_income_info      as a3
     on a1.product_id = a3.product_id
    and a1.book_id = a3.book_id
-;
