@@ -9,7 +9,7 @@
 -- 创建日期：2025-09-24
 ----------------------------------------------------------------
 DROP TABLE IF EXISTS ods.ods_mysql_zhangzhong_xzz_Book;
-CREATE TABLE IF NOT EXISTS ods.ods_mysql_zhangzhong_xzz_Book (
+CREATE TABLE ods.ods_mysql_zhangzhong_xzz_Book (
      BookId                    int(11)          NOT null                  COMMENT "书籍Id"
     ,BookName                  varchar(900)                               COMMENT "书名",
     ,AuthorId                  bigint(20)                                 COMMENT "作者Id"
