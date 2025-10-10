@@ -201,18 +201,17 @@ select a1.dt                 -- 日期
       ,a2.ttl_chap_num       -- 总章节数
       ,a1.pub_chap           -- 发布章节
       ,a1.mat_is_cmp         -- 物料是否齐全
-      ,ast_cmp_dt            -- 素材完成日期
-      ,rev_sc_dt             -- 审核抽查日期
+      ,a1.ast_cmp_dt         -- 素材完成日期
+      ,a2.rev_sc_dt          -- 审核抽查日期
       ,a1.zhtw_sig_ctr_dt    -- 繁体签约日期
       ,a1.ph2_test_bgn_dt    -- 第二阶段测试开始日期
       ,a1.ph1_test_bgn_dt    -- 第一阶段测试开始日期
-      ,trl_cost_mon          -- 本月翻译成本
+      ,a2.trl_cost_mon       -- 本月翻译成本
       ,a3.amt_mon            -- 本月收入
       ,a3.amt_30d            -- 近30天收入
       ,a3.amt_7d             -- 近7天收入
   from ss_book_dim_info           as a1
   left join book_chap_trl_info    as a2
-    on a1.product_id = a2.productid
    and a1.book_cd = a2.BookCode
    and a1.lang_cd = a2.lang_cd
   left join book_income_info      as a3
