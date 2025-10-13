@@ -4,6 +4,7 @@
 -- 目标表： ads.ads_sv_third_party_payment_funnel_exposure
 -- 负责人： wx
 -- 开发日期：2025-10-13
+-- 版本号：v0.1.0
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_exposure
 -- 活跃表
@@ -46,7 +47,7 @@ exposure as(
           ,case when czlx like '%vip%' then '订阅'
                 when czlx like '%签到卡%' then '订阅'
                 else '非订阅'
-            end as subscribe_status
+            end as is_sub
           ,case when zffs_list is null and os = 'Android' then '安卓'
                 when zffs_list is null and os = 'iOS' then 'iOS'
                 when zffs_list = 'GooglePlay'  then '安卓'
@@ -84,7 +85,7 @@ select exposure.dt
       ,if(strategy_id is null, '续订(或策略id为空)', strategy_id)  as strategy_id
       ,group_concat(distinct shop_item_type)                      as shop_item_type
       ,group_concat(distinct zfqd)                                as zfqd
-      ,group_concat(distinct subscribe_status)                    as subscribe_status
+      ,group_concat(distinct is_sub)                              as is_sub
       ,now()                                                      as etl_time
   from active
   left join exposure
