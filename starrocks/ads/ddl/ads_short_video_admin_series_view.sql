@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW ads.ads_short_video_admin_series_view (
+create or replace view ads.ads_short_video_admin_series_view (
      SeriesId                  comment "id"
     ,series_code               comment "代号"
     ,Language                  comment "语言"
@@ -48,89 +48,85 @@ CREATE OR REPLACE VIEW ads.ads_short_video_admin_series_view (
     ,sd_type_name              comment "短剧类型名称"
     ,at_type_name              comment "音轨类型名称"
     ,dub_type_name             comment "配音类型名称"
-) as
-select
-      a.SeriesId
-     ,b.series_code
-     ,a.Language
-     ,a.SeriesName
-     ,a.Description
-     ,a.CoverUrl
-     ,a.CreateTime
-     ,a.UpdateTime
-     ,a.CreateUser
-     ,a.PublishStatus
-     ,a.PublishedAt
-     ,a.UnPublishedAt
-     ,a.LastEpis
-     ,a.AllEpis
-     ,a.PayEpisFrom
-     ,a.IsDelete
-     ,a.Producer
-     ,a.Recommend
-     ,a.SourceSeriesId
-     ,a.Price
-     ,a.MinutePrice
-     ,a.Ending
-     ,a.SeriesNameKey
-     ,a.DescriptionKey
-     ,a.RecommendKey
-     ,a.IsSubtitles
-     ,a.SubtitlesStatus
-     ,a.EpisStatus
-     ,a.VideoStatus
-     ,a.SeriesLevel
-     ,a.OperateLevel
-     ,a.WorkType
-     ,a.ImageKey
-     ,a.ListRecommendKey
-     ,a.ListRecommend
-     ,a.AdsBeginTime
-     ,a.Core
-     ,a.IsScheduledPublish
-     ,a.ScheduledPublishTime
-     ,a.HighLightPlot
-     ,a.TurningPoint
-     ,c.add_time                as import_time
-     ,f.source_create_time
-     ,d.PlanStatus              as plan_status
-     ,d.BeginDate               as run_out_time
-     ,IF(
-        a.PublishedAt <= CURRENT_DATE(),
-        '已上架',
-        e.status
-       )                        as multilingual_status
-     ,case when g.localType=1 and g.localSubType = 1 then '本土剧-AI短剧'
-           when g.localType=1 then '本土剧'
-           when g.localType=2 then '译制剧'
-           else null
-       end                      as sd_type_name
-     ,case when g.audioType = 1 then '原声剧'
-           when g.audioType = 2 then '配音剧'
-           else null
-       end as at_type_name
-     ,case when g.dubbedType = 1 then '人工配音'
-           when g.dubbedType = 2 then 'AI配音'
-           else null
-       end                      as dub_type_name
+)
+as
+select a.SeriesId
+      ,b.series_code
+      ,a.Language
+      ,a.SeriesName
+      ,a.Description
+      ,a.CoverUrl
+      ,a.CreateTime
+      ,a.UpdateTime
+      ,a.CreateUser
+      ,a.PublishStatus
+      ,a.PublishedAt
+      ,a.UnPublishedAt
+      ,a.LastEpis
+      ,a.AllEpis
+      ,a.PayEpisFrom
+      ,a.IsDelete
+      ,a.Producer
+      ,a.Recommend
+      ,a.SourceSeriesId
+      ,a.Price
+      ,a.MinutePrice
+      ,a.Ending
+      ,a.SeriesNameKey
+      ,a.DescriptionKey
+      ,a.RecommendKey
+      ,a.IsSubtitles
+      ,a.SubtitlesStatus
+      ,a.EpisStatus
+      ,a.VideoStatus
+      ,a.SeriesLevel
+      ,a.OperateLevel
+      ,a.WorkType
+      ,a.ImageKey
+      ,a.ListRecommendKey
+      ,a.ListRecommend
+      ,a.AdsBeginTime
+      ,a.Core
+      ,a.IsScheduledPublish
+      ,a.ScheduledPublishTime
+      ,a.HighLightPlot
+      ,a.TurningPoint
+      ,c.add_time                as import_time
+      ,f.source_create_time
+      ,d.PlanStatus              as plan_status
+      ,d.BeginDate               as run_out_time
+      ,if(
+          a.PublishedAt <= CURRENT_DATE()
+         ,'已上架'
+         ,e.status
+        )                        as multilingual_status
+      ,case when g.localType=1 and g.localSubType = 1 then '本土剧-AI短剧'
+            when g.localType=1 then '本土剧'
+            when g.localType=2 then '译制剧'
+            else null
+        end                      as sd_type_name
+      ,case when g.audioType = 1 then '原声剧'
+            when g.audioType = 2 then '配音剧'
+            else null
+        end as at_type_name
+      ,case when g.dubbedType = 1 then '人工配音'
+            when g.dubbedType = 2 then 'AI配音'
+            else null
+        end                      as dub_type_name
   from ods.ods_tidb_short_video_admin_series                 as a
   left join dim.dim_short_video_source_series_view           as b
     on a.sourceseriesid = b.series_id
-  left join (
-            select
-                 series_code
-                ,min(create_time)    as source_create_time
-              from dim.dim_short_video_source_series_view
-             group by series_code
-            ) f
+  left join (select series_code
+                   ,min(create_time)    as source_create_time
+               from dim.dim_short_video_source_series_view
+              group by series_code
+            )                                                as f
     on b.series_code = f.series_code
   left join ods.ods_tidb_cdcreator_tidb_cn_story_original    as c
     on b.series_code = c.story_code
-  left join (
-            select
-                 codeid
-                ,planstatus
-                ,min(begindate)      as begindate
+  left join (select codeid
+                   ,planstatus
+                   ,min(begindate)      as begindate
               from ods.ods_tidb_ad_sharpengine_ads_global_marketingplan
              where planstatus = 1
                and codestage >= 2
@@ -138,66 +134,57 @@ select
              )                                               as d
     on a.seriesid = d.codeid
   left join (
-            select
-                 bookcode
-                ,3                   as language_id
-                ,enstatus            as status
+            select bookcode
+                  ,3                    as language_id
+                  ,enstatus             as status
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(enstatus, '') != ''
              union all
-            select
-                  bookcode
-                 ,4                  as language_id
-                 ,spstatus           as status
+            select bookcode
+                 ,4                     as language_id
+                 ,spstatus              as status
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(spstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,5                  as language_id
-                 ,ptstatus
+            select bookcode
+                  ,5                    as language_id
+                  ,ptstatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(ptstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,6                  as language_id
-                 ,frstatus
+            select bookcode
+                  ,6                    as language_id
+                  ,frstatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(frstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,7                  as language_id
-                 ,rustatus
+            select bookcode
+                  ,7                    as language_id
+                  ,rustatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(rustatus, '') != ''
              union all
-            select
-        bookcode
-                 ,11                 as language_id
-                 ,idstatus
+            select bookcode
+                  ,11                   as language_id
+                  ,idstatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(idstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,12                 as language_id
-                 ,thstatus
+            select bookcode
+                  ,12                   as language_id
+                  ,thstatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(thstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,9                  as language_id
-                 ,jpstatus
+            select bookcode
+                  ,9                    as language_id
+                  ,jpstatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(jpstatus, '') != ''
              union all
-            select
-        bookcode
-                 ,14                 as language_id
-                 ,kostatus
+            select bookcode
+                  ,14                   as language_id
+                  ,kostatus
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(kostatus, '') != ''
             )                                                as e
