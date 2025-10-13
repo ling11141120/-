@@ -11,7 +11,7 @@ create table ads.ads_sv_third_party_payment_funnel_exposure (
     ,strategy_id        varchar(200)    not null      comment "策略ID"
     ,shop_item_type     varchar(200)    null          comment "档位类型"
     ,zfqd               varchar(200)    null          comment "支付渠道"
-    ,subscribe_status   varchar(200)    null          comment "是否订阅"
+    ,is_sub             varchar(20)     null          comment "是否订阅"
     ,etl_ime datetime null default current_timestamp  comment "清洗时间"
 )
 duplicate key (dt)
