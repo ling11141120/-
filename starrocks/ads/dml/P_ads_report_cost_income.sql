@@ -23,6 +23,7 @@ from(
                              when site_id=435 then 3521
                              when site_id=436 then 3531
                              when site_id=445 then 3541
+                             when site_id=497 then 3621
                     end
                            )as product_id,
                        book_id,cname as book_name,from_book_Name as origin_bookname,to_book_name as object_bookname,Promotion_tp as Promotion_status,object_book_type,is_cost_rate
