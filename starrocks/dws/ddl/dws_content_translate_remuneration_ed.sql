@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS tmp.dws_content_translate_remuneration_ed;
-CREATE TABLE tmp.dws_content_translate_remuneration_ed (
+DROP TABLE IF EXISTS dws.dws_content_translate_remuneration_ed;
+CREATE TABLE dws.dws_content_translate_remuneration_ed (
      dt             DATE           NOT NULL           COMMENT "年分区字段：日期"
     ,product_id     SMALLINT       NOT NULL           COMMENT "产品id"
     ,book_id        BIGINT         NOT NULL           COMMENT "书籍id"
