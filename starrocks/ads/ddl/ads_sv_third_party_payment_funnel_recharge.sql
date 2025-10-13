@@ -1,22 +1,26 @@
-drop table if exists ads.ads_sv_third_party_payment_funnel_exposure;
-create table ads.ads_sv_third_party_payment_funnel_exposure (
+drop table if exists ads.ads_sv_third_party_payment_funnel_recharge;
+create table ads.ads_sv_third_party_payment_funnel_recharge (
      dt                 date            not null      comment "日期分区"
     ,user_id            bigint(20)      not null      comment "用户id"
-    ,period_type        varchar(50)     null          comment "周期类型"
+    ,period_type        varchar(50)     not null      comment "周期类型"
+    ,order_id           varchar(255)    not null      comment "订单id"
     ,user_type          varchar(200)    null          comment "用户类型"
     ,language2          varchar(50)     null          comment "语言id"
     ,core               int(11)         null          comment "core"
     ,mt                 varchar(50)     null          comment "终端"
+    ,create_time        datetime        null          comment "创建时间"
     ,recharge_source    varchar(200)    not null      comment "充值来源"
     ,strategy_id        varchar(200)    not null      comment "策略ID"
     ,shop_item_type     varchar(200)    null          comment "档位类型"
     ,zfqd               varchar(200)    null          comment "支付渠道"
-    ,subscribe_status   varchar(200)    null          comment "是否订阅"
+    ,if_third           int(11)         null          comment ""
+    ,subscribe_status   int(11)         null          comment ""
+    ,time_duration      int(11)         null          comment ""
+    ,base_amount        decimal(12,2)   null          comment ""
     ,etl_ime datetime null default current_timestamp  comment "清洗时间"
 )
-duplicate key (dt)
-comment "海剧三方支付漏斗报表-曝光"
-partition by date_trunc('month', dt)
+primary key(dt, user_id, period_type, order_id)
+comment "海剧三方支付漏斗报表-充值成功"
 distributed by hash(dt, period_type, user_id) buckets 5
 properties (
     "replication_num" = "3",

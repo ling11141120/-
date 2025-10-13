@@ -3,7 +3,7 @@
 -- 程序名： P_ads_sv_third_party_payment_funnel_exposure
 -- 目标表： ads.ads_sv_third_party_payment_funnel_exposure
 -- 负责人： wx
--- 开发日期：2025-10-10
+-- 开发日期：2025-10-13
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_exposure
 -- 活跃表
@@ -13,14 +13,14 @@ with active as(
           ,t1.period_type
           ,t1.user_type
           ,t1.corever
-          ,dic_mt.enum_name                                 as mt
-          ,dic_lang.remarks                                 as language2
-     from dws.dws_user_short_video_wide_active_period_ed    as t1
-     left join dim.dim_dic dic_lang  -- 注册/投放语言
+          ,dic_mt.enum_name    as mt
+          ,dic_lang.remarks    as language2
+     from dws.dws_user_short_video_wide_active_period_ed  as t1
+     left join dim.dim_dic                                as dic_lang  -- 注册/投放语言
        on t1.current_language2 = dic_lang.enum_id
       and dic_lang.table_name = 'dim_producttype'
       and dic_lang.dic_column = 'language_id'
-     left join dim.dim_dic  dic_mt  -- mt
+     left join dim.dim_dic                                as dic_mt  -- mt
        on t1.mt = dic_mt.enum_id
       and dic_mt.table_name = 'dim_user_accountinfo_df'
       and dic_mt.dic_column = 'mt'
@@ -43,6 +43,10 @@ exposure as(
                 when czlx like '%签到卡%' then '签到卡'
                 else '普通充值'
             end as shop_item_type
+          ,case when czlx like '%vip%' then '订阅'
+                when czlx like '%签到卡%' then '订阅'
+                else '非订阅'
+            end as subscribe_status
           ,case when zffs_list is null and os = 'Android' then '安卓'
                 when zffs_list is null and os = 'iOS' then 'iOS'
                 when zffs_list = 'GooglePlay'  then '安卓'
@@ -59,10 +63,10 @@ exposure as(
           ,core
           ,dt
       from ads.ads_sensors_cd_video_rechargeexposure_view
-     where product_id = 6833 
-       and dt >= '${bf_1_dt}' 
+     where product_id = 6833
+       and dt >= '${bf_1_dt}'
        and dt <= '${dt}'
-     group by 1, 2, 3, 4, 5, 6, 7, 8
+     group by 1, 2, 3, 4, 5, 6, 7, 8 ,9
 )
 -- 活跃关联曝光
 select exposure.dt
@@ -80,6 +84,7 @@ select exposure.dt
       ,if(strategy_id is null, '续订(或策略id为空)', strategy_id)  as strategy_id
       ,group_concat(distinct shop_item_type)                      as shop_item_type
       ,group_concat(distinct zfqd)                                as zfqd
+      ,group_concat(distinct subscribe_status)                    as subscribe_status
       ,now()                                                      as etl_time
   from active
   left join exposure
