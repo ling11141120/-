@@ -141,8 +141,8 @@ select a.SeriesId
              where ifnull(enstatus, '') != ''
              union all
             select bookcode
-                 ,4                     as language_id
-                 ,spstatus              as status
+                  ,4                    as language_id
+                  ,spstatus             as status
               from ods.ods_tidb_shuangwen_tidb_en_shortvideomultilingual
              where ifnull(spstatus, '') != ''
              union all
