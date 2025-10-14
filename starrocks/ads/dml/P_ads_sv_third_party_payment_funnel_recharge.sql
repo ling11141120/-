@@ -77,7 +77,7 @@ payorder as(select dt
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=204100 then 'banner'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=210010 then 'push'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=203600 then '开屏页'
-                                        else 0
+                                        else split(get_json_string(custom_data, '$.activityLink'), '_')[1]
                                     end
                                   )
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='202100'
