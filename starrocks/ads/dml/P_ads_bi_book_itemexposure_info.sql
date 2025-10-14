@@ -120,7 +120,7 @@ with expo as (
                             end                   as book_lang_id
                           ,app_core_ver           as corever
                           ,book_id
-                          ,coalesce(mt, '-99')    as mt
+                          ,lower(coalesce(mt, '-99'))    as mt
                           ,identity_login_id      as user_id
                       from dwd.dwd_sensors_production_itemclick_view
                      where dt >= '${bf_3_dt}'
