@@ -3,8 +3,8 @@
 -- 程序名： P_ads_sv_third_party_payment_funnel_recharge
 -- 目标表： ads.ads_sv_third_party_payment_funnel_recharge
 -- 负责人： wx
--- 开发日期：2025-10-13
--- 版本号：v0.1.0
+-- 开发日期：2025-10-15
+-- 版本号：v0.2.0
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_recharge
 -- 活跃表
@@ -70,7 +70,7 @@ payorder as(select dt
                              then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
                                          and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (0,1) then '普通弹窗'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
-                                         and split(get_json_string(custom_data, '$.activityLink'), '_')[2]=3 then '充值返回推'
+                                         and split(get_json_string(custom_data, '$.activityLink'), '_')[2]=3 then '充值返回推弹窗'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=200800 then '解锁页VIP'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=203200 then '悬浮窗'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=204000 then 'TAB栏'

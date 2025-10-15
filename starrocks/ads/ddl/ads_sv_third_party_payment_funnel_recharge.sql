@@ -9,7 +9,7 @@ create table ads.ads_sv_third_party_payment_funnel_recharge (
     ,core               int(11)         null          comment "core"
     ,mt                 varchar(50)     null          comment "终端"
     ,create_time        datetime        null          comment "创建时间"
-    ,recharge_source    varchar(200)    not null      comment "充值来源"
+    ,recharge_source    varchar(200)    null          comment "充值来源"
     ,strategy_id        varchar(200)    not null      comment "策略ID"
     ,shop_item_type     varchar(200)    null          comment "档位类型"
     ,zfqd               varchar(200)    null          comment "支付渠道"
