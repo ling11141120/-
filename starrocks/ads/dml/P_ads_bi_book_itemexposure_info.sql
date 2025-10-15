@@ -103,7 +103,7 @@ with expo as (
               from (
                     -- 点击书籍
                     select dt
-                          ,app_product_id         as product_id
+                          ,app_product_id                as product_id
                           ,case when right(book_id, 3) = '410' then 6    -- 通过书籍后三位siteid判断书籍语言，剩余判断不出来的书归为上报的current_language语言
                                 when right(book_id, 3) = '409' then 5
                                 when right(book_id, 3) = '322' then 3
@@ -117,11 +117,11 @@ with expo as (
                                 when right(book_id, 3) = '419' then 9
                                 when app_product_id = 3333 then 2        -- 繁体的书
                                 else app_lang_id                         -- 剩余判断不出来的书归为上报的current_language语言
-                            end                   as book_lang_id
-                          ,app_core_ver           as corever
+                            end                          as book_lang_id
+                          ,app_core_ver                  as corever
                           ,book_id
-                          ,coalesce(mt, '-99')    as mt
-                          ,identity_login_id      as user_id
+                          ,lower(coalesce(mt, '-99'))    as mt
+                          ,identity_login_id             as user_id
                       from dwd.dwd_sensors_production_itemclick_view
                      where dt >= '${bf_3_dt}'
                        and dt < '${dt}'
@@ -129,21 +129,21 @@ with expo as (
                        and cast(identity_login_id AS BIGINT) > 0
                        and book_id > 0
                        and app_product_id is not null                    -- 过滤掉非正常的数据
-                   )                            as a
+                   )                                     as a
               left join (select dt
-                               ,Product_Id      as product_id
+                               ,Product_Id               as product_id
                                ,user_id
-                               ,last_bookid     as book_id
+                               ,last_bookid              as book_id
                            from dws.dws_user_market_channel_info_detail_td
                           where dt >= '${bf_3_dt}' 
                             and dt < '${dt}' 
                           group by 1, 2, 3, 4
-                        )                       as b
+                        )                                as b
                 on a.product_id = b.product_id
                and a.user_id = b.user_id 
                and a.dt = b.dt 
                and a.book_id = b.book_id
-           )                                    as a
+           )                                             as a
      where rn = 1
      group by 1, 2, 3, 4, 5, 6, 7
 )
