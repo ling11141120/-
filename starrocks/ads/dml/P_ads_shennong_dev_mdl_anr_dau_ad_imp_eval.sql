@@ -29,18 +29,19 @@ with dau as (
      where a1.dt = '${bf_1_dt}'
        and a1.period_type = 'ctt'
        and a1.product_id = 6833
+       and a1.mt = 4
      group by 1,2,3,4,5
      union all
     select a4.dt
           ,a4.corever                                           as core
-          ,a5.device                                            as dev_mdl
+          ,a5.dev_mdl                                           as dev_mdl
           ,a6.p_cd_val                                          as biz_type_cd
           ,a4.product_id                                        as product_id
           ,bitmap_count(bitmap_union(to_bitmap(a4.user_id)))    as svr_dau
       from dws.dws_user_wide_active_period_ed                   as a4    -- 阅读活跃用户表
       join dim.dim_user_userdata_view                           as a5    -- 阅读用户信息表
         on a5.product_id not in (6833,6883)
-       and a5.device is not null
+       and a5.dev_mdl is not null
        and a4.user_id = a5.id
        and a4.product_id = a5.product_id
       join dim.dim_pub_code_mapping_dict                        as a6
@@ -50,13 +51,14 @@ with dau as (
        and a4.product_id = a6.cd_val
      where a4.dt = '${bf_1_dt}'
        and a4.period_type = 'ctt'
+       and a4.mt = 4
      group by 1,2,3,4,5
 )
 ,srsv_uv as (
     -- 海阅
     select a1.dt
           ,a2.corever                                                     as core
-          ,a3.device                                                      as dev_mdl
+          ,a3.dev_mdl                                                     as dev_mdl
           ,a4.p_cd_val                                                    as biz_type_cd
           ,a1.app_product_id                                              as product_id
           ,bitmap_count(bitmap_union(to_bitmap(a1.identity_login_id)))    as clk_uv
@@ -81,7 +83,7 @@ with dau as (
        and a1.dt <= a2.end_dt
       join dim.dim_user_userdata_view                                     as a3
         on a3.product_id not in (6833,6883)
-       and a3.device is not null
+       and a3.dev_mdl is not null
        and a1.identity_login_id = a3.id
        and a1.app_product_id = a3.product_id
       join dim.dim_pub_code_mapping_dict                                  as a4
@@ -243,6 +245,9 @@ with dau as (
       and a3.ProductId = a4.cd_val
     where a3.AnrTime = '${bf_1_dt}'
 )
+select 
+  from mdl_anr
+
 select coalesce(a1.dt,a2.dt)                      as dt                  -- 日期
       ,coalesce(a1.dem_type,'NoANR')              as dem_type            -- 降权类型
       ,coalesce(a1.biz_type_cd,a2.biz_type_cd)    as biz_type_cd         -- 业务类型编码
