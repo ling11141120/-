@@ -3,8 +3,8 @@
 -- 程序名： P_ads_bi_ss_book_anal_rpt.sql
 -- 目标表： ads.ads_bi_ss_book_anal_rpt
 -- 负责人： qhr/wx
--- 开发日期： 2025-09-24
--- 版本号： v0.0.0
+-- 开发日期： 2025-10-17
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_ss_book_anal_rpt (
