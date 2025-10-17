@@ -144,11 +144,10 @@ with dau as (
                and b1.user_id = b2.user_id
                and b1.product_id = b2.product_id
                and b1.corever = b2.corever
-              left join dim.dim_user_all_info                                                      as b3
-                on b3.device is not null
-               and b1.user_id = b3.user_id
+              left join dim.dim_user_userdata_view                                                 as b3
+                on b3.dev_mdl is not null
+               and b1.user_id = b3.id
                and b1.product_id = b3.product_id
-               and b1.corever = b3.corever
               join dws.dws_advertisement_user_position_amt_ed                                      as b4
                 on b4.dt = '${bf_1_dt}'
                and b1.product_id = b4.product_id
@@ -169,6 +168,8 @@ with dau as (
 )
 ,mdl_dau_ad_uv as (
     select a1.dt
+          ,0               as dem_type
+          ,'NoANR'         as dem_type_name
           ,a1.biz_type_cd
           ,a1.product_id
           ,a1.core
@@ -198,7 +199,8 @@ with dau as (
 ,mdl_anr as (
     -- 广告降权
     select date(a1.AnrTime)                                                                as dt
-          ,'AD'                                                                            as dem_type
+          ,1                                                                               as dem_type
+          ,'ADs'                                                                           as dem_type_name
           ,a2.p_cd_val                                                                     as biz_type_cd
           ,a1.ProductId                                                                    as product_id
           ,a1.Core                                                                         as core
@@ -224,7 +226,8 @@ with dau as (
      union all
     -- PUSH降权
     select date(a3.AnrTime)                              as dt
-          ,'PUSH'                                        as dem_type
+          ,2                                             as dem_type
+          ,'PUSH'                                        as dem_type_name
           ,a4.p_cd_val                                   as biz_type_cd
           ,a3.ProductId                                  as product_id
           ,a3.Core                                       as core
@@ -245,15 +248,14 @@ with dau as (
       and a3.ProductId = a4.cd_val
     where a3.AnrTime = '${bf_1_dt}'
 )
-select 
-  from mdl_anr
-
-select coalesce(a1.dt,a2.dt)                      as dt                  -- 日期
-      ,coalesce(a1.dem_type,'NoANR')              as dem_type            -- 降权类型
-      ,coalesce(a1.biz_type_cd,a2.biz_type_cd)    as biz_type_cd         -- 业务类型编码
-      ,coalesce(a1.product_id,a2.product_id)      as product_id          -- product_id
-      ,coalesce(a1.core,a2.core)                  as core                -- core
-      ,coalesce(a1.dev_mdl,a2.dev_mdl)            as dev_mdl             -- 设备型号
+-- ANR有数据，日活及广告可能没数据
+select a1.dt                                      as dt                  -- 日期
+      ,a1.dem_type                                as dem_type            -- 降权类型
+      ,a1.biz_type_cd                             as biz_type_cd         -- 业务类型编码
+      ,a1.product_id                              as product_id          -- product_id
+      ,a1.core                                    as core                -- core
+      ,a1.dev_mdl                                 as dev_mdl             -- 设备型号
+      ,a1.dem_type_name                           as dem_type_name       -- 降权类型名称
       ,a3.cd_val_desc                             as biz_type_name       -- 业务类型名称
       ,a4.cd_val_desc                             as prd_name            -- 产品名称
       ,a1.mfr                                     as mfr                 -- 厂商
@@ -275,7 +277,7 @@ select coalesce(a1.dt,a2.dt)                      as dt                  -- 日�
       ,a2.clk_uv                                  as clk_uv              -- 点击uv
       ,a2.push_act_clk_uv                         as push_act_clk_uv     -- 下发活跃点击uv
   from mdl_anr                                    as a1
-  full join mdl_dau_ad_uv                         as a2
+  left join mdl_dau_ad_uv                         as a2
     on a1.dt = a2.dt
    and a1.biz_type_cd = a2.biz_type_cd
    and a1.core = a2.core
@@ -283,12 +285,55 @@ select coalesce(a1.dt,a2.dt)                      as dt                  -- 日�
   left join dim.dim_pub_code_mapping_dict         as a3
     on a3.app_plat = 'beidou'
    and a3.cd_col = 'biz_type_cd'
-   and coalesce(a1.biz_type_cd,a2.biz_type_cd) = a3.cd_val
+   and a1.biz_type_cd = a3.cd_val
   left join dim.dim_pub_code_mapping_dict         as a4
     on a4.app_plat = 'pub'
    and a4.cd_col = 'product_id'
-   and coalesce(a1.product_id,a2.product_id) = a4.cd_val
- where coalesce(a1.core,a2.core) is not null
+   and a1.product_id = a4.cd_val
+ union all
+-- 日活及广告有数据，ANR没数据
+select a5.dt                                      as dt                  -- 日期
+      ,a5.dem_type                                as dem_type            -- 降权类型
+      ,a5.biz_type_cd                             as biz_type_cd         -- 业务类型编码
+      ,a5.product_id                              as product_id          -- product_id
+      ,a5.core                                    as core                -- core
+      ,a5.dev_mdl                                 as dev_mdl             -- 设备型号
+      ,a5.dem_type_name                           as dem_type_name       -- 降权类型名称
+      ,a7.cd_val_desc                             as biz_type_name       -- 业务类型名称
+      ,a8.cd_val_desc                             as prd_name            -- 产品名称
+      ,null                                       as mfr                 -- 厂商
+      ,null                                       as anr_ocr_dt          -- ANR发生日期
+      ,null                                       as anr_fch_dt          -- ANR抓取日期
+      ,null                                       as dev_guid            -- 设备GUID
+      ,null                                       as imp_num             -- 影响数
+      ,null                                       as sess_num            -- 会话数
+      ,null                                       as imp_pct             -- 受影响占比
+      ,null                                       as hist_anr_usr_rat    -- 历史ANR用户比例
+      ,a5.svr_dau                                 as svr_dau             -- 服务端日活
+      ,a5.ad_uv                                   as ad_uv               -- 广告uv
+      ,a5.ad_ttl_amt                              as ad_ttl_amt          -- 广告总收入
+      ,a5.ad_rpc                                  as ad_rpc              -- 广告人均单价
+      ,a5.web_ad_amt                              as web_ad_amt          -- web广告收入
+      ,a5.web_rpc                                 as web_rpc             -- web广告人均单价
+      ,a5.med_sdk_ad_amt                          as med_sdk_ad_amt      -- 聚合SDK广告收入
+      ,a5.med_sdk_rpc                             as med_sdk_rpc         -- 聚合SDK广告人均单价
+      ,a5.clk_uv                                  as clk_uv              -- 点击uv
+      ,a5.push_act_clk_uv                         as push_act_clk_uv     -- 下发活跃点击uv
+  from mdl_dau_ad_uv                              as a5
+  left join mdl_anr                               as a6
+    on a5.dt = a6.dt
+   and a5.biz_type_cd = a6.biz_type_cd
+   and a5.core = a6.core
+   and a5.dev_mdl = a6.dev_mdl
+  left join dim.dim_pub_code_mapping_dict         as a7
+    on a7.app_plat = 'beidou'
+   and a7.cd_col = 'biz_type_cd'
+   and a5.biz_type_cd = a7.cd_val
+  left join dim.dim_pub_code_mapping_dict         as a8
+    on a8.app_plat = 'pub'
+   and a8.cd_col = 'product_id'
+   and a5.product_id = a8.cd_val
+ where a6.dt is null
 ;
 
 -- 前10日
@@ -296,7 +341,8 @@ insert into tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 with mdl_anr as (
     -- 广告降权
     select date(a1.AnrTime)                                                                as dt
-          ,'AD'                                                                            as dem_type
+          ,1                                                                               as dem_type
+          ,'ADs'                                                                           as dem_type_name
           ,a2.p_cd_val                                                                     as biz_type_cd
           ,a1.ProductId                                                                    as product_id
           ,a1.Core                                                                         as core
@@ -322,7 +368,8 @@ with mdl_anr as (
      union all
     -- PUSH降权
     select date(a3.AnrTime)                              as dt
-          ,'PUSH'                                        as dem_type
+          ,2                                             as dem_type
+          ,'PUSH'                                        as dem_type_name
           ,a4.p_cd_val                                   as biz_type_cd
           ,a3.ProductId                                  as product_id
           ,a3.Core                                       as core
@@ -344,32 +391,33 @@ with mdl_anr as (
     where a3.AnrTime >= date_sub('${bf_1_dt}', interval 10 day)
       and a3.AnrTime < '${bf_1_dt}'
 )
-select a1.dt                                as dt                  -- 日期
-      ,coalesce(a1.dem_type,a2.dem_type)    as dem_type            -- 降权类型
-      ,a1.biz_type_cd                       as biz_type_cd         -- 业务类型编码
-      ,a1.product_id                        as product_id          -- product_id
-      ,a1.core                              as core                -- core
-      ,a1.dev_mdl                           as dev_mdl             -- 设备型号
-      ,a3.cd_val_desc                       as biz_type_name       -- 业务类型名称
-      ,a4.cd_val_desc                       as prd_name            -- 产品名称
-      ,a1.mfr                               as mfr                 -- 厂商
-      ,a1.anr_ocr_dt                        as anr_ocr_dt          -- ANR发生日期
-      ,a1.anr_fch_dt                        as anr_fch_dt          -- ANR抓取日期
-      ,a1.dev_guid                          as dev_guid            -- 设备GUID
-      ,a1.imp_num                           as imp_num             -- 影响数
-      ,a1.sess_num                          as sess_num            -- 会话数
-      ,a1.imp_pct                           as imp_pct             -- 受影响占比
-      ,a1.hist_anr_usr_rat                  as hist_anr_usr_rat    -- 历史ANR用户比例
-      ,a2.svr_dau                           as svr_dau             -- 服务端日活
-      ,a2.ad_uv                             as ad_uv               -- 广告uv
-      ,a2.ad_ttl_amt                        as ad_ttl_amt          -- 广告总收入
-      ,a2.ad_rpc                            as ad_rpc              -- 广告人均单价
-      ,a2.web_ad_amt                        as web_ad_amt          -- web广告收入
-      ,a2.web_ad_rpc                        as web_ad_rpc          -- web广告人均单价
-      ,a2.med_sdk_ad_amt                    as med_sdk_ad_amt      -- 聚合SDK广告收入
-      ,a2.med_sdk_ad_rpc                    as med_sdk_ad_rpc      -- 聚合SDK广告人均单价
-      ,a2.clk_uv                            as clk_uv              -- 点击uv
-      ,a2.push_act_clk_uv                   as push_act_clk_uv     -- 下发活跃点击uv
+select a1.dt                                          as dt                  -- 日期
+      ,coalesce(a1.dem_type,a2.dem_type)              as dem_type            -- 降权类型
+      ,a1.biz_type_cd                                 as biz_type_cd         -- 业务类型编码
+      ,a1.product_id                                  as product_id          -- product_id
+      ,a1.core                                        as core                -- core
+      ,a1.dev_mdl                                     as dev_mdl             -- 设备型号
+      ,coalesce(a1.dem_type_name,a2.dem_type_name)    as dem_type_name       -- 降权类型名称
+      ,a3.cd_val_desc                                 as biz_type_name       -- 业务类型名称
+      ,a4.cd_val_desc                                 as prd_name            -- 产品名称
+      ,a1.mfr                                         as mfr                 -- 厂商
+      ,a1.anr_ocr_dt                                  as anr_ocr_dt          -- ANR发生日期
+      ,a1.anr_fch_dt                                  as anr_fch_dt          -- ANR抓取日期
+      ,a1.dev_guid                                    as dev_guid            -- 设备GUID
+      ,a1.imp_num                                     as imp_num             -- 影响数
+      ,a1.sess_num                                    as sess_num            -- 会话数
+      ,a1.imp_pct                                     as imp_pct             -- 受影响占比
+      ,a1.hist_anr_usr_rat                            as hist_anr_usr_rat    -- 历史ANR用户比例
+      ,a2.svr_dau                                     as svr_dau             -- 服务端日活
+      ,a2.ad_uv                                       as ad_uv               -- 广告uv
+      ,a2.ad_ttl_amt                                  as ad_ttl_amt          -- 广告总收入
+      ,a2.ad_rpc                                      as ad_rpc              -- 广告人均单价
+      ,a2.web_ad_amt                                  as web_ad_amt          -- web广告收入
+      ,a2.web_ad_rpc                                  as web_ad_rpc          -- web广告人均单价
+      ,a2.med_sdk_ad_amt                              as med_sdk_ad_amt      -- 聚合SDK广告收入
+      ,a2.med_sdk_ad_rpc                              as med_sdk_ad_rpc      -- 聚合SDK广告人均单价
+      ,a2.clk_uv                                      as clk_uv              -- 点击uv
+      ,a2.push_act_clk_uv                             as push_act_clk_uv     -- 下发活跃点击uv
   from mdl_anr                                              as a1
   left join tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
     on a2.dt >= date_sub('${bf_1_dt}', interval 10 day)

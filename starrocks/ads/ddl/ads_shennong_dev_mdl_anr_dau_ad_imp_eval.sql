@@ -1,11 +1,12 @@
 DROP TABLE IF EXISTS tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval;
 CREATE TABLE tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
      dt                  DATE             NOT NULL    COMMENT '日期'
-    ,dem_type            VARCHAR(10)      NOT NULL    COMMENT '降权类型'
+    ,dem_type            INT              NOT NULL    COMMENT '降权类型编码'
     ,biz_type_cd         INT              NOT NULL    COMMENT '业务类型编码'
     ,product_id          BIGINT           NOT NULL    COMMENT 'product_id'
     ,core                INT              NOT NULL    COMMENT 'core'
     ,dev_mdl             VARCHAR(100)     NOT NULL    COMMENT '设备型号'
+    ,dem_type_name       VARCHAR(20)                  COMMENT '降权类型名称'
     ,biz_type_name       VARCHAR(10)                  COMMENT '业务类型名称'
     ,prd_name            VARCHAR(50)                  COMMENT '产品名称'
     ,mfr                 VARCHAR(100)                 COMMENT '厂商'
