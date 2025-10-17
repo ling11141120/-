@@ -61,11 +61,15 @@ with ss_book_dim_info as (
             end                       as book_stat
           ,a3.build_time              as pub_dt
           ,a3.normal_chapter_num_f    as pub_chap
-          ,a4.Status                  as mat_is_cmp
+          ,case when a4.BookName is not null and a4.CoverSrc is not null then '是'
+                else '否'
+            end                       as mat_is_cmp
           ,a8.ast_cmp_dt              as ast_cmp_dt
           ,a5.SignTime                as zhtw_sig_ctr_dt
           ,a6.ph2_test_bgn_dt         as ph2_test_bgn_dt
           ,a6.ph1_test_bgn_dt         as ph1_test_bgn_dt
+          ,a9.ttl_chap_len            as pub_wc
+          ,a9.ttl_chap_sum            as mc_trl_wc
       from ods.ods_book_novel_book_m                                           as a1
       left join (select b1.productid
                        ,b1.bookid
@@ -80,16 +84,13 @@ with ss_book_dim_info as (
                     and b2.app_plat = 'pub'
                     and b2.cd_col = 'book_lang_cd'
                 )                                                              as a2
-        on a1.productid = a2.productid
-       and a1.bookid = a2.bookid
-       and a1.SiteId = a2.lang_cd
-      left join dim.dim_shuangwen_book_read_consume_info                       as a3
-        on a1.productid = a3.product_id
-       and a1.bookid = a3.book_id
+        on a1.bookid = a2.bookid
+       and a1.Language = a2.BookLanguage
+      left join dim.dim_shuangwen_book_read_consume_info                       as a3    ---去掉了productid的关联条件
+        on a1.bookid = a3.book_id
        and a3.sexy2 < 4
-      left join ods.ods_edit_book                                              as a4
-        on a1.productid = a4.productid
-       and a1.bookid = (a4.BookId*1000+a4.SiteId)
+      left join ods.ods_edit_book                                              as a4    ---去掉了productid的关联条件
+        on a1.bookid = (a4.BookId*1000+a4.SiteId)
       left join ods.ods_mysql_zhangzhong_xzz_Book                              as a5
         on a5.StoryType = 1
        and a2.bookno = a5.BookCode
@@ -117,13 +118,25 @@ with ss_book_dim_info as (
        and a1.bookid = a7.to_book_id
       left join (select b4.Code
                        ,b4.CurrentLanguage
-                       ,max(b4.BmCompeleteTime)    as ast_cmp_dt
+                       ,min(b4.BmCompeleteTime)    as ast_cmp_dt
                    from ods.ods_tidb_sharpengine_ads_asset_prod_MaterialUploadLog  as b4
                   where b4.TgtType=1
                   group by 1, 2
                 )                                                              as a8
         on a2.bookno=a8.Code
        and a2.BookLanguage=a8.CurrentLanguage
+      left join  (select productid
+                        ,bookid
+                        ,sum(case when IsSuccess = 1 then FontLength
+                                  else null
+                              end
+                            )                      as ttl_chap_len
+                        ,sum(FontLength)    as ttl_chap_sum
+                    from ods.ods_tidb_shuangwen_xx_chapter
+                    group by 1, 2
+                 )                                                             as a9
+        on a4.productid = a9.productid
+       and a4.bookid = a9.bookid
      where a1.StoryType = 1
        and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD', 'ZD')
 )
@@ -131,18 +144,30 @@ with ss_book_dim_info as (
 , book_chap_trl_info as (
     select a1.productid
           ,a1.BookCode
-          ,a1.ToLanguage                                                                     as lang_cd
-          ,min(a2.CompleteTime)                                                              as bgn_trl_dt
-          ,max(a2.CompleteTime)                                                              as cmp_trl_dt
-          ,datediff(max(a2.CompleteTime), min(a2.CompleteTime))                              as trl_days
-          ,concat(sum(case when a2.IsComplete = 2 then 1 else 0 end ), '/', count(a2.Id))    as trl_prg
-          ,group_concat(distinct a2.InterpreterId)                                           as trl_emp
-          ,group_concat(distinct a2.InterpreterName)                                         as trl_emp_name
-          ,sum(a2.RobotLength)                                                               as mc_trl_wc
-          ,sum(a2.RobotLength)                                                               as qa_wc
-          ,sum(a2.ForeignLength)                                                             as pub_wc
-          ,count(a2.Id)                                                                      as ttl_chap_num
-          ,min(case when a3.RoleType=12 then a3.CreateTime else null end )                   as rev_sc_dt
+          ,a1.ToLanguage                                                                            as lang_cd
+          ,min(a2.CompleteTime)                                                                     as bgn_trl_dt
+          ,max(case when a2.ChapterNumber = (select max(b1.ChapterNumber)
+                                               from ods.ods_tidb_shuangwen_xx_objectchapter           as b1
+                                              where a1.productid = b1.productid
+                                                and a1.id = b1.objectbookid
+                                            )
+                    then a2.CompleteTime 
+                end
+              )                                                                                     as cmp_trl_dt
+          ,datediff(max(case when a2.ChapterNumber = (select max(b1.ChapterNumber)
+                                                        from ods.ods_tidb_shuangwen_xx_objectchapter  as b1
+                                                       where a1.productid = b1.productid
+                                                         and a1.id = b1.objectbookid
+                                                     ) 
+                             then a2.CompleteTime 
+                         end
+                       ) , min(a2.CompleteTime))                                                    as trl_days
+          ,concat(sum(case when a2.IsComplete = 2 then 1 else 0 end ), '/', count(a2.Id))           as trl_prg
+          ,max(case when a3.RoleType = 1 then a2.InterpreterId else 0 end)                          as trl_emp
+          ,max(case when a3.RoleType = 1 then a2.InterpreterName else 'Robot' end)                  as trl_emp_name
+          ,sum(a2.ForeignLength)                                                                    as qa_wc
+          ,count(a2.Id)                                                                             as ttl_chap_num
+          ,min(case when a3.RoleType=12 then a3.CreateTime else null end )                          as rev_sc_dt
           ,sum(case when a3.dt >= date_format('${bf_1_dt}', '%Y-%m-01') and a3.dt <='${bf_1_dt}' and a3.CurrencyType=1 then a3.TotalPrice
                     when a3.dt >= date_format('${bf_1_dt}', '%Y-%m-01') and a3.dt <='${bf_1_dt}' and a3.CurrencyType=2 then a3.TotalPrice*6.5
                     else 0
@@ -152,6 +177,14 @@ with ss_book_dim_info as (
       left join ods.ods_tidb_shuangwen_xx_objectchapter         as a2
         on a1.productid = a2.productid
        and a1.id = a2.objectbookid
+     left join (select productid
+                      ,objectbookid
+                      ,max(ChapterNumber)        as max_chapter_number
+                 from ods.ods_tidb_shuangwen_xx_objectchapter
+                group by 1, 2
+               )                                                as b1
+            on a1.productid = b1.productid
+           and a1.id = b1.objectbookid
       left join ods.ods_tidb_shuangwen_en_translateremuneration as a3
         on a1.SwBookId = a3.BookId
        and a1.ToLanguage = a3.ToLanguage
@@ -195,9 +228,9 @@ select a1.dt                 -- 日期
       ,a2.trl_prg            -- 翻译进度
       ,a2.trl_emp            -- 译员id
       ,a2.trl_emp_name       -- 译员名称
-      ,a2.mc_trl_wc          -- 机翻字数
+      ,a1.mc_trl_wc          -- 机翻字数
       ,a2.qa_wc              -- 质检字数
-      ,a2.pub_wc             -- 发布字数
+      ,a1.pub_wc             -- 发布字数
       ,a2.ttl_chap_num       -- 总章节数
       ,a1.pub_chap           -- 发布章节
       ,a1.mat_is_cmp         -- 物料是否齐全
@@ -212,7 +245,7 @@ select a1.dt                 -- 日期
       ,a3.amt_7d             -- 近7天收入
   from ss_book_dim_info           as a1
   left join book_chap_trl_info    as a2
-   and a1.book_cd = a2.BookCode
+    on a1.book_cd = a2.BookCode
    and a1.lang_cd = a2.lang_cd
   left join book_income_info      as a3
     on a1.product_id = a3.product_id
