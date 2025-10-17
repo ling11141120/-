@@ -131,5 +131,3 @@ select a1.dt                  as dt                  -- 日期
   left join result_plevel                                                as a2
     on a1.to_book_id*1000+a1.site_id = a2.book_id
 ;
-
-
