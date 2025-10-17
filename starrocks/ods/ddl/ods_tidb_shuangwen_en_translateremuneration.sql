@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
 -- 目标表：ods.ods_tidb_shuangwen_en_translateremuneration
--- 来源实例：old_starrocks_source
+-- 来源实例：old_tidb_source
 -- 来源表：shuangwen_tidb_en.TranslateRemuneration
 -- 来源负责：
 -- 采集工具：极光-定时链路
