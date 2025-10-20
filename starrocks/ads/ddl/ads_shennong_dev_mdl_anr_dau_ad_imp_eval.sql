@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval;
-CREATE TABLE tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
+DROP TABLE IF EXISTS ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval;
+CREATE TABLE ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
      dt                  DATE             NOT NULL    COMMENT '日期'
     ,dem_type            INT              NOT NULL    COMMENT '降权类型编码'
     ,biz_type_cd         INT              NOT NULL    COMMENT '业务类型编码'

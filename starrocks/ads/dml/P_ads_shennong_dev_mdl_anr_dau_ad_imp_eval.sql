@@ -7,7 +7,7 @@
 ----------------------------------------------------------------
 
 -- 昨日
-insert into tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
+insert into ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 with dau as (
     select a1.dt
           ,a1.corever                                           as core
@@ -98,7 +98,7 @@ with dau as (
           ,a6.corever                                                     as core
           ,a6.device                                                      as dev_mdl
           ,a7.p_cd_val                                                    as biz_type_cd
-          ,a5.app_product_id                                              as product_id
+          ,a6.product_id                                                  as product_id
           ,bitmap_count(bitmap_union(to_bitmap(a5.login_id)))             as clk_uv
       from ods_log.ods_sensors_production_pushclick                       as a5
       join dim.dim_short_video_user_accountinfo                           as a6    -- 短剧用户信息表
@@ -108,7 +108,7 @@ with dau as (
         on a7.app_plat = 'beidou'
        and a7.cd_col = 'product_id'
        and a7.p_cd_val is not null
-       and a5.app_product_id = a7.cd_val
+       and a6.product_id = a7.cd_val
      where a5.dt = '${bf_1_dt}'
        and a5.project_id = 8
      group by 1,2,3,4,5
