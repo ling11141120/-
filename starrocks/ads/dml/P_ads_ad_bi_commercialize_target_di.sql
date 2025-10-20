@@ -70,28 +70,29 @@ with z1 as (select t1.dt
                     )                     as b
             on a.position_id = b.ad_position
          group by 1,2
-),z3 as (select dt
-               ,if(b.core is null or b.core=0,1,b.core)     as core
-               ,sum(cnt)                                    as show_cnt_yg
-               ,count(distinct user_id)                     as show_unt_yg
-               ,sum(amt) ad_amt_yg
-           from (select ad_position
-                   from dim.dim_sr_ads_position_view
-                  where ad_show_type_name = '激励视频'
-                )                           as a
-           join (select dt
-                       ,positions
-                       ,user_id
-                       ,cnt
-                       ,amt
-                       ,core
-                   from dws.dws_advertisement_user_position_amt_ed
-                  where product_id not in (6833, 6883)
-                    and dt >= '${bf_4_dt}'
-                    and dt < '${dt}'
-                )                           as b
-             on a.ad_position = b.positions
-          group by 1,2
+)
+,z3 as (select dt
+              ,if(b.core is null or b.core=0,1,b.core)     as core
+              ,sum(cnt)                                    as show_cnt_yg
+              ,count(distinct user_id)                     as show_unt_yg
+              ,sum(amt) ad_amt_yg
+          from (select ad_position
+                  from dim.dim_sr_ads_position_view
+                 where ad_show_type_name = '激励视频'
+               )                           as a
+          join (select dt
+                      ,positions
+                      ,user_id
+                      ,cnt
+                      ,amt
+                      ,core
+                  from dws.dws_advertisement_user_position_amt_ed
+                 where product_id not in (6833, 6883)
+                   and dt >= '${bf_4_dt}'
+                   and dt < '${dt}'
+               )                           as b
+            on a.ad_position = b.positions
+         group by 1,2
 )
 -- 无用户id，无core维度，需要增加
 ,z4 as (select dt
@@ -152,8 +153,8 @@ with z1 as (select t1.dt
          group by 1,2,3
 )
 select z1.dt                                    as dt
-      ,z1.core                                  as core
       ,1                                        as project_type
+      ,z1.core                                  as core
       ,concat(year(z1.dt)
             , '-',week(date_sub(z1.dt, interval ((dayofweek(z1.dt) + 1) % 7) day) ) + 1
             ,'(',date(date_sub(z1.dt, interval ((dayofweek(z1.dt) + 1) % 7) day))
@@ -265,7 +266,7 @@ with user_info as(select sacc.product_id
 ,z2 as (select dt
               ,if(a.core is null or a.core=0,1,a.core)              as core
               ,sum(ad_amount) as ad_amt_zs
-              ,sum(if(a.core = 1, ad_amount, 0)) as ad_amt_zs_c
+              ,sum(if(a.core = 1, ad_amount, 0)) as ad_amt_zs_c1
               ,sum(case when b.ad_show_type_name = '激励视频' then impressions end)     as show_cnt_zs
               ,sum(case when b.ad_show_type_name = '激励视频' then clicks end)          as click_cnt_zs
           from ads.ads_bi_ad_video_income                           as a
@@ -356,7 +357,7 @@ with user_info as(select sacc.product_id
             and product_id = 6833
           group by 1,2,3
 )
-,z7 as (select a.dt,
+,z7 as (select a.dt
               ,if(a.core is null or a.core=0,1,a.core)                                                      as core
               ,count(distinct a.login_id)                                                                   as unlock_unt
               ,sum(unlock_cnt)                                                                              as unlock_cnt
@@ -407,8 +408,8 @@ with user_info as(select sacc.product_id
           group by a.dt,b.corever
 )
 select z1.dt                                                  as dt
-      ,z1.core
       ,2                                                      as project_type
+      ,z1.core
       ,concat(year(z1.dt)
               , '-'
               ,week(date_sub(z1.dt, interval ((dayofweek(z1.dt) + 1) % 7) day) ) + 1

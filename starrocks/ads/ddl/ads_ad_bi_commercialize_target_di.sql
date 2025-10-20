@@ -2,9 +2,9 @@ drop table if exists ads.ads_ad_bi_commercialize_target_di;
 create table if not exists ads.ads_ad_bi_commercialize_target_di (
      dt                  date               not null                    comment "日期"
     ,project_type        int(11)            not null                    comment "项目类型 1=海阅|2=海剧"
+    ,core                int(11)            not null                    comment "core"
     ,week                varchar(65533)     not null                    comment "年周"
     ,quarter             varchar(128)       not null                    comment "年季度"
-    ,core                varchar(400)                                   comment "core ，多个用逗号隔开(1core1，2core2，3core3，4core4)"
     ,dau                 int(11)            not null                    comment "日活"
     ,deu                 int(11)            not null                    comment "广告总活跃"
     ,motive_deu          int(11)            not null                    comment "激励视频活跃"
@@ -42,9 +42,9 @@ create table if not exists ads.ads_ad_bi_commercialize_target_di (
     ,series_cnt_d1       decimal(38, 6)                                 comment "人均观看短剧数量（d1+）"
     ,etl_tm              datetime           default current_timestamp   comment "etl清洗时间"
 )
-primary key(dt, project_type)
+primary key(dt, project_type,core)
 comment "海阅/海剧广告商业化指标表"
-distributed by hash(dt, project_type) buckets 3
+distributed by hash(dt, project_type,core) buckets 3
 properties (
      "replication_num" = "3",
      "in_memory" = "false",
