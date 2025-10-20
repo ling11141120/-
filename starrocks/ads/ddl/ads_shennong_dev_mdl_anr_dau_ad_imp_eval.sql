@@ -1,10 +1,12 @@
 DROP TABLE IF EXISTS ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval;
 CREATE TABLE ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
      dt                  DATE             NOT NULL    COMMENT '日期'
+    ,dem_type            INT              NOT NULL    COMMENT '降权类型编码'
     ,biz_type_cd         INT              NOT NULL    COMMENT '业务类型编码'
     ,product_id          BIGINT           NOT NULL    COMMENT 'product_id'
     ,core                INT              NOT NULL    COMMENT 'core'
     ,dev_mdl             VARCHAR(100)     NOT NULL    COMMENT '设备型号'
+    ,dem_type_name       VARCHAR(20)                  COMMENT '降权类型名称'
     ,biz_type_name       VARCHAR(10)                  COMMENT '业务类型名称'
     ,prd_name            VARCHAR(50)                  COMMENT '产品名称'
     ,mfr                 VARCHAR(100)                 COMMENT '厂商'
@@ -23,14 +25,17 @@ CREATE TABLE ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
     ,web_ad_rpc          DECIMAL(20,5)                COMMENT 'web广告人均单价'
     ,med_sdk_ad_amt      DECIMAL(20,5)                COMMENT '聚合SDK广告收入'
     ,med_sdk_ad_rpc      DECIMAL(20,5)                COMMENT '聚合SDK广告人均单价'
+    ,clk_uv              DECIMAL(20,5)                COMMENT '点击uv'
+    ,push_act_clk_uv     DECIMAL(20,5)                COMMENT '下发活跃点击uv'
 )
-PRIMARY KEY (dt, biz_type_cd, product_id, core ,dev_mdl)
+PRIMARY KEY (dt, dem_type, biz_type_cd, product_id, core ,dev_mdl)
 COMMENT '神农-机型ANR日活广告影响评估'
 PARTITION BY DATE_TRUNC('month',dt)
-DISTRIBUTED BY HASH (dt, biz_type_cd, product_id, core, dev_mdl)
-PROPERTIES("replication_num" = "3",
-           "enable_persistent_index" = "true",
-           "replicated_storage" = "true",
-           "compression" = "LZ4"
+DISTRIBUTED BY HASH (dt, dem_type, biz_type_cd, product_id, core, dev_mdl)
+PROPERTIES(
+    "replication_num" = "3",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
 )
 ;
