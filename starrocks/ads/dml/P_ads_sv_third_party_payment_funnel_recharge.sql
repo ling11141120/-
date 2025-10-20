@@ -3,8 +3,8 @@
 -- 程序名： P_ads_sv_third_party_payment_funnel_recharge
 -- 目标表： ads.ads_sv_third_party_payment_funnel_recharge
 -- 负责人： wx
--- 开发日期：2025-10-15
--- 版本号：v0.2.0
+-- 开发日期：2025-10-20
+-- 版本号：v0.3.0
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_recharge
 -- 活跃表
@@ -64,19 +64,24 @@ payorder as(select dt
                   ,t1.create_time
                   ,case when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='201300' then '商店页'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200900' then '半屏'
-                        when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200800' then '解锁页VIP'
+                        when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200800' and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2]='0' then '解锁页VIP'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1] is null
-                             then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
+                             then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100 
                                          and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (0,1) then '普通弹窗'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
                                          and split(get_json_string(custom_data, '$.activityLink'), '_')[2]=3 then '充值返回推弹窗'
-                                        when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=200800 then '解锁页VIP'
+                                        when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
+                                         and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (12) then '充值弹层'
+                                        when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=200800
+                                         and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2]='0' then '解锁页VIP'
+                                        when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=205000  then '会员中心页'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=203200 then '悬浮窗'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=204000 then 'TAB栏'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=204100 then 'banner'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=210010 then 'push'
                                         when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=203600 then '开屏页'
+                                        when split(get_json_string(custom_data, '$.activityLink'), '_')[1] is null then '其他'
                                         else split(get_json_string(custom_data, '$.activityLink'), '_')[1]
                                     end
                                   )
@@ -84,6 +89,8 @@ payorder as(select dt
                          and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2] in ('0','1') then '普通弹窗'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='202100'
                          and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2] in ('3') then '充值返回推弹窗'
+                        when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='202100'
+                         and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2] in ('12') then '充值弹层'
                         else '其他'
                     end                                                    as recharge_source
                   ,get_json_string(custom_data, '$.strategyId')            as strategy_id
