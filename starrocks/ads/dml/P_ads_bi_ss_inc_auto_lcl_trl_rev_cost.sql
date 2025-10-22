@@ -60,5 +60,5 @@ select a1.createtime                                             as dt          
       ,a1.day0amount / a1.devnum                                 as arpu              -- 日均用户收入
       ,a1.costamount                                             as ttl_amt           -- 总成本
       ,now()                                                     as etl_time          -- etl处理时间
-  from user_cost_revenue                                           as a1
+  from user_cost_revenue                                         as a1
 ;
