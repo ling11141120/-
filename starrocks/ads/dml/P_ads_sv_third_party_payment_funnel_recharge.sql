@@ -65,7 +65,11 @@ payorder as(select dt
                   ,case when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='201300' then '商店页'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200900' then '半屏'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200800' and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2]='0' then '解锁页VIP'
+<<<<<<< HEAD
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5'
+=======
+                        when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5' 
+>>>>>>> dev-wx-RTM-17196
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1] is null
                              then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100 
                                          and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (0,1) then '普通弹窗'

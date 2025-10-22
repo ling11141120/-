@@ -91,12 +91,13 @@ with dau as (
        and a4.cd_col = 'product_id'
        and a4.p_cd_val is not null
        and a1.app_product_id = a4.cd_val
+     where a2.mt = 4
      group by 1,2,3,4,5
      union all
     -- 海剧
     select a5.dt
           ,a6.corever                                                     as core
-          ,a6.device                                                      as dev_mdl
+          ,a6.device2                                                     as dev_mdl
           ,a7.p_cd_val                                                    as biz_type_cd
           ,a6.product_id                                                  as product_id
           ,bitmap_count(bitmap_union(to_bitmap(a5.login_id)))             as clk_uv
@@ -104,6 +105,7 @@ with dau as (
       join dim.dim_short_video_user_accountinfo                           as a6    -- 短剧用户信息表
         on a5.login_id = a6.user_id
        and a6.device2 is not null
+       and a6.mt = 4
       join dim.dim_pub_code_mapping_dict                                  as a7
         on a7.app_plat = 'beidou'
        and a7.cd_col = 'product_id'
@@ -162,6 +164,7 @@ with dau as (
                and b1.dt = '${bf_1_dt}'
                and coalesce(b2.device2, b3.device) is not null
                and b1.product_id <> 6883
+               and b1.mt = 4
              group by 1, 2, 3, 4, 5, 6
            )                                                                                       as a1
      group by 1, 2, 3, 4, 5
@@ -221,7 +224,7 @@ with dau as (
        and a2.cd_col = 'product_id'
        and a2.p_cd_val is not null
        and a1.ProductId = a2.cd_val
-     where a1.AnrTime = '${bf_1_dt}'
+     where date(a1.AnrTime) = '${bf_1_dt}'
        and a1.ProductId <> 6883
      union all
     -- PUSH降权
@@ -246,7 +249,7 @@ with dau as (
       and a4.cd_col = 'product_id'
       and a4.p_cd_val is not null
       and a3.ProductId = a4.cd_val
-    where a3.AnrTime = '${bf_1_dt}'
+    where date(a3.AnrTime) = '${bf_1_dt}'
 )
 -- ANR有数据，日活及广告可能没数据
 select a1.dt                                      as dt                  -- 日期
@@ -337,7 +340,7 @@ select a5.dt                                      as dt                  -- 日�
 ;
 
 -- 前10日
-insert into tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
+insert into ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 with mdl_anr as (
     -- 广告降权
     select date(a1.AnrTime)                                                                as dt
@@ -363,8 +366,8 @@ with mdl_anr as (
        and a2.cd_col = 'product_id'
        and a2.p_cd_val is not null
        and a1.ProductId = a2.cd_val
-     where a1.AnrTime >= date_sub('${bf_1_dt}', interval 10 day)
-       and a1.AnrTime < '${bf_1_dt}'
+     where date(a1.AnrTime) >= date_sub('${bf_1_dt}', interval 10 day)
+       and date(a1.AnrTime) < '${bf_1_dt}'
      union all
     -- PUSH降权
     select date(a3.AnrTime)                              as dt
@@ -388,8 +391,8 @@ with mdl_anr as (
       and a4.cd_col = 'product_id'
       and a4.p_cd_val is not null
       and a3.ProductId = a4.cd_val
-    where a3.AnrTime >= date_sub('${bf_1_dt}', interval 10 day)
-      and a3.AnrTime < '${bf_1_dt}'
+    where date(a3.AnrTime) >= date_sub('${bf_1_dt}', interval 10 day)
+      and date(a3.AnrTime) < '${bf_1_dt}'
 )
 select a1.dt                                          as dt                  -- 日期
       ,coalesce(a1.dem_type,a2.dem_type)              as dem_type            -- 降权类型
@@ -419,7 +422,7 @@ select a1.dt                                          as dt                  -- 
       ,a2.clk_uv                                      as clk_uv              -- 点击uv
       ,a2.push_act_clk_uv                             as push_act_clk_uv     -- 下发活跃点击uv
   from mdl_anr                                              as a1
-  left join tmp.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
+  left join ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
     on a2.dt >= date_sub('${bf_1_dt}', interval 10 day)
    and a2.dt < '${bf_1_dt}'
    and a1.dt = a2.dt
