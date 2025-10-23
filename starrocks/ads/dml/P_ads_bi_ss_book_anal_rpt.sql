@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
--- 程序功能： bi-短篇书籍分析报表
+-- 程序功能： bi-短篇项目收益明细报表
 -- 程序名： P_ads_bi_ss_book_anal_rpt.sql
 -- 目标表： ads.ads_bi_ss_book_anal_rpt
 -- 负责人： qhr/wx
@@ -47,13 +47,12 @@ insert into ads.ads_bi_ss_book_anal_rpt (
 -- 短篇书籍维度信息
 with ss_book_dim_info as (
     select '${bf_1_dt}'               as dt
-          ,a1.productid               as product_id
           ,a1.BookID                  as book_id
-          ,a2.lang_cd                 as lang_cd
-          ,a2.lang_name               as lang_name
-          ,a2.bookno                  as book_cd
-          ,case when a2.IsFull = 6 then '完本'
-                when a2.IsFull = 0 then '未完本'
+          ,a1.lang_cd                 as lang_cd
+          ,a1.lang_name               as lang_name
+          ,a1.bookno                  as book_cd
+          ,case when a1.IsFull = 6 then '完本'
+                when a1.IsFull = 0 then '未完本'
                 else null
             end                       as book_cmp_stat
           ,a1.BookName                as book_name
@@ -79,13 +78,12 @@ with ss_book_dim_info as (
           ,a6.ph1_test_bgn_dt         as ph1_test_bgn_dt
           ,a9.ttl_chap_len            as pub_wc
           ,a9.ttl_chap_sum            as mc_trl_wc
-      from ods.ods_book_novel_book_m                                           as a1
-      left join (select b1.productid
-                       ,b1.bookid
+           from (select b1.bookid
                        ,b1.bookno
                        ,b1.booknoseries
                        ,b1.BookLanguage
                        ,b1.IsFull
+                       ,b1.BookName
                        ,b2.cd_val         as lang_cd
                        ,b2.cd_val_desc    as lang_name
                    from ods.ods_tidb_sharpengine_bi_if_books                   as b1
@@ -93,19 +91,21 @@ with ss_book_dim_info as (
                      on b1.BookLanguage = b2.p_cd_val
                     and b2.app_plat = 'pub'
                     and b2.cd_col = 'book_lang_cd'
-                )                                                              as a2
+                )                                                              as a1
+      left join (select BookID,Language,max(StoryType) as StoryType
+                  from ods.ods_book_novel_book_m
+                  group by 1,2)                                                as a2
         on a1.bookid = a2.bookid
-       and a1.Language = a2.BookLanguage
-      left join dim.dim_shuangwen_book_read_consume_info                       as a3    ---去掉了productid的关联条件
+       and a1.BookLanguage = a2.Language
+      left join dim.dim_shuangwen_book_read_consume_info                       as a3
         on a1.bookid = a3.book_id
        and a3.sexy2 < 4
-      left join ods.ods_edit_book                                              as a4    ---去掉了productid的关联条件
+      left join ods.ods_edit_book                                              as a4
         on a1.bookid = (a4.BookId*1000+a4.SiteId)
       left join ods.ods_mysql_zhangzhong_xzz_Book                              as a5
         on a5.StoryType = 1
-       and a2.bookno = a5.BookCode
-      left join (select b3.PutProductId
-                       ,b3.CodeId
+       and a1.bookno = a5.BookCode
+      left join (select b3.CodeId
                        ,min(case when b3.CodeStage = 2 and b3.PlanRound = 1 then b3.BeginDate
                                  else null
                              end
@@ -118,13 +118,11 @@ with ss_book_dim_info as (
                  where b3.ProjectCode = 1
                    and b3.IsDel = 0
                    and coalesce(b3.SourceChl, '') <> ''
-                 group by 1, 2
+                 group by 1
                 )                                                              as a6
-        on a1.productid = a6.PutProductId
-       and a1.bookid = a6.CodeId
+        on a1.bookid = a6.CodeId
       left join dwd.dwd_edit_book_languagebooktotal_da                         as a7
         on a7.dt = '${bf_1_dt}'
-       and a1.productid = a7.product_id
        and a1.bookid = a7.to_book_id
       left join (select b4.Code
                        ,b4.CurrentLanguage
@@ -133,27 +131,24 @@ with ss_book_dim_info as (
                   where b4.TgtType=1
                   group by 1, 2
                 )                                                               as a8
-        on a2.bookno=a8.Code
-       and a2.BookLanguage=a8.CurrentLanguage
-      left join  (select productid
-                        ,bookid
+        on a1.bookno=a8.Code
+       and a1.BookLanguage=a8.CurrentLanguage
+      left join  (select bookid
                         ,sum(case when IsSuccess = 1 then FontLength
                                   else null
                               end
                             )                      as ttl_chap_len
-                        ,sum(FontLength)    as ttl_chap_sum
+                        ,sum(FontLength)           as ttl_chap_sum
                     from ods.ods_tidb_shuangwen_xx_chapter
-                    group by 1, 2
+                    group by 1
                  )                                                             as a9
-        on a4.productid = a9.productid
-       and a4.bookid = a9.bookid
-     where a1.StoryType = 1
-       and coalesce(a2.booknoseries, '-99') in ('PD', 'AD', 'JD', 'ZD')
+        on a4.bookid = a9.bookid
+     where a2.StoryType = 1
+       and coalesce(a1.booknoseries, '-99') in ('PD', 'AD', 'JD', 'ZD')
 )
 -- 书籍章节翻译信息
 , book_chap_trl_info as (
-    select a1.productid
-          ,a1.BookCode
+    select a1.BookCode
           ,a1.ToLanguage                                                                            as lang_cd
           ,min(a2.CompleteTime)                                                                     as bgn_trl_dt
           ,max(case when a2.ChapterNumber = (select max(b1.ChapterNumber)
@@ -225,21 +220,20 @@ with ss_book_dim_info as (
         on a3.ObjectChapterId = a4.ChapterId
      where a1.StoryType = 1
        and a1.ObjectBookType = 0
-     group by 1, 2, 3
+     group by 1, 2
 )
 --书籍本月、近30天、近7天收入信息
 , book_income_info as (
-    select product_id
-          ,book_id
-          ,sum(case when dt >= date_format('${bf_1_dt}', '%Y-%m-01') and dt <='${bf_1_dt}' then (amount / 100)*6.5
+    select book_id
+          ,sum(case when dt >= date_format('${bf_1_dt}', '%Y-%m-01') and dt <='${bf_1_dt}' then (amount / 100)
                     else 0
                 end
               )    as amt_mon
-          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 29 day) and dt <= '${bf_1_dt}' then (amount / 100)*6.5
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 29 day) and dt <= '${bf_1_dt}' then (amount / 100)
                     else 0
                 end
               )    as amt_30d
-          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 6 day) and dt <= '${bf_1_dt}' then (amount / 100)*6.5
+          ,sum(case when dt >= date_sub('${bf_1_dt}',interval 6 day) and dt <= '${bf_1_dt}' then (amount / 100)
                     else 0
                 end
               )    as amt_7d
@@ -251,13 +245,11 @@ with ss_book_dim_info as (
      where types = 1
        and dt >= date_sub('${bf_1_dt}',interval 29 day)
        and dt <= '${bf_1_dt}'
-     group by 1, 2
+     group by 1
 )
 --广告成本信息
 , ads_global_info as (
-    select a1.ProductId
-          ,a2.BookId
-          ,a1.CreateTime
+    select a2.BookId
           ,sum(case when a1.CreateTime = '${bf_1_dt}' then a1.CostAmount
                     else 0
                 end
@@ -268,12 +260,12 @@ with ss_book_dim_info as (
        and a1.AdId = a2.AdId
       left join ods_tidb_sharpengine_ads_global_FbAccount            as a3
         on a2.FbAccount = a3.Account
-     where a3.FbAccountType = 0 or a3.FbAccountType is null and a2.BookId is not null
-     group by 1 ,2 ,3
+     where a3.FbAccountType = 0 or a3.FbAccountType is null
+     group by 1
 
 )
 select a1.dt                 -- 日期
-      ,a1.product_id         -- product_id
+      ,0                     -- product_id
       ,a1.book_id            -- 书籍id
       ,a1.lang_cd            -- 语言编码
       ,a1.lang_name          -- 语言名称
@@ -312,8 +304,6 @@ select a1.dt                 -- 日期
     on a1.book_cd = a2.BookCode
    and a1.lang_cd = a2.lang_cd
   left join book_income_info      as a3
-    on a1.product_id = a3.product_id
-   and a1.book_id = a3.book_id
+    on a1.book_id = a3.book_id
   left join ads_global_info       as a4
-    on a1.product_id = a4.productid
-   and a1.book_id = a4.bookid
+    on a1.book_id = a4.bookid
