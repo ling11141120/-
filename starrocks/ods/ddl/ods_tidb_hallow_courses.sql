@@ -16,6 +16,7 @@ create table if not exists ods.ods_tidb_hallow_courses (
     ,state                  tinyint                                              comment "状态：1(上架)  0(下架)"
     ,courseepisodes         int                                                  comment "课程集数"
     ,tags                   varchar(1020)                                        comment "课程标签"
+    ,tags_list              array(varchar(1020))                                 comment "课程标签数组"
     ,score                  int                                                  comment "课程评分"
     ,comment                varchar(4096)                                        comment "备注"
     ,scene                  varchar(1020)                                        comment "场景"
