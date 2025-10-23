@@ -27,7 +27,7 @@ CREATE TABLE ods_log.ods_sensors_cd_video_apirequest (
     ,os                VARCHAR(200)          COMMENT "操作系统"
     ,app_id            STRING                COMMENT "app_id"
     ,failure_reason    STRING                COMMENT "失败原因"
-    ,request_duration  DECIMAL(5,3)          COMMENT "请求时长"
+    ,request_duration  DECIMAL(20,3)         COMMENT "请求时长"
     ,request_type1     STRING                COMMENT "请求类型"
     ,request_result    STRING                COMMENT "请求结果"
     ,ip                STRING                COMMENT "IP"
