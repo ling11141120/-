@@ -254,11 +254,11 @@ with ss_book_dim_info as (
                     else 0
                 end
               )    as ad_cost
-      from ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer    as a1
-      left join ods_tidb_sharpengine_ads_global_adext                as a2
+      from ods.ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer    as a1
+      left join ods.ods_tidb_sharpengine_ads_global_adext                as a2
         on a1.ProductId = a2.ProductId
        and a1.AdId = a2.AdId
-      left join ods_tidb_sharpengine_ads_global_FbAccount            as a3
+      left join ods.ods_tidb_sharpengine_ads_global_FbAccount            as a3
         on a2.FbAccount = a3.Account
      where a3.FbAccountType = 0 or a3.FbAccountType is null
      group by 1
