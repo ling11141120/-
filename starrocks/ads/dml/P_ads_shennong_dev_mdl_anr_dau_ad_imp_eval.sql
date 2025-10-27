@@ -3,7 +3,8 @@
 -- 程序名： P_ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 -- 目标表： ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 -- 负责人： qhr
--- 开发日期： 2023-08-19
+-- 开发日期： 2025-08-19
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 -- 昨日
