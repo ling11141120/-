@@ -36,7 +36,7 @@ CREATE TABLE dwd.dwd_trade_short_video_payorder (
     ,order_init_time    DATETIME                                         COMMENT "用户订单创建时间"
     ,cooorder_extinfo   VARCHAR(1000)                                    COMMENT "合作方订单扩展"
     ,custom_data        VARCHAR(65533)                                   COMMENT "自定义数据，透传，json格式"
-    ,schedule_time      DATETIME                                         COMMENT "退款时间"
+    ,ScheduleTime       DATETIME                                         COMMENT "退款时间"
     ,etl_tm             DATETIME                                         COMMENT "清洗时间"
 )
 PRIMARY KEY (dt, product_id, id, status)
