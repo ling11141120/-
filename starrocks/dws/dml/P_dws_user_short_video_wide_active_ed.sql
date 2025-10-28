@@ -1,0 +1,155 @@
+-- 脚本
+insert into dws.dws_user_short_video_wide_active_ed
+
+-- 活跃用户
+with active_user_tmp as (
+    select dt,Product_id, User_Id
+    from (
+             -- 海外短剧登录表
+             select dt,product_id, user_id  from dwd.dwd_user_short_video_user_login_view  where dt >= '${bf_3_dt}' and dt<='${dt}' and user_id>=0
+             union all
+             -- 国内短剧登录表
+             select dt,6883 as productid, user_id  from dwd.dwd_user_video_cn_login_info  where dt >= '${bf_3_dt}' and dt<='${dt}' and user_id>=0
+             union all
+             -- 海外短剧支付表
+             select dt,product_id ,user_id from dwd.dwd_trade_short_video_payorder
+             where dt>='${bf_3_dt}' and dt<='${dt}' and product_id =6833 and status=0 and test_flag =0 and user_id>=0
+             union all
+             -- 国内短剧支付表
+             select dt,product_id, video_user_id as user_id from dwd.dwd_trade_video_cn_payorder_view
+             where dt>='${bf_3_dt}' and dt<='${dt}' and order_status=1 and test_flag=0 and video_user_id>=0
+             union all
+             -- 海外短剧消耗表
+             select dt,6833 as product_id, account_id as user_id from dwd.dwd_sv_consume_user_consume_bill_pdi where dt >= '${bf_3_dt}' and dt<='${dt}' and account_id>=0
+             union all
+             -- 国内短剧消耗表
+             select dt,6883 as product_id, ref_user_id as user_id from dwd.dwd_consume_short_video_cn_consume_view where dt >= '${bf_3_dt}' and dt<='${dt}' and ref_user_id>=0
+             union all
+             -- 海外短剧观看记录表
+             select date(create_time) as dt,6833 as product_id,account_id as user_id from dwd.dwd_video_short_video_epis_history where date(create_time) >= '${bf_3_dt}' and date(create_time)<='${dt}'and account_id>=0
+             union all
+             -- 国内短剧观看记录表
+             select dt,6883 as product_id,user_id from dwd.dwd_video_vedio_watch_cn_view where dt >= '${bf_3_dt}' and dt<='${dt}' and user_id>=0
+        ) a
+        -- where cast(a.user_id as int)>0
+    group by 1,2,3
+),
+-- 用户信息
+user_info_tmp AS (
+        -- 海外短剧用户信息
+        select
+                sacc.product_id,
+                sacc.user_id,
+                sacc.corever as corever,
+                sacc.mt2 as mt,
+                sacc.current_language,
+                sacc.current_language2,
+               sacc.reg_country,
+               ifnull(lev.level,2) as level,
+               sacc.create_time,
+               sacc.sex,
+               sacc.third_party_id,
+               sacc.pass_word,
+               sacc.email,sacc.bind_email
+        from dim.dim_short_video_user_accountinfo sacc
+        left join(
+                    select product_id,short_name,level from dim.dim_countrylevel where product_id=6833
+                )lev
+         on sacc.product_id=lev.product_id
+         and sacc.reg_country=lev.short_name
+
+        union all
+        -- 国内短剧用户信息
+        select
+                6883 as product_id,
+                account as user_id,
+                corever2 as corever,
+                mt2 as mt,
+                null as current_language,
+                current_language2,
+               reg_country,
+               null as level,
+               create_time,
+               sex,
+               null as third_party_id,
+               null as pass_word,
+               null as email,
+               null as bind_email
+        from dim.dim_video_cn_accountinfo_view
+),
+-- 用户第一次安装时的剧ID
+sv_user_series_id AS (
+SELECT
+    user_id,
+    series_id
+FROM
+    (
+    SELECT user_id,
+           book_id AS series_id,
+           ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY install_date) as rank
+    FROM ads.ads_user_install_info_view
+    WHERE product_id = 6833
+    ) a
+WHERE a.rank = 1
+),
+-- 关联剧编码
+sv_user_video_code AS (
+    SELECT
+         a.user_id AS user_id,
+         a.series_id AS series_id,
+         b.source_series_code AS series_code
+    FROM sv_user_series_id a
+     LEFT JOIN dim.dim_sv_series_hi b
+    ON a.series_id = b.series_id
+ )
+
+
+select
+        dt,
+        b.product_id,
+        b.user_id,
+        acc.corever,
+        acc.mt,
+        acc.current_language as current_language,
+       acc.currentlanguage2 as currentlanguage2,
+       acc.reg_country,
+       acc.level,
+       acc.create_time,
+       datediff(dt,acc.create_time) as reg_days,
+       acc.sex,
+       if(third_party_id in(1,2,3) or pass_word is not null,1,0) as is_acc_login,
+       if(email is not null or bind_email is not null,1,0) as is_has_email,
+       c.series_code,
+       now() as etl_time
+from active_user_tmp b
+left join (
+            select
+                    a.product_id,
+                    a.user_id,
+                    if(a.corever is null or a.CoreVer=0,1,a.CoreVer) as corever,
+                    a.mt,
+                    a.current_language ,
+                   case when (current_language2  is null or current_language2=0)and product_id=3311 then 6
+                        when (current_language2  is null or current_language2=0)and product_id=3322 then 5
+                        when (current_language2  is null or current_language2=0)and product_id=3333 then 2
+                        when (current_language2  is null or current_language2=0)and product_id=3366 then 3
+                        when (current_language2  is null or current_language2=0)and product_id=3371 then 7
+                        when (current_language2  is null or current_language2=0)and product_id=3388 then 4
+                        when (current_language2  is null or current_language2=0)and product_id=3501 then 11
+                        when (current_language2  is null or current_language2=0)and product_id=3511 then 12
+                        else current_language2
+                    end  as currentlanguage2,
+                   a.reg_country,
+                   a.level,
+                   a.create_time ,
+                   a.sex,
+                   a.third_party_id,
+                   a.pass_word,
+                   a.email,
+                   a.bind_email
+            from user_info_tmp a
+            ) acc
+   on b.product_id=acc.product_id
+   and b.user_id=acc.user_id
+LEFT JOIN sv_user_video_code c
+ ON b.user_id = c.user_id
