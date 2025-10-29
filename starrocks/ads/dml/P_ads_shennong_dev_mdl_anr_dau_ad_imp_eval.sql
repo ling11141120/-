@@ -3,7 +3,8 @@
 -- 程序名： P_ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 -- 目标表： ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 -- 负责人： qhr
--- 开发日期： 2023-08-19
+-- 开发日期： 2025-08-19
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 -- 昨日
@@ -169,10 +170,54 @@ with dau as (
            )                                                                                       as a1
      group by 1, 2, 3, 4, 5
 )
+, svsr_tp_rev as (
+    -- 海剧
+    select a1.dt
+          ,a2.corever            as core
+          ,a2.device2            as dev_mdl
+          ,a3.p_cd_val           as biz_type_cd
+          ,a1.product_id         as product_id
+          ,sum(a1.item_count)    as tp_rev
+      from dwd.dwd_trade_short_video_payorder           as a1
+      left join dim.dim_short_video_user_accountinfo    as a2
+        on a1.user_id = a2.user_id
+       and a2.device2 is not null
+      join dim.dim_pub_code_mapping_dict                as a3
+        on a3.app_plat = 'beidou'
+       and a3.cd_col = 'product_id'
+       and a3.p_cd_val is not null
+       and a1.product_id = a3.cd_val
+     where a1.dt = '${bf_1_dt}'
+       and a1.mt = 4
+       and a1.product_id = 6833
+     group by 1, 2, 3, 4, 5
+     union all
+    -- 海阅
+    select a4.dt
+          ,a4.corever            as core
+          ,a5.dev_mdl            as dev_mdl
+          ,a6.p_cd_val           as biz_type_cd
+          ,a4.ProductId          as product_id
+          ,sum(a4.ItemCount)     as tp_rev
+      from dwd.dwd_trade_user_payorder                    as a4
+      left join dim.dim_user_userdata_view                 as a5
+        on a5.product_id not in (6833, 6883)
+       and a5.dev_mdl is not null
+       and a4.UserId = a5.id
+       and a4.ProductId = a5.product_id
+      join dim.dim_pub_code_mapping_dict                as a6
+        on a6.app_plat = 'beidou'
+       and a6.cd_col = 'product_id'
+       and a6.p_cd_val is not null
+       and a4.ProductId = a6.cd_val
+     where a4.dt = '${bf_1_dt}'
+       and a4.MT = 4
+     group by 1, 2, 3, 4, 5
+)
 ,mdl_dau_ad_uv as (
     select a1.dt
-          ,0               as dem_type
-          ,'NoANR'         as dem_type_name
+          ,0                   as dem_type
+          ,'NoANR'             as dem_type_name
           ,a1.biz_type_cd
           ,a1.product_id
           ,a1.core
@@ -186,18 +231,24 @@ with dau as (
           ,a2.med_sdk_ad_amt
           ,a2.med_sdk_rpc
           ,a3.clk_uv
-          ,null            as push_act_clk_uv
-      from dau             as a1
-      left join ad_info    as a2
+          ,null                as push_act_clk_uv
+          ,a4.tp_rev
+      from dau                 as a1
+      left join ad_info        as a2
         on a1.dt = a2.dt
-       and a1.biz_type_cd = a2.biz_type_cd
+       and a1.product_id = a2.product_id
        and a1.core = a2.core
        and a1.dev_mdl = a2.dev_mdl
-      left join srsv_uv    as a3
+      left join srsv_uv        as a3
         on a1.dt = a3.dt
-       and a1.biz_type_cd = a3.biz_type_cd
+       and a1.product_id = a3.product_id
        and a1.core = a3.core
        and a1.dev_mdl = a3.dev_mdl
+      left join svsr_tp_rev    as a4
+        on a1.dt = a4.dt
+       and a1.product_id = a4.product_id
+       and a1.core = a4.core
+       and a1.dev_mdl = a4.dev_mdl
 )
 ,mdl_anr as (
     -- 广告降权
@@ -279,6 +330,8 @@ select a1.dt                                      as dt                  -- 日�
       ,a2.med_sdk_rpc                             as med_sdk_rpc         -- 聚合SDK广告人均单价
       ,a2.clk_uv                                  as clk_uv              -- 点击uv
       ,a2.push_act_clk_uv                         as push_act_clk_uv     -- 下发活跃点击uv
+      ,a2.tp_rev                                  as tp_rev              -- 充值收入
+      ,now()                                      as etl_tm              -- etl时间
   from mdl_anr                                    as a1
   left join mdl_dau_ad_uv                         as a2
     on a1.dt = a2.dt
@@ -294,7 +347,7 @@ select a1.dt                                      as dt                  -- 日�
    and a4.cd_col = 'product_id'
    and a1.product_id = a4.cd_val
  union all
--- 日活及广告有数据，ANR没数据
+-- 日活及广告等有数据，ANR没数据
 select a5.dt                                      as dt                  -- 日期
       ,a5.dem_type                                as dem_type            -- 降权类型
       ,a5.biz_type_cd                             as biz_type_cd         -- 业务类型编码
@@ -322,6 +375,8 @@ select a5.dt                                      as dt                  -- 日�
       ,a5.med_sdk_rpc                             as med_sdk_rpc         -- 聚合SDK广告人均单价
       ,a5.clk_uv                                  as clk_uv              -- 点击uv
       ,a5.push_act_clk_uv                         as push_act_clk_uv     -- 下发活跃点击uv
+      ,a5.tp_rev                                  as tp_rev              -- 充值收入
+      ,now()                                      as etl_tm              -- etl时间
   from mdl_dau_ad_uv                              as a5
   left join mdl_anr                               as a6
     on a5.dt = a6.dt
@@ -421,6 +476,8 @@ select a1.dt                                          as dt                  -- 
       ,a2.med_sdk_ad_rpc                              as med_sdk_ad_rpc      -- 聚合SDK广告人均单价
       ,a2.clk_uv                                      as clk_uv              -- 点击uv
       ,a2.push_act_clk_uv                             as push_act_clk_uv     -- 下发活跃点击uv
+      ,a2.tp_rev                                      as tp_rev              -- 充值收入
+      ,now()                                          as etl_tm              -- etl时间
   from mdl_anr                                              as a1
   left join ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
     on a2.dt >= date_sub('${bf_1_dt}', interval 10 day)

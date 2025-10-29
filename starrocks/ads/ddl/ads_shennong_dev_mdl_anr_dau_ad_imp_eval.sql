@@ -27,6 +27,8 @@ CREATE TABLE ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval (
     ,med_sdk_ad_rpc      DECIMAL(20,5)                COMMENT '聚合SDK广告人均单价'
     ,clk_uv              DECIMAL(20,5)                COMMENT '点击uv'
     ,push_act_clk_uv     DECIMAL(20,5)                COMMENT '下发活跃点击uv'
+    ,tp_rev              DECIMAL(20,5)                COMMENT '充值收入'
+    ,etl_tm              DATETIME                     COMMENT 'etl时间'
 )
 PRIMARY KEY (dt, dem_type, biz_type_cd, product_id, core ,dev_mdl)
 COMMENT '神农-机型ANR日活广告影响评估'
