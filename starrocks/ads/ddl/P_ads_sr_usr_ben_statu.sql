@@ -19,6 +19,7 @@ insert into ads.ads_sr_usr_ben_statu(
 ---基础订单数据信息，聚合生效/失效时间和金额
 with base_data as (
 select user_id
+      ,order_id
       ,shop_item
       ,group_concat(distinct order_id) as rel_ord
       ,min(create_time) as ben_ocr_tm
@@ -40,7 +41,7 @@ select user_id
            from ads.ads_trade_user_payorder_view
           where shop_item in (810, 840, 850)
        )     as a1
-          group by 1, 2
+          group by 1, 2 ,3
 )
 --- 求每个用户购买订单后，解锁章节字数
 , chapter_words as (
