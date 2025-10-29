@@ -25,21 +25,21 @@ with base_data as (
           ,min(create_time)                   as ben_ocr_tm
           ,max(if(vipexpire_time = -99,vipexpire_time2,vipexpire_time)) as ben_end_tm
           ,max(item_count)                    as item_count
-      from ( select user_id
-                   ,order_id
-                   ,shop_item
-                   ,create_time
-                   ,vipexpire_time
-                   ,item_count
-                   ,case when get_json_object(sensorsdata,'$.subscription_period') = 1 then date_add(create_time,7)
-                         when get_json_object(sensorsdata,'$.subscription_period') = 2 then add_months(create_time,1)
-                         when get_json_object(sensorsdata,'$.subscription_period') = 3 then add_months(create_time,3)
-                         when get_json_object(sensorsdata,'$.subscription_period') = 4 then add_months(create_time,12)
-                         when get_json_object(sensorsdata,'$.subscription_period') = 5 then date_add(create_time,get_json_object(sensorsdata,'$.subscription_num') )
-                         else vipexpire_time
-                     end   as vipexpire_time2
-               from ads.ads_trade_user_payorder_view
-              where shop_item in (810, 840, 850)
+      from (select user_id
+                  ,order_id
+                  ,shop_item
+                  ,create_time
+                  ,vipexpire_time
+                  ,item_count
+                  ,case when get_json_object(sensorsdata,'$.subscription_period') = 1 then date_add(create_time,7)
+                        when get_json_object(sensorsdata,'$.subscription_period') = 2 then add_months(create_time,1)
+                        when get_json_object(sensorsdata,'$.subscription_period') = 3 then add_months(create_time,3)
+                        when get_json_object(sensorsdata,'$.subscription_period') = 4 then add_months(create_time,12)
+                        when get_json_object(sensorsdata,'$.subscription_period') = 5 then date_add(create_time,get_json_object(sensorsdata,'$.subscription_num') )
+                        else vipexpire_time
+                    end   as vipexpire_time2
+              from ads.ads_trade_user_payorder_view
+             where shop_item in (810, 840, 850)
            )    as a1
      group by 1, 2 ,3
 )
