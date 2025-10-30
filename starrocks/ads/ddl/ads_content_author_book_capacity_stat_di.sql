@@ -1,5 +1,5 @@
-drop table if exists ads_content_author_book_capacity_stat_di;
-create table if not exists ads_content_author_book_capacity_stat_di (
+drop table if exists ads.ads_content_author_book_capacity_stat_di;
+create table ads.ads_content_author_book_capacity_stat_di (
     md5_key             varchar(65533)      not null     comment "md5_key唯一值"
    ,dt                  date                not null     comment "日期"
    ,author_id           varchar(65533)      not null     comment "译员id"
