@@ -1,15 +1,14 @@
 ----------------------------------------------------------------
 -- 程序功能： BI-海剧海阅移动终端Push监控
--- 程序名： P_ads_srsv_bi_mt_push_mon_dml
+-- 程序名： P_ads_srsv_bi_mt_push_mon
 -- 目标表： ads.ads_srsv_bi_mt_push_mon
 -- 负责人： qhr
 -- 开发日期：2025-10-21
 -- 版本号： v0.0.0
 ----------------------------------------------------------------
 
--- ${bf_1_dt}：固定传入T-1日期的yyyy-MM-dd 00:00:00
 -- ${dt}：传入当前调度时间的yyyy-MM-dd HH:00:00
-insert into tmp.ads_srsv_bi_mt_push_mon
+insert into ads.ads_srsv_bi_mt_push_mon
 with act_user as (
     select date_trunc('hour', '${dt}')                         as stat_time
           ,6833                                                as product_id
@@ -55,20 +54,30 @@ with act_user as (
      group by 1, 2, 3, 4
 )
 , sv_push_info as (
-    select date_trunc('hour', '${dt}')                                                                as stat_time
-          ,6833                                                                                       as product_id
-          ,a2.corever                                                                                 as core
-          ,a2.mt                                                                                      as mt
-          ,count(a1.Id)                                                                               as svr_push_tsk_num
-          ,bitmap_union(to_bitmap(cast(get_json_string(a1.Body, '$.custom.accountId') as bigint)))    as svr_push_uv
-          ,sum(case when a1.IsSuccess = 1 then 1 else 0 end)                                          as svr_push_succ_tsk_num
-      from ods.ods_tidb_unifypush_log_log_pushlog_sv    as a1
-      join dim.dim_short_video_user_accountinfo         as a2
-        on cast(get_json_string(a2.Body, '$.custom.accountId') as bigint) = a2.user_id
-     where a1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
-       and a1.CreateTime >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
-       and a1.CreateTime < '${dt}'
-       and (a1.AppId % 2 = 1 or a1.AppId % 2 = 0)
+    select date_trunc('hour', '${dt}')                          as stat_time
+          ,6833                                                 as product_id
+          ,a2.corever                                           as core
+          ,a2.mt                                                as mt
+          ,count(a1.Id)                                         as svr_push_tsk_num
+          ,bitmap_union(to_bitmap(a1.AccountId))                as svr_push_uv
+          ,sum(case when a1.IsSuccess = 1 then 1 else 0 end)    as svr_push_succ_tsk_num
+      from (select case when coalesce(b1.AccountId,0) = 0 then
+                             case when b1.AppId % 2 = 0 then cast(get_json_string(get_json_string(b1.Body, '$.Data.custom'), '$.accountId') as bigint)
+                                  else cast(get_json_string(b1.Body, '$.custom.accountId') as bigint)
+                              end
+                        else b1.AccountId
+                    end                                         as AccountId
+                   ,b1.IsSuccess
+                   ,b1.Id
+              from ods.ods_tidb_unifypush_log_log_pushlog_sv    as b1
+             where b1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b1.CreateTime >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b1.CreateTime < '${dt}'
+               and b1.AppId % 2 in (1, 0)
+           )                                                    as a1
+      join dim.dim_short_video_user_accountinfo                 as a2
+        on a1.AccountId = a2.user_id
+       and coalesce(a1.AccountId,0) <> 0
      group by 1, 2, 3, 4
 )
 , cli_push_dev_arr as (
@@ -89,21 +98,41 @@ with act_user as (
      group by 1, 2, 3, 4
 )
 , cli_push_uv as (
-    select date_trunc('hour', '${dt}')                              as stat_time
-          ,6833                                                     as product_id
-          ,a2.corever                                               as core
-          ,a2.mt                                                    as mt
-          ,bitmap_union(to_bitmap(a4.account_id))                   as cli_push_uv
-          ,bitmap_union(to_bitmap(a4.active_user_id))               as cli_push_act_uv
-      from ads.ads_center_push_position_message_di_analysis_json    as a1
-      join dim.dim_short_video_user_accountinfo                     as a2
-        on a1.active_user_id = a2.user_id
-       and coalesce(a2.mt,-99) in (1, 4)
-       and a2.corever is not null
-     where a1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
-       and a1.need_to_send_time >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
-       and a1.need_to_send_time < '${dt}'
-       and (a1.send_status = 1 or a1.push_position_id in (1,2))
+    select date_trunc('hour', '${dt}')                                      as stat_time
+          ,6833                                                             as product_id
+          ,a1.core                                                          as core
+          ,a1.mt                                                            as mt
+          ,bitmap_union(to_bitmap(a1.account_id))                           as cli_push_uv
+          ,bitmap_union(to_bitmap(a1.active_user_id))                       as cli_push_act_uv
+      from (select date_trunc('hour', '${dt}')                              as stat_time
+                  ,b2.corever                                               as core
+                  ,b2.mt                                                    as mt
+                  ,b1.account_id                                            as account_id
+                  ,b1.active_user_id                                        as active_user_id
+              from ads.ads_center_push_position_message_di_analysis_json    as b1
+              join dim.dim_short_video_user_accountinfo                     as b2
+                on b1.account_id = b2.user_id
+               and coalesce(b2.mt,-99) in (1, 4)
+               and b2.corever is not null
+             where b1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b1.need_to_send_time >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b1.need_to_send_time < '${dt}'
+               and (b1.send_status = 1 or b1.push_position_id in (1,2))
+             union all
+            select date_trunc('hour', '${dt}')                              as stat_time
+                  ,cast(substr(b3.app_id,-4,1) as int)                      as corever
+                  ,case when b3.os = 'Android' then 4 else 1 end            as mt
+                  ,b3.login_id                                              as account_id
+                  ,b3.login_id                                              as active_user_id
+             from ads.ads_sensors_cd_video_ElmentExposure_view              as b3
+             where b3.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b3.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b3.event_tm < '${dt}'
+               and (    (b3.element_id = 210015 and b3.project_id = 8)
+                     or (b3.element_id = 210012 and b3.os = 'iOS')
+                     or (b3.element_id = 210032 and b3.os = 'Android')
+                   )
+           )                                                                as a1
      group by 1, 2, 3, 4
 )
 , cli_clk_uv as (
