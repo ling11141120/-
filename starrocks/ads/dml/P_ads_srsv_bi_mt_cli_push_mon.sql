@@ -77,8 +77,7 @@ with act_user as (
           ,a1.mt                                                            as mt
           ,bitmap_union(to_bitmap(a1.account_id))                           as cli_push_uv
           ,bitmap_union(to_bitmap(a1.active_user_id))                       as cli_push_act_uv
-      from (select date_trunc('hour', '${dt}')                              as stat_time
-                  ,b2.corever                                               as core
+      from (select b2.corever                                               as core
                   ,b2.mt                                                    as mt
                   ,b1.account_id                                            as account_id
                   ,b1.active_user_id                                        as active_user_id
@@ -92,8 +91,7 @@ with act_user as (
                and b1.need_to_send_time < '${dt}'
                and (b1.send_status = 1 or b1.push_position_id in (1,2))
              union all
-            select date_trunc('hour', '${dt}')                              as stat_time
-                  ,cast(substr(b3.app_id,-4,1) as int)                      as corever
+            select cast(substr(b3.app_id,-4,1) as int)                      as corever
                   ,case when b3.os = 'Android' then 4 else 1 end            as mt
                   ,b3.login_id                                              as account_id
                   ,b3.login_id                                              as active_user_id
@@ -111,17 +109,31 @@ with act_user as (
 , cli_clk_uv as (
     select date_trunc('hour', '${dt}')             as stat_time
           ,6833                                    as product_id
-          ,a2.corever                              as core
-          ,a2.mt                                   as mt
+          ,a1.core                                 as core
+          ,a1.mt                                   as mt
           ,bitmap_union(to_bitmap(a1.login_id))    as cli_clk_uv
-      from ads.ads_sensors_video_pushclick_view    as a1
-      join dim.dim_short_video_user_accountinfo    as a2
-        on a1.login_id = a2.user_id
-       and coalesce(a2.mt,-99) in (1, 4)
-       and a2.corever is not null
-     where a1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
-       and a1.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
-       and a1.event_tm < '${dt}'
+      from (select cast(substr(b1.app_id, -4, 1) as int)            as core
+                  ,case when b1.os = 'Android' then 4 else 1 end    as mt
+                  ,b1.login_id                                      as login_id
+              from ads.ads_sensors_video_pushclick_view    as b1
+             where b1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b1.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b1.event_tm < '${dt}'
+               and b1.os in ('Android','iOS')
+             union all
+            select cast(substr(b2.app_id, -4, 1) as int)            as core
+                  ,case when b2.os = 'Android' then 4 else 1 end    as mt
+                  ,b2.login_id                                      as login_id
+              from ads.ads_sensors_cd_video_elmentclick_view    as b2
+             where b2.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b2.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b2.event_tm < '${dt}'
+               and b2.os in ('iOS', 'Android')
+               and (    (b2.element_id = 210015 and b2.project_id = 8)
+                     or (b2.element_id = 210012 and b2.os = 'iOS' and b2.element_type = 1)
+                     or (b2.element_id = 210032 and b2.os = 'Android')
+                   )
+           )    as a1
      group by 1, 2, 3, 4
 )
 select a1.stat_time                as stat_time               -- 统计时间
