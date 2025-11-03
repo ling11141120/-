@@ -4,7 +4,7 @@
 -- 目标表： ads.ads_srsv_bi_ad_optimizer_template_target_data_pre_1
 -- 负责人： qhr
 -- 开发日期： 2025-08-15
--- 版本号： v0.1.2
+-- 版本号： v0.2.2
 ----------------------------------------------------------------
 
 -- 维度:日期、新老组，书籍，mt，优化师&组
@@ -317,16 +317,16 @@ with z1 as (
           ,ifnull(lag(b.reg_num_new,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_new_yester
       from opt_and_ce_info                                  as a
       left join (select a.product_id
-                      ,if(a.product_id<>6833,0,e.core)      as core
-                      ,e.source_chl
-                      ,e.ad_set_id
-                      ,date(a.install_date)                 as dt
-                      ,sum(a.ios_day0_amt)                  as ios_day0_amt
-                      ,sum(a.day0_amt)                      as day0_amt
-                      ,sum(a.day0_amt_new)                  as day0_amt_new
-                      ,sum(a.reg_num_ios)                   as reg_num_ios
-                      ,sum(a.reg_num)                       as reg_num
-                      ,sum(a.reg_num_new)                   as reg_num_new
+                       ,if(a.product_id<>6833,0,e.core)     as core
+                       ,e.source_chl
+                       ,e.ad_set_id
+                       ,date(a.install_date)                as dt
+                       ,sum(a.ios_day0_amt)                 as ios_day0_amt
+                       ,sum(a.day0_amt)                     as day0_amt
+                       ,sum(a.day0_amt_new)                 as day0_amt_new
+                       ,sum(a.reg_num_ios)                  as reg_num_ios
+                       ,sum(a.reg_num)                      as reg_num
+                       ,sum(a.reg_num_new)                  as reg_num_new
                    from ads.ads_bi_ad_new_user_value_ed     as a
                    join ads.ads_advertisement_adext_view    as e
                      on a.product_id=e.product_id
@@ -340,71 +340,86 @@ with z1 as (
        and a.core=b.core
        and a.ad_set_id=b.ad_set_id
        and a.dt=b.dt
-    -- 最新书籍标准
+      -- 最新书籍标准
       left join (select BookId
-                      ,DateKey
-                      ,SourceChl
-                      ,AdTarget
-                      ,max(if(mt=1,R0Std,null))     as ios_r0_std
-                      ,max(if(mt=4,R0Std,null))     as and_r0_std
+                       ,DateKey
+                       ,SourceChl
+                       ,AdTarget
+                       ,max(if(mt=1,R0Std,null))     as ios_r0_std
+                       ,max(if(mt=4,R0Std,null))     as and_r0_std
                    from ods.ods_ads_tidb_sharpengine_ads_global_BookRoiStdCfgV2Daily
                   where DateKey>days_add(curdate(),-360)
                   group by 1,2,3,4
                 )                                   as r
-         on r.BookId=a.book_id
+        on r.BookId=a.book_id
        and r.DateKey=a.dt
        and r.SourceChl = a.source_chl
        and IFNULL(r.AdTarget,'') = IFNULL(a.ad_target,'')
       -- 最新阅读大盘标准
-      left join (select CurrentLanguage2
+      left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_1
+        on a.dt = put_1.dt
+       and a.ad_set_id = put_1.AdSetId
+      left join (select CurrentLanguage
                        ,DateKey
                        ,BookChannel
                        ,SourceChl
+                       ,Core
+                       ,StdCode
                        ,AdTarget
                        ,BookType
                        ,max(if(mt=1,R0Std,null))     as ios_r0_std
                        ,max(if(mt=4,R0Std,null))     as and_r0_std
-                    from ods.ods_ads_tidb_sharpengine_ads_global_PutProductRoiStdCfgV2Daily
-                   where BookChannel =1
-                     and DateKey>days_add(curdate(),-360)
-                   group by 1,2,3,4,5,6
+                   from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                  where ProjectCode = 1
+                    and DateKey>days_add(curdate(),-360)
+                  group by 1, 2, 3, 4, 5, 6, 7, 8
                 )                                    as put
-        on put.CurrentLanguage2=a.languageid
+        on put.CurrentLanguage=a.languageid
        and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
+       and put.core = a.core
        and put.DateKey=a.dt
        and put.SourceChl = a.source_chl
        and IFNULL(put.AdTarget,'') = IFNULL(a.ad_target,'')
+       and IFNULL(put.StdCode,'') = IFNULL(put_1.StdCode,'')
        and put.BookType = a.story_type
-    -- 海剧分剧标准
-    left join (select DateKey
-                    ,VideoId
-                    ,SourceChl
-                    ,AdTarget
-                    ,max(if(mt=1,R0Std,null))    as ios_r0_std
-                    ,max(if(mt=4,R0Std,null))    as and_r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_VideoRoiStdCfgV2Daily
-                where DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4
-              )                                  as r2
+      -- 海剧分剧标准
+      left join (select DateKey
+                       ,VideoId
+                       ,SourceChl
+                       ,AdTarget
+                       ,max(if(mt=1,R0Std,null))    as ios_r0_std
+                       ,max(if(mt=4,R0Std,null))    as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_VideoRoiStdCfgV2Daily
+                  where DateKey>days_add(curdate(),-360)
+                  group by 1,2,3,4
+                )                                  as r2
       on r2.VideoId=a.book_id
      and r2.SourceChl = a.source_chl
      and r2.DateKey=a.dt
      and IFNULL(r2.AdTarget,'') = IFNULL(a.ad_target,'')
     -- 海剧标准
+    left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_2
+      on put_2.dt = a.dt
+     and put_2.AdSetId = a.ad_set_id
     left join (select DateKey
-                    ,CurrentLanguage2
-                    ,SourceChl
-                    ,AdTarget
-                    ,max(if(mt=1,R0Std,null))  ios_r0_std
-                    ,max(if(mt=4,R0Std,null))  and_r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_PutProductVideoRoiStdCfgV2Daily
-                where DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4
+                     ,CurrentLanguage
+                     ,SourceChl
+                     ,Core
+                     ,StdCode
+                     ,AdTarget
+                     ,max(if(mt=1,R0Std,null))  ios_r0_std
+                     ,max(if(mt=4,R0Std,null))  and_r0_std
+                 from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                where ProjectCode = 1
+                  and DateKey>days_add(curdate(),-360)
+                group by 1, 2, 3, 4, 5, 6
               )                                   as put2
-      on put2.CurrentLanguage2=a.languageid
+      on put2.CurrentLanguage = a.languageid
      and put2.SourceChl = a.source_chl
-     and put2.DateKey=a.dt
+     and put2.DateKey = a.dt
+     and put2.core = a.core
      and IFNULL(put2.AdTarget,'') = IFNULL(a.ad_target,'')
+     and IFNULL(put2.StdCode,'')=IFNULL(put_2.StdCode,'')
 )
 
 -- 标准和指标处理,core过滤,book_id非null
