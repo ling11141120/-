@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS tmp.ads_srsv_bi_mt_push_mon;
-CREATE TABLE tmp.ads_srsv_bi_mt_push_mon (
+DROP TABLE IF EXISTS ads.ads_srsv_bi_mt_push_mon;
+CREATE TABLE ads.ads_srsv_bi_mt_push_mon (
      stat_time                DATETIME          NOT NULL    COMMENT '统计时间'
     ,product_id               INT               NOT NULL    COMMENT 'product_id'
     ,core                     INT               NOT NULL    COMMENT 'core'
@@ -16,7 +16,7 @@ CREATE TABLE tmp.ads_srsv_bi_mt_push_mon (
 )
 PRIMARY KEY (stat_time, product_id, core, mt)
 COMMENT 'BI-海剧海阅移动终端Push监控'
-PARTITION BY DATE_TRUNC('month',stat_time)
+PARTITION BY DATE_TRUNC('year',stat_time)
 DISTRIBUTED BY HASH (stat_time, product_id, core, mt)
 PROPERTIES(
     "replication_num" = "3",
