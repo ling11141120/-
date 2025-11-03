@@ -4,7 +4,7 @@
 -- 目标表： ads.ads_sv_third_party_payment_funnel_recharge
 -- 负责人： wx
 -- 开发日期：2025-10-20
--- 版本号：v0.3.0
+-- 版本号：v0.3.1
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_recharge
 -- 活跃表
@@ -65,11 +65,7 @@ payorder as(select dt
                   ,case when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='201300' then '商店页'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200900' then '半屏'
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200800' and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2]='0' then '解锁页VIP'
-<<<<<<< HEAD
-                        when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5'
-=======
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5' 
->>>>>>> dev-wx-RTM-17196
                         when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1] is null
                              then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100 
                                          and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (0,1) then '普通弹窗'
@@ -106,9 +102,10 @@ payorder as(select dt
                     end                                                    as shop_item_type
                   ,case when subpay_type = 'AppStore' then 'iOS'
                         when subpay_type = 'GooglePlay' then '安卓'
-                        else '三方'
-                    end                                                    as zfqd
-                  ,if(subpay_type in ('AppStore', 'GooglePlay'), 0, 1)     as if_third
+                        when subpay_type = 'AppGallery' then '华为'
+                        when subpay_type = 'MiGlobal' then '小米'
+                        else '三方'end as zfqd
+                  ,if(subpay_type in ('AppStore','GooglePlay','AppGallery','MiGlobal'), 0, 1) as if_third
                   ,time_duration from (select *
                                          from ads.ads_short_video_payorder_view
                                         where test_flag=0
