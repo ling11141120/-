@@ -1,9 +1,9 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_tidb_unifypush_log_log_pushlog_sv
--- 来源实例： 
--- 来源表： 
+-- 来源实例： old_tidb_source
+-- 来源表： unifypush_log.log_pushlog_sv
 -- 来源负责： 
--- 采集工具： 
+-- 采集工具： SeaTunnel
 -- 开发人： qhr
 -- 创建日期： 2025-09-23
 ----------------------------------------------------------------
@@ -42,7 +42,7 @@ PROPERTIES (
     "dynamic_partition.enable" = "true",
     "dynamic_partition.time_unit" = "day",
     "dynamic_partition.time_zone" = "Asia/Shanghai",
-    "dynamic_partition.start" = "-95",
+    "dynamic_partition.start" = "-35",
     "dynamic_partition.end" = "3",
     "dynamic_partition.prefix" = "p",
     "dynamic_partition.buckets" = "1",
