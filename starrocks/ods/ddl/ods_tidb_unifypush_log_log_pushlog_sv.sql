@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
--- 目标表： ods.ods_tidb_shuangwen_xx_objectchapter
+-- 目标表： ods.ods_tidb_unifypush_log_log_pushlog_sv
 -- 来源实例： old_tidb_source
 -- 来源表： unifypush_log.log_pushlog_sv
 -- 来源负责： 
@@ -31,24 +31,24 @@ CREATE TABLE ods.ods_tidb_unifypush_log_log_pushlog_sv (
     ,sr_createtime DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间"
     ,sr_updatetime DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
 )
-DUPLICATE KEY(dt, Id, CreateTime)
+PRIMARY KEY(`dt`, `Id`, `CreateTime`)
 COMMENT "海剧-push资源位需要推送的消息表(来源为串总)"
 PARTITION BY RANGE(dt)
 (PARTITION p20251015 VALUES LESS THAN ("2025-10-16"))
 DISTRIBUTED BY HASH(dt, Id, CreateTime) BUCKETS 5
 PROPERTIES (
-     "replication_num" = "3"
-    ,"bloom_filter_columns" = "dt, AccountId, DeviceId, CreateTime, BatchId, Id"
-    ,"dynamic_partition.enable" = "true"
-    ,"dynamic_partition.time_unit" = "day"
-    ,"dynamic_partition.time_zone" = "Asia/Shanghai"
-    ,"dynamic_partition.start" = "-2147483648"
-    ,"dynamic_partition.end" = "3"
-    ,"dynamic_partition.prefix" = "p"
-    ,"dynamic_partition.buckets" = "1"
-    ,"dynamic_partition.history_partition_num" = "0"
-    ,"in_memory" = "false"
-    ,"enable_persistent_index" = "true"
-    ,"replicated_storage" = "true"
-    ,"compression" = "LZ4"
+    "replication_num" = "3",
+    "bloom_filter_columns" = "dt, AccountId, DeviceId, CreateTime, BatchId, Id",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "day",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-35",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "1",
+    "dynamic_partition.history_partition_num" = "0",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
 );
