@@ -409,7 +409,7 @@ with z1 as (
                      ,max(if(mt=1,R0Std,null))             as ios_r0_std
                      ,max(if(mt=4,R0Std,null))             as and_r0_std
                  from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
-                where ProjectCode = 1
+                where ProjectCode = 2
                   and DateKey>days_add(curdate(),-360)
                 group by 1, 2, 3, 4, 5, 6
               )                                            as put2
