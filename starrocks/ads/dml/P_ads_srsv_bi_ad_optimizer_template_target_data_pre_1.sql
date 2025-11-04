@@ -227,7 +227,7 @@ with z1 as (
                 )                                                                           as a2
         on a1.product = a2.prj_cd
        and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a2.src_med
-       and concat(regexp_replace(a1.book_code,'[-–—‐‒].*$',''), '-', upper(a1.current_language2)) = concat(a2.prd_cd, '-', upper(a2.lang_abbr))
+       and concat(upper(a1.current_language2), '-', a1.book_code) = concat(upper(a2.lang_abbr), '-', a2.prd_cd)
       left join (select ProjectCode
                        ,CodeId
                        ,SourceChl
