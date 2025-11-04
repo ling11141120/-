@@ -8,7 +8,7 @@
 ----------------------------------------------------------------
 
 -- ${dt}：传入当前调度时间的yyyy-MM-dd HH:00:00
-insert into tmp.ads_srsv_bi_mt_cli_push_mon
+insert into ads.ads_srsv_bi_mt_cli_push_mon
 with act_user as (
     select date_trunc('hour', '${dt}')                         as stat_time
           ,6833                                                as product_id

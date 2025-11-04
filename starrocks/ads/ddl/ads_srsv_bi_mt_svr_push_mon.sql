@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS tmp.ads_srsv_bi_mt_svr_push_mon;
-CREATE TABLE tmp.ads_srsv_bi_mt_svr_push_mon (
+DROP TABLE IF EXISTS ads.ads_srsv_bi_mt_svr_push_mon;
+CREATE TABLE ads.ads_srsv_bi_mt_svr_push_mon (
      stat_time             DATETIME       NOT NULL COMMENT '统计时间'
     ,product_id            INT            NOT NULL COMMENT 'product_id'
     ,mt                    INT            NOT NULL COMMENT '移动终端'
