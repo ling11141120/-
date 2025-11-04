@@ -28,7 +28,7 @@ with t1 as (
      group by a1.Code, a3.NickName
 )
 select a1.PlanId                                    as plan_id
-      ,regexp_replace(a1.Code, '[-–—‐‒].*$', '')    as prd_cd
+      ,a1.Code                                      as prd_cd
       ,a1.ProjectCode                               as prj_cd
       ,case when (a1.ProjectCode = 1) then '海阅'
             when (a1.ProjectCode = 2) then '海剧'
