@@ -525,11 +525,11 @@ with del_pri as (
        and a1.anr_ocr_dt is null
 )
 delete from ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
-using del_pri
-where dt          = del_pri.del_dt
-  and dem_type    = del_pri.del_dem_type
-  and biz_type_cd = del_pri.del_biz_type_cd
-  and product_id  = del_pri.del_product_id
-  and core        = del_pri.del_core
-  and dev_mdl     = del_pri.del_dev_mdl
+ using del_pri
+ where dt          = del_pri.del_dt
+   and dem_type    = del_pri.del_dem_type
+   and biz_type_cd = del_pri.del_biz_type_cd
+   and product_id  = del_pri.del_product_id
+   and core        = del_pri.del_core
+   and dev_mdl     = del_pri.del_dev_mdl
 ;
