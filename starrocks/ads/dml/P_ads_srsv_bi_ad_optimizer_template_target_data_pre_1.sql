@@ -227,7 +227,7 @@ with z1 as (
                 )                                                                           as a2
         on a1.product = a2.prj_cd
        and if(a1.source_chl in ('facebook','fbs2s'),'fb', a1.source_chl) = a2.src_med
-       and concat(regexp_replace(a1.book_code,'[-–—‐‒].*$',''), '-', upper(a1.current_language2)) = concat(a2.prd_cd, '-', upper(a2.lang_abbr))
+       and concat(upper(a1.current_language2), '-', a1.book_code) = concat(upper(a2.lang_abbr), '-', a2.prd_cd)
       left join (select ProjectCode
                        ,CodeId
                        ,SourceChl
@@ -409,7 +409,7 @@ with z1 as (
                      ,max(if(mt=1,R0Std,null))             as ios_r0_std
                      ,max(if(mt=4,R0Std,null))             as and_r0_std
                  from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
-                where ProjectCode = 1
+                where ProjectCode = 2
                   and DateKey>days_add(curdate(),-360)
                 group by 1, 2, 3, 4, 5, 6
               )                                            as put2
