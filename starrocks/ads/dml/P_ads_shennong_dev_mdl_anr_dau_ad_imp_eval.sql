@@ -496,3 +496,40 @@ select a1.dt                                          as dt                  -- 
    and a4.cd_col = 'product_id'
    and a1.product_id = a4.cd_val
 ;
+
+with del_pri as (
+    select a1.dt             as del_dt
+          ,a1.dem_type       as del_dem_type
+          ,a1.biz_type_cd    as del_biz_type_cd
+          ,a1.product_id     as del_product_id
+          ,a1.core           as del_core
+          ,a1.dev_mdl        as del_dev_mdl
+      from (select b1.dt
+                  ,b1.dem_type
+                  ,b1.biz_type_cd
+                  ,b1.product_id
+                  ,b1.core
+                  ,b1.dev_mdl
+                  ,b1.anr_ocr_dt
+                  ,count(*) over (partition by b1.dt
+                                              ,b1.biz_type_cd
+                                              ,b1.product_id
+                                              ,b1.core
+                                              ,b1.dev_mdl
+                                 )                                 as cnt
+              from ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as b1
+             where b1.dt >= date_sub('${bf_1_dt}', interval 10 day)
+               and b1.dt < '${bf_1_dt}'
+           )                                                       as a1
+     where a1.cnt > 1
+       and a1.anr_ocr_dt is null
+)
+delete from ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
+ using del_pri
+ where dt          = del_pri.del_dt
+   and dem_type    = del_pri.del_dem_type
+   and biz_type_cd = del_pri.del_biz_type_cd
+   and product_id  = del_pri.del_product_id
+   and core        = del_pri.del_core
+   and dev_mdl     = del_pri.del_dev_mdl
+;
