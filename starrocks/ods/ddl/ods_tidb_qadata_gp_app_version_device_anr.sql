@@ -4,7 +4,7 @@
 -- 来源表： qadata.gp_app_version_device_anr
 -- 采集工具： 极光-定时批量
 -- 开发人： qhr
--- 开发日期： 2023-08-20
+-- 开发日期： 2025-08-20
 ----------------------------------------------------------------
 
 DROP TABLE IF EXISTS ods.ods_tidb_qadata_gp_app_version_device_anr;
