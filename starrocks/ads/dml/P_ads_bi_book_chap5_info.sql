@@ -52,7 +52,7 @@ select t1.dt                      -- 日期
       ,t1.new_cname               -- 分类名称
       ,t1.chap5_read_num          -- 第五章阅读人数
       ,t2.ttl_chap_read_num       -- 总阅读人数
-      ,round(t1.chap5_read_num / t2.ttl_chap_read_num, 4) as chap5_ret_rt  -- 第五章留存率
+      ,round(t1.chap5_read_num / t2.ttl_chap_read_num, 4) as chap5_ret_rt    -- 第五章留存率
   from t1
   left join t2
     on t1.book_id = t2.book_id

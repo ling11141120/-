@@ -20,7 +20,8 @@ properties (
     "dynamic_partition.time_unit" = "DAY",
     "dynamic_partition.time_zone" = "Asia/Shanghai",
     "dynamic_partition.start" = "-7",
-    "dynamic_partition.end" = "7",
+    "dynamic_partition.end" = "1",
+    "dynamic_partition.history_partition_num" = "9",
     "dynamic_partition.prefix" = "p",
     "dynamic_partition.buckets" = "1",
     "compression" = "LZ4"
