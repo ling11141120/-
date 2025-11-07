@@ -39,7 +39,7 @@ with t1 as (
       left join (select login_id                      as user_id
                        ,count(distinct episode_id)    as total_episode_count
                    from ods_log.ods_sensors_cd_video_startwatching
-                  where dt >= date_add('${bf_1_dt}',interval -365 day)
+                  where dt >= date_add('${bf_1_dt}',interval -92 day)
                     and dt <= '${bf_1_dt}'
                   group by 1
                 )    as a2
@@ -50,7 +50,7 @@ with t1 as (
                                ,date_format(event_tm, '%y-%m-%d %h:%i:00')    as minute_time
                                ,count(distinct episode_id) as episode_count
                            from ods_log.ods_sensors_cd_video_startwatching
-                          where dt >= date_add('${bf_1_dt}',interval -365 day)
+                          where dt >= date_add('${bf_1_dt}',interval -92 day)
                             and dt <= '${bf_1_dt}'
                           group by 1, 2
                         )    as b2
@@ -63,7 +63,7 @@ with t1 as (
                          end        as is_sub
                       from ods_log.ods_sensors_cd_video_production_ordersuccess
                      where project_id = 8
-                       and dt >= date_add('${bf_1_dt}',interval -365 day)
+                       and dt >= date_add('${bf_1_dt}',interval -92 day)
                        and dt <= '${bf_1_dt}'
                      group by 1, 2
                     )    as a4
@@ -92,7 +92,7 @@ with t1 as (
       left join (select login_id                      as user_id
                        ,count(distinct chapter_id)    as total_episode_count
                    from ods_log.ods_sensors_production_startreadingchapter
-                  where dt >= date_add('${bf_1_dt}',interval -365 day)
+                  where dt >= date_add('${bf_1_dt}',interval -92 day)
                     and dt <= '${bf_1_dt}'
                   group by 1
                 )    as a2
@@ -103,7 +103,7 @@ with t1 as (
                                ,date_format(event_tm, '%y-%m-%d %h:%i:00')    as minute_time
                                ,count(distinct chapter_id)                    as chapter_count
                            from ods_log.ods_sensors_production_startreadingchapter
-                          where dt >= date_add('${bf_1_dt}',interval -365 day)
+                          where dt >= date_add('${bf_1_dt}',interval -92 day)
                             and dt <= '${bf_1_dt}'
                           group by 1, 2
                         )    as b2
@@ -116,7 +116,7 @@ with t1 as (
                          end                 as is_sub
                       from ods_log.ods_sensors_cd_video_production_ordersuccess
                      where project_id = 5
-                       and dt >= date_add('${bf_1_dt}',interval -365 day)
+                       and dt >= date_add('${bf_1_dt}',interval -92 day)
                        and dt <= '${bf_1_dt}'
                      group by 1, 2
                     )    as a4
