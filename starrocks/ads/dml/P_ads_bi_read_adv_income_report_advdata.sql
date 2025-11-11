@@ -2,8 +2,9 @@
 -- 程序功能： 阅读广告位置收入数据(阅读真实收益)
 -- 程序名： P_ads_bi_read_adv_income_report_advdata
 -- 目标表： ads.ads_bi_read_adv_income_report_advdata
--- 负责人： qhr
--- 开发日期： 
+-- 负责人： xjc
+-- 开发日期：2025-11-05
+-- 版本号： v0.0.0
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_read_adv_income_report_advdata
@@ -21,12 +22,11 @@ with amt as (
           ,sum(ad_amount)           as ad_amount
       from dws.dws_advertisement_admob_income_ed
      where dt >= '${bf_4_dt}'
-       and product_id <> 6833
+       and product_id not in (6833)
        and time_types = 1
-     group by 1,2,3,4,5,6
-)
+     group by 1, 2, 3, 4, 5, 6)
 -- 先关联开启状态的广告单元id配置数据
-,amt_1 as (
+, amt_1 as (
     select amt.dt
           ,amt.product_id
           ,amt.mt
@@ -39,20 +39,20 @@ with amt as (
           ,sum(amt.ad_requests)         as ad_request_cnt
           ,sum(amt.matched_requests)    as matched_request_cnt
           ,sum(amt.impressions)         as impression_cnt
-          ,sum(amt.clicks)              as click_cnt 
+          ,sum(amt.clicks)              as click_cnt
       from amt
       join (select product_id
                   ,unit_adid
                   ,ad_show_type
-                  ,min(ad_position)     as ad_position
-              from dim.dim_app_adplatform_unit_id_info    -- 海外阅读的广告单元id配置表
-             where ad_plat_form = 1
-               and status = 1
-             group by 1,2,3
-           )                            as b
+                  ,min(ad_position) as ad_position
+             from dim.dim_app_adplatform_unit_id_info  -- 海外阅读的广告单元id配置表
+            where ad_plat_form = 1
+              and status = 1
+            group by 1, 2, 3
+           ) as b
         on amt.product_id = b.product_id
        and amt.ad_unit = b.unit_adid
-     group by 1,2,3,4,5,6,7,8
+     group by 1, 2, 3, 4, 5, 6, 7, 8
 )
 , amt_2 as (
     select amt.dt
@@ -61,194 +61,198 @@ with amt as (
           ,amt.corever
           ,amt.ads_nmae
           ,b.ad_show_type
-          ,b.ad_position                as position_id
-          ,1                            as tps
-          ,sum(amt.ad_amount)           as ad_amt
-          ,sum(amt.ad_requests)         as ad_request_cnt
-          ,sum(amt.matched_requests)    as matched_request_cnt
-          ,sum(amt.impressions)         as impression_cnt
-          ,sum(amt.clicks)              as click_cnt 
+          ,b.ad_position              as position_id
+          ,1                          as tps
+          ,sum(amt.ad_amount)         as ad_amt
+          ,sum(amt.ad_requests)       as ad_request_cnt
+          ,sum(amt.matched_requests)  as matched_request_cnt
+          ,sum(amt.impressions)       as impression_cnt
+          ,sum(amt.clicks)            as click_cnt
       from amt
       join (select product_id
                   ,unit_adid
                   ,ad_show_type
-                  ,min(ad_position)     as ad_position
-              from dim.dim_app_adplatform_unit_id_info    -- 海外阅读的广告单元id配置表
-             where ad_plat_form = 1
-               and status = 0
-             group by 1,2,3
-           )                            as b
+                  ,min(ad_position)   as ad_position
+             from dim.dim_app_adplatform_unit_id_info   -- 海外阅读的广告单元id配置表
+            where ad_plat_form = 1
+              and status = 0
+            group by 1, 2, 3
+           ) as b
         on amt.product_id = b.product_id
-       and amt.ad_unit=b.unit_adid
-     where concat(amt.ad_unit,amt.product_id) not in (select distinct concat(unit_adid,product_id)
+       and amt.ad_unit = b.unit_adid
+     where concat(amt.ad_unit, amt.product_id) not in (select distinct concat(unit_adid, product_id)
                                                         from dim.dim_app_adplatform_unit_id_info
-                                                       where ad_plat_form=1
-                                                         and status =1
+                                                       where ad_plat_form = 1
+                                                         and status = 1
                                                      )
-     group by 1,2,3,4,5,6,7,8
+     group by 1, 2, 3, 4, 5, 6, 7, 8
 )
-select dt
-      ,product_id
-      ,mt
-      ,corever
-      ,ads_nmae
-      ,ad_show_type
-      ,position_id
-      ,tps
-      ,ad_amt
-      ,ad_request_cnt
-      ,matched_request_cnt
-      ,impression_cnt
-      ,click_cnt
-      ,now() as etl_tm
-  from amt_1
+select a.dt                    as dt                     -- 日期，来自DATE字段
+      ,a.product_id            as product_id             -- 产品
+      ,a.mt                    as mt                     -- 平台
+      ,a.corever               as corever                -- 包体
+      ,a.ads_nmae              as ads_nmae               -- 广告来源
+      ,a.ad_show_type          as ad_show_type           -- 广告类型
+      ,a.position_id           as position_id            -- 广告位置id
+      ,a.tps                   as tps                    -- 1:admob 2:topon 3:max 4:starmobi
+      ,a.ad_amt                as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
+      ,a.ad_request_cnt        as ad_request_cnt         -- 请求的数量，该值是一个整数
+      ,a.matched_request_cnt   as matched_request_cnt    -- 响应请求而返回广告的次数，该值是一个整数
+      ,a.impression_cnt        as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
+      ,a.click_cnt             as click_cnt              -- 用户点击广告的次数，该值是一个整数
+      ,now()                   as etl_tm                 -- 数据清洗时间
+  from amt_1                   as a
  union all
-select dt
-      ,product_id
-      ,mt
-      ,corever
-      ,ads_nmae
-      ,ad_show_type
-      ,position_id
-      ,tps
-      ,ad_amt
-      ,ad_request_cnt
-      ,matched_request_cnt
-      ,impression_cnt
-      ,click_cnt
-      ,now() as etl_tm
-  from amt_2
+select a.dt                    as dt                     -- 日期，来自DATE字段
+      ,a.product_id            as product_id             -- 产品
+      ,a.mt                    as mt                     -- 平台
+      ,a.corever               as corever                -- 包体
+      ,a.ads_nmae              as ads_nmae               -- 广告来源
+      ,a.ad_show_type          as ad_show_type           -- 广告类型
+      ,a.position_id           as position_id            -- 广告位置id
+      ,a.tps                   as tps                    -- 1:admob 2:topon 3:max 4:starmobi
+      ,a.ad_amt                as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
+      ,a.ad_request_cnt        as ad_request_cnt         -- 请求的数量，该值是一个整数
+      ,a.matched_request_cnt   as matched_request_cnt    -- 响应请求而返回广告的次数，该值是一个整数
+      ,a.impression_cnt        as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
+      ,a.click_cnt             as click_cnt              -- 用户点击广告的次数，该值是一个整数
+      ,now()                   as etl_tm                 -- 数据清洗时间
+  from amt_2                   as a
 ;
 
+
+
+
 insert into ads.ads_bi_read_adv_income_report_advdata
--- --------------------------------------- topon 和 rixengine 新增的广告-----------------------------
-select dt
-      ,product_id
-      ,mt
-      ,corever
-      ,firm_name                as ads_name     -- 广告来源
-      ,ad_format                as ad_show_type -- 广告类型
-      ,placement_name           as position_id  -- 广告位置
-      ,2                        as tps
-      ,sum(ad_amount)           as ad_amt
-      ,sum(request)             as ad_request_cnt
-      ,sum(matched_requests)    as matched_requests
-      ,sum(impressions)         as impression_cnt
-      ,sum(clicks)              as click_cnt
-      ,now()                    as etl_tm
-  from dws.dws_advertisement_topon_rixengine_income_ed 
- where dt>= '${bf_4_dt}'   -- and   正式数据从dt>='2023-11-27' 开始
- group by 1,2,3,4,5,6,7,8
--- --------------------------------------- 新增max聚合广告数据-----------------------------
+-- topon 和 rixengine 新增的广告
+select dt                    as dt                     -- 日期，来自DATE字段
+      ,product_id            as product_id             -- 产品
+      ,mt                    as mt                     -- 平台
+      ,corever               as corever                -- 包体
+      ,firm_name             as ads_name               -- 广告来源
+      ,ad_format             as ad_show_type           -- 广告类型
+      ,placement_name        as position_id            -- 广告位置id
+      ,2                     as tps                    -- 2:topon 4:rixengine
+      ,sum(ad_amount)        as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
+      ,sum(request)          as ad_request_cnt         -- 请求的数量，该值是一个整数
+      ,sum(matched_requests) as matched_request_cnt    -- 响应请求而返回广告的次数，该值是一个整数
+      ,sum(impressions)      as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
+      ,sum(clicks)           as click_cnt              -- 用户点击广告的次数，该值是一个整数
+      ,now()                 as etl_tm                 -- 数据清洗时间
+  from dws.dws_advertisement_topon_rixengine_income_ed
+ where dt >= '${bf_4_dt}'
+ group by 1, 2, 3, 4, 5, 6, 7, 8
+-- 新增max聚合广告数据
  union all
-select dt
-      ,product_id
-      ,mt
-      ,corever
-      ,net_work                      as ads_name     -- 广告来源
-      ,ad_format                     as ad_show_type -- 广告类型
-      ,ad_position                   as position_id  -- 广告位置
-      ,3                             as tps
-      ,sum(estimated_revenue_amt)    as ad_amt
-      ,0                             as ad_request_cnt
-      ,0                             as matched_requests
-      ,sum(impressions_cnt)          as impression_cnt
-      ,0                             as click_cnt
-      ,now()                         as etl_tm
-  from dws.dws_advertisement_applovin_max_ad_amt_ed 
- where dt>= '${bf_4_dt}' --  -- and   正式数据从dt>='2024-02-22' 开始
-   and product_id !=6833
- group by 1,2,3,4,5,6,7,8
+select dt                             as dt                     -- 日期，来自DATE字段
+      ,product_id                     as product_id             -- 产品
+      ,mt                             as mt                     -- 平台
+      ,corever                        as corever                -- 包体
+      ,net_work                       as ads_name               -- 广告来源
+      ,ad_format                      as ad_show_type           -- 广告类型
+      ,ad_position                    as position_id            -- 广告位置
+      ,3                              as tps                    -- 3:max
+      ,sum(estimated_revenue_amt)     as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
+      ,0                              as ad_request_cnt         -- 请求的数量，该值是一个整数
+      ,0                              as matched_request_cnt    -- 响应请求而返回广告的次数，该值是一个整数
+      ,sum(impressions_cnt)           as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
+      ,0                              as click_cnt              -- 用户点击广告的次数，该值是一个整数
+      ,now()                          as etl_tm                 -- 数据清洗时间
+  from dws.dws_advertisement_applovin_max_ad_amt_ed
+ where dt >= '${bf_4_dt}'
+   and product_id != 6833
+ group by 1, 2, 3, 4, 5, 6, 7, 8
 ;
 
 -- 阅读同步数据
 insert into ads.ads_bi_read_adv_income_report_advdata
-select a.dt
-      ,product_id
-      ,mt
-      ,core                                                        as corever
-      ,ads_name
-      ,ad_show_type
-      ,positions
+select a.dt                                                     as dt                     -- 日期，来自DATE字段
+      ,product_id                                               as product_id             -- 产品
+      ,mt                                                       as mt                     -- 平台
+      ,core                                                     as corever                -- 包体
+      ,ads_name                                                 as ads_name               -- 广告来源
+      ,ad_show_type                                             as ad_show_type           -- 广告类型
+      ,positions                                                as position_id            -- 广告位置id
       ,case when ads_name in('MonKing','MobKing') then 5
             when ads_name in('Starmobi','H5') then 4
             when ads_name in('pengpai') then 6
             when ads_name in('Starmobi_2') then 7
-        end                                                        as tps
-      ,sum(amt)                                                    as ad_amt
-      ,round(max(b.ad_request)*(sum(cnt)/max(b.all_cnt)),0)        as ad_request
-      ,round(max(b.match_request)*(sum(cnt)/max(b.all_cnt)),0)     as match_request
-      ,round(max(b.ad_show_count)*(sum(cnt)/max(b.all_cnt)),0)     as ad_show_count
-      ,round(max(b.ad_click_count)*(sum(cnt)/max(b.all_cnt)),0)    as ad_click_count
-      ,now() as etl_time
-  from dws.dws_advertisement_user_position_amt_ed         as a
+            else null
+        end                                                        as tps                    -- 标签
+      ,sum(amt)                                                    as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
+      ,round(max(b.ad_request)*(sum(cnt)/max(b.all_cnt)),0)        as ad_request_cnt         -- 请求的数量，该值是一个整数
+      ,round(max(b.match_request)*(sum(cnt)/max(b.all_cnt)),0)     as matched_request_cnt    -- 响应请求而返回广告的次数，该值是一个整数
+      ,round(max(b.ad_show_count)*(sum(cnt)/max(b.all_cnt)),0)     as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
+      ,round(max(b.ad_click_count)*(sum(cnt)/max(b.all_cnt)),0)    as click_cnt              -- 用户点击广告的次数，该值是一个整数
+      ,now()                                                       as etl_time               -- 数据清洗时间
+  from dws.dws_advertisement_user_position_amt_ed                  as a
   left join (select dt
-                   ,sum(ad_request)                       as ad_request
-                   ,sum(match_request)                    as match_request
-                   ,sum(ad_show_count)                    as ad_show_count
-                   ,sum(ad_click_count)                   as ad_click_count
-                   ,sum(all_cnt)                          as all_cnt
-               from (select date(day)                     as dt
-                           ,sum(ad_request)               as ad_request
-                           ,sum(match_request)            as match_request
-                           ,sum(ad_show_count)            as ad_show_count
-                           ,sum(ad_click_count)           as ad_click_count
-                           ,0                             as all_cnt
+                   ,sum(ad_request)                   as ad_request
+                   ,sum(match_request)                as match_request
+                   ,sum(ad_show_count)                as ad_show_count
+                   ,sum(ad_click_count)               as ad_click_count
+                   ,sum(all_cnt)                      as all_cnt
+               from (select date(day)                 as dt
+                           ,sum(ad_request)           as ad_request
+                           ,sum(match_request)        as match_request
+                           ,sum(ad_show_count)        as ad_show_count
+                           ,sum(ad_click_count)       as ad_click_count
+                           ,0                         as all_cnt
                        from dim.dim_sv_ad_advertise_info_view
-                      where day>='${bf_4_dt}' 
-                        and system_type=2
+                      where day >= '${bf_4_dt}'
+                        and system_type = 2
                       group by 1
                       union all
-                     select Date                          as dt
-                           ,sum(AdReq)                    as ad_request
-                           ,sum(AdRes)                    as match_request
-                           ,sum(Imp)                      as ad_show_count
-                           ,sum(Click)                    as ad_click_count
-                           ,0                             as all_cnt
+                     select Date                      as dt
+                           ,sum(AdReq)                as ad_request
+                           ,sum(AdRes)                as match_request
+                           ,sum(Imp)                  as ad_show_count
+                           ,sum(Click)                as ad_click_count
+                           ,0                         as all_cnt
                        from ods.ods_tidb_mobkingaddata    as a
-                      where Date>='${bf_4_dt}'
-                        and ProjectType =0
+                      where Date >= '${bf_4_dt}'
+                        and ProjectType = 0
                       group by 1
                       union all
-                     select Date                          as dt
-                           ,0                             as ad_request
-                           ,0                             as match_request
-                           ,sum(Sessions)                 as ad_show_count
-                           ,sum(Clicks)                   as ad_click_count
-                           ,0                             as all_cnt
+                     select Date                      as dt
+                           ,0                         as ad_request
+                           ,0                         as match_request
+                           ,sum(Sessions)             as ad_show_count
+                           ,sum(Clicks)               as ad_click_count
+                           ,0                         as all_cnt
                        from ods.ods_tidb_SurgeAdData
-                      where Date>='${bf_4_dt}' 
-                        and UrlName='moboreader'
+                      where Date >= '${bf_4_dt}'
+                        and UrlName = 'moboreader'
                       group by 1
-                      union all 
-                     select date(day)                     as dt
-                           ,0                             as ad_request
-                           ,0                             as match_request
-                           ,0                             as ad_show_count
-                           ,sum(page_view)                as ad_click_count
-                           ,0                             as all_cnt
+                      union all
+                     select date(day)                 as dt
+                           ,0                         as ad_request
+                           ,0                         as match_request
+                           ,0                         as ad_show_count
+                           ,sum(page_view)            as ad_click_count
+                           ,0                         as all_cnt
                        from ods.ods_tidb_short_video_log_firefly_income_report
-                      where date(day)>='${bf_4_dt}' 
-                        and system_type=2
+                      where date(day) >= '${bf_4_dt}'
+                        and system_type = 2
                       group by 1
                       union all
                      select dt
-                           ,0                             as ad_request
-                           ,0                             as match_request
-                           ,0                             as ad_show_count
-                           ,0                             as ad_click_count
-                           ,sum(cnt)                      as all_cnt
+                           ,0                         as ad_request
+                           ,0                         as match_request
+                           ,0                         as ad_show_count
+                           ,0                         as ad_click_count
+                           ,sum(cnt)                  as all_cnt
                        from dws.dws_advertisement_user_position_amt_ed
-                      where dt>='${bf_4_dt}'
-                        and product_id <>6833
+                      where dt >= '${bf_4_dt}'
+                        and product_id <> 6833
                         and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2')
                       group by 1
-                    )                                     as a
-              group by 1
-            ) b 
-    on a.dt=b.dt
+                    )    as a
+     group by 1
+            )    as b
+    on a.dt = b.dt
  where product_id <> 6833
    and a.ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2')
-   and a.dt >='${bf_4_dt}'
- group by 1,2,3,4,5,6,7,8
+   and a.dt >= '${bf_4_dt}'
+ group by 1, 2, 3, 4, 5, 6, 7, 8
 ;

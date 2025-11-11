@@ -1,14 +1,14 @@
 ----------------------------------------------------------------
--- 程序功能： BI-海剧海阅移动终端Push监控
--- 程序名： P_ads_srsv_bi_mt_push_mon
--- 目标表： ads.ads_srsv_bi_mt_push_mon
+-- 程序功能： BI-海剧海阅移动终端客户端Push监控
+-- 程序名： P_ads_srsv_bi_mt_cli_push_mon
+-- 目标表： ads.ads_srsv_bi_mt_cli_push_mon
 -- 负责人： qhr
 -- 开发日期：2025-10-21
 -- 版本号： v0.0.0
 ----------------------------------------------------------------
 
 -- ${dt}：传入当前调度时间的yyyy-MM-dd HH:00:00
-insert into ads.ads_srsv_bi_mt_push_mon
+insert into ads.ads_srsv_bi_mt_cli_push_mon
 with act_user as (
     select date_trunc('hour', '${dt}')                         as stat_time
           ,6833                                                as product_id
@@ -53,33 +53,6 @@ with act_user as (
        and a2.corever is not null
      group by 1, 2, 3, 4
 )
-, sv_push_info as (
-    select date_trunc('hour', '${dt}')                          as stat_time
-          ,6833                                                 as product_id
-          ,a2.corever                                           as core
-          ,a2.mt                                                as mt
-          ,count(a1.Id)                                         as svr_push_tsk_num
-          ,bitmap_union(to_bitmap(a1.AccountId))                as svr_push_uv
-          ,sum(case when a1.IsSuccess = 1 then 1 else 0 end)    as svr_push_succ_tsk_num
-      from (select case when coalesce(b1.AccountId,0) = 0 then
-                             case when b1.AppId % 2 = 0 then cast(get_json_string(get_json_string(b1.Body, '$.Data.custom'), '$.accountId') as bigint)
-                                  else cast(get_json_string(b1.Body, '$.custom.accountId') as bigint)
-                              end
-                        else b1.AccountId
-                    end                                         as AccountId
-                   ,b1.IsSuccess
-                   ,b1.Id
-              from ods.ods_tidb_unifypush_log_log_pushlog_sv    as b1
-             where b1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
-               and b1.CreateTime >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
-               and b1.CreateTime < '${dt}'
-               and b1.AppId % 2 in (1, 0)
-           )                                                    as a1
-      join dim.dim_short_video_user_accountinfo                 as a2
-        on a1.AccountId = a2.user_id
-       and coalesce(a1.AccountId,0) <> 0
-     group by 1, 2, 3, 4
-)
 , cli_push_dev_arr as (
     select date_trunc('hour', '${dt}')                  as stat_time
           ,6833                                         as product_id
@@ -104,8 +77,7 @@ with act_user as (
           ,a1.mt                                                            as mt
           ,bitmap_union(to_bitmap(a1.account_id))                           as cli_push_uv
           ,bitmap_union(to_bitmap(a1.active_user_id))                       as cli_push_act_uv
-      from (select date_trunc('hour', '${dt}')                              as stat_time
-                  ,b2.corever                                               as core
+      from (select b2.corever                                               as core
                   ,b2.mt                                                    as mt
                   ,b1.account_id                                            as account_id
                   ,b1.active_user_id                                        as active_user_id
@@ -119,8 +91,7 @@ with act_user as (
                and b1.need_to_send_time < '${dt}'
                and (b1.send_status = 1 or b1.push_position_id in (1,2))
              union all
-            select date_trunc('hour', '${dt}')                              as stat_time
-                  ,cast(substr(b3.app_id,-4,1) as int)                      as corever
+            select cast(substr(b3.app_id,-4,1) as int)                      as corever
                   ,case when b3.os = 'Android' then 4 else 1 end            as mt
                   ,b3.login_id                                              as account_id
                   ,b3.login_id                                              as active_user_id
@@ -138,55 +109,61 @@ with act_user as (
 , cli_clk_uv as (
     select date_trunc('hour', '${dt}')             as stat_time
           ,6833                                    as product_id
-          ,a2.corever                              as core
-          ,a2.mt                                   as mt
+          ,a1.core                                 as core
+          ,a1.mt                                   as mt
           ,bitmap_union(to_bitmap(a1.login_id))    as cli_clk_uv
-      from ads.ads_sensors_video_pushclick_view    as a1
-      join dim.dim_short_video_user_accountinfo    as a2
-        on a1.login_id = a2.user_id
-       and coalesce(a2.mt,-99) in (1, 4)
-       and a2.corever is not null
-     where a1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
-       and a1.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
-       and a1.event_tm < '${dt}'
+      from (select cast(substr(b1.app_id, -4, 1) as int)            as core
+                  ,case when b1.os = 'Android' then 4 else 1 end    as mt
+                  ,b1.login_id                                      as login_id
+              from ads.ads_sensors_video_pushclick_view    as b1
+             where b1.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b1.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b1.event_tm < '${dt}'
+               and b1.os in ('Android','iOS')
+             union all
+            select cast(substr(b2.app_id, -4, 1) as int)            as core
+                  ,case when b2.os = 'Android' then 4 else 1 end    as mt
+                  ,b2.login_id                                      as login_id
+              from ads.ads_sensors_cd_video_elmentclick_view    as b2
+             where b2.dt = case when hour('${dt}') = 0 then date(date_sub('${dt}', interval 1 day)) else date('${dt}') end
+               and b2.event_tm >= case when hour('${dt}') = 0 then date_sub('${dt}', interval 1 day) else date_trunc('day', '${dt}') end
+               and b2.event_tm < '${dt}'
+               and b2.os in ('iOS', 'Android')
+               and (    (b2.element_id = 210015 and b2.project_id = 8)
+                     or (b2.element_id = 210012 and b2.os = 'iOS' and b2.element_type = 1)
+                     or (b2.element_id = 210032 and b2.os = 'Android')
+                   )
+           )    as a1
      group by 1, 2, 3, 4
 )
-select a1.stat_time                as stat_time                -- 统计时间
-      ,a1.product_id               as product_id               -- product_id
-      ,a1.core                     as core                     -- core
-      ,a1.mt                       as mt                       -- 移动终端
-      ,a6.cd_val_desc              as mt_name                  -- 移动终端名称
-      ,a2.svr_push_tsk_num         as svr_push_tsk_num         -- 服务端下发任务数
-      ,a2.svr_push_uv              as svr_push_uv              -- 服务端下发UV
-      ,a2.svr_push_succ_tsk_num    as svr_push_succ_tsk_num    -- 服务端下发成功任务数
-      ,a3.push_cli_arr_dev_num     as push_cli_arr_dev_num     -- 下发到达客户端设备数
-      ,a4.cli_push_uv              as cli_push_uv              -- 客户端下发UV
-      ,a5.cli_clk_uv               as cli_clk_uv               -- 客户端点击UV
-      ,a1.cli_dau                  as cli_dau                  -- 客户端dau
-      ,a4.cli_push_act_uv          as cli_push_act_uv          -- 客户端下发活跃UV
+select a1.stat_time                as stat_time               -- 统计时间
+      ,a1.product_id               as product_id              -- product_id
+      ,a1.core                     as core                    -- core
+      ,a1.mt                       as mt                      -- 移动终端
+      ,a5.cd_val_desc              as mt_name                 -- 移动终端名称
+      ,a2.push_cli_arr_dev_num     as push_cli_arr_dev_num    -- 下发到达客户端设备数
+      ,a3.cli_push_uv              as cli_push_uv             -- 客户端下发UV
+      ,a4.cli_clk_uv               as cli_clk_uv              -- 客户端点击UV
+      ,a1.cli_dau                  as cli_dau                 -- 客户端dau
+      ,a3.cli_push_act_uv          as cli_push_act_uv         -- 客户端下发活跃UV
   from act_user                              as a1
-  left join sv_push_info                     as a2
+  left join cli_push_dev_arr                 as a2
     on a1.stat_time = a2.stat_time
    and a1.product_id = a2.product_id
    and a1.core = a2.core
    and a1.mt = a2.mt
-  left join cli_push_dev_arr                 as a3
+  left join cli_push_uv                      as a3
     on a1.stat_time = a3.stat_time
    and a1.product_id = a3.product_id
    and a1.core = a3.core
    and a1.mt = a3.mt
-  left join cli_push_uv                      as a4
+  left join cli_clk_uv                       as a4
     on a1.stat_time = a4.stat_time
    and a1.product_id = a4.product_id
    and a1.core = a4.core
    and a1.mt = a4.mt
-  left join cli_clk_uv                       as a5
-    on a1.stat_time = a5.stat_time
-   and a1.product_id = a5.product_id
-   and a1.core = a5.core
-   and a1.mt = a5.mt
-  left join dim.dim_pub_code_mapping_dict    as a6
-    on a6.app_plat = 'pub'
-   and a6.cd_col = 'mt'
-   and a1.mt = a6.cd_val
+  left join dim.dim_pub_code_mapping_dict    as a5
+    on a5.app_plat = 'pub'
+   and a5.cd_col = 'mt'
+   and a1.mt = a5.cd_val
 ;
