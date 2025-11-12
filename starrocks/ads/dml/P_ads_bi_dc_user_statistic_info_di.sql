@@ -22,7 +22,7 @@ with install_user_count as (
         on a1.ad_id = a2.ad_id
        and a2.product_id = 6833
        and a2.inst_id > 0
-     where a1.dt >= date_sub('${bf_1_dt}', interval 10 day)
+     where a1.dt >= date_sub('${bf_1_dt}', interval 60 day)
        and a1.Product_Id = 6833
        and a1.IsDelete = 0
      group by 1,2,3,4,5,6,7
@@ -55,7 +55,7 @@ select a1.dt                                   as dt                  -- 统计�
               ,count(b1.OrderSerialId)                                        as pay_order_count
               ,coalesce(sum(b1.Amount/100),0)                                 as pay_order_amount
           from dwd.dwd_pay_order_for_dc_view    as b1
-         where b1.dt >= date_sub('${bf_1_dt}', interval 10 day)
+         where b1.dt >= date_sub('${bf_1_dt}', interval 60 day)
          group by 1,2,3,4,5,6,7
          union all
          select b2.dt
