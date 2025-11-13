@@ -22,7 +22,7 @@ with t1 as (
                           ,project_type
                           ,sub_pay_type
                       from ads.ads_srsv_trade_koc_payorderinfo_di
-                     where dt >= date_sub('${bf_1_dt}', interval 1 month)
+                     where dt = '${bf_1_dt}'
                        and project_type = 2
                        and user_id is not null
                      group by 1, 2 ,3
@@ -73,7 +73,7 @@ with t1 as (
                           ,project_type
                           ,sub_pay_type
                       from ads.ads_srsv_trade_koc_payorderinfo_di
-                     where dt >= date_sub('${bf_1_dt}', interval 1 month)
+                     where dt = '${bf_1_dt}'
                        and project_type = 1
                        and user_id is not null
                      group by 1, 2 ,3
