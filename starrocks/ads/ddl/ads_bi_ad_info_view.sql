@@ -1,13 +1,3 @@
-----------------------------------------------------------------
--- 目标表： ads.ads_bi_ad_info_view
--- 来源实例： <来源数据库实例>
--- 来源表： dwd.dwd_advertisement_adext_view
--- 来源负责： <来源表服务端/客户端负责人(允许多个)>
--- 采集工具： <采集工具：极光-定时批量 / SeaTunnel>
--- 开发人： roger
--- 开发日期：2025/11/13
-----------------------------------------------------------------
-
 create or replace view ads.ads_bi_ad_info_view (
      ad_id            comment "广告id"
     ,prd_id           comment "产品id"
