@@ -8,14 +8,14 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_bib_usr_dlg_anal
-select date(a.CreateTime)                            as dt             -- 数据日期
-      ,a.UserId                                      as usr_id         -- 用户Id
-      ,datediff(a.CreateTime,b.create_time)          as ust            -- 用户活跃时长
-      ,count(1)                                      as dlg_num_d      -- 当日对话次数
-      ,current_timestamp()                           as etl_time       -- 数据清洗时间
-  from ods.ods_tidb_hallow_log_log_chatlog           as a
-  left join dim.dim_hallow_user_account_info_view    as b
-    on a.UserId=b.id
- where substr(a.CreateTime,1,10) >= '${bf_1_dt}'
+select date(a1.CreateTime)                           as dt           -- 数据日期
+      ,a1.UserId                                     as usr_id       -- 用户Id
+      ,datediff(a1.CreateTime,a2.create_time)        as ust          -- 用户活跃时长
+      ,count(1)                                      as dlg_num_d    -- 当日对话次数
+      ,current_timestamp()                           as etl_time     -- 数据清洗时间
+  from ods.ods_tidb_hallow_log_log_chatlog           as a1
+  left join dim.dim_hallow_user_account_info_view    as a2
+    on a1.UserId = a2.id
+ where substr(a1.CreateTime,1,10) >= '${bf_1_dt}'
  group by 1, 2, 3
 ;
