@@ -110,14 +110,14 @@ with t1 as (
                 )                                                             as a4
         on a1.user_id = a4.user_id
 )
-select a1.dt                                                  -- 日期
-      ,a1.user_id                                             -- 用户id
-      ,a1.prj_type_cd                                         -- 项目类型
-      ,coalesce(a2.cd_col_desc, '-99')    as prj_type_name    -- 项目类型名称
-      ,a1.ttl_view_num                                        -- 总观看集/章数
-      ,a1.min_avg_view_num                                    -- 每分钟平均观看集/章数
-      ,a1.pay_mth                                             -- 支付方式
-      ,a1.tp_prd                                              -- 充值产品
+select a1.dt                                                     -- 日期
+      ,a1.user_id                                                -- 用户id
+      ,a1.prj_type_cd                                            -- 项目类型
+      ,coalesce(a2.cd_col_desc, '-99')       as prj_type_name    -- 项目类型名称
+      ,a1.ttl_view_num                                           -- 总观看集/章数
+      ,a1.min_avg_view_num                                       -- 每分钟平均观看集/章数
+      ,a1.pay_mth                                                -- 支付方式
+      ,a1.tp_prd                                                 -- 充值产品
   from t1                                    as a1
   left join dim.dim_pub_code_mapping_dict    as a2
     on a1.prj_type_cd = a2.cd_val
