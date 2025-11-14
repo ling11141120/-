@@ -214,12 +214,16 @@ with z1 as (
                        ,b1.opt_eid
                        ,b1.opt_name
                        ,b2.day7_amt
-                   from (select c1.Code            as prd_cd
-                               ,c1.SourceChl       as src_med
-                               ,c1.ProjectCode     as prj_cd
-                               ,c3.cd_val          as lang_abbr
-                               ,c2.LastTaskUid     as opt_eid
-                               ,c2.LastTaskUser    as opt_name
+                   from (select c1.CodeId             as prd_id
+                               ,c1.Code               as prd_cd
+                               ,c1.SourceChl          as src_med
+                               ,c1.ProjectCode        as prj_cd
+                               ,c1.CurrentLanguage    as lang_cd
+                               ,c3.cd_val             as lang_abbr
+                               ,c2.LastTaskUid        as opt_eid
+                               ,c2.LastTaskUser       as opt_name
+                               ,c1.CodeStage          as code_stage
+                               ,c1.PlanRound          as plan_round
                            from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan              as c1
                            left join ods.ods_tidb_sharpengine_ads_global_marketingplanlasttask    as c2
                              on c1.Id = c2.MarketingPlanId
@@ -231,18 +235,31 @@ with z1 as (
                           where c1.IsDel = 0
                             and coalesce(c1.Code, '') <> ''
                             and c1.ProjectCode in (1, 2)
-                            and c1.CodeStage = 1
-                            and c1.PlanRound = 1
                             and c2.LastTaskUid is not null
                         )                                                                         as b1
-                   left join (select c4.ads_optimizer
-                                    ,sum(c4.cost_amount)    as day7_amt
+                   left join (select c5.p_cd_val             as prj_cd
+                                    ,case when c4.source_chl in ('facebook','fbs2s') then 'fb' 
+                                          else c4.source_chl
+                                      end                    as src_med
+                                    ,c4.book_id              as prd_id
+                                    ,c4.current_language2    as lang_cd
+                                    ,c4.ads_optimizer        as opt_eid
+                                    ,sum(c4.cost_amount)     as day7_amt
                                 from ads.ads_bi_ad_cost_recharge_view                             as c4
+                                left join dim.dim_pub_code_mapping_dict                           as c5
+                                   on c4.product_id = c5.p_cd_val
+                                  and c5.cd_col = 'product_id'
+                                  and c5.app_plat = 'pub'
                                where c4.dt between date_sub(curdate(), interval 6 day) and curdate()
                                  and coalesce(c4.ads_optimizer, 'unknown') not in ('unknown', 'inste_bf760b83b9c349c7bbf2b221ac673d25', 'inste_5e3bc147ee9e45bd8479e3f149735bd3')
-                               group by c4.ads_optimizer
+                                 and c4.book_id is not null
+                               group by 1, 2, 3, 4, 5
                              )                                                                    as b2
-                     on b1.opt_eid = b2.ads_optimizer
+                     on b1.prj_cd = b2.prj_cd
+                    and b1.src_med = b2.src_med
+                    and b1.prd_id = b2.prd_id
+                    and b1.lang_cd = b2.lang_cd
+                    and b1.opt_eid = b2.opt_eid
                 qualify dense_rank() over(partition by b1.prj_cd, b1.src_med, b1.prd_cd, b1.lang_abbr
                                               order by b2.day7_amt desc
                                          ) = 1    -- 同一组媒体+代号存在多个优化师取近7天花费最高的
