@@ -22,4 +22,5 @@ select a1.ad_id               as ad_id            -- 广告id
    and a2.app_plat = "pub"
    and a2.cd_col = "product_id"
  where a1.ad_id not regexp "[a-zA-Z]|,"
+   and a1.product_id = 2311
 ;
