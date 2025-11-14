@@ -21,5 +21,5 @@ select a1.ad_id               as ad_id            -- 广告id
     on a1.product_id = a2.cd_val
    and a2.app_plat = "pub"
    and a2.cd_col = "product_id"
- where a1.ad_id is not null
+ where a1.ad_id not regexp "[a-zA-Z]|,"
 ;
