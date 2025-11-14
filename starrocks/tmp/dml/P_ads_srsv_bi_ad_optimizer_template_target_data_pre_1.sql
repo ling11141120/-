@@ -216,8 +216,8 @@ with z1 as (
                        ,b2.day7_amt
                    from (select c1.Code            as prd_cd
                                ,c1.SourceChl       as src_med
-                               ,c3.p_cd_val        as prj_cd
-                               ,c4.cd_val          as lang_abbr
+                               ,c1.ProjectCode     as prj_cd
+                               ,c3.cd_val          as lang_abbr
                                ,c2.LastTaskUid     as opt_eid
                                ,c2.LastTaskUser    as opt_name
                            from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan              as c1
@@ -225,26 +225,22 @@ with z1 as (
                              on c1.Id = c2.MarketingPlanId
                             and c2.IsDel = 0
                            left join dim.dim_pub_code_mapping_dict                                as c3
-                             on c1.PutProductId = c3.cd_val
-                            and c3.cd_col = 'product_id'
+                             on c1.CurrentLanguage = c3.p_cd_val
+                            and c3.cd_col = 'lang_abbr'
                             and c3.app_plat = 'pub'
-                            and c3.p_cd_col is not null
-                           left join dim.dim_pub_code_mapping_dict                                as c4
-                             on c1.CurrentLanguage = c4.p_cd_val
-                            and c4.cd_col = 'lang_abbr'
-                            and c4.app_plat = 'pub'
                           where c1.IsDel = 0
-                            and c1.Code is not null
+                            and coalesce(c1.Code, '') <> ''
                             and c1.ProjectCode in (1, 2)
                             and c1.CodeStage = 1
                             and c1.PlanRound = 1
+                            and c2.LastTaskUid is not null
                         )                                                                         as b1
-                   left join (select c5.ads_optimizer
-                                    ,sum(c5.cost_amount)    as day7_amt
-                                from ads.ads_bi_ad_cost_recharge_view                             as c5
-                               where c5.dt between date_sub(curdate(), interval 6 day) and curdate()
-                                 and coalesce(c5.ads_optimizer, 'unknown') not in ('unknown', 'inste_bf760b83b9c349c7bbf2b221ac673d25', 'inste_5e3bc147ee9e45bd8479e3f149735bd3')
-                               group by c5.ads_optimizer
+                   left join (select c4.ads_optimizer
+                                    ,sum(c4.cost_amount)    as day7_amt
+                                from ads.ads_bi_ad_cost_recharge_view                             as c4
+                               where c4.dt between date_sub(curdate(), interval 6 day) and curdate()
+                                 and coalesce(c4.ads_optimizer, 'unknown') not in ('unknown', 'inste_bf760b83b9c349c7bbf2b221ac673d25', 'inste_5e3bc147ee9e45bd8479e3f149735bd3')
+                               group by c4.ads_optimizer
                              )                                                                    as b2
                      on b1.opt_eid = b2.ads_optimizer
                 qualify dense_rank() over(partition by b1.prj_cd, b1.src_med, b1.prd_cd, b1.lang_abbr
