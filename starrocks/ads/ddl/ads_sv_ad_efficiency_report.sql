@@ -1,53 +1,54 @@
-drop table ads.ads_sv_ad_efficiency_report;
+drop table if exists ads.ads_sv_ad_efficiency_report;
 create table ads.ads_sv_ad_efficiency_report (
-    dt                          date                not null    comment "日期"
-   ,period_type                 varchar(20)         not null    comment "统计周期类型,ctt/rmt,rmt拉活用户"
-   ,product_id                  bigint(20)          not null    comment "产品id"
-   ,user_id                     varchar(200)        not null    comment "用户id"
-   ,user_type                   varchar(50)         not null    comment "用户类型"
-   ,corever                     int(11)             null        comment "core"
-   ,mt                          int(11)             null        comment "mt"
-   ,mt_name                     varchar(50)         null        comment "mt名称"
-   ,reg_country                 varchar(50)         null        comment "注册国家缩写"
-   ,country                     varchar(50)         null        comment "注册国家"
-   ,country_level               int(11)             null        comment "国家等级"
-   ,current_language2           int(11)             null        comment "注册语言"
-   ,current_language2_name      varchar(50)         null        comment "注册语言名称"
-   ,position_id                 int(11)             null        comment "广告位id"
-   ,ad_type                     int(11)             null        comment "广告类型id"
-   ,ad_position_type            varchar(50)         null        comment "广告位类型名称"
-   ,event_strategy_id           varchar(50)         null        comment "策略id"
-   ,main_strategy_id            varchar(65533)      null        comment "主策略id"
-   ,exposure_id                 varchar(200)        null        comment "曝光用户id"
-   ,exposure_pv                 int(11)             null        comment "曝光用户pv"
-   ,click_id                    varchar(200)        null        comment "点击用户id"
-   ,click_pv                    int(11)             null        comment "点击用户pv"
-   ,watchsuccess_id             varchar(200)        null        comment "观看成功用户id"
-   ,watchsuccess_pv             int(11)             null        comment "观看成功用户pv"
-   ,unlock_id                   varchar(200)        null        comment "解锁用户id"
-   ,unlock_pv                   int(11)             null        comment "解锁用户pv"
-   ,amt                         decimal(12, 6)      null        comment "广告收益"
-   ,row_amt                     int(11)             null        comment "主策略收益倒序"
-   ,recharge_amount             decimal(12, 2)      null        comment "充值金额"
-   ,etl_time                    datetime            null        comment "etl时间"
+    dt                        date              not null    comment "日期"
+   ,period_type               varchar(20)       not null    comment "统计周期类型,ctt/rmt,rmt拉活用户"
+   ,product_id                bigint(20)        not null    comment "产品id"
+   ,user_id                   varchar(200)      not null    comment "用户id"
+   ,user_type                 varchar(50)       not null    comment "用户类型"
+   ,corever                   int(11)                       comment "core"
+   ,mt                        int(11)                       comment "mt"
+   ,mt_name                   varchar(50)                   comment "mt名称"
+   ,reg_country               varchar(50)                   comment "注册国家缩写"
+   ,country                   varchar(50)                   comment "注册国家"
+   ,country_level             int(11)                       comment "国家等级"
+   ,current_language2         int(11)                       comment "注册语言"
+   ,current_language2_name    varchar(50)                   comment "注册语言名称"
+   ,position_id               int(11)                       comment "广告位id"
+   ,ad_type                   int(11)                       comment "广告类型id"
+   ,ad_position_type          varchar(50)                   comment "广告位类型名称"
+   ,ad_src                    varchar(255)                  comment "广告来源"
+   ,event_strategy_id         varchar(50)                   comment "策略id"
+   ,main_strategy_id          varchar(65533)                comment "主策略id"
+   ,exposure_id               varchar(200)                  comment "曝光用户id"
+   ,exposure_pv               int(11)                       comment "曝光用户pv"
+   ,click_id                  varchar(200)                  comment "点击用户id"
+   ,click_pv                  int(11)                       comment "点击用户pv"
+   ,watchsuccess_id           varchar(200)                  comment "观看成功用户id"
+   ,watchsuccess_pv           int(11)                       comment "观看成功用户pv"
+   ,unlock_id                 varchar(200)                  comment "解锁用户id"
+   ,unlock_pv                 int(11)                       comment "解锁用户pv"
+   ,amt                       decimal(12, 6)                comment "广告收益"
+   ,row_amt                   int(11)                       comment "主策略收益倒序"
+   ,recharge_amount           decimal(12, 2)                comment "充值金额"
+   ,etl_time                  datetime                      comment "etl时间"
 )
 duplicate key(dt, period_type, product_id, user_id)
 comment "海剧-广告效能汇总表"
 partition by range(dt)
 distributed by hash(dt, period_type, product_id, user_id) buckets 5
 properties (
-    "replication_num" = "3",
-    "dynamic_partition.enable" = "true",
-    "dynamic_partition.time_unit" = "day",
-    "dynamic_partition.time_zone" = "asia/shanghai",
-    "dynamic_partition.start" = "-2147483648",
-    "dynamic_partition.end" = "3",
-    "dynamic_partition.prefix" = "p",
-    "dynamic_partition.buckets" = "1",
-    "dynamic_partition.history_partition_num" = "0",
-    "in_memory" = "false",
-    "enable_persistent_index" = "true",
-    "replicated_storage" = "true",
-    "compression" = "lz4"
+    "replication_num" = "3"
+   ,"dynamic_partition.enable" = "true"
+   ,"dynamic_partition.time_unit" = "DAY"
+   ,"dynamic_partition.time_zone" = "Asia/Shanghai"
+   ,"dynamic_partition.start" = "-2147483648"
+   ,"dynamic_partition.end" = "3"
+   ,"dynamic_partition.prefix" = "p"
+   ,"dynamic_partition.buckets" = "1"
+   ,"dynamic_partition.history_partition_num" = "0"
+   ,"in_memory" = "false"
+   ,"enable_persistent_index" = "true"
+   ,"replicated_storage" = "true"
+   ,"compression" = "LZ4"
 )
 ;
