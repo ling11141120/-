@@ -4,7 +4,7 @@
 -- 目标表： ads.ads_srsv_bi_susp_koc_scr
 -- 负责人： wx
 -- 开发日期： 2025-10-31
--- 版本号： v0.0.0
+-- 版本号： v1.0.0
 ----------------------------------------------------------------
 insert into tmp.ads_srsv_bi_susp_koc_scr
 select '${bf_1_dt}'                       as dt                  -- 日期
