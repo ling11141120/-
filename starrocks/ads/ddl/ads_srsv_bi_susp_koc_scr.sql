@@ -1,5 +1,5 @@
-drop table if exists ads.ads_srsv_bi_susp_koc_scr;
-create table ads.ads_srsv_bi_susp_koc_scr (
+drop table if exists tmp.ads_srsv_bi_susp_koc_scr;
+create table tmp.ads_srsv_bi_susp_koc_scr (
      dt                  date          not null    comment "日期"
     ,usr_id              bigint(20)    not null    comment "用户id"
     ,prj_type_cd         int(11)                   comment "项目类型"
