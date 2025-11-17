@@ -6,7 +6,7 @@ create table tmp.ads_srsv_bi_susp_koc_scr (
     ,prj_type_name       varchar(20)               comment "项目类型名称"
     ,ttl_view_num        int(11)                   comment "总观看数"
     ,min_avg_view_num    varchar(50)               comment "每分钟平均观看数量"
-    ,pay_mth             varchar(100)              comment "支付方式"
+    ,pay_mth             string                    comment "支付方式"
     ,tp_prd              varchar(20)               comment "充值产品"
 )
 primary key (dt, usr_id)
