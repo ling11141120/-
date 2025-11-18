@@ -258,7 +258,7 @@ select a1.dt                                                                 as 
                          )     as b2
                  on b1.dt = b2.dt
                 and b1.ads_name = b2.ads_name
-     group by 1,2
+              group by 1,2
             )                                        as a2
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
