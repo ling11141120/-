@@ -2,8 +2,8 @@
 -- 程序功能： 用户广告位转化明细
 -- 程序名： P_ads_ad_user_space_conversion_detail
 -- 目标表： ads.ads_ad_user_space_conversion_detail
--- 负责人： xjc
--- 开发日期： 2025-11-11
+-- 负责人： qhr/xjc
+-- 开发日期： 2025-09-09
 -- 版本号： v0.1.2
 ----------------------------------------------------------------
 
@@ -23,7 +23,7 @@ with event_detail as (
           ,'ad'                                as ad_type
           ,count(1)                            as pv
           ,0                                   as amount
-      from ads.ads_sensors_production_ad_position_exposure_view    -- ods_sensors_production_adpositionexposure event=ADPositionExposure 资源位曝光 ,project_id=5 仅海阅
+      from ads.ads_sensors_production_ad_position_exposure_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and ad_position_id is not null
@@ -39,7 +39,7 @@ with event_detail as (
           ,'task'                               as ad_type
           ,count(1)                             as pv
           ,0                                    as amount
-      from ads.ads_sensors_production_element_expose_view    -- ods_sensors_production_element_expose event=element_expose 控件曝光事件
+      from ads.ads_sensors_production_element_expose_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100772'
@@ -59,7 +59,7 @@ with event_detail as (
           ,'h5_ad'                             as ad_type
           ,count(1)                            as pv
           ,0                                   as amount
-      from ads.ads_sensors_production_element_expose_view    -- ods_sensors_production_element_expose event=element_expose 控件曝光事件
+      from ads.ads_sensors_production_element_expose_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100356'
@@ -79,7 +79,7 @@ with event_detail as (
           ,'ad'                                as ad_type
           ,count(1)                            as pv
           ,0                                   as amount
-      from ads.ads_sensors_production_adpositionclick_view    -- ods_sensors_production_adpositionclick event=ADPositionClick 资源位点击
+      from ads.ads_sensors_production_adpositionclick_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and ad_position_id is not null
@@ -99,7 +99,7 @@ with event_detail as (
           ,'ad'                                as ad_type
           ,count(1)                            as pv
           ,0                                   as amount
-      from ads.ads_sensors_production_ad_watch_success_view    -- ods_sensors_production_adwatchsuccess event=ADWatchSuccess 广告完播
+      from ads.ads_sensors_production_ad_watch_success_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
      group by 1,2,3,4,5
@@ -122,7 +122,7 @@ with event_detail as (
             end                                 as ad_type
           ,count(1)                             as pv
           ,0                                    as amount
-      from ads.ads_sensors_production_H5BackToApp_view    -- event=H5BackToApp H5广告返回APP
+      from ads.ads_sensors_production_H5BackToApp_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and status = '任务成功'
@@ -160,26 +160,26 @@ with event_detail as (
           ,a1.user_id
           ,period_type
           ,user_type
-          ,a2.remarks
+          ,a2.cd_val_desc                 as remarks
           ,case when country_level = 1 then 'T1'
                 when country_level = 2 then 'T2'
                 else '-99'
             end                           as country_level
-          ,case when lower(a3.enum_name) = 'ios' then 1
-                when lower(a3.enum_name) = 'android' then 4
-                else a3.enum_name
+          ,case when lower(a3.cd_val_desc) = 'ios' then 1
+                when lower(a3.cd_val_desc) = 'android' then 4
+                else a3.cd_val_desc
             end                           as mt
           ,coalesce(a1.corever, '-99')    as corever
-      from dws.dws_user_wide_active_period_ed     as a1    -- 阅读线-用户域登录阅读充值消耗事件汇总活跃表
-      left join dim.dim_dic    as a2
-        on a1.current_language2 = a2.enum_id
-       and a2.table_name = 'dim_producttype'
-       and a2.dic_column = 'language_id'
-      left join dim.dim_dic    as a3
-        on a1.mt = a3.enum_id
-       and a3.table_name = 'dim_user_accountinfo_df'
-       and a3.dic_column = 'mt'
-      left join dim.dim_country_dic    as a4
+      from dws.dws_user_wide_active_period_ed    as a1
+      left join dim.dim_pub_code_mapping_dict    as a2
+        on a1.current_language2 = a2.cd_val
+       and a2.app_plat = 'pub'
+       and a2.cd_col = 'lang_cd'
+      left join dim.dim_pub_code_mapping_dict    as a3
+        on a1.mt = a3.cd_val
+       and a3.app_plat = 'pub'
+       and a3.cd_col = 'mt'
+      left join dim.dim_country_dic              as a4
         on a1.reg_country = a4.code
      where a1.dt >= '${bf_1_dt}'
        and a1.dt <= '${dt}'

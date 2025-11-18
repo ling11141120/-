@@ -44,7 +44,7 @@ with us as (
           ,a1.ad_amount
           ,a2.ads_type
           ,a2.position_id
-      from us    as a1
+      from us                                             as a1
       left join dim.dim_short_video_ads_unit_adid_view    as a2
         on a1.ad_unit = a2.unit_adid
        and a2.status = 1
@@ -65,7 +65,7 @@ with us as (
           ,a1.ad_amount
           ,a2.ads_type
           ,a2.position_id
-      from p    as a1
+      from p                                         as a1
       join dim.dim_short_video_ads_unit_adid_view    as a2
         on a1.ad_unit = a2.unit_adid
        and a2.status in (0, 2)
@@ -239,7 +239,7 @@ select a1.dt                                                              as dt 
                        and ProjectType = 2
                      group by 1,2
 
-               )    as b1
+               )          as b1
           left join (select dt
                           ,ads_name
                           ,sum(cnt)    as all_cnt
@@ -251,7 +251,7 @@ select a1.dt                                                              as dt 
                     )     as b2
             on b1.ads_name = b2.ads_name
            and b1.dt = b2.dt
-            )    as a2
+            )                                        as a2
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where product_id = 6833
