@@ -25,7 +25,8 @@ with ad_click_count as (
           ,2                       as system_type
           ,count(1)                as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1    -- completeTaskClick 控件点击时上报   ods_log.ods_sensors_production_complete_task_click
-      left join dim.dim_pub_code_mapping_dict    as a2 on a1.ad_src=a2.cd_val
+      left join dim.dim_pub_code_mapping_dict    as a2 
+        on a1.ad_src=a2.cd_val
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100772'
@@ -48,7 +49,8 @@ with ad_click_count as (
           ,2                       as system_type
           ,count(1)                as ad_click_count
       from dwd.dwd_sensors_production_element_click_view    as a1    -- event=element_click 控件点击时上报   ods_log.ods_sensors_production_element_click
-      left join dim.dim_pub_code_mapping_dict    as a2 on a1.ad_src=a2.cd_val
+      left join dim.dim_pub_code_mapping_dict    as a2 
+        on a1.ad_src=a2.cd_val
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100356'
@@ -75,7 +77,8 @@ with ad_click_count as (
       from dwd.dwd_sensors_production_adpositionclick_view    as a1    -- event=ADPositionClick 资源位点击
       left join dim.dim_sv_ads_position_view    as a2
         on a1.ad_position_id = a2.ad_position
-      left join dim.dim_pub_code_mapping_dict    as a3 on a1.ad_src=a3.cd_val
+      left join dim.dim_pub_code_mapping_dict    as a3 
+        on a1.ad_src=a3.cd_val
      where a1.dt >= '${bf_1_dt}'
        and a1.dt <= '${dt}'
        and a1.ad_type = 6
@@ -98,7 +101,8 @@ with ad_click_count as (
           ,1                 as system_type
           ,count(1)          as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1    -- event=completeTaskClick 控件点击时上报
-      left join dim.dim_pub_code_mapping_dict    as a2 on a1.ad_src=a2.cd_val
+      left join dim.dim_pub_code_mapping_dict    as a2 
+        on a1.ad_src=a2.cd_val
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and task_type in('9', '浏览第三方页面')
@@ -177,9 +181,9 @@ with ad_click_count as (
                        ,'synjoy'            as ads_name
                        ,sum(revenue)*0.7    as revenue_share
                    from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
-                   where dt>='${bf_1_dt}'
-                     and dt<='${dt}'
-                   group by 1,2,3
+                  where dt>='${bf_1_dt}'
+                    and dt<='${dt}'
+                  group by 1,2,3
                 )    as a2
         on a1.dt=a2.dt
        and a1.system_type = a2.system_type
@@ -286,7 +290,7 @@ select a1.dt                                       as dt                   -- �
                                               ,b1.ad_unit
                                       order by b1.create_tm desc
                                               ,b1.ad_unit   desc
-                                   )                          as rk_desc
+                                 )                          as rk_desc
         from dwd.dwd_advertisement_user_position_amt_p_di     as b1     -- 阅读及海外短剧--广告预估收益明细宽表,数据起始时间23年1月
         left join dim.dim_ads_source_abbr    as b2
           on b1.ads_name = b2.ads_name

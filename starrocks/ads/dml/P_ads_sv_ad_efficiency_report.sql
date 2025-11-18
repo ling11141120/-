@@ -48,8 +48,8 @@ with active as (
           ,a1.ad_type
           ,a1.event_strategy_id
           ,a1.login_id
-          ,max(a1.main_strategy_id)    as main_strategy_id
-          ,count(1)                    as pv
+          ,max(a1.main_strategy_id)           as main_strategy_id
+          ,count(1)                           as pv
       from (select dt
                   ,product_id
                   ,ad_src
@@ -82,7 +82,7 @@ with active as (
 , ad_click as (
     select a1.dt
           ,a1.product_id
-          ,coalesce(a2.cd_val_desc,'其他')                          as ad_src
+          ,coalesce(a2.cd_val_desc,'其他')                     as ad_src
           ,coalesce(a1.ad_position_id1, a1.ad_position_id)    as position_id
           ,a1.ad_type
           ,a1.event_strategy_id
@@ -98,7 +98,7 @@ with active as (
 , ad_watchsuccess as (
     select a1.dt
           ,a1.product_id
-          ,coalesce(a2.cd_val_desc,'其他')                          as ad_src
+          ,coalesce(a2.cd_val_desc,'其他')                     as ad_src
           ,coalesce(a1.ad_position_id1, a1.ad_position_id)    as position_id
           ,a1.ad_type
           ,a1.event_strategy_id
@@ -114,7 +114,7 @@ with active as (
 , ad_unlock as (
     select a1.dt
           ,a1.product_id
-          ,'其他'            as ad_src
+          ,'其他'             as ad_src
           ,a2.unlock_type    as position_id
           ,a3.AdShowType     as ad_type
           ,a1.event_strategy_id
@@ -134,10 +134,10 @@ with active as (
           ,a1.product_id
           ,coalesce(a2.cd_val_desc,'其他')    as ad_src
           ,a1.positions
-          ,a1.ad_show_type              as ad_type
+          ,a1.ad_show_type                   as ad_type
           ,a1.event_strategy_id
           ,a1.user_id
-          ,sum(a1.amt)                  as amt
+          ,sum(a1.amt)                       as amt
       from dws.dws_advertisement_user_position_amt_ed    as a1
       left join dim.dim_pub_code_mapping_dict    as a2
         on a1.ads_name = a2.cd_val

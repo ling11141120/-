@@ -15,8 +15,8 @@ with event_detail as (
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
-              ,programme_id
-              ,coalesce(ad_strategy_id,programme_id,'-99')
+             ,programme_id
+             ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
           ,'exposure'                          as event
@@ -51,8 +51,8 @@ with event_detail as (
           ,login_id
           ,ad_position_id                      as ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
-              ,programme_id
-              ,coalesce(ad_strategy_id,programme_id,'-99')
+             ,programme_id
+             ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
           ,'exposure'                          as event
@@ -71,8 +71,8 @@ with event_detail as (
           ,login_id 
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
-              ,programme_id
-              ,coalesce(ad_strategy_id,programme_id,'-99')
+             ,programme_id
+             ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
           ,'click'                             as event
@@ -91,8 +91,8 @@ with event_detail as (
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
-              ,programme_id
-              ,coalesce(ad_strategy_id,programme_id,'-99')
+             ,programme_id
+             ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
           ,'vtc'                               as event
@@ -111,8 +111,8 @@ with event_detail as (
           ,if(ad_position_id in (19,63,5,61,23,29)
              ,programme_id
              ,if(task_id is null
-                 ,ad_strategy_id
-                 ,coalesce(event_strategy_id,programme_id)
+                ,ad_strategy_id
+                ,coalesce(event_strategy_id,programme_id)
                 )
              )                                  as ad_strategy_id
           ,coalesce(main_strategy_id, '-99')    as main_strategy_id
@@ -190,15 +190,15 @@ select a1.dt
       ,ifnull(a1.ad_position_id,-99)           as ad_position_id
       ,case when coalesce(a1.ad_strategy_id,'-99') in ('-99', '', '-1') then coalesce(a1.ad_strategy_id,'-99')
             else a1.ad_strategy_id
-         end                                   as ad_strategy_id
+        end                                    as ad_strategy_id
       ,case when coalesce(a1.main_strategy_id,'-99') in ('-99', '', '-1') then coalesce(a1.main_strategy_id,'-99')
             else a1.main_strategy_id
-         end                                   as main_strategy_id
+        end                                    as main_strategy_id
       ,case when a1.ad_type = 'ad'    then '普通广告'
             when a1.ad_type = 'h5_ad' then 'h5广告'
             when a1.ad_type = 'task'  then '任务广告'
             else '-99'
-         end                                   as ad_type
+        end                                    as ad_type
       ,ifnull(a2.period_type,'-99')            as period_type
       ,ifnull(a2.user_type,-99)                as user_type
       ,ifnull(a2.remarks,-99)                  as put_language

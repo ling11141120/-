@@ -127,11 +127,11 @@ insert into ads.ads_bi_ad_video_income
 select a1.dt                            as dt                  -- 日期
       ,a1.product_id                    as product_id          -- 产品id
       ,case
-            when a1.ad_format = 'BANNER'  then 1    -- banner
-            when a1.ad_format = 'NATIVE'  then 2    -- 原生广告
-            when a1.ad_format = 'REWARD'  then 3    -- 激励视频
-            when a1.ad_format = 'APPOPEN' then 4    -- 开屏广告
-            when a1.ad_format = 'INTER'   then 5    -- 插屏广告
+            when a1.ad_format = 'BANNER'  then 1               -- banner
+            when a1.ad_format = 'NATIVE'  then 2               -- 原生广告
+            when a1.ad_format = 'REWARD'  then 3               -- 激励视频
+            when a1.ad_format = 'APPOPEN' then 4               -- 开屏广告
+            when a1.ad_format = 'INTER'   then 5               -- 插屏广告
             else null
         end                             as ad_show_type        -- 广告类型
       ,a1.ad_position                   as positions           -- 广告位置
@@ -251,7 +251,7 @@ select a1.dt                                                              as dt 
                     )     as b2
             on b1.ads_name = b2.ads_name
            and b1.dt = b2.dt
-       )    as a2
+            )    as a2
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where product_id = 6833

@@ -20,7 +20,7 @@ with amt as (
           ,sum(impressions)         as impressions
           ,sum(clicks)              as clicks
           ,sum(ad_amount)           as ad_amount
-      from dws.dws_advertisement_admob_income_ed    -- 沙盘-广告错误报表数据
+      from dws.dws_advertisement_admob_income_ed
      where dt >= '${bf_4_dt}'
        and product_id not in (6833)
        and time_types = 1    -- 时区类型 1北京 2洛杉矶
@@ -46,7 +46,7 @@ with amt as (
                   ,unit_adid
                   ,ad_show_type
                   ,min(ad_position)     as ad_position
-             from dim.dim_app_adplatform_unit_id_info    -- 海外阅读的广告单元id配置表
+             from dim.dim_app_adplatform_unit_id_info
             where ad_plat_form = 1
               and status = 1
             group by 1, 2, 3
@@ -74,7 +74,7 @@ with amt as (
                   ,unit_adid
                   ,ad_show_type
                   ,min(ad_position)     as ad_position
-             from dim.dim_app_adplatform_unit_id_info   -- 海外阅读的广告单元id配置表
+             from dim.dim_app_adplatform_unit_id_info
             where ad_plat_form = 1
               and status = 0
             group by 1, 2, 3
@@ -85,7 +85,7 @@ with amt as (
                                                         from dim.dim_app_adplatform_unit_id_info
                                                        where ad_plat_form = 1
                                                          and status = 1
-                                                      )
+                                                    )
      group by 1, 2, 3, 4, 5, 6, 7, 8
 )
 select a1.dt                     as dt                     -- 日期，来自DATE字段
@@ -120,9 +120,6 @@ select a1.dt                     as dt                     -- 日期，来自DAT
       ,now()                     as etl_tm                 -- 数据清洗时间
   from amt_2    as a1
 ;
-
-
-
 
 insert into ads.ads_bi_read_adv_income_report_advdata
 -- topon 和 rixengine 新增的广告
@@ -252,7 +249,7 @@ select a1.dt                                                                 as 
                     )    as b1
                left join (select dt
                                 ,ads_name
-                                ,sum(cnt)                as click_cnt
+                                ,sum(cnt)    as click_cnt
                             from dws.dws_advertisement_user_position_amt_ed
                             where dt >= '${bf_4_dt}'
                               and product_id <> 6833
