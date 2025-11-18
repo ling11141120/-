@@ -14,7 +14,7 @@ create table ads.ads_bi_read_adv_income_report_advdata (
     ,impression_cnt         bigint(20)                  comment "向用户展示的广告总数。该值是一个整数。"
     ,click_cnt              bigint(20)                  comment "用户点击广告的次数。该值是一个整数。"
     ,etl_tm                 datetime   not null         comment "数据清洗时间"
-     index index_product_id (product_id) using bitmap comment 'index_product_id'
+    ,index index_product_id (product_id) using bitmap   comment 'index_product_id'
 )
 DUPLICATE KEY(dt, product_id)
 COMMENT "广告位置收入数据"
