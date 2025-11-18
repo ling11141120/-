@@ -179,8 +179,6 @@ with event_detail as (
         on a1.mt = a3.cd_val
        and a3.app_plat = 'pub'
        and a3.cd_col = 'mt'
-      left join dim.dim_country_dic              as a4
-        on a1.reg_country = a4.code
      where a1.dt >= '${bf_1_dt}'
        and a1.dt <= '${dt}'
      group by 1,2,3,4,5,6,7,8
