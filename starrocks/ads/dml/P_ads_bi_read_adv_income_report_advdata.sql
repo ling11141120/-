@@ -23,7 +23,7 @@ with amt as (
       from dws.dws_advertisement_admob_income_ed
      where dt >= '${bf_4_dt}'
        and product_id not in (6833)
-       and time_types = 1    -- 时区类型 1北京 2洛杉矶
+       and time_types = 1
      group by 1, 2, 3, 4, 5, 6
 )
 -- 先关联开启状态的广告单元id配置数据
@@ -45,12 +45,12 @@ with amt as (
       join (select product_id
                   ,unit_adid
                   ,ad_show_type
-                  ,min(ad_position)     as ad_position
+                  ,min(ad_position)    as ad_position
              from dim.dim_app_adplatform_unit_id_info
             where ad_plat_form = 1
               and status = 1
             group by 1, 2, 3
-           )     as a2
+           )      as a2
         on a1.product_id = a2.product_id
        and a1.ad_unit = a2.unit_adid
      group by 1, 2, 3, 4, 5, 6, 7, 8
@@ -73,12 +73,12 @@ with amt as (
       join (select product_id
                   ,unit_adid
                   ,ad_show_type
-                  ,min(ad_position)     as ad_position
+                  ,min(ad_position)    as ad_position
              from dim.dim_app_adplatform_unit_id_info
             where ad_plat_form = 1
               and status = 0
             group by 1, 2, 3
-           )     as a2
+           )      as a2
         on a1.product_id = a2.product_id
        and a1.ad_unit = a2.unit_adid
      where concat(a1.ad_unit, a1.product_id) not in (select distinct concat(unit_adid, product_id)
@@ -156,7 +156,7 @@ select a1.dt                             as dt                     -- 日期，�
       ,sum(a1.impressions_cnt)           as impression_cnt         -- 向用户展示的广告总数，该值是一个整数
       ,0                                 as click_cnt              -- 用户点击广告的次数，该值是一个整数
       ,now()                             as etl_tm                 -- 数据清洗时间
-  from dws.dws_advertisement_applovin_max_ad_amt_ed    as a1
+  from dws.dws_advertisement_applovin_max_ad_amt_ed       as a1
  where dt >= '${bf_4_dt}'
    and product_id != 6833
  group by 1, 2, 3, 4, 5, 6, 7, 8
@@ -187,11 +187,11 @@ select a1.dt                                                                 as 
   from dws.dws_advertisement_user_position_amt_ed    as a1
   left join (select b1.dt
                    ,b1.ads_name
-                   ,sum(b1.ad_request)        as ad_request
-                   ,sum(b1.match_request)     as match_request
-                   ,sum(b1.ad_show_count)     as ad_show_count
-                   ,sum(b1.ad_click_count)    as ad_click_count
-                   ,sum(b2.click_cnt)         as ad_click_cnt
+                   ,sum(b1.ad_request)             as ad_request
+                   ,sum(b1.match_request)          as match_request
+                   ,sum(b1.ad_show_count)          as ad_show_count
+                   ,sum(b1.ad_click_count)         as ad_click_count
+                   ,sum(b2.click_cnt)              as ad_click_cnt
                from (select date(day)              as dt
                            ,'Starmobi'             as ads_name
                            ,sum(ad_request)        as ad_request
@@ -203,12 +203,12 @@ select a1.dt                                                                 as 
                         and system_type = 2
                       group by 1,2
                       union all
-                     select Date          as dt
-                           ,'MobKing'     as ads_name
-                           ,sum(AdReq)    as ad_request
-                           ,sum(AdRes)    as match_request
-                           ,sum(Imp)      as ad_show_count
-                           ,sum(Click)    as ad_click_count
+                     select Date             as dt
+                           ,'MobKing'        as ads_name
+                           ,sum(AdReq)       as ad_request
+                           ,sum(AdRes)       as match_request
+                           ,sum(Imp)         as ad_show_count
+                           ,sum(Click)       as ad_click_count
                        from ods.ods_tidb_mobkingaddata
                       where Date >= '${bf_4_dt}'
                         and ProjectType = 0
@@ -246,7 +246,7 @@ select a1.dt                                                                 as 
                      where dt >= '${bf_4_dt}'
                        and ProjectType = 1
                      group by 1,2
-                    )    as b1
+                    )          as b1
                left join (select dt
                                 ,ads_name
                                 ,sum(cnt)    as click_cnt
@@ -258,8 +258,8 @@ select a1.dt                                                                 as 
                          )     as b2
                  on b1.dt = b2.dt
                 and b1.ads_name = b2.ads_name
-     group by 1,2
-            )    as a2
+              group by 1,2
+            )                                        as a2
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where a1.product_id <> 6833
