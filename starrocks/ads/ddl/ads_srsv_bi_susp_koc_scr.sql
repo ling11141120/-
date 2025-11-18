@@ -1,13 +1,13 @@
-drop table if exists tmp.ads_srsv_bi_susp_koc_scr;
-create table tmp.ads_srsv_bi_susp_koc_scr (
-     dt                  date          not null    comment "日期"
-    ,usr_id              bigint(20)    not null    comment "用户id"
-    ,prj_type_cd         int(11)                   comment "项目类型"
-    ,prj_type_name       varchar(20)               comment "项目类型名称"
-    ,ttl_view_num        int(11)                   comment "总观看数"
-    ,min_avg_view_num    varchar(50)               comment "每分钟平均观看数量"
-    ,pay_mth             string                    comment "支付方式"
-    ,tp_prd              varchar(20)               comment "充值产品"
+drop table if exists ads.ads_srsv_bi_susp_koc_scr;
+create table ads.ads_srsv_bi_susp_koc_scr (
+     dt                  date        not null comment "日期"
+    ,usr_id              bigint      not null comment "用户id"
+    ,prj_type_cd         int                  comment "项目类型"
+    ,prj_type_name       varchar(20)          comment "项目类型名称"
+    ,ttl_view_num        int                  comment "总观看数"
+    ,ttl_view_min        int                  comment "总观看分钟数"
+    ,pay_mth             string               comment "支付方式"
+    ,tp_prd              varchar(20)          comment "充值产品"
 )
 primary key (dt, usr_id)
 comment "嫌疑达人分值表"
