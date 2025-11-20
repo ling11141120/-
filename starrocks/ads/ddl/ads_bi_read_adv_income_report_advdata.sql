@@ -1,19 +1,20 @@
-CREATE TABLE ads.ads_bi_read_adv_income_report_advdata (
-     dt                  DATE           NOT NULL COMMENT "日期，来自DATE字段"
-    ,product_id          INT(11)        NOT NULL COMMENT "产品"
-    ,mt                  INT(11)                 COMMENT "平台"
-    ,corever             INT(11)                 COMMENT "包体"
-    ,ads_nmae            VARCHAR(65533)          COMMENT "广告来源"
-    ,ad_show_type        VARCHAR(255)            COMMENT "广告类型"
-    ,position_id         VARCHAR(255)            COMMENT "广告位置id"
-    ,tps                 INT(11)                 COMMENT "1:admob 2:topon 3:max 4:starmobi"
-    ,ad_amt              DECIMAL(18, 4)          COMMENT "AdMob 发布商的估算收入 ESTIMATED_EARNINGS/1000000,单位，美元"
-    ,ad_request_cnt      BIGINT(20)              COMMENT "请求的数量。该值是一个整数。"
-    ,matched_request_cnt BIGINT(20)              COMMENT "响应请求而返回广告的次数。该值是一个整数。"
-    ,impression_cnt      BIGINT(20)              COMMENT "向用户展示的广告总数。该值是一个整数。"
-    ,click_cnt           BIGINT(20)              COMMENT "用户点击广告的次数。该值是一个整数。"
-    ,etl_tm              DATETIME       NOT NULL COMMENT "数据清洗时间"
-    ,INDEX index_product_id (product_id) USING BITMAP COMMENT 'index_product_id'
+drop table if exists ads.ads_bi_read_adv_income_report_advdata;
+create table ads.ads_bi_read_adv_income_report_advdata (
+     dt                     date       not null         comment "日期，来自DATE字段"
+    ,product_id             int(11)    not null         comment "产品"
+    ,mt                     int(11)                     comment "平台"
+    ,corever                int(11)                     comment "包体"
+    ,ads_name               varchar(65533)              comment "广告来源"
+    ,ad_show_type           varchar(255)                comment "广告类型"
+    ,position_id            varchar(255)                comment "广告位置id"
+    ,tps                    int(11)                     comment "1:admob 2:topon 3:max 4:starmobi"
+    ,ad_amt                 decimal(18, 4)              comment "AdMob 发布商的估算收入 ESTIMATED_EARNINGS/1000000,单位，美元"
+    ,ad_request_cnt         bigint(20)                  comment "请求的数量。该值是一个整数。"
+    ,matched_request_cnt    bigint(20)                  comment "响应请求而返回广告的次数。该值是一个整数。"
+    ,impression_cnt         bigint(20)                  comment "向用户展示的广告总数。该值是一个整数。"
+    ,click_cnt              bigint(20)                  comment "用户点击广告的次数。该值是一个整数。"
+    ,etl_tm                 datetime   not null         comment "数据清洗时间"
+    ,index index_product_id (product_id) using bitmap   comment 'index_product_id'
 )
 DUPLICATE KEY(dt, product_id)
 COMMENT "广告位置收入数据"

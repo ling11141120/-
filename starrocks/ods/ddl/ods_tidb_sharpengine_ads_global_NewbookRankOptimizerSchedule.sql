@@ -1,10 +1,11 @@
 ----------------------------------------------------------------
--- 目标表： ods.ods_shuangwen_tidb_en_shortstorybook
--- 来源实例： old_tidb_source
+-- 目标表： ods.ods_tidb_sharpengine_ads_global_NewbookRankOptimizerSchedule
+-- 来源实例： new_tidb_source
 -- 来源表： sharpengine_ads_global.NewbookRankOptimizerSchedule
--- 采集工具： 极光-定时批量
+-- 来源负责： 
+-- 采集工具： SeaTunnel
 -- 负责人： qhr
--- 创建日期： 2023-08-13
+-- 创建日期： 2025-08-13
 ----------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS ods.ods_tidb_sharpengine_ads_global_NewbookRankOptimizerSchedule (
@@ -38,10 +39,11 @@ CREATE TABLE IF NOT EXISTS ods.ods_tidb_sharpengine_ads_global_NewbookRankOptimi
 PRIMARY KEY(Id)
 COMMENT "新剧测投优化师拆单计划表"
 DISTRIBUTED BY HASH(Id)
-PROPERTIES ("replication_num" = "3",
-            "in_memory" = "false",
-            "enable_persistent_index" = "true",
-            "replicated_storage" = "true",
-            "compression" = "LZ4"
+PROPERTIES (
+    "replication_num" = "3",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
 )
 ;
