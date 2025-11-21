@@ -247,7 +247,7 @@ with z1 as (
                                     ,sum(c4.cost_amount)     as day7_amt
                                 from ads.ads_bi_ad_cost_recharge_view                             as c4
                                 left join dim.dim_pub_code_mapping_dict                           as c5
-                                   on c4.product_id = c5.p_cd_val
+                                   on c4.product_id = c5.cd_val
                                   and c5.cd_col = 'product_id'
                                   and c5.app_plat = 'pub'
                                where c4.dt between date_sub(curdate(), interval 6 day) and curdate()
