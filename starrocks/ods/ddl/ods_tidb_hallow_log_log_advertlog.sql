@@ -12,7 +12,7 @@ drop table if exists ods.ods_tidb_hallow_log_log_advertlog;
 create table ods.ods_tidb_hallow_log_log_advertlog (
      Id                bigint         not null                  comment '广告日志Id'
     ,CreateTime        datetime       not null                  comment '创建时间'
-    ,ECPMInfo          json                                     comment 'eCPM全部信息'
+    ,ECPMInfo          string                                   comment 'eCPM全部信息'
     ,ECPMValueMicros   decimal(30,20)                           comment '预测的eCPM值'
     ,ECPMValueType     tinyint                                  comment 'eCPM值类型 0：预测 1：真实'
     ,UserId            bigint         not null                  comment '用户ID'
