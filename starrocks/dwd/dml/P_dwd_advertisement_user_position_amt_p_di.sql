@@ -41,7 +41,7 @@ with tmp_data as (
           ,a.appver                                       as appver
           ,a.ad_unit                                      as ad_unit
           ,a.position_id                                  as position_id
-          ,if(a.platform is null, 'Admob', a.platform)    as ads_name    -- 广告平台 (adomob,topon,max)
+          ,if(a.platform is null, 'Admob', a.platform)    as ads_name -- 广告平台 (adomob,topon,max)
           ,a.platform_source                              as platform_source
           ,a.main_strategy_id                             as main_strategy_id
           ,a.event_strategy_id                            as event_strategy_id
@@ -49,10 +49,6 @@ with tmp_data as (
           ,sum(case when a.core = 4 then case when platform='Admob' or platform is null or platform='' then a.valueMicros/1000000.0
                                               else a.valueMicros
                                           end
-                                        -- a.valueMicros/1000000.0
-                                        --  case when mt = 1 and (platform='Admob' or platform is null or platform='') then a.valueMicros
-                                        --       else a.valueMicros/1000000.0
-                                        --   end
                     else case when mt = 4 and (platform='Admob' or platform is null or platform='') then a.valueMicros/1000000.0
                               else a.valueMicros
                           end
@@ -68,8 +64,8 @@ with tmp_data as (
                   ,ad_unit
                   ,position_id
                   ,platform
-                  ,case when precisionType = 2 then valueMicros/1000.0
-                        else valueMicros
+                  ,case precisionType when 2 then valueMicros/1000.0
+                                      else valueMicros
                     end                                   as valueMicros
                   ,platform_source
                   ,main_strategy_id
@@ -227,15 +223,15 @@ with us as (
           ,us.ads_source                          as ads_source
           ,us.main_strategy_id                    as main_strategy_id
           ,us.event_strategy_id                   as event_strategy_id
-      from us
+      from us 
       left join (
-          -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
-          select unit_adid, position_id, ads_type
-            from dim.dim_short_video_ads_unit_adid_view
-           qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1
-      ) b 
+                 -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
+                 select unit_adid, position_id, ads_type
+                   from dim.dim_short_video_ads_unit_adid_view
+                  qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1
+                ) b
         on us.ad_unit = b.unit_adid
-     where us.position > 0 
+     where us.position > 0
 ) 
 , n as (
     select us.dt                   as dt
