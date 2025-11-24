@@ -1,35 +1,62 @@
 ----------------------------------------------------------------
 -- 程序功能： 阅读及海剧用户广告展现位置收益表
--- 程序名： P_dws_advertisement_user_position_amt_ed
--- 目标表： dws.dws_advertisement_user_position_amt_ed
--- 开发人： qhr/cm
--- 开发日期： 
+-- 程序名： P_dwd_advertisement_user_position_amt_p_di
+-- 目标表： dwd.dwd_advertisement_user_position_amt_p_di
+-- 负责人： cm/qhr
+-- 开发日期：2025-11-24
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 delete from dwd.dwd_advertisement_user_position_amt_p_di where dt>= '${bf_1_dt}' and dt<='${dt}';
 
--- 阅读
+-- 阅读 & 圣经
 insert into dwd.dwd_advertisement_user_position_amt_p_di
 with tmp_data as (
-    select productid                                                                                                              as product_id
-          ,userid                                                                                                                 as user_id
-          ,mod(appId DIV 1000,1000)                                                                                               as core
-          ,mt                                                                                                                     as mt
-          ,appver                                                                                                                 as appver
-          ,CreateTime                                                                                                             as create_time
-          ,trim(get_json_string(parse_json(s0), "$.adUnitId"))                                                                    as ad_unit
-          ,trim(coalesce(get_json_string(parse_json(s0), "$.positionId"),get_json_string(parse_json(s0), "$.ad_position_id")))    as position_id
-          ,trim(get_json_string(parse_json(s0), "$.platform"))                                                                    as platform
-          ,trim(get_json_string(parse_json(s0), "$.precisionType"))                                                               as precisionType
-          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)                                                       as valueMicros
-          ,trim(get_json_string(parse_json(s0), "$.mediationAdapterClassName"))                                                   as platform_source
-          ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                                                            as main_strategy_id
-          ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                                                              as event_strategy_id
-          ,trim(get_json_string(parse_json(s0), "$.programme_id"))                                                                as programme_id
+    select productid                                                                     as product_id
+          ,userid                                                                        as user_id
+          ,mod(appId DIV 1000,1000)                                                      as core
+          ,mt                                                                            as mt
+          ,appver                                                                        as appver
+          ,CreateTime                                                                    as create_time
+          ,trim(get_json_string(parse_json(s0), "$.adUnitId"))                           as ad_unit
+          ,trim(coalesce( get_json_string(parse_json(s0), "$.positionId")
+                         ,get_json_string(parse_json(s0), "$.ad_position_id")
+                        )
+               )                                                                         as position_id
+          ,trim(get_json_string(parse_json(s0), "$.platform"))                           as platform
+          ,trim(get_json_string(parse_json(s0), "$.precisionType"))                      as precisionType
+          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)              as valueMicros
+          ,trim(get_json_string(parse_json(s0), "$.mediationAdapterClassName"))          as platform_source
+          ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                   as main_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                     as event_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.programme_id"))                       as programme_id
       from ods_log.ods_readerlog_xx_log_commonactionlog
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and Action = 'AdMobPainEvent'
+     union all
+    select 2311                                                                          as product_id
+          ,UserId                                                                        as user_id
+          ,Core                                                                          as core
+          ,mt                                                                            as mt
+          ,Appver                                                                        as appver
+          ,CreateTime                                                                    as create_time
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.adUnitId'))                     as ad_unit
+          ,trim(coalesce( get_json_string(parse_json(ECPMInfo), '$.positionId')
+                         ,get_json_string(parse_json(ECPMInfo), '$.position')
+                        )
+               )                                                                         as position_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.platform'))                     as platform
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.precisionType'))                as precisionType
+          ,cast(get_json_string(parse_json(ECPMInfo), '$.valueMicros')as double)         as valueMicros
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.mediationAdapterClassName'))    as platform_source
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.main_strategy_id'))             as main_strategy_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.event_strategy_id'))            as event_strategy_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.programme_id'))                 as programme_id
+      from ods.ods_tidb_hallow_log_log_advertlog
+    where ECPMValueType = 1
+      and date(CreateTime) >= '${bf_1_dt}'
+      and date(CreateTime) <= '${dt}'
 )
 , amt as (
     select date(a.create_time)                            as dt
@@ -41,7 +68,7 @@ with tmp_data as (
           ,a.appver                                       as appver
           ,a.ad_unit                                      as ad_unit
           ,a.position_id                                  as position_id
-          ,if(a.platform is null, 'Admob', a.platform)    as ads_name    -- 广告平台 (adomob,topon,max)
+          ,if(a.platform is null, 'Admob', a.platform)    as ads_name -- 广告平台 (adomob,topon,max)
           ,a.platform_source                              as platform_source
           ,a.main_strategy_id                             as main_strategy_id
           ,a.event_strategy_id                            as event_strategy_id
@@ -49,10 +76,6 @@ with tmp_data as (
           ,sum(case when a.core = 4 then case when platform='Admob' or platform is null or platform='' then a.valueMicros/1000000.0
                                               else a.valueMicros
                                           end
-                                        -- a.valueMicros/1000000.0
-                                        --  case when mt = 1 and (platform='Admob' or platform is null or platform='') then a.valueMicros
-                                        --       else a.valueMicros/1000000.0
-                                        --   end
                     else case when mt = 4 and (platform='Admob' or platform is null or platform='') then a.valueMicros/1000000.0
                               else a.valueMicros
                           end
@@ -68,8 +91,8 @@ with tmp_data as (
                   ,ad_unit
                   ,position_id
                   ,platform
-                  ,case when precisionType = 2 then valueMicros/1000.0
-                        else valueMicros
+                  ,case precisionType when 2 then valueMicros/1000.0
+                                      else valueMicros
                     end                                   as valueMicros
                   ,platform_source
                   ,main_strategy_id
@@ -137,7 +160,9 @@ select a.dt                   as dt
               ,amt.appver
               ,amt.create_time
               ,amt.ad_unit
-              ,d.ad_show_type
+              ,case when amt.product_id = 2311 then 3
+                    else d.ad_show_type
+                end                             as ad_show_type
               ,amt.position_id                  as positions
               ,amt.amount
               ,amt.ads_name
@@ -227,15 +252,15 @@ with us as (
           ,us.ads_source                          as ads_source
           ,us.main_strategy_id                    as main_strategy_id
           ,us.event_strategy_id                   as event_strategy_id
-      from us
+      from us 
       left join (
-          -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
-          select unit_adid, position_id, ads_type
-            from dim.dim_short_video_ads_unit_adid_view
-           qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1
-      ) b 
+                 -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
+                 select unit_adid, position_id, ads_type
+                   from dim.dim_short_video_ads_unit_adid_view
+                  qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1
+                ) b
         on us.ad_unit = b.unit_adid
-     where us.position > 0 
+     where us.position > 0
 ) 
 , n as (
     select us.dt                   as dt
