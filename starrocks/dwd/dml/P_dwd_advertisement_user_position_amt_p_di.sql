@@ -1,35 +1,62 @@
 ----------------------------------------------------------------
 -- 程序功能： 阅读及海剧用户广告展现位置收益表
--- 程序名： P_dws_advertisement_user_position_amt_ed
--- 目标表： dws.dws_advertisement_user_position_amt_ed
--- 开发人： qhr/cm
--- 开发日期： 
+-- 程序名： P_dwd_advertisement_user_position_amt_p_di
+-- 目标表： dwd.dwd_advertisement_user_position_amt_p_di
+-- 负责人： cm/qhr
+-- 开发日期：2025-11-24
+-- 版本号： v0.1.0
 ----------------------------------------------------------------
 
 delete from dwd.dwd_advertisement_user_position_amt_p_di where dt>= '${bf_1_dt}' and dt<='${dt}';
 
--- 阅读
+-- 阅读 & 圣经
 insert into dwd.dwd_advertisement_user_position_amt_p_di
 with tmp_data as (
-    select productid                                                                                                              as product_id
-          ,userid                                                                                                                 as user_id
-          ,mod(appId DIV 1000,1000)                                                                                               as core
-          ,mt                                                                                                                     as mt
-          ,appver                                                                                                                 as appver
-          ,CreateTime                                                                                                             as create_time
-          ,trim(get_json_string(parse_json(s0), "$.adUnitId"))                                                                    as ad_unit
-          ,trim(coalesce(get_json_string(parse_json(s0), "$.positionId"),get_json_string(parse_json(s0), "$.ad_position_id")))    as position_id
-          ,trim(get_json_string(parse_json(s0), "$.platform"))                                                                    as platform
-          ,trim(get_json_string(parse_json(s0), "$.precisionType"))                                                               as precisionType
-          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)                                                       as valueMicros
-          ,trim(get_json_string(parse_json(s0), "$.mediationAdapterClassName"))                                                   as platform_source
-          ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                                                            as main_strategy_id
-          ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                                                              as event_strategy_id
-          ,trim(get_json_string(parse_json(s0), "$.programme_id"))                                                                as programme_id
+    select productid                                                                     as product_id
+          ,userid                                                                        as user_id
+          ,mod(appId DIV 1000,1000)                                                      as core
+          ,mt                                                                            as mt
+          ,appver                                                                        as appver
+          ,CreateTime                                                                    as create_time
+          ,trim(get_json_string(parse_json(s0), "$.adUnitId"))                           as ad_unit
+          ,trim(coalesce( get_json_string(parse_json(s0), "$.positionId")
+                         ,get_json_string(parse_json(s0), "$.ad_position_id")
+                        )
+               )                                                                         as position_id
+          ,trim(get_json_string(parse_json(s0), "$.platform"))                           as platform
+          ,trim(get_json_string(parse_json(s0), "$.precisionType"))                      as precisionType
+          ,cast(get_json_string(parse_json(s0), "$.valueMicros") as double)              as valueMicros
+          ,trim(get_json_string(parse_json(s0), "$.mediationAdapterClassName"))          as platform_source
+          ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                   as main_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                     as event_strategy_id
+          ,trim(get_json_string(parse_json(s0), "$.programme_id"))                       as programme_id
       from ods_log.ods_readerlog_xx_log_commonactionlog
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and Action = 'AdMobPainEvent'
+     union all
+    select 2311                                                                          as product_id
+          ,UserId                                                                        as user_id
+          ,Core                                                                          as core
+          ,mt                                                                            as mt
+          ,Appver                                                                        as appver
+          ,CreateTime                                                                    as create_time
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.adUnitId'))                     as ad_unit
+          ,trim(coalesce( get_json_string(parse_json(ECPMInfo), '$.positionId')
+                         ,get_json_string(parse_json(ECPMInfo), '$.position')
+                        )
+               )                                                                         as position_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.platform'))                     as platform
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.precisionType'))                as precisionType
+          ,cast(get_json_string(parse_json(ECPMInfo), '$.valueMicros')as double)         as valueMicros
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.mediationAdapterClassName'))    as platform_source
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.main_strategy_id'))             as main_strategy_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.event_strategy_id'))            as event_strategy_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.programme_id'))                 as programme_id
+      from ods.ods_tidb_hallow_log_log_advertlog
+    where ECPMValueType = 1
+      and date(CreateTime) >= '${bf_1_dt}'
+      and date(CreateTime) <= '${dt}'
 )
 , amt as (
     select date(a.create_time)                            as dt
@@ -133,7 +160,9 @@ select a.dt                   as dt
               ,amt.appver
               ,amt.create_time
               ,amt.ad_unit
-              ,d.ad_show_type
+              ,case when amt.product_id = 2311 then 3
+                    else d.ad_show_type
+                end                             as ad_show_type
               ,amt.position_id                  as positions
               ,amt.amount
               ,amt.ads_name
