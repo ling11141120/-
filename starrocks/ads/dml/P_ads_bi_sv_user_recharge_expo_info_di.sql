@@ -22,8 +22,8 @@ with recharge_exposure_tmp as (
            ,row_number() over(partition by login_id order by event_tm) as rn
      from ods_log.ods_sensors_cd_video_production_rechargeexposure
      where product_id = 6833 
-     and dt = '${bf_1_dt}'
-     and login_id is not null
+       and dt = '${bf_1_dt}'
+       and cast(login_id as bigint) is not null
      )
 
 select a1.dt                       as dt                     -- 日期
@@ -40,8 +40,7 @@ select a1.dt                       as dt                     -- 日期
       ,a1.CurrentLanguage2         as current_language2      -- 投放语言
       ,a1.lang_name                as current_language2_name -- 投放语言名称
       ,now()                       as etl_tm                 -- etl时间
-from (
-      select b1.dt
+from (select b1.dt
             ,b1.login_id                            as usr_id
             ,split(b1.zffs_list, ",")               as zffs_array
             ,array_length(split(b1.zffs_list, ",")) as size
@@ -56,16 +55,16 @@ from (
             ,b4.cd_val_desc                         as lang_name
       from recharge_exposure_tmp                                   as b1
       left join ods.ods_tidb_short_video_accountinfo               as b2
-      on b1.login_id = b2.id
+        on b1.login_id = b2.id
       left join dws.dws_user_short_video_wide_active_period_ed     as b3
-      on b3.dt = "${bf_1_dt}"
-      and b3.period_type = "ctt"
-      and b3.product_id = 6833
-      and b1.login_id = b3.user_id
+        on b3.dt = "${bf_1_dt}"
+       and b3.period_type = "ctt"
+       and b3.product_id = 6833
+       and b1.login_id = b3.user_id
       left join dim.dim_pub_code_mapping_dict b4
-      on b4.app_plat = "pub"
-      and b4.cd_col = "lang_cd"
-      and b2.CurrentLanguage2 = b4.cd_val
+        on b4.app_plat = "pub"
+       and b4.cd_col = "lang_cd"
+       and b2.CurrentLanguage2 = b4.cd_val
       where b1.rn = 1
       ) a1,
 generate_series(1, size)

@@ -40,5 +40,5 @@ from (select user_id
                   and ProdId = 6833
               ) b
       ) a
-where a.rn = 1
+where a.rn = 1 and a.user_id is not null
 ;
