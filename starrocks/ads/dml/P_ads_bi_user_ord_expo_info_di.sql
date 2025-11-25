@@ -13,13 +13,12 @@ insert into ads.ads_bi_user_ord_expo_info_di
 with tmp_recharge_exposure as (
       select login_id as usr_id
             ,event_tm
-            ,zffs_list
-            ,array_join(array_slice(split(zffs_list, ','), 1, 3), ',') as zffs_list_filter
+            ,array_join(array_slice(split(max(zffs_list), ','), 1, 3), ',') as zffs_list_filter
       from ods_log.ods_sensors_cd_video_production_rechargeexposure
       where product_id = 6833
        and dt >= '${bf_4_dt}' 
        and dt <= '${bf_1_dt}'
-      group by login_id, event_tm, zffs_list
+      group by login_id, event_tm
 )
       ,tmp_order as (select a1.dt
                            ,a1.usr_id
