@@ -417,4 +417,10 @@ values
 ,('pub', 'ctry_cd', 'ML', '国家编码', '马里', NULL, NULL, NULL, NULL)
 ,('pub', 'ctry_cd', 'LB', '国家编码', '黎巴嫩', NULL, NULL, NULL, NULL)
 ,('pub', 'ctry_cd', 'ME', '国家编码', '黑山', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '1', '广告类型', 'Banner', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '2', '广告类型', '原生广告', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '3', '广告类型', '激励视频', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '4', '广告类型', '开屏广告', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '5', '广告类型', 'H5', NULL, NULL, NULL, NULL)
+,('pub', 'ad_show_type', '6', '广告类型', '插页广告', NULL, NULL, NULL, NULL)
 ;
