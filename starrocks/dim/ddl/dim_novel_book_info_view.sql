@@ -35,16 +35,13 @@ select a.productid     as product_id
     on a.productid = b.productid
    and a.Language = b.Language
    and a.NewCID = b.CID
- where (    (a.productid = 3366 and a.Language = 3)
-         or (a.productid = 3311 and a.Language = 6)
-         or (a.productid = 3322 and a.Language = 5)
-         or (a.productid = 3333 and a.Language = 2)
-         or (a.productid = 3388 and a.Language = 4)
-         or (a.productid = 3371 and a.Language = 7)
-         or (a.productid = 3399 and a.Language = 9)
-         or (a.productid = 3501 and a.Language = 11)
-         or (a.productid = 3511 and a.Language = 12)
-       )
+  join dim.dim_pub_code_mapping_dict                                   as c
+    on a.productid = c.p_cd_val
+   and a.Language = c.cd_val
+   and c.app_plat='pub'
+   and c.cd_col='lang_cd'
+   and a.Language != 1
+   and a.productid != 3366
  union all
 select a.productid     as product_id
       ,a.bookid        as book_id
@@ -64,6 +61,11 @@ select a.productid     as product_id
   left join ods.ods_tidb_readernovel_tidb_en_novel_bookcategory_new    as b
     on a.NewCID = b.CID
    and b.Language = 3
+  join dim.dim_pub_code_mapping_dict                                   as c
+    on a.productid = c.p_cd_val
+   and a.Language=c.cd_val
+   and c.app_plat='pub'
+   and c.cd_col='lang_cd'
  where a.productid = 3366
-   and a.Language in (13, 14, 15, 16)
+   and a.Language != 19
 ;
