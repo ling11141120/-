@@ -1,34 +1,34 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_tidb_short_video_log_ext_epis_history_part2
 -- 来源实例： video-en-log-mysql-slave
--- 来源表： short_video_log.epis_history_*
+-- 来源表： short_video_log.epis_history_*(每月一个表)
 -- 来源负责： 
 -- 采集工具： SeaTunnel
 -- 开发人： qhr
 -- 开发日期： 2025-11-12
 ----------------------------------------------------------------
 
-DROP TABLE IF EXISTS ods.ods_tidb_short_video_log_ext_epis_history_part2;
-CREATE TABLE ods.ods_tidb_short_video_log_ext_epis_history_part2 (
-     dt              DATE     NOT NULL                  COMMENT "日期，根据CreateTime转换而来"
-    ,Id              BIGINT   NOT NULL                  COMMENT "历史记录主键id"
-    ,AccountId       BIGINT   NOT NULL                  COMMENT "用户id"
-    ,SeriesId        BIGINT   NOT NULL                  COMMENT "剧id"
-    ,EpisId          BIGINT   NOT NULL                  COMMENT "集id"
-    ,WatchStamp      INT      NOT NULL                  COMMENT "观看时间戳"
-    ,CreateTime      DATETIME NOT NULL                  COMMENT "创建时间"
-    ,EpisNum         INT                                COMMENT "集数"
-    ,regionId        SMALLINT                           COMMENT "归属区域 id，1：香港，2：北美；"
-    ,WatchOver       TINYINT                            COMMENT "是否观看完成"
-    ,sr_createtime   DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间"
-    ,sr_updatetime   DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+drop table if exists ods.ods_tidb_short_video_log_ext_epis_history_part2;
+create table ods.ods_tidb_short_video_log_ext_epis_history_part2 (
+     dt              date     not null                  comment "日期，根据CreateTime转换而来"
+    ,Id              bigint   not null                  comment "历史记录主键id"
+    ,AccountId       bigint   not null                  comment "用户id"
+    ,SeriesId        bigint   not null                  comment "剧id"
+    ,EpisId          bigint   not null                  comment "集id"
+    ,WatchStamp      int      not null                  comment "观看时间戳"
+    ,CreateTime      datetime not null                  comment "创建时间"
+    ,EpisNum         int                                comment "集数"
+    ,regionId        smallint                           comment "归属区域 id，1：香港，2：北美；"
+    ,WatchOver       tinyint                            comment "是否观看完成"
+    ,sr_createtime   datetime default current_timestamp comment "starrocks数据注入时间"
+    ,sr_updatetime   datetime default current_timestamp comment "starrocks数据更新时间"
 ) 
-PRIMARY KEY(dt, Id)
-COMMENT "短剧-用户有效观看短剧记录表2"
-PARTITION BY RANGE(dt)
-(PARTITION p202511 VALUES LESS THAN ("2025-12-01"))
-DISTRIBUTED BY HASH(Id) BUCKETS 20
-PROPERTIES (
+primary key(dt, Id)
+comment "短剧-用户有效观看短剧记录表2"
+partition by range(dt)
+(partition p202511 values less than ("2025-12-01"))
+distributed by hash(Id) buckets 20
+properties (
     "replication_num" = "3"
     ,"dynamic_partition.enable" = "true"
     ,"dynamic_partition.time_unit" = "MONTH"
