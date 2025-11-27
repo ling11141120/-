@@ -136,7 +136,7 @@ with dau as (
                   ,b5.p_cd_val                                                                     as biz_type_cd
                   ,b1.corever                                                                      as core
                   ,b1.product_id                                                                   as product_id
-                  ,coalesce(b2.device2, b3.device)                                                 as dev_mdl
+                  ,coalesce(b2.device2, b3.dev_mdl)                                                as dev_mdl
                   ,b1.user_id                                                                      as user_id
                   ,sum(b4.amt)                                                                     as ad_ttl_amt
                   ,sum(if(b4.ad_show_type = 6, b4.amt, 0))                                         as web_ad_amt
@@ -163,7 +163,7 @@ with dau as (
                and b5.p_cd_val is not null
              where b1.user_period = 2
                and b1.dt = '${bf_1_dt}'
-               and coalesce(b2.device2, b3.device) is not null
+               and coalesce(b2.device2, b3.dev_mdl) is not null
                and b1.product_id <> 6883
                and b1.mt = 4
              group by 1, 2, 3, 4, 5, 6
@@ -391,10 +391,11 @@ select a5.dt                                      as dt                  -- 日�
     on a8.app_plat = 'pub'
    and a8.cd_col = 'product_id'
    and a5.product_id = a8.cd_val
- where a6.dt is null
+ where a6.product_id is null
+    or a6.dev_mdl is null
 ;
 
--- 前10日
+-- 前3日
 insert into ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval
 with mdl_anr as (
     -- 广告降权
@@ -421,7 +422,7 @@ with mdl_anr as (
        and a2.cd_col = 'product_id'
        and a2.p_cd_val is not null
        and a1.ProductId = a2.cd_val
-     where date(a1.AnrTime) >= date_sub('${bf_1_dt}', interval 10 day)
+     where date(a1.AnrTime) >= date_sub('${bf_1_dt}', interval 3 day)
        and date(a1.AnrTime) < '${bf_1_dt}'
      union all
     -- PUSH降权
@@ -446,7 +447,7 @@ with mdl_anr as (
       and a4.cd_col = 'product_id'
       and a4.p_cd_val is not null
       and a3.ProductId = a4.cd_val
-    where date(a3.AnrTime) >= date_sub('${bf_1_dt}', interval 10 day)
+    where date(a3.AnrTime) >= date_sub('${bf_1_dt}', interval 3 day)
       and date(a3.AnrTime) < '${bf_1_dt}'
 )
 select a1.dt                                          as dt                  -- 日期
@@ -480,7 +481,7 @@ select a1.dt                                          as dt                  -- 
       ,now()                                          as etl_tm              -- etl时间
   from mdl_anr                                              as a1
   left join ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as a2
-    on a2.dt >= date_sub('${bf_1_dt}', interval 10 day)
+    on a2.dt >= date_sub('${bf_1_dt}', interval 3 day)
    and a2.dt < '${bf_1_dt}'
    and a1.dt = a2.dt
    and a1.biz_type_cd = a2.biz_type_cd
@@ -518,7 +519,7 @@ with del_pri as (
                                               ,b1.dev_mdl
                                  )                                 as cnt
               from ads.ads_shennong_dev_mdl_anr_dau_ad_imp_eval    as b1
-             where b1.dt >= date_sub('${bf_1_dt}', interval 10 day)
+             where b1.dt >= date_sub('${bf_1_dt}', interval 3 day)
                and b1.dt < '${bf_1_dt}'
            )                                                       as a1
      where a1.cnt > 1
