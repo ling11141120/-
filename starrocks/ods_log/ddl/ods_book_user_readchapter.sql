@@ -21,27 +21,27 @@
 -- 开发日期： 2025-07-02
 ----------------------------------------------------------------
 
-DROP TABLE IF EXISTS ods_log.ods_book_user_readchapter;
-CREATE TABLE ods_log.ods_book_user_readchapter (
-     dt             DATE          NOT NULL                  COMMENT "createtime 分区"
-    ,Productid      INT(11)       NOT NULL                  COMMENT "产品id"
-    ,Id             BIGINT(20)    NOT NULL                  COMMENT "自增id"
-    ,BookId         BIGINT(20)                              COMMENT "书籍id"
-    ,ChapterId      BIGINT(20)                              COMMENT "章节id"
-    ,UserId         BIGINT(20)                              COMMENT "用户id"
-    ,ProdId         VARCHAR(512)                            COMMENT "x值"
-    ,CreateTime     DATETIME                                COMMENT "阅读时间"
-    ,AppId          INT(11)                                 COMMENT "应用程序id"
-    ,Time           BIGINT(20)    DEFAULT "0"               COMMENT "阅读时长(s)"
-    ,sr_createtime  DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间"
-    ,sr_updatetime  DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
-    ,INDEX index_productid (productid) USING BITMAP         COMMENT '产品id索引'
+drop table if exists ods_log.ods_book_user_readchapter;
+create table ods_log.ods_book_user_readchapter (
+     dt             date          not null                  comment "createtime 分区"
+    ,Productid      int(11)       not null                  comment "产品id"
+    ,Id             bigint(20)    not null                  comment "自增id"
+    ,BookId         bigint(20)                              comment "书籍id"
+    ,ChapterId      bigint(20)                              comment "章节id"
+    ,UserId         bigint(20)                              comment "用户id"
+    ,ProdId         varchar(512)                            comment "x值"
+    ,CreateTime     datetime                                comment "阅读时间"
+    ,AppId          int(11)                                 comment "应用程序id"
+    ,Time           bigint(20)    default "0"               comment "阅读时长(s)"
+    ,sr_createtime  datetime      default current_timestamp comment "starrocks数据注入时间"
+    ,sr_updatetime  datetime      default current_timestamp comment "starrocks数据更新时间"
+    ,INDEX index_productid (Productid) using bitmap         comment '产品id索引'
 )
-PRIMARY KEY(dt, Productid, Id)
-COMMENT "用户章节阅读表"
-PARTITION BY RANGE(dt)
-DISTRIBUTED BY HASH(Productid, Id) BUCKETS 3
-PROPERTIES (
+primary key(dt, Productid, Id)
+comment "用户章节阅读表"
+partition by range(dt)
+distributed by hash(Productid, Id) buckets 3
+properties (
     "replication_num" = "3",
     "bloom_filter_columns" = "UserId, CreateTime",
     "dynamic_partition.enable" = "true",

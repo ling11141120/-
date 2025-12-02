@@ -1,4 +1,4 @@
-CREATE or REPLACE VIEW dim.dim_user_account_info_view (
+create or replace view dim.dim_user_account_info_view (
      dt                               comment "分区-注册时间"
     ,product_id                       comment "产品id"
     ,id                               comment "用户id"
@@ -128,17 +128,17 @@ CREATE or REPLACE VIEW dim.dim_user_account_info_view (
     ,sr_createtime                    comment "starrocks数据注入时间"
     ,sr_updatetime                    comment "starrocks数据更新时间"
 )
-COMMENT "阅读：用户注册信息表"
-AS
-SELECT date(createtime)                AS dt
-      ,productid                       AS product_id
+comment "阅读：用户注册信息表"
+as
+select date(createtime)                as dt
+      ,productid                       as product_id
       ,Id
       ,Account
       ,Nick
       ,Sex
-      ,HeadId                          AS head_id
-      ,CreateTime                      AS create_time
-      ,LastLoginTime                   AS last_login_time
+      ,HeadId                          as head_id
+      ,CreateTime                      as create_time
+      ,LastLoginTime                   as last_login_time
       ,Chl
       ,MT
       ,IMEI
@@ -146,116 +146,116 @@ SELECT date(createtime)                AS dt
       ,MAC
       ,Money
       ,Phone
-      ,LastSignTime                    AS last_sign_time
-      ,ContinueSignNum                 AS continue_sign_num
-      ,ContinueLoginNum                AS continue_login_num
-      ,DeviceGUID                      AS device_guid
-      ,ConsumeLevel                    AS consume_level
-      ,LastStatTime                    AS last_stat_time
-      ,SendRewardNum                   AS send_reward_num
+      ,LastSignTime                    as last_sign_time
+      ,ContinueSignNum                 as continue_sign_num
+      ,ContinueLoginNum                as continue_login_num
+      ,DeviceGUID                      as device_guid
+      ,ConsumeLevel                    as consume_level
+      ,LastStatTime                    as last_stat_time
+      ,SendRewardNum                   as send_reward_num
       ,Ticket
-      ,TicketTime                      AS ticket_time
-      ,CurMonthConsume                 AS curmonth_consume
-      ,LastMonthConsume                AS last_month_consume
-      ,CurMonthReward                  AS curmonth_reward
-      ,LastMonthReward                 AS last_month_reward
-      ,DeviceToken                     AS device_token
-      ,CurMonthTicket                  AS curmonth_ticket
+      ,TicketTime                      as ticket_time
+      ,CurMonthConsume                 as curmonth_consume
+      ,LastMonthConsume                as last_month_consume
+      ,CurMonthReward                  as curmonth_reward
+      ,LastMonthReward                 as last_month_reward
+      ,DeviceToken                     as device_token
+      ,CurMonthTicket                  as curmonth_ticket
       ,Acc
       ,EMail
-      ,ClientId                        AS client_id
-      ,IsAutoAccount                   AS is_auto_account
-      ,HasCharge                       AS has_charge
-      ,HasSentWelcome                  AS has_sent_welcome
+      ,ClientId                        as client_id
+      ,IsAutoAccount                   as is_auto_account
+      ,HasCharge                       as has_charge
+      ,HasSentWelcome                  as has_sent_welcome
       ,Exp
-      ,MoneyFirstDate                  AS money_first_date
+      ,MoneyFirstDate                  as money_first_date
       ,Province
       ,City
       ,Birthday
       ,Country
-      ,ProdId                          AS prod_id
-      ,SendGiftConsumeTotal            AS send_gift_consume_total
-      ,IsFirst                         AS is_first
-      ,BenefitsEnd                     AS benefit_send
+      ,ProdId                          as prod_id
+      ,SendGiftConsumeTotal            as send_gift_consume_total
+      ,IsFirst                         as is_first
+      ,BenefitsEnd                     as benefit_send
       ,Code
-      ,OperateOver                     AS operate_over
-      ,GiftMoney                       AS gift_money
-      ,GiftMoneyEx                     AS gift_money_ex
-      ,AwardMoney                      AS award_money
-      ,AwardMoneyEx                    AS award_money_ex
+      ,OperateOver                     as operate_over
+      ,GiftMoney                       as gift_money
+      ,GiftMoneyEx                     as gift_money_ex
+      ,AwardMoney                      as award_money
+      ,AwardMoneyEx                    as award_money_ex
       ,Chl2
       ,IP
-      ,TotalCoin                       AS total_coin
-      ,HeadImageUrl                    AS head_image_url
-      ,NeedPushShelfBook               AS need_push_shelf_book
-      ,ReadNum                         AS read_num
-      ,RechargeType                    AS recharge_type
-      ,RechargeTypeExpireTime          AS recharge_type_expire_time
+      ,TotalCoin                       as total_coin
+      ,HeadImageUrl                    as head_image_url
+      ,NeedPushShelfBook               as need_push_shelf_book
+      ,ReadNum                         as read_num
+      ,RechargeType                    as recharge_type
+      ,RechargeTypeExpireTime          as recharge_type_expire_time
       ,Point
       ,AppVer
       ,Ver
-      ,IsSpecialConsumer               AS is_special_consumer
-      ,IsCanConsume                    AS is_can_consume
+      ,IsSpecialConsumer               as is_special_consumer
+      ,IsCanConsume                    as is_can_consume
       ,IDFA
-      ,MonthCardExpireDate             AS month_card_expire_date
-      ,SalesManType                    AS sales_man_type
-      ,VoiceInviterId                  AS voice_inviter_id
-      ,VoiceSalesManType               AS voice_sales_man_type
-      ,PhoneBindTime                   AS phone_bind_time
-      ,UtcOffset                       AS ut_coff_set
-      ,VoiceSalesManExpireTime         AS voice_sales_man_expire_time
-      ,SalesManExpireTime              AS sales_man_expire_time
-      ,LastBuyMonthCardDate            AS last_buy_month_card_date
-      ,LastBuyMonthCardId              AS last_buy_month_card_id
+      ,MonthCardExpireDate             as month_card_expire_date
+      ,SalesManType                    as sales_man_type
+      ,VoiceInviterId                  as voice_inviter_id
+      ,VoiceSalesManType               as voice_sales_man_type
+      ,PhoneBindTime                   as phone_bind_time
+      ,UtcOffset                       as ut_coff_set
+      ,VoiceSalesManExpireTime         as voice_sales_man_expire_time
+      ,SalesManExpireTime              as sales_man_expire_time
+      ,LastBuyMonthCardDate            as last_buy_month_card_date
+      ,LastBuyMonthCardId              as last_buy_month_card_id
       ,Introduction
-      ,ADID                            AS ad_id
-      ,AdType                          AS ad_type
-      ,AndroidId                       AS android_id
-      ,InstallDate                     AS install_date
-      ,RegIP                           AS reg_ip
-      ,RegCountry                      AS reg_country
-      ,Platform                        AS plat_form
-      ,HasBoundEmail                   AS has_bound_email
-      ,EmailBoundStatus                AS email_bound_status
-      ,HasBuyOldCard                   AS has_buy_old_card
-      ,JiFen                           AS jifen
-      ,LastReportTime                  AS last_report_time
-      ,if (CoreVer = 0,1,CoreVer)      AS CoreVer
-      ,BackGoundImgUrl                 AS back_gound_img_url
-      ,HasChargeBefore                 AS has_charge_before
-      ,ConfigVer                       AS config_ver
-      ,IsFirebase                      AS is_fire_base
-      ,HasBuyOldVipCard                AS has_buy_old_vip_card
-      ,AppId                           AS app_id
-      ,AppId2                          AS app_id2
-      ,CurrentLanguage                 AS current_language
-      ,MonthCardPlusExpireDate         AS month_card_plus_expire_date
-      ,LastBuyMonthCardPlusDate        AS last_buy_month_card_plus_date
-      ,LastBuyMonthCardPlusId          AS last_buy_month_card_plus_id
-      ,RowUpdateTimestamp              AS row_update_timestamp
-      ,AndroidIdForDeviceGUID          AS android_id_for_device_guid
-      ,LastItemPrice                   AS last_item_price
+      ,ADID                            as ad_id
+      ,AdType                          as ad_type
+      ,AndroidId                       as android_id
+      ,InstallDate                     as install_date
+      ,RegIP                           as reg_ip
+      ,RegCountry                      as reg_country
+      ,Platform                        as plat_form
+      ,HasBoundEmail                   as has_bound_email
+      ,EmailBoundStatus                as email_bound_status
+      ,HasBuyOldCard                   as has_buy_old_card
+      ,JiFen                           as jifen
+      ,LastReportTime                  as last_report_time
+      ,if (CoreVer = 0,1,CoreVer)      as CoreVer
+      ,BackGoundImgUrl                 as back_gound_img_url
+      ,HasChargeBefore                 as has_charge_before
+      ,ConfigVer                       as config_ver
+      ,IsFirebase                      as is_fire_base
+      ,HasBuyOldVipCard                as has_buy_old_vip_card
+      ,AppId                           as app_id
+      ,AppId2                          as app_id2
+      ,CurrentLanguage                 as current_language
+      ,MonthCardPlusExpireDate         as month_card_plus_expire_date
+      ,LastBuyMonthCardPlusDate        as last_buy_month_card_plus_date
+      ,LastBuyMonthCardPlusId          as last_buy_month_card_plus_id
+      ,RowUpdateTimestamp              as row_update_timestamp
+      ,AndroidIdForDeviceGUID          as android_id_for_device_guid
+      ,LastItemPrice                   as last_item_price
       ,MT2
-      ,if (CoreVer2 = 0,1,CoreVer2)    AS CoreVer2
-      ,DeepLinkPlatform                AS deeplink_plat_form
-      ,RegCountry2                     AS reg_country2
+      ,if (CoreVer2 = 0,1,CoreVer2)    as CoreVer2
+      ,DeepLinkPlatform                as deeplink_plat_form
+      ,RegCountry2                     as reg_country2
       ,Energy
-      ,TotalEnergy                     AS total_energy
-      ,BookId                          AS book_id
-      ,ScreenLockTime                  AS screen_lock_time
-      ,RealLastLoginTime               AS real_last_login_time
-      ,UniqueCdReaderId                AS unique_cdreader_id
-      ,CurrentLanguage2                AS current_language2
-      ,HasChangeLang                   AS has_change_lang
+      ,TotalEnergy                     as total_energy
+      ,BookId                          as book_id
+      ,ScreenLockTime                  as screen_lock_time
+      ,RealLastLoginTime               as real_last_login_time
+      ,UniqueCdReaderId                as unique_cdreader_id
+      ,CurrentLanguage2                as current_language2
+      ,HasChangeLang                   as has_change_lang
       ,Medal
-      ,MedalMinExpireTime              AS medal_min_expire_time
-      ,DailyJiFenToGiftFlag            AS daily_jifen_to_gift_flag
-      ,ContinueSignNum2                AS continue_sign_num2
-      ,ContinueSignNum3                AS continue_sign_num3
-      ,SignRound                       AS sign_round
-      ,BenginSignRoundTime             AS bengin_sign_round_time
-      ,BenginSignTime3                 AS bengin_sign_time3
-      ,BenginSignTime2                 AS bengin_sign_time2
+      ,MedalMinExpireTime              as medal_min_expire_time
+      ,DailyJiFenToGiftFlag            as daily_jifen_to_gift_flag
+      ,ContinueSignNum2                as continue_sign_num2
+      ,ContinueSignNum3                as continue_sign_num3
+      ,SignRound                       as sign_round
+      ,BenginSignRoundTime             as bengin_sign_round_time
+      ,BenginSignTime3                 as bengin_sign_time3
+      ,BenginSignTime2                 as bengin_sign_time2
       ,sr_createtime
       ,sr_updatetime
   from ods.ods_book_user_accountinfo

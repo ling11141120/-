@@ -1,10 +1,124 @@
-CREATE VIEW dim.`dim_short_video_epis_view` (`epis_id` COMMENT "单集id", `series_id` COMMENT "剧集id", `create_tm` COMMENT "创建时间", `update_tm` COMMENT "修改时间", `create_user` COMMENT "上传人", `cover_url` COMMENT "视频封面", `media_url` COMMENT "媒体播放地址", `file_id` COMMENT "媒体文件的唯一标识", `epis_num` COMMENT "分集序号", `is_free` COMMENT "是否免费 1免费 0收费", `duration` COMMENT "视频长度", `is_delete` COMMENT "是否删除", `epis_description` COMMENT "分集简介", `file_size` COMMENT "文件大小", `price` COMMENT "分集价格（分）", `publish_status` COMMENT "上架状态(1上架 2下架)", `title` COMMENT "标题", `title_key` COMMENT "标题key", `epis_description_key` COMMENT "分集简介转换key", `stream_url` COMMENT "转码后url", `trans_status` COMMENT "转码状态 1完成 0 未完成", `sub_titles` COMMENT "字幕文件地址", `preceding_current_duration` COMMENT "到当前剧集的视频长度", `preceding_current_price` COMMENT "到当前剧集的价格（分）", `series_price` COMMENT "短剧每集价格(分)", `sr_createtime` COMMENT "sr数据创建时间", `sr_updatetime` COMMENT "sr数据更新时间")
-COMMENT "短剧分集表" AS SELECT `a`.`EpisId`, `a`.`SeriesId`, `a`.`CreateTime`, `a`.`UpdateTime`, `a`.`CreateUser`, `a`.`CoverUrl`, `a`.`MediaUrl`, `a`.`FileId`, `a`.`EpisNum`, `a`.`IsFree`, `a`.`Duration`, `a`.`IsDelete`, `a`.`EpisDescription`, `a`.`FileSize`, `a`.`Price`, `a`.`PublishStatus`, `a`.`Title`, `a`.`TitleKey`, `a`.`EpisDescriptionKey`, `a`.`StreamUrl`, `a`.`TransStatus`, `a`.`Subtitles`, `a`.`preceding_current_duration`, if(`a`.`preceding_current_price` > 0, `a`.`preceding_current_price`, 0) AS `preceding_current_price`, `a`.`series_price`, `a`.`sr_createtime`, `a`.`sr_updatetime`
-FROM (SELECT `ods`.`a`.`EpisId`, `ods`.`a`.`SeriesId`, `ods`.`a`.`CreateTime`, `ods`.`a`.`UpdateTime`, `ods`.`a`.`CreateUser`, `ods`.`a`.`CoverUrl`, `ods`.`a`.`MediaUrl`, `ods`.`a`.`FileId`, `ods`.`a`.`EpisNum`, `ods`.`a`.`IsFree`, `ods`.`a`.`Duration`, `ods`.`a`.`IsDelete`, `ods`.`a`.`EpisDescription`, `ods`.`a`.`FileSize`, `ods`.`a`.`Price`, `ods`.`a`.`PublishStatus`, `ods`.`a`.`Title`, `ods`.`a`.`TitleKey`, `ods`.`a`.`EpisDescriptionKey`, `ods`.`a`.`StreamUrl`, `ods`.`a`.`TransStatus`, `ods`.`a`.`Subtitles`, sum(if(`ods`.`a`.`EpisNum` >= `ods`.`b`.`PayEpisFrom`, `ods`.`a`.`Duration`, 0)) OVER (PARTITION BY `ods`.`a`.`SeriesId` ORDER BY `ods`.`a`.`EpisNum` ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS `preceding_current_duration`, ((`ods`.`a`.`EpisNum` - `ods`.`b`.`PayEpisFrom`) + 1) * `ods`.`b`.`Price` AS `preceding_current_price`, if(`ods`.`a`.`EpisNum` >= `ods`.`b`.`PayEpisFrom`, `ods`.`b`.`Price`, 0) AS `series_price`, `ods`.`a`.`sr_createtime`, `ods`.`a`.`sr_updatetime`
-FROM `ods`.`ods_tidb_short_video_epis` AS `a` 
-LEFT JOIN `ods`.`ods_tidb_short_video_series` AS `b` ON `ods`.`a`.`SeriesId` = `ods`.`b`.`SeriesId`
-WHERE `ods`.`a`.`IsDelete` = 0
-UNION
-SELECT `ods`.`ods_tidb_short_video_epis`.`EpisId`, `ods`.`ods_tidb_short_video_epis`.`SeriesId`, `ods`.`ods_tidb_short_video_epis`.`CreateTime`, `ods`.`ods_tidb_short_video_epis`.`UpdateTime`, `ods`.`ods_tidb_short_video_epis`.`CreateUser`, `ods`.`ods_tidb_short_video_epis`.`CoverUrl`, `ods`.`ods_tidb_short_video_epis`.`MediaUrl`, `ods`.`ods_tidb_short_video_epis`.`FileId`, `ods`.`ods_tidb_short_video_epis`.`EpisNum`, `ods`.`ods_tidb_short_video_epis`.`IsFree`, `ods`.`ods_tidb_short_video_epis`.`Duration`, `ods`.`ods_tidb_short_video_epis`.`IsDelete`, `ods`.`ods_tidb_short_video_epis`.`EpisDescription`, `ods`.`ods_tidb_short_video_epis`.`FileSize`, `ods`.`ods_tidb_short_video_epis`.`Price`, `ods`.`ods_tidb_short_video_epis`.`PublishStatus`, `ods`.`ods_tidb_short_video_epis`.`Title`, `ods`.`ods_tidb_short_video_epis`.`TitleKey`, `ods`.`ods_tidb_short_video_epis`.`EpisDescriptionKey`, `ods`.`ods_tidb_short_video_epis`.`StreamUrl`, `ods`.`ods_tidb_short_video_epis`.`TransStatus`, `ods`.`ods_tidb_short_video_epis`.`Subtitles`, 0 AS `preceding_current_duration`, 0 AS `preceding_current_price`, 0 AS `series_price`, `ods`.`ods_tidb_short_video_epis`.`sr_createtime`, `ods`.`ods_tidb_short_video_epis`.`sr_updatetime`
-FROM `ods`.`ods_tidb_short_video_epis`
-WHERE `ods`.`ods_tidb_short_video_epis`.`IsDelete` != 0) `a`;
+create view dim.dim_short_video_epis_view(
+     epis_id                       comment "单集id"
+    ,series_id                     comment "剧集id"
+    ,create_tm                     comment "创建时间"
+    ,update_tm                     comment "修改时间"
+    ,create_user                   comment "上传人"
+    ,cover_url                     comment "视频封面"
+    ,media_url                     comment "媒体播放地址"
+    ,file_id                       comment "媒体文件的唯一标识"
+    ,epis_num                      comment "分集序号"
+    ,is_free                       comment "是否免费 1免费 0收费"
+    ,duration                      comment "视频长度"
+    ,is_delete                     comment "是否删除"
+    ,epis_description              comment "分集简介"
+    ,file_size                     comment "文件大小"
+    ,price                         comment "分集价格（分）"
+    ,publish_status                comment "上架状态(1上架 2下架)"
+    ,title                         comment "标题"
+    ,title_key                     comment "标题key"
+    ,epis_description_key          comment "分集简介转换key"
+    ,stream_url                    comment "转码后url"
+    ,trans_status                  comment "转码状态 1完成 0 未完成"
+    ,sub_titles                    comment "字幕文件地址"
+    ,preceding_current_duration    comment "到当前剧集的视频长度"
+    ,preceding_current_price       comment "到当前剧集的价格（分）"
+    ,series_price                  comment "短剧每集价格(分)"
+    ,sr_createtime                 comment "sr数据创建时间"
+    ,sr_updatetime                 comment "sr数据更新时间"
+)
+comment "短剧分集表"
+as
+select a.EpisId
+      ,a.SeriesId
+      ,a.CreateTime
+      ,a.UpdateTime
+      ,a.CreateUser
+      ,a.CoverUrl
+      ,a.MediaUrl
+      ,a.FileId
+      ,a.EpisNum
+      ,a.IsFree
+      ,a.Duration
+      ,a.IsDelete
+      ,a.EpisDescription
+      ,a.FileSize
+      ,a.Price
+      ,a.PublishStatus
+      ,a.Title
+      ,a.TitleKey
+      ,a.EpisDescriptionKey
+      ,a.StreamUrl
+      ,a.TransStatus
+      ,a.Subtitles
+      ,a.preceding_current_duration
+      ,if(a.preceding_current_price > 0, a.preceding_current_price, 0) as preceding_current_price
+      ,a.series_price
+      ,a.sr_createtime
+      ,a.sr_updatetime
+  from (select a.EpisId
+              ,a.SeriesId
+              ,a.CreateTime
+              ,a.UpdateTime
+              ,a.CreateUser
+              ,a.CoverUrl
+              ,a.MediaUrl
+              ,a.FileId
+              ,a.EpisNum
+              ,a.IsFree
+              ,a.Duration
+              ,a.IsDelete
+              ,a.EpisDescription
+              ,a.FileSize
+              ,a.Price
+              ,a.PublishStatus
+              ,a.Title
+              ,a.TitleKey
+              ,a.EpisDescriptionKey
+              ,a.StreamUrl
+              ,a.TransStatus
+              ,a.Subtitles
+              ,sum(if(a.EpisNum >= b.PayEpisFrom, a.Duration, 0)) over (partition by a.SeriesId
+                                                                            order by a.EpisNum asc
+                                                                             rows between unbounded preceding and current row
+                                                                       )    as preceding_current_duration
+              ,((a.EpisNum - b.PayEpisFrom) + 1) * b.Price                  as preceding_current_price
+             , if(a.EpisNum >= b.PayEpisFrom, b.Price,0)                    as series_price
+             , a.sr_createtime
+             , a.sr_updatetime
+          from ods.ods_tidb_short_video_epis           as a
+          left join ods.ods_tidb_short_video_series    as b
+            on a.SeriesId = b.SeriesId
+         where a.IsDelete = 0
+         union
+        select EpisId
+              ,SeriesId
+              ,CreateTime
+              ,UpdateTime
+              ,CreateUser
+              ,CoverUrl
+              ,MediaUrl
+              ,FileId
+              ,EpisNum
+              ,IsFree
+              ,Duration
+              ,IsDelete
+              ,EpisDescription
+              ,FileSize
+              ,Price
+              ,PublishStatus
+              ,Title
+              ,TitleKey
+              ,EpisDescriptionKey
+              ,StreamUrl
+              ,TransStatus
+              ,Subtitles
+              ,0 as preceding_current_duration
+              ,0 as preceding_current_price
+              ,0 as series_price
+              ,sr_createtime
+              ,sr_updatetime
+          from ods.ods_tidb_short_video_epis
+         where ods.ods_tidb_short_video_epis.IsDelete != 0
+       )                                               as a
+;

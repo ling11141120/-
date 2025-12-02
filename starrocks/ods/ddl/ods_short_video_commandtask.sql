@@ -8,22 +8,22 @@
 -- 备注： ClassType='user_refund'
 ----------------------------------------------------------------
 
-DROP TABLE IF EXISTS ods.ods_short_video_commandtask;
-CREATE TABLE ods.ods_short_video_commandtask (
-     id             INT(11)        NOT NULL                  COMMENT ""
-    ,classtype      VARCHAR(512)                             COMMENT ""
-    ,args           VARCHAR(65533)                           COMMENT ""
-    ,scheduletime   DATETIME                                 COMMENT ""
-    ,status         INT(11)                                  COMMENT ""
-    ,execcount      INT(11)                                  COMMENT ""
-    ,exectime       DATETIME                                 COMMENT ""
-    ,sr_createtime  DATETIME       DEFAULT CURRENT_TIMESTAMP COMMENT ""
-    ,sr_updatetime  DATETIME                                 COMMENT ""
+drop table if exists ods.ods_short_video_commandtask;
+create table ods.ods_short_video_commandtask (
+     id             int(11)        not null                  comment ""
+    ,classtype      varchar(512)                             comment ""
+    ,args           string                                   comment ""
+    ,scheduletime   datetime                                 comment ""
+    ,status         int(11)                                  comment ""
+    ,execcount      int(11)                                  comment ""
+    ,exectime       datetime                                 comment ""
+    ,sr_createtime  datetime       default current_timestamp comment ""
+    ,sr_updatetime  datetime                                 comment ""
 )
-PRIMARY KEY (id)
-COMMENT "短剧--订单退款记录"
-DISTRIBUTED BY HASH (id) BUCKETS 1
-PROPERTIES (
+primary key (id)
+comment "短剧--订单退款记录"
+distributed by hash (id) buckets 1
+properties (
     "replication_num" = "3",
     "in_memory" = "false",
     "enable_persistent_index" = "true",
