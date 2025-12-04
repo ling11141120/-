@@ -1,3 +1,101 @@
-CREATE VIEW ads.`ads_sensors_cd_video_adshow_view` (`dt` COMMENT "分区日期", `id` COMMENT "nvl(rid,track_id)", `track_id`, `rid` COMMENT "记录ID", `event_tm` COMMENT "事件时间", `device_id` COMMENT "设备id", `login_id` COMMENT "login_id", `identity_login_id` COMMENT "identity_login_id", `device_lang` COMMENT "设备语言", `event` COMMENT "事件", `distinct_id` COMMENT "distinct_id", `identity_user_id` COMMENT "identity_userid", `app_product_id` COMMENT "包体ID", `send_id` COMMENT "转化来源", `core` COMMENT "core", `app_channel` COMMENT "渠道编号", `app_product_x` COMMENT "应用程序ID", `app_lang_id` COMMENT "界面语言", `lib_version` COMMENT "lib_version", `app_version` COMMENT "app_version", `page_id` COMMENT "页面ID", `page_name` COMMENT "页面名称", `ad_position_id` COMMENT "广告位ID", `ad_position_id1` COMMENT "广告位ID_new", `ad_id` COMMENT "广告ID", `ad_type` COMMENT "广告类型", `ad_platform` COMMENT "广告平台", `ad_source` COMMENT "广告来源", `etl_tm` COMMENT "清洗时间", `app_id` COMMENT "app_id", `product_id` COMMENT "产品ID", `os` COMMENT "操作系统", `ip` COMMENT "IP", `city` COMMENT "城市", `element_id` COMMENT "控件ID", `element_name` COMMENT "控件名称", `element_type` COMMENT "控件类型", `current_language2`, `event_strategy_id` COMMENT "策略ID", `main_strategy_id` COMMENT "主策略ID", `ad_strategy_id` COMMENT "广告策略ID", `ad_group_id` COMMENT "广告人群包ID", `programme_id` COMMENT "方案ID", `module_channel_id` COMMENT "频道id") AS SELECT `ods_log`.`a`.`dt`, `ods_log`.`a`.`id`, `ods_log`.`a`.`track_id`, `ods_log`.`a`.`rid`, `ods_log`.`a`.`event_tm`, `ods_log`.`a`.`device_id`, `ods_log`.`a`.`login_id`, `ods_log`.`a`.`identity_login_id`, `ods_log`.`a`.`device_lang`, `ods_log`.`a`.`event`, `ods_log`.`a`.`distinct_id`, `ods_log`.`a`.`identity_user_id`, `ods_log`.`a`.`app_product_id`, `ods_log`.`a`.`send_id`, CASE WHEN ((length(`ods_log`.`a`.`app_id`)) = 9) THEN (substring(`ods_log`.`a`.`app_id`, 6, 1)) WHEN (`ods_log`.`a`.`app_id` IS NULL) THEN '' ELSE `ods_log`.`a`.`app_id` END AS `core`, `ods_log`.`a`.`app_channel`, `ods_log`.`a`.`app_product_x`, `ods_log`.`a`.`app_lang_id`, `ods_log`.`a`.`lib_version`, `ods_log`.`a`.`app_version`, `ods_log`.`a`.`page_id`, `ods_log`.`a`.`page_name`, `ods_log`.`a`.`ad_position_id`, `ods_log`.`a`.`ad_position_id1`, `ods_log`.`a`.`ad_id`, `ods_log`.`a`.`ad_type`, `ods_log`.`a`.`ad_platform`, `ods_log`.`a`.`ad_source`, `ods_log`.`a`.`etl_tm`, `ods_log`.`a`.`app_id`, 6833 AS `product_id`, `ods_log`.`a`.`os`, `ods_log`.`a`.`ip`, `ods_log`.`a`.`city`, `ods_log`.`a`.`element_id`, `ods_log`.`a`.`element_name`, `ods_log`.`a`.`element_type`, `dim`.`b`.`current_language2`, `ods_log`.`a`.`event_strategy_id`, `ods_log`.`a`.`main_strategy_id`, `ods_log`.`a`.`ad_strategy_id`, `ods_log`.`a`.`ad_group_id`, `ods_log`.`a`.`programme_id`, `ods_log`.`a`.`module_channel_id`
-FROM `ods_log`.`ods_sensors_production_adshow` AS `a` LEFT OUTER JOIN `dim`.`dim_short_video_user_accountinfo` AS `b` ON `ods_log`.`a`.`login_id` = `dim`.`b`.`user_id`
-WHERE `ods_log`.`a`.`project_id` = 8;
+create or replace view ads.ads_sensors_cd_video_adshow_view (
+     dt                comment "分区日期"
+    ,id                comment "nvl(rid,track_id)"
+    ,track_id          comment "track_id"
+    ,rid               comment "记录ID"
+    ,event_tm          comment "事件时间"
+    ,device_id         comment "设备id"
+    ,login_id          comment "login_id"
+    ,identity_login_id comment "identity_login_id"
+    ,device_lang       comment "设备语言"
+    ,event             comment "事件"
+    ,distinct_id       comment "distinct_id"
+    ,identity_user_id  comment "identity_userid"
+    ,app_product_id    comment "包体ID"
+    ,send_id           comment "转化来源"
+    ,core              comment "core"
+    ,app_channel       comment "渠道编号"
+    ,app_product_x     comment "应用程序ID"
+    ,app_lang_id       comment "界面语言"
+    ,lib_version       comment "lib_version"
+    ,app_version       comment "app_version"
+    ,page_id           comment "页面ID"
+    ,page_name         comment "页面名称"
+    ,ad_position_id    comment "广告位ID"
+    ,ad_position_id1   comment "广告位ID_new"
+    ,ad_id             comment "广告ID"
+    ,ad_type           comment "广告类型"
+    ,ad_platform       comment "广告平台"
+    ,ad_source         comment "广告来源"
+    ,etl_tm            comment "清洗时间"
+    ,app_id            comment "app_id"
+    ,product_id        comment "产品ID"
+    ,os                comment "操作系统"
+    ,ip                comment "IP"
+    ,city              comment "城市"
+    ,element_id        comment "控件ID"
+    ,element_name      comment "控件名称"
+    ,element_type      comment "控件类型"
+    ,current_language2 comment "投放语言"
+    ,event_strategy_id comment "策略ID"
+    ,main_strategy_id  comment "主策略ID"
+    ,ad_strategy_id    comment "广告策略ID"
+    ,ad_group_id       comment "广告人群包ID"
+    ,programme_id      comment "方案ID"
+    ,module_channel_id comment "频道id"
+    ,request_duration  comment "请求时长"
+)
+as
+select a.dt
+      ,a.id
+      ,a.track_id
+      ,a.rid
+      ,a.event_tm
+      ,a.device_id
+      ,a.login_id
+      ,a.identity_login_id
+      ,a.device_lang
+      ,a.event
+      ,a.distinct_id
+      ,a.identity_user_id
+      ,a.app_product_id
+      ,a.send_id
+      ,case when ((length(a.app_id)) = 9) then (substring(a.app_id, 6, 1))
+            when (a.app_id is null) then ''
+            else a.app_id
+        end  as core
+      ,a.app_channel
+      ,a.app_product_x
+      ,a.app_lang_id
+      ,a.lib_version
+      ,a.app_version
+      ,a.page_id
+      ,a.page_name
+      ,a.ad_position_id
+      ,a.ad_position_id1
+      ,a.ad_id
+      ,a.ad_type
+      ,a.ad_platform
+      ,a.ad_source
+      ,a.etl_tm
+      ,a.app_id
+      ,6833 as product_id
+      ,a.os
+      ,a.ip
+      ,a.city
+      ,a.element_id
+      ,a.element_name
+      ,a.element_type
+      ,b.current_language2
+      ,a.event_strategy_id
+      ,a.main_strategy_id
+      ,a.ad_strategy_id
+      ,a.ad_group_id
+      ,a.programme_id
+      ,a.module_channel_id
+      ,a.request_duration
+  from ods_log.ods_sensors_production_adshow              as a
+  left outer join dim.dim_short_video_user_accountinfo    as b
+    on a.login_id = b.user_id
+ where a.project_id = 8
+;

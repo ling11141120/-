@@ -23,6 +23,17 @@ create or replace view ads.ads_sensors_cd_video_adrequest_view (
     ,request_type1        comment '请求类型'
     ,ip                   comment 'IP'
     ,etl_tm               comment '清洗时间'
+    ,page_id              comment '页面ID'
+    ,page_name            comment '页面名称'
+    ,element_id           comment '控件ID'
+    ,element_name         comment '控件名称'
+    ,element_type         comment '控件类型'
+    ,ad_id                comment '广告ID'
+    ,ad_platform          comment '广告平台'
+    ,ad_source            comment '广告来源'
+    ,ad_type              comment '广告类型'
+    ,main_strategy_id     comment '主策略ID'
+    ,event_strategy_id    comment '策略ID'
 )
 comment '海剧广告请求事件视图'
 as
@@ -50,5 +61,16 @@ select  dt
        ,request_type1
        ,ip
        ,etl_tm
+       ,page_id
+       ,page_name
+       ,element_id
+       ,element_name
+       ,element_type
+       ,ad_id
+       ,ad_platform
+       ,ad_source
+       ,ad_type
+       ,main_strategy_id
+       ,event_strategy_id
   from ods_log.ods_sensors_cd_video_adrequest
 ;
