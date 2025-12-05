@@ -45,6 +45,8 @@ create table ods_log.ods_sensors_production_adtrigger (
     ,request_duration  decimal(20, 3)    comment "请求时长"
     ,etl_tm            datetime          comment "清洗时间"
     ,project_id        int               comment "项目id：5阅读 8短剧"
+    ,os                string            comment "系统名称"
+    ,app_id            string            comment "app_id"
 )
 primary key (dt, id)
 comment "event=ADTrigger 广告播放失败事件"
