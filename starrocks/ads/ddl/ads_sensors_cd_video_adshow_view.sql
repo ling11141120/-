@@ -44,6 +44,7 @@ create or replace view ads.ads_sensors_cd_video_adshow_view (
     ,programme_id      comment "方案ID"
     ,module_channel_id comment "频道id"
     ,request_duration  comment "请求时长"
+    ,app_core_ver      comment "core"
 )
 as
 select a.dt
@@ -94,6 +95,7 @@ select a.dt
       ,a.programme_id
       ,a.module_channel_id
       ,a.request_duration
+      ,a.app_core_ver
   from ods_log.ods_sensors_production_adshow              as a
   left outer join dim.dim_short_video_user_accountinfo    as b
     on a.login_id = b.user_id

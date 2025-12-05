@@ -42,6 +42,8 @@ create table ods_log.ods_sensors_production_adinvocation (
     ,event_strategy_id string            comment "策略ID"
     ,etl_tm            datetime          comment "清洗时间"
     ,project_id        int               comment "项目id：5阅读 8短剧"
+    ,os                string            comment "系统名称"
+    ,app_id            string            comment "app_id"
 )
 primary key (dt, id)
 comment "event=ADInvocation 广告调用"

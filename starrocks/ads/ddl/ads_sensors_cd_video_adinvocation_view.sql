@@ -30,6 +30,8 @@ create or replace view ads.ads_sensors_cd_video_adinvocation_view (
     ,main_strategy_id     comment "主策略ID"
     ,event_strategy_id    comment "策略ID"
     ,project_id           comment "项目id：5阅读 8短剧"
+    ,os                   comment "操作系统"
+    ,app_id               comment "app_id"
 )
 comment "海剧广告调用"
 as
@@ -64,6 +66,8 @@ select dt
       ,main_strategy_id
       ,event_strategy_id
       ,project_id
+      ,os
+      ,app_id
   from ods_log.ods_sensors_production_adinvocation
  where project_id = 8
 ;

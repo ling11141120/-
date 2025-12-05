@@ -34,6 +34,8 @@ create or replace view ads.ads_sensors_cd_video_adtrigger_view (
     ,request_duration     comment "请求时长"
     ,etl_tm               comment "清洗时间"
     ,project_id           comment "项目id：5阅读 8短剧"
+    ,os                   comment "操作系统"
+    ,app_id               comment "app_id"
 )
 comment "海剧广告播放失败事件"
 as
@@ -72,6 +74,8 @@ select dt
       ,request_duration
       ,etl_tm
       ,project_id
+      ,os
+      ,app_id
   from ods_log.ods_sensors_production_adtrigger
  where project_id = 8
 ;
