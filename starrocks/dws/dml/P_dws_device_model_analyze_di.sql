@@ -222,43 +222,42 @@ with dau as (
        and a4.MT = 4
      group by 1, 2, 3, 4, 5
 )
-
-select a1.dt
-     , a1.biz_type_cd
-     , a1.product_id
-     , a1.core
-     , a1.dev_mdl
-     , a5.cd_val_desc         as biz_type_name
-     , a1.svr_dau
-     , a2.ad_uv
-     , a2.ad_ttl_amt
-     , a2.ad_rpc
-     , a2.web_ad_amt
-     , a2.web_rpc             as web_ad_rpc
-     , a2.med_sdk_ad_amt
-     , a2.med_sdk_rpc         as med_sdk_ad_rpc
-     , a3.clk_uv
-     , null                   as push_act_clk_uv
-     , a4.tp_rev
-     , a4.push_af_1h_tp_rev
-     , now()                  as etl_dtm
-from dau                   as a1
-  left join ad_info        as a2
+select a1.dt                                 as dt                   -- 日期
+     , a1.biz_type_cd                        as biz_type_cd          -- 业务类型编码
+     , a1.product_id                         as product_id           -- product_id
+     , a1.core                               as core                 -- core
+     , a1.dev_mdl                            as dev_mdl              -- 设备型号
+     , a5.cd_val_desc                        as biz_type_name        -- 业务类型名称
+     , a1.svr_dau                            as svr_dau              -- 服务端日活
+     , a2.ad_uv                              as ad_uv                -- 广告uv
+     , a2.ad_ttl_amt                         as ad_ttl_amt           -- 广告总收入
+     , a2.ad_rpc                             as ad_rpc               -- 广告人均单价
+     , a2.web_ad_amt                         as web_ad_amt           -- web广告收入
+     , a2.web_rpc                            as web_ad_rpc           -- web广告人均单价
+     , a2.med_sdk_ad_amt                     as med_sdk_ad_amt       -- 聚合sdk广告收入
+     , a2.med_sdk_rpc                        as med_sdk_ad_rpc       -- 聚合sdk广告人均单价
+     , a3.clk_uv                             as clk_uv               -- 点击uv
+     , null                                  as push_act_clk_uv      -- 下发活跃点击uv
+     , a4.tp_rev                             as tp_rev               -- 充值收入
+     , a4.push_af_1h_tp_rev                  as push_af_1h_tp_rev    -- 拉活后1小时内充值收入
+     , now()                                 as etl_dtm              -- etl时间
+  from dau                                   as a1
+  left join ad_info                          as a2
     on a1.dt = a2.dt
    and a1.product_id = a2.product_id
    and a1.core = a2.core
    and a1.dev_mdl = a2.dev_mdl
-  left join srsv_uv        as a3
+  left join srsv_uv                          as a3
     on a1.dt = a3.dt
    and a1.product_id = a3.product_id
    and a1.core = a3.core
    and a1.dev_mdl = a3.dev_mdl
-  left join svsr_tp_rev    as a4
+  left join svsr_tp_rev                      as a4
     on a1.dt = a4.dt
    and a1.product_id = a4.product_id
    and a1.core = a4.core
    and a1.dev_mdl = a4.dev_mdl
-  left join dim.dim_pub_code_mapping_dict as a5
+  left join dim.dim_pub_code_mapping_dict    as a5
     on a5.app_plat = 'beidou'
    and a5.cd_col = 'biz_type_cd'
    and a1.biz_type_cd = a5.cd_val

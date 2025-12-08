@@ -7,7 +7,6 @@
 -- 版本号： v1.0
 ----------------------------------------------------------------
 
-
 insert into dwd.dwd_device_gp_app_anr_di
 select date_trunc('day', AnrTime)                                             as dt
       ,Id                                                                     as id
@@ -32,12 +31,12 @@ select date_trunc('day', AnrTime)                                             as
       ,SessionCount                                                           as session_count
       ,null                                                                   as active_count
       ,now()                                                                  as etl_tm
-from ods.ods_tidb_qadata_gp_app_version_device_anr
-where date(InitTime) = '${bf_1_dt}'
-  and date(AnrTime) >= '${bf_3_dt}'
-  and date(AnrTime) <= '${bf_1_dt}'
+  from ods.ods_tidb_qadata_gp_app_version_device_anr
+ where date(InitTime) = '${bf_1_dt}'
+   and date(AnrTime) >= '${bf_3_dt}'
+   and date(AnrTime) <= '${bf_1_dt}'
 
-union all
+ union all
 select date_trunc('day', AnrTime)           as dt
       ,Id                                   as id
       ,'PUSH'                               as anr_type
@@ -59,8 +58,8 @@ select date_trunc('day', AnrTime)           as dt
       ,null                                 as session_count
       ,ActiveCount                          as active_count
       ,now()                                as etl_tm
-from ods.ods_tidb_qadata_gp_app_push_device_anr
-where date(InitTime) = '${bf_1_dt}'
-  and date(AnrTime) >= '${bf_3_dt}'
-  and date(AnrTime) <= '${bf_1_dt}'
+  from ods.ods_tidb_qadata_gp_app_push_device_anr
+ where date(InitTime) = '${bf_1_dt}'
+   and date(AnrTime) >= '${bf_3_dt}'
+   and date(AnrTime) <= '${bf_1_dt}'
 ;
