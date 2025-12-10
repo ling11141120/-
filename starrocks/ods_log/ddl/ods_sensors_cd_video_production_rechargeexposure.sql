@@ -1,0 +1,102 @@
+----------------------------------------------------------------
+-- 目标表： ods_log.ods_sensors_cd_video_endwatching
+-- 来源实例：
+-- 来源表：
+-- 来源负责：
+-- 采集工具： 极光-实时映射
+-- 开发人： xjc
+-- 开发日期： 2025-11-27
+----------------------------------------------------------------
+
+drop table if exists ods_log.ods_sensors_cd_video_production_rechargeexposure;
+create table ods_log.ods_sensors_cd_video_production_rechargeexposure (
+     dt                       date              not null                     comment "分区日期"
+    ,id                       varchar(65533)    not null                     comment "nvl(rid,track_id)"
+    ,track_id                 varchar(65533)                                 comment "跟踪id"
+    ,rid                      varchar(65533)                                 comment "记录ID"
+    ,event_tm                 datetime                                       comment "事件时间"
+    ,device_id                varchar(65533)                                 comment "设备id"
+    ,login_id                 varchar(65533)                                 comment "login_id"
+    ,identity_login_id        varchar(65533)                                 comment "identity_login_id"
+    ,device_lang              varchar(65533)                                 comment "设备语言"
+    ,event                    varchar(65533)                                 comment "事件"
+    ,distinct_id              varchar(65533)                                 comment "distinct_id"
+    ,identity_user_id         varchar(65533)                                 comment "identity_userid"
+    ,app_product_id           varchar(65533)                                 comment "包体ID"
+    ,send_id                  varchar(65533)                                 comment "转化来源"
+    ,app_core_ver             varchar(65533)                                 comment "core"
+    ,app_channel              varchar(65533)                                 comment "渠道编号"
+    ,app_product_x            varchar(65533)                                 comment "应用程序ID"
+    ,app_lang_id              varchar(65533)                                 comment "界面语言"
+    ,page_name                varchar(65533)                                 comment "页面名称"
+    ,page_id                  varchar(65533)                                 comment "页面ID"
+    ,element_name             varchar(65533)                                 comment "控件名称"
+    ,element_id               varchar(65533)                                 comment "控件ID"
+    ,recharge_type            varchar(65533)                                 comment "充值类型"
+    ,book_id                  varchar(65533)                                 comment "小说ID"
+    ,chapter_id               varchar(65533)                                 comment "章节id"
+    ,recharge_amount          varchar(65533)                                 comment "充值货币金额"
+    ,present_gift             varchar(65533)                                 comment "赠送货币金额"
+    ,countdown                varchar(65533)                                 comment "倒计时标签时长"
+    ,real_recharge            varchar(65533)                                 comment "支付金额"
+    ,list_sort                varchar(65533)                                 comment "列表位置"
+    ,is_available             varchar(65533)                                 comment "是否可用"
+    ,event_strategy_id        varchar(65533)                                 comment "策略id"
+    ,app_module               varchar(65533)                                 comment "模块"
+    ,element_type             varchar(65533)                                 comment "控件类型"
+    ,czlx                     varchar(65533)                                 comment "充值类型"
+    ,subscription_days        varchar(65533)                                 comment "订阅天数"
+    ,programme_id             varchar(65533)                                 comment "方案ID"
+    ,cz_template_id           varchar(65533)                                 comment "充值模板ID"
+    ,cz_template_name         varchar(65533)                                 comment "充值模板名称"
+    ,task_current_progress    varchar(65533)                                 comment "当前任务进度"
+    ,task_max_progress        varchar(65533)                                 comment "任务最大进度"
+    ,app_id                   varchar(65533)                                 comment "app ID"
+    ,app_version              varchar(65533)                                 comment "应用版本"
+    ,product_id               varchar(65533)                                 comment "产品ID"
+    ,os                       varchar(65533)                                 comment "操作系统"
+    ,ip                       varchar(65533)                                 comment "IP"
+    ,city                     varchar(65533)                                 comment "城市"
+    ,province                 varchar(65533)                                 comment "省份"
+    ,country                  varchar(65533)                                 comment "国家"
+    ,lib                      varchar(65533)                                 comment "lib"
+    ,lib_version              varchar(65533)                                 comment "5阅读 8 短剧"
+    ,project_id               varchar(65533)                                 comment "5阅读 8 短剧"
+    ,shortplay_id             varchar(65533)                                 comment "短剧id"
+    ,episode_id               varchar(65533)                                 comment "剧集id"
+    ,activity_link            varchar(1024)                                  comment "活动链路"
+    ,pay_link                 varchar(1024)                                  comment "支付链路"
+    ,activity_id              varchar(65533)                                 comment "活动id"
+    ,parent_group_id          varchar(1048576)                               comment "用户集合ID"
+    ,etl_tm                   datetime          default current_timestamp    comment "etl时间"
+    ,ad_group_id              varchar(65533)                                 comment "广告人群包ID"
+    ,ad_strategy_id           varchar(65533)                                 comment "广告策略ID"
+    ,main_strategy_id         varchar(65533)                                 comment "主策略ID"
+    ,module_channel_id        varchar(65533)                                 comment "频道id"
+    ,recharge_index           varchar(65533)                                 comment "档位位序"
+    ,zffs_list                varchar(65533)                                 comment "支付方式列表"
+    ,is_subscription          varchar(65533)                                 comment "是否续订"
+    ,zffs_id_list             varchar(65533)                                 comment "支付方式ID列表"
+    ,zffs_strategy_id         varchar(65533)                                 comment "支付方式策略ID"
+    ,anonymous_id             varchar(65533)                                 comment "匿名ID"
+)
+primary key(dt, id)
+comment "event=rechargeExposure 充值档位曝光事件"
+partition by range(dt)
+distributed by hash(id) buckets 3 
+properties (
+    "replication_num" = "2"
+   ,"dynamic_partition.enable" = "true"
+   ,"dynamic_partition.time_unit" = "DAY"
+   ,"dynamic_partition.time_zone" = "Asia/Shanghai"
+   ,"dynamic_partition.start" = "-90"
+   ,"dynamic_partition.end" = "3"
+   ,"dynamic_partition.prefix" = "p"
+   ,"dynamic_partition.buckets" = "3"
+   ,"dynamic_partition.history_partition_num" = "0"
+   ,"in_memory" = "false"
+   ,"enable_persistent_index" = "true"
+   ,"replicated_storage" = "true"
+   ,"compression" = "ZSTD"
+)
+;
