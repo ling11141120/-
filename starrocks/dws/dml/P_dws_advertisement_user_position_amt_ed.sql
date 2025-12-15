@@ -124,7 +124,7 @@ with ad_click_count as (
       left join (select date(day)                 as dt
                        ,system_type
                        ,'Starmobi'                as ads_name
-                       ,sum(revenue_share)*0.7    as revenue_share
+                       ,sum(revenue_share)        as revenue_share
                    from dim.dim_sv_ad_advertise_info_view
                   where date(day)>='${bf_1_dt}'
                     and date(day)<='${dt}'
@@ -135,7 +135,7 @@ with ad_click_count as (
                              else ProjectType
                          end                      as system_type
                        ,'MobKing'                 as ads_name
-                       ,sum(SubNetRevenue)*0.7    as revenue_share
+                       ,sum(SubNetRevenue)    as revenue_share
                    from ods.ods_tidb_mobkingaddata
                   where Date>='${bf_1_dt}'
                     and Date<='${dt}'
@@ -175,7 +175,7 @@ with ad_click_count as (
                              else ProjectType
                          end                as system_type
                        ,'synjoy'            as ads_name
-                       ,sum(revenue)*0.7    as revenue_share
+                       ,sum(revenue)        as revenue_share
                    from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
