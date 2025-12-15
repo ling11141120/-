@@ -225,9 +225,16 @@ with z1 as (
                                ,c1.CodeStage          as code_stage
                                ,c1.PlanRound          as plan_round
                            from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan              as c1
-                           left join ods.ods_tidb_sharpengine_ads_global_marketingplanlasttask    as c2
+                           left join (select MarketingPlanId
+                                            ,LastTaskUid
+                                            ,LastTaskUser
+                                        from ods.ods_tidb_sharpengine_ads_global_marketingplanlasttask
+                                       where IsDel = 0
+                                     qualify dense_rank() over (partition by MarketingPlanId,LastTaskUid,LastTaskUser
+                                                                    order by CreateTime desc
+                                                               ) = 1
+                                     )                                                            as c2
                              on c1.Id = c2.MarketingPlanId
-                            and c2.IsDel = 0
                            left join dim.dim_pub_code_mapping_dict                                as c3
                              on c1.CurrentLanguage = c3.p_cd_val
                             and c3.cd_col = 'lang_abbr'
