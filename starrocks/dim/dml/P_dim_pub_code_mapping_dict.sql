@@ -151,6 +151,7 @@ values
 ,('pub', 'ad_src', '6', '广告来源', 'pengpai', NULL, NULL, NULL, NULL)
 ,('pub', 'ad_src', '7', '广告来源', 'Starmobi_2', NULL, NULL, NULL, NULL)
 ,('pub', 'ad_src', '8', '广告来源', 'synjoy', NULL, NULL, NULL, NULL)
+,('pub', 'ad_src', '9', '广告来源', 'Bees', NULL, NULL, NULL, NULL)
 ,('pub', 'prd_lang_cd', '7757', '产品语言编码', '简体中文', 'product_id', '7757', 'product_id', '新安卓读书')
 ,('pub', 'prd_lang_cd', '3311', '产品语言编码', '法语', 'product_id', '3311', 'product_id', '法语阅读')
 ,('pub', 'prd_lang_cd', '3333', '产品语言编码', '繁体', 'product_id', '3333', 'product_id', '繁体畅读')
