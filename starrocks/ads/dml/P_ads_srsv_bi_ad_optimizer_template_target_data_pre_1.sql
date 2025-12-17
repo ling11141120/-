@@ -301,10 +301,10 @@ with z1 as (
        and a1.template_id = a4.TemplateId
        and a1.dt = a4.fst_ce_dt
       left join (select b5.ProjectCode
-                      ,b5.SourceChl
-                      ,b5.CodeId
-                      ,b6.TemplateId
-                      ,b6.InitAdSetCount
+                      , b5.SourceChl
+                      , b5.CodeId
+                      , b6.TemplateId
+                      , b6.InitAdSetCount
                    from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlan             as b5
                    join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanItem         as b6
                      on b5.PlanId = b6.PlanId
@@ -318,10 +318,10 @@ with z1 as (
        and a1.book_id = a5.CodeId
        and a1.template_id = a5.TemplateId
       left join (select b7.ProjectCode
-                      ,b8.SourceChl
-                      ,b8.CodeId
-                      ,b7.TemplateId
-                      ,count(distinct b10.AdSetId)                                          as AdSetCount
+                      , b8.SourceChl
+                      , b8.CodeId
+                      , b7.TemplateId
+                      , count(distinct b10.AdSetId)                                          as AdSetCount
                    from ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanTask         as b7
                    join ods.ods_ads_tidb_sharpengine_ads_global_AdsCreationAutoTask         as b8
                      on b7.AdsCreationAutoTaskId = b8.Id
@@ -346,125 +346,125 @@ with z1 as (
 -- 指标：标准，new占比，通过D0收入比例确定投放标准，昨日+今日
 , z3 as (
     select a.*
-          ,ifnull(b.ios_day0_amt,0)                                                                                  as ios_day0_amt
-          ,ifnull(b.day0_amt,0)                                                                                      as day0_amt
-          ,ifnull(b.day0_amt_new,0)                                                                                  as day0_amt_new
-          ,ifnull(b.reg_num_ios,0)                                                                                   as reg_num_ios
-          ,ifnull(b.reg_num,0)                                                                                       as reg_num_all
-          ,ifnull(b.reg_num_new,0)                                                                                   as reg_num_new
-          ,case when a.product_id=6833 then coalesce(r2.ios_r0_std,put2.ios_r0_std)
-                else coalesce(r.ios_r0_std,put.ios_r0_std)
-            end                                                                                                      as ios_r0_std
-          ,case when a.product_id=6833 then coalesce(r2.and_r0_std,put2.and_r0_std)
-                else coalesce(r.and_r0_std,put.and_r0_std)
-            end                                                                                                      as and_r0_std
-          ,ifnull(lag(b.reg_num_ios,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_ios_yester
-          ,ifnull(lag(b.reg_num,1,0)     over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_yester
-          ,ifnull(lag(b.reg_num_new,1,0) over(partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_new_yester
-    from opt_and_ce_info                                  as a
-    left join (select a.product_id
-                     ,if(a.product_id<>6833,0,e.core)     as core
-                     ,e.source_chl
-                     ,e.ad_set_id
-                     ,date(a.install_date)                as dt
-                     ,sum(a.ios_day0_amt)                 as ios_day0_amt
-                     ,sum(a.day0_amt)                     as day0_amt
-                     ,sum(a.day0_amt_new)                 as day0_amt_new
-                     ,sum(a.reg_num_ios)                  as reg_num_ios
-                     ,sum(a.reg_num)                      as reg_num
-                     ,sum(a.reg_num_new)                  as reg_num_new
-                 from ads.ads_bi_ad_new_user_value_ed     as a
-                 join ads.ads_advertisement_adext_view    as e
-                   on a.product_id=e.product_id
-                  and a.ad_id=e.ad_id
-                where e.source_chl in ('facebook','fbs2s','tt','tiktok app')
-                  and a.install_date>'2024-01-01'
-                  and e.book_id is not null
-                group by 1,2,3,4,5
-              )                                            as b
-      on a.product_id=b.product_id
-     and a.core=b.core
-     and a.ad_set_id=b.ad_set_id
-     and a.dt=b.dt
-    -- 最新书籍标准
-    left join (select BookId
-                     ,DateKey
-                     ,SourceChl
-                     ,AdTarget
-                     ,max(if(mt=1,R0Std,null))             as ios_r0_std
-                     ,max(if(mt=4,R0Std,null))             as and_r0_std
-                 from ods.ods_ads_tidb_sharpengine_ads_global_BookRoiStdCfgV2Daily
-                where DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4
-              )                                            as r
-      on r.BookId=a.book_id
-     and r.DateKey=a.dt
-     and r.SourceChl = a.source_chl
-     and IFNULL(r.AdTarget,'') = IFNULL(a.ad_target,'')
-    -- 最新阅读大盘标准
-    left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_1
-      on put_1.dt = a.dt
-     and put_1.AdSetId = a.ad_set_id
-    left join (select CurrentLanguage
-                     ,DateKey
-                     ,BookChannel
-                     ,SourceChl
-                     ,Core
-                     ,StdCode
-                     ,AdTarget
-                     ,BookType
-                     ,max(if(mt=1,R0Std,null))             as ios_r0_std
-                     ,max(if(mt=4,R0Std,null))             as and_r0_std
-                 from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
-                where ProjectCode = 1 and DateKey>days_add(curdate(),-360)
-                group by 1, 2, 3, 4, 5, 6, 7, 8
-              )                                            as put
-      on put.CurrentLanguage=a.languageid
-     and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
-     and put.core = a.core
-     and put.DateKey=a.dt
-     and put.SourceChl = a.source_chl
-     and IFNULL(put.AdTarget,'') = IFNULL(a.ad_target,'')
-     and IFNULL(put.StdCode,'') = IFNULL(put_1.StdCode,'')
-     and put.BookType = a.story_type
-    -- 海剧分剧标准
-    left join (select DateKey
-                     ,VideoId
-                     ,SourceChl
-                     ,AdTarget
-                     ,max(if(mt=1,R0Std,null))             as ios_r0_std
-                     ,max(if(mt=4,R0Std,null))             as and_r0_std
-                 from ods.ods_ads_tidb_sharpengine_ads_global_VideoRoiStdCfgV2Daily
-                where DateKey>days_add(curdate(),-360)
-                group by 1,2,3,4
-              )                                            as r2
-      on r2.VideoId=a.book_id
-     and r2.SourceChl = a.source_chl
-     and r2.DateKey=a.dt
-     and IFNULL(r2.AdTarget,'') = IFNULL(a.ad_target,'')
-    -- 海剧标准
-    left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_2
-      on put_2.dt = a.dt
-     and put_2.AdSetId = a.ad_set_id
-    left join (select DateKey
-                     ,CurrentLanguage
-                     ,SourceChl
-                     ,Core
-                     ,StdCode
-                     ,AdTarget
-                     ,max(if(mt=1,R0Std,null))             as ios_r0_std
-                     ,max(if(mt=4,R0Std,null))             as and_r0_std
-                 from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
-                where ProjectCode = 2
-                  and DateKey>days_add(curdate(),-360)
-                group by 1, 2, 3, 4, 5, 6
-              )                                            as put2
-      on put2.CurrentLanguage = a.languageid
-     and put2.SourceChl = a.source_chl
-     and put2.DateKey = a.dt
-     and put2.core = a.core
-     and IFNULL(put2.AdTarget,'') = IFNULL(a.ad_target,'')
-     and IFNULL(put2.StdCode,'')=IFNULL(put_2.StdCode,'')
+         , ifnull(b.ios_day0_amt, 0)                                                                                  as ios_day0_amt
+         , ifnull(b.day0_amt, 0)                                                                                      as day0_amt
+         , ifnull(b.day0_amt_new, 0)                                                                                  as day0_amt_new
+         , ifnull(b.reg_num_ios, 0)                                                                                   as reg_num_ios
+         , ifnull(b.reg_num, 0)                                                                                       as reg_num_all
+         , ifnull(b.reg_num_new, 0)                                                                                   as reg_num_new
+         , case when a.product_id = 6833 then coalesce(r2.ios_r0_std, put2.ios_r0_std)
+                else coalesce(r.ios_r0_std, put.ios_r0_std)
+            end                                                                                                       as ios_r0_std
+         , case when a.product_id = 6833 then coalesce(r2.and_r0_std, put2.and_r0_std)
+                 else coalesce(r.and_r0_std, put.and_r0_std)
+            end                                                                                                       as and_r0_std
+         , ifnull(lag(b.reg_num_ios,1,0) over (partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_ios_yester
+         , ifnull(lag(b.reg_num,1,0)     over (partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_yester
+         , ifnull(lag(b.reg_num_new,1,0) over (partition by concat(a.product_id,a.ad_set_id) order by a.dt asc),0)    as reg_num_new_yester
+      from opt_and_ce_info                                              as a
+      left join (select a.product_id
+                      , if(a.product_id <> 6833, 0, e.core) as core
+                      , e.source_chl
+                      , e.ad_set_id
+                      , date(a.install_date)                as dt
+                      , sum(a.ios_day0_amt)                 as ios_day0_amt
+                      , sum(a.day0_amt)                     as day0_amt
+                      , sum(a.day0_amt_new)                 as day0_amt_new
+                      , sum(a.reg_num_ios)                  as reg_num_ios
+                      , sum(a.reg_num)                      as reg_num
+                      , sum(a.reg_num_new)                  as reg_num_new
+                   from ads.ads_bi_ad_new_user_value_ed     as a
+                   join ads.ads_advertisement_adext_view    as e
+                     on a.product_id = e.product_id
+                    and a.ad_id = e.ad_id
+                  where e.source_chl in ('facebook', 'fbs2s', 'tt', 'tiktok app')
+                    and a.install_date > '2024-01-01'
+                    and e.book_id is not null
+                  group by 1, 2, 3, 4, 5
+                )                                                       as b
+        on a.product_id = b.product_id
+       and a.core = b.core
+       and a.ad_set_id = b.ad_set_id
+       and a.dt = b.dt
+      -- 最新书籍标准
+      left join (select BookId
+                      , DateKey
+                      , SourceChl
+                      , AdTarget
+                      , max(if(mt = 1, R0Std, null)) as ios_r0_std
+                      , max(if(mt = 4, R0Std, null)) as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_BookRoiStdCfgV2Daily
+                  where DateKey > days_add(curdate(), -360)
+                  group by 1, 2, 3, 4
+                )                                                       as r
+        on r.BookId = a.book_id
+       and r.DateKey = a.dt
+       and r.SourceChl = a.source_chl
+       and IFNULL(r.AdTarget, '') = IFNULL(a.ad_target, '')
+      -- 最新阅读大盘标准
+      left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_1
+        on put_1.dt = a.dt
+       and put_1.AdSetId = a.ad_set_id
+      left join (select CurrentLanguage
+                      , DateKey
+                      , BookChannel
+                      , SourceChl
+                      , Core
+                      , StdCode
+                      , AdTarget
+                      , BookType
+                      , max(if(mt = 1, R0Std, null)) as ios_r0_std
+                      , max(if(mt = 4, R0Std, null)) as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                  where ProjectCode = 1 and DateKey > days_add(curdate(), -360)
+                  group by 1, 2, 3, 4, 5, 6, 7, 8
+                )                                                       as put
+        on put.CurrentLanguage = a.languageid
+       and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
+       and put.core = a.core
+       and put.DateKey = a.dt
+       and put.SourceChl = a.source_chl
+       and IFNULL(put.AdTarget, '') = IFNULL(a.ad_target, '')
+       and IFNULL(put.StdCode, '') = IFNULL(put_1.StdCode, '')
+       and put.BookType = a.story_type
+      -- 海剧分剧标准
+      left join (select DateKey
+                      , VideoId
+                      , SourceChl
+                      , AdTarget
+                      , max(if(mt = 1, R0Std, null)) as ios_r0_std
+                      , max(if(mt = 4, R0Std, null)) as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_VideoRoiStdCfgV2Daily
+                  where DateKey > days_add(curdate(), -360)
+                  group by 1, 2, 3, 4
+                )                                                       as r2
+        on r2.VideoId = a.book_id
+       and r2.SourceChl = a.source_chl
+       and r2.DateKey = a.dt
+       and IFNULL(r2.AdTarget, '') = IFNULL(a.ad_target, '')
+      -- 海剧标准
+      left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_2
+        on put_2.dt = a.dt
+       and put_2.AdSetId = a.ad_set_id
+      left join (select DateKey
+                      , CurrentLanguage
+                      , SourceChl
+                      , Core
+                      , StdCode
+                      , AdTarget
+                      , max(if(mt = 1, R0Std, null))     as ios_r0_std
+                      , max(if(mt = 4, R0Std, null))     as and_r0_std
+                   from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                  where ProjectCode = 2
+                    and DateKey > days_add(curdate(), -360)
+                  group by 1, 2, 3, 4, 5, 6
+                )                                                       as put2
+        on put2.CurrentLanguage = a.languageid
+       and put2.SourceChl = a.source_chl
+       and put2.DateKey = a.dt
+       and put2.core = a.core
+       and IFNULL(put2.AdTarget, '') = IFNULL(a.ad_target, '')
+       and IFNULL(put2.StdCode, '') = IFNULL(put_2.StdCode, '')
 )
 -- 标准和指标处理,core过滤,book_id非null
 -- 优化师、创编模板、新老组汇总
@@ -489,19 +489,19 @@ with z1 as (
           ,is_fst_infra         -- 是否首日基建
           ,init_infra_num       -- 初始基建条数
           ,is_new_group_ce      -- 是否有创编新组
-          ,sum(day0_amt)                                                                    as reg_num_all
-          ,sum(day0_amt_new)                                                                as reg_num_new
-          ,count(distinct ad_set_id)                                                        as adset_num
-          ,sum(cost_amount)                                                                 as spend
-          ,sum(reg_num)                                                                     as reg_num
-          ,sum(amount)                                                                      as d0_amt
-          ,sum(payers_num)                                                                  as payers_num
-          ,sum(coalesce(r0_std,(ios_r0_std+and_r0_std)/2)*cost_amount)                      as std_amt
+          ,sum(day0_amt)                                                  as reg_num_all
+          ,sum(day0_amt_new)                                              as reg_num_new
+          ,count(distinct ad_set_id)                                      as adset_num
+          ,sum(cost_amount)                                               as spend
+          ,sum(reg_num)                                                   as reg_num
+          ,sum(amount)                                                    as d0_amt
+          ,sum(payers_num)                                                as payers_num
+          ,sum(coalesce(r0_std,(ios_r0_std+and_r0_std)/2)*cost_amount)    as std_amt
           ,ifnull(case when sum(day0_amt_new)=0 then sum(reg_num_new+reg_num_new_yester)/sum(reg_num_yester+reg_num_all)
-                      else coalesce(sum(day0_amt_new)/sum(day0_amt),sum(reg_num_new+reg_num_new_yester)/sum(reg_num_yester+reg_num_all))
-                  end
+                       else coalesce(sum(day0_amt_new)/sum(day0_amt),sum(reg_num_new+reg_num_new_yester)/sum(reg_num_yester+reg_num_all))
+                   end
                   ,0
-                 )                                                                          as new_amt_rate
+                 )                                                        as new_amt_rate
       from (select *
                   ,case when source_chl in ('facebook','fbs2s') then 'meta'
                         when source_chl in ('tt','tiktok app') then 'tiktok'
@@ -712,29 +712,29 @@ with z1 as (
           )                 as a
       -- 测试排期
       left join (select code_id
-                      ,project_code
-                      ,case when source_chl in ('fb') then 'meta'
-                            when source_chl in('tt') then 'tiktok'
-                            else source_chl
-                        end as source2
-                      ,update_time
-                      ,begin_date
-                      ,end_date
-                      ,code_stage
-                      ,code_lv
-                      ,test_status
+                      , project_code
+                      , case when source_chl in ('fb') then 'meta'
+                             when source_chl in ('tt') then 'tiktok'
+                             else source_chl
+                         end as source2
+                      , update_time
+                      , begin_date
+                      , end_date
+                      , code_stage
+                      , code_lv
+                      , test_status
                   from ads.ads_srsv_ads_marketing_plan_view
                   where is_del=0
                     and source_chl <>''
                 ) p
         on a.dt>=p.begin_date
-      and a.dt<=p.end_date
-      and a.book_id=p.code_id
-      and a.product=p.project_code
-      and a.source2=p.source2  -- 进阶日前一天数据
-    where a.core<=1
-      and if(days_diff(a.dt,p.update_time)>=0,ifnull(code_lv,''),'') not in('B')
-      and if(days_diff(a.dt,p.update_time)>=0,ifnull(test_status,0),0) < 2
+       and a.dt<=p.end_date
+       and a.book_id=p.code_id
+       and a.product=p.project_code
+       and a.source2=p.source2  -- 进阶日前一天数据
+     where a.core<=1
+       and if(days_diff(a.dt,p.update_time)>=0,ifnull(code_lv,''),'') not in('B')
+       and if(days_diff(a.dt,p.update_time)>=0,ifnull(test_status,0),0) < 2
 )
 select a1.source2
       ,a1.project_code
