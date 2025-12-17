@@ -1,251 +1,385 @@
-INSERT INTO dws.dws_advertisement_user_position_amt_west5_ed
--- -------阅读以及海剧的脚本    -------------------------------
--- -------统计每日H5点击--------------
-WITH ad_click_count AS (
-    SELECT '${bf_1_dt}'         AS dt
-          ,app_product_id       AS product_id
-          ,login_id             AS user_id
-          ,app_core_ver         AS core
-          ,mt
-          ,appver
-          ,5                    AS ad_show_type
-          ,59                   AS positions
-          ,'Starmobi'           AS ads_name
-          ,NULL                 AS main_strategy_id
-          ,NULL                 AS event_strategy_id
-          ,event_strategy_id    AS programme_id
-          ,2                    AS system_type
-          ,COUNT(1)             AS ad_click_count
-     FROM dwd.dwd_sensors_production_complete_task_click_view
-    WHERE dt>='${bf_1_dt}'
-      AND dt<='${dt}'
-      AND DATE(date_add(event_tm,INTERVAL -13 HOUR)) = '${bf_1_dt}'    -- 取西五区的时间数据
-      AND element_id = '100772'
-      AND type = '121'
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-    UNION ALL
-    SELECT '${bf_1_dt}' AS dt
-          ,app_product_id AS product_id
-          ,login_id AS user_id
-          ,app_core_ver AS core
-          ,mt
-          ,appver
-          ,5 AS ad_show_type
-          ,ad_position_id AS positions
-          ,'Starmobi' AS ads_name
-          ,main_strategy_id
-          ,ad_strategy_id AS event_strategy_id
-          ,programme_id AS programme_id
-          ,2 AS system_type
-          ,COUNT(1) AS ad_click_count
-     FROM dwd.dwd_sensors_production_element_click_view
-    WHERE dt>='${bf_1_dt}'
-      AND dt<='${dt}'
-      AND DATE(date_add(event_tm,INTERVAL -13 HOUR)) = '${bf_1_dt}'
-      AND element_id = '100356'
-      AND ad_position_id >0   -- 241113从19、60改为>0
-      AND app_product_id IS NOT NULL
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-    UNION ALL
+----------------------------------------------------------------
+-- 程序功能： 阅读及海剧用户广告展现位置收益表_西五区
+-- 程序名： dws_advertisement_user_position_amt_west5_ed
+-- 目标表： dws.dws_advertisement_user_position_amt_west5_ed
+-- 负责人： roger
+-- 开发日期：2025/12/11
+-- 版本号： v0.1
+----------------------------------------------------------------
+
+delete from  dws.dws_advertisement_user_position_amt_west5_ed where dt>='${bf_1_dt}' and dt<='${dt}';
+
+insert into dws.dws_advertisement_user_position_amt_west5_ed
+-- 统计每日H5点击
+with ad_click_count as (
+    select date(date_add(event_tm,interval -13 hour)) as dt
+          ,a1.app_product_id       as product_id
+          ,a1.login_id             as user_id
+          ,a1.app_core_ver         as core
+          ,a1.mt
+          ,a1.appver
+          ,5                       as ad_show_type
+          ,59                      as positions
+          ,a1.ad_src               as ads_src
+          ,null                    as main_strategy_id
+          ,null                    as event_strategy_id
+          ,a1.event_strategy_id    as programme_id
+          ,2                       as system_type
+          ,count(1)                as ad_click_count
+      from dwd.dwd_sensors_production_complete_task_click_view    as a1
+     where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+       and dt <= '${dt}'
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and element_id = '100772'
+       and type = '121'
+       and ad_src is not null
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     union all
+    select date(date_add(event_tm,interval -13 hour)) as dt
+          ,a1.app_product_id       as product_id
+          ,a1.login_id             as user_id
+          ,a1.app_core_ver         as core
+          ,a1.mt
+          ,a1.appver
+          ,5                       as ad_show_type
+          ,a1.ad_position_id       as positions
+          ,a1.ad_src               as ads_src
+          ,a1.main_strategy_id
+          ,a1.ad_strategy_id       as event_strategy_id
+          ,a1.programme_id         as programme_id
+          ,2                       as system_type
+          ,count(1)                as ad_click_count
+      from dwd.dwd_sensors_production_element_click_view    as a1
+     where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+       and dt <= '${dt}'
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and element_id = '100356'
+       and ad_position_id > 0
+       and app_product_id is not null
+       and ad_src is not null
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     union all
     -- 海剧每日H5点击
-    SELECT '${bf_1_dt}' AS dt
-          ,a.product_id
-          ,a.user_id
-          ,a.core
-          ,a.mt
-          ,a.appver
-          ,a.ad_type AS ad_show_type
-          ,b.ad_position AS positions
-          ,b.ad_position_name AS ads_name
-          ,a.main_strategy_id
-          ,a.event_strategy_id
-          ,a.programme_id
-          ,1 AS system_type
-          ,COUNT(1) AS ad_click_count
-     FROM dwd.dwd_sensors_production_adpositionclick_view a
-     LEFT JOIN dim.dim_sv_ads_position_view b
-       ON a.ad_position_id = b.ad_position
-    WHERE dt>='${bf_1_dt}'
-      AND dt<='${dt}'
-      AND DATE(date_add(event_tm,INTERVAL -13 HOUR)) = '${bf_1_dt}'
-      AND ad_type = 6
-      AND product_id = 6833
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
-    UNION ALL
-    SELECT '${bf_1_dt}' AS dt
-          ,6833 AS product_id
-          ,login_id AS user_id
-          ,corever AS core
-          ,a.mt
-          ,a.appver
-          ,6 AS ad_show_type
-          ,NULL AS positions
-          ,'H5'  AS ads_name
-          ,NULL AS main_strategy_id
-          ,a.event_strategy_id
-          ,NULL AS programme_id
-          ,1 AS system_type
-          ,COUNT(1) AS ad_click_count
-     FROM dwd.dwd_sensors_production_complete_task_click_view a
-    WHERE dt>='${bf_1_dt}'
-      AND dt<='${dt}'
-      AND DATE(date_add(event_tm,INTERVAL -13 HOUR)) = '${bf_1_dt}'
-      AND task_type IN('9','浏览第三方页面')
-      AND app_product_id IS NULL
-    GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13
+    select date(date_add(event_tm,interval -13 hour)) as dt
+          ,a1.product_id
+          ,a1.user_id
+          ,a1.core
+          ,a1.mt
+          ,a1.appver
+          ,a1.ad_type             as ad_show_type
+          ,a2.ad_position         as positions
+          ,a1.ad_src              as ads_src
+          ,a1.main_strategy_id
+          ,a1.event_strategy_id
+          ,a1.programme_id
+          ,1                      as system_type
+          ,count(1)               as ad_click_count
+      from dwd.dwd_sensors_production_adpositionclick_view    as a1
+      left join dim.dim_sv_ads_position_view                  as a2
+        on a1.ad_position_id = a2.ad_position
+     where a1.dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+       and a1.dt <= '${dt}'
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and a1.ad_type = 6
+       and a1.product_id = 6833
+       and ad_src is not null
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     union all
+    select date(date_add(event_tm,interval -13 hour)) as dt
+          ,6833              as product_id
+          ,login_id          as user_id
+          ,corever           as core
+          ,mt
+          ,appver
+          ,6                 as ad_show_type
+          ,null              as positions
+          ,a1.ad_src         as ads_src
+          ,null              as main_strategy_id
+          ,event_strategy_id
+          ,null              as programme_id
+          ,1                 as system_type
+          ,count(1)          as ad_click_count
+      from dwd.dwd_sensors_production_complete_task_click_view    as a1
+     where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+       and dt <= '${dt}'
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and task_type in('9', '浏览第三方页面')
+       and app_product_id is null
+       and length(ad_src)>=1
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 )
-,avg_click_amount AS (
-    SELECT a.dt
-          ,a.system_type
-          ,b.ads_name
-          ,SUM(a.ad_click_count) AS ad_click_count
-          ,SUM(b.revenue_share) AS ad_amt
-          ,ROUND(SUM(b.revenue_share)/SUM(a.ad_click_count),9) AS ad_avg_click_amt
-      FROM (SELECT dt
+-- 东八区昨日H5点击
+, ad_click_count_east8 as (
+    select a1.dt
+         ,a1.ad_src               as ads_src
+         ,2                       as system_type
+         ,count(1)                as ad_click_count
+    from dwd.dwd_sensors_production_complete_task_click_view    as a1
+    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
+      and element_id = '100772'
+      and type = '121'
+      and ad_src is not null
+    group by 1, 2, 3
+    union all
+    select a1.dt
+         ,a1.ad_src               as ads_src
+         ,2                       as system_type
+         ,count(1)                as ad_click_count
+    from dwd.dwd_sensors_production_element_click_view    as a1
+    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
+      and element_id = '100356'
+      and ad_position_id > 0
+      and app_product_id is not null
+      and ad_src is not null
+    group by 1, 2, 3
+    union all
+    -- 海剧每日H5点击
+    select a1.dt
+         ,a1.ad_src              as ads_src
+         ,1                      as system_type
+         ,count(1)               as ad_click_count
+    from dwd.dwd_sensors_production_adpositionclick_view    as a1
+    where a1.dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
+      and a1.ad_type = 6
+      and a1.product_id = 6833
+      and a1.ad_src is not null
+    group by 1, 2, 3
+    union all
+    select a1.dt
+         ,a1.ad_src         as ads_src
+         ,1                 as system_type
+         ,count(1)          as ad_click_count
+    from dwd.dwd_sensors_production_complete_task_click_view    as a1
+    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
+      and task_type in('9', '浏览第三方页面')
+      and app_product_id is null
+      and length(ad_src)>=1
+    group by 1, 2, 3
+)
+-- 统计每日H5点击平均收益
+, avg_click_amount as (
+    select a1.dt
+          ,a1.system_type
+          ,a2.ads_name
+          ,round(sum(a2.revenue_share)/sum(a1.ad_click_count),9)    as ad_avg_click_amt
+      from (select dt
                   ,system_type
-                  ,SUM(ad_click_count) AS ad_click_count
-              FROM ad_click_count
-             GROUP BY dt,system_type
-           ) a
-      LEFT JOIN (SELECT '${bf_1_dt}' AS dt
+                  ,a2.cd_val_desc        as ads_name
+                  ,sum(ad_click_count)   as ad_click_count
+              from ad_click_count_east8                        as a1
+              left join dim.dim_pub_code_mapping_dict    as a2
+                on a1.ads_src=a2.cd_val
+               and a2.app_plat='pub'
+               and a2.cd_col='ad_src'
+             group by 1,2,3
+           )         as a1
+      left join (select date(day)                 as dt
                        ,system_type
-                       ,'Starmobi' AS ads_name
-                       ,SUM(revenue_share)*0.7 AS revenue_share
-                   FROM dim.dim_sv_ad_advertise_info_view
-                  WHERE date(day)= '${dt}'    --- day是东八区时间，取前一天为西五区时间
-                  GROUP BY 1, 2,3
-                  UNION ALL
-                 SELECT '${bf_1_dt}' AS dt
-                       ,CASE WHEN ProjectType=0 THEN 2 ELSE ProjectType END AS system_type
-                       ,'MobKing' AS ads_name
-                       ,SUM(SubNetRevenue)*0.7 AS revenue_share
-                   FROM ods.ods_tidb_mobkingaddata a
-                  WHERE Date = '${dt}'
-                  GROUP BY 1,2,3
-                  UNION ALL
-                 SELECT '${bf_1_dt}' AS dt
-                       ,CASE WHEN UrlName='moboreels' THEN 1
-                            WHEN UrlName='moboreader' THEN 2
-                           END AS system_type
-                       ,'pengpai' AS ads_name
-                       ,SUM(RevenueNet) AS revenue_share
-                   FROM ods.ods_tidb_SurgeAdData
-                  WHERE UrlName IN('moboreels','moboreader')
-                    AND Date = '${dt}'
-                  GROUP BY 1,2,3
-                ) b
-        ON a.dt = b.dt
-       AND a.system_type = b.system_type
-     GROUP BY 1,2,3
+                       ,'Starmobi'                as ads_name
+                       ,sum(revenue_share)        as revenue_share
+                   from dim.dim_sv_ad_advertise_info_view
+                  where date(day) in ('${bf_1_dt}', '${dt}')
+                  group by 1, 2,3
+                  union all
+                 select Date as dt
+                       ,case when ProjectType = 0 then 2
+                             else ProjectType
+                         end                      as system_type
+                       ,'MobKing'                 as ads_name
+                       ,sum(SubNetRevenue)        as revenue_share
+                   from ods.ods_tidb_mobkingaddata
+                  where Date in ('${bf_1_dt}', '${dt}')
+                  group by 1,2,3
+                  union all
+                 select Date as dt
+                        ,case when UrlName='moboreels' then 1
+                              when UrlName='moboreader' then 2
+                              else null
+                          end               as system_type
+                        ,'pengpai'          as ads_name
+                        ,sum(RevenueNet)    as revenue_share
+                   from ods.ods_tidb_SurgeAdData
+                  where UrlName in('moboreels','moboreader')
+                    and Date in ('${bf_1_dt}', '${dt}')
+                  group by 1,2,3
+                  union all
+                 select dt
+                       ,system_type
+                       ,'Starmobi_2'    as ads_name
+                       ,income          as revenue_share
+                   from (select date(day)         as dt
+                               ,system_type
+                               ,sum(ecpm)         as ecpm
+                               ,sum(income)       as income
+                               ,sum(page_view)    as page_view
+                           from ods.ods_tidb_short_video_log_firefly_income_report
+                         group by 1,2
+                        )     as c1
+                  where dt in ('${bf_1_dt}', '${dt}')
+                  union all
+                 select dt
+                       ,case when ProjectType = 1 then 2
+                             when ProjectType = 2 then 1
+                             else ProjectType
+                         end                as system_type
+                       ,'synjoy'            as ads_name
+                       ,sum(revenue)*0.8    as revenue_share
+                   from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
+                 where dt in ('${bf_1_dt}', '${dt}')
+                  group by 1,2,3
+                )    as a2
+        on a1.dt=a2.dt
+       and a1.system_type = a2.system_type
+       and a1.ads_name = a2.ads_name
+     group by 1,2,3
 )
-,user_info_tmp AS (
-    SELECT a.product_id
-          ,a.user_id
-          ,CASE WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3311 THEN 6
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3322 THEN 5
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3333 THEN 2
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3366 THEN 3
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3371 THEN 7
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3388 THEN 4
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3501 THEN 11
-               WHEN (current_language2 IS NULL OR current_language2=0) AND product_id=3511 THEN 12
-               ELSE current_language2
-          END AS currentlanguage2
-     FROM (SELECT sacc.product_id
-                 ,sacc.user_id
-                 ,sacc.current_language2
-             FROM dim.dim_short_video_user_accountinfo sacc    -- 海外短剧用户信息
-            UNION ALL
-           SELECT 6883 AS product_id
-                 ,account AS user_id
-                 ,current_language2
-             FROM dim.dim_video_cn_accountinfo_view    -- 国内短剧用户信息
-            UNION ALL
-           SELECT product_id
-                 ,id AS user_id
-                 ,current_language2
-             FROM dim.dim_user_account_info_view
-          ) a
+,user_info_tmp as (
+    select a1.product_id
+          ,a1.user_id
+          ,case when (current_language2 is null or current_language2=0)and product_id=3311 then 6
+                when (current_language2 is null or current_language2=0)and product_id=3322 then 5
+                when (current_language2 is null or current_language2=0)and product_id=3333 then 2
+                when (current_language2 is null or current_language2=0)and product_id=3366 then 3
+                when (current_language2 is null or current_language2=0)and product_id=3371 then 7
+                when (current_language2 is null or current_language2=0)and product_id=3388 then 4
+                when (current_language2 is null or current_language2=0)and product_id=3501 then 11
+                when (current_language2 is null or current_language2=0)and product_id=3511 then 12
+                else current_language2
+            end               as currentlanguage2
+      from (select product_id
+                  ,user_id
+                  ,current_language2
+              from dim.dim_short_video_user_accountinfo
+             union all
+            select 6883       as product_id
+                  ,account    as user_id
+                  ,current_language2
+              from dim.dim_video_cn_accountinfo_view
+             union all
+            select product_id
+                  ,id         as user_id
+                  ,current_language2
+              from dim.dim_user_account_info_view
+           )    as a1
 )
-SELECT x.dt
-      ,x.product_id
-      ,x.user_id
-      ,x.core
-      ,x.mt
-      ,CASE WHEN x.product_id = 6833 AND x.positions = 12 THEN 'Starmobi-H5'
-            WHEN x.product_id <> 6833 AND x.positions = 59 THEN 'Starmobi-H5'
-            ELSE acc.currentlanguage2
-       END AS current_language2
-      ,x.appver
-      ,x.ad_show_type
-      ,x.positions
-      ,x.ads_name
-      ,x.ads_source
-      ,x.main_strategy_id
-      ,x.event_strategy_id
-      ,x.programme_id
-      ,MAX(CASE WHEN rk_asc=1 THEN amount END) AS fst_amt
-      ,MAX(CASE WHEN rk_desc=1 THEN amount END) AS lst_amt
-      ,COUNT(1) AS cnt
-      ,SUM(amount) AS amt
-      ,NOW() AS etl_tm
-  FROM (SELECT a.dt
-              ,a.product_id
-              ,a.user_id
-              ,a.corever AS core
-              ,a.mt
-              ,a.appver
-              ,a.create_tm
-              ,a.ad_unit
-              ,a.ad_show_type
-              ,a.position_id AS positions
-              ,a.ad_position_amt AS amount
-              ,a.ads_name
-              ,COALESCE(b.ads_source_abbr, a.ads_source) AS ads_source
-              ,a.main_strategy_id
-              ,a.event_strategy_id
-              ,a.programme_id
-              ,ROW_NUMBER()OVER(PARTITION BY a.dt,a.product_id,a.user_id,a.corever,a.mt,a.appver,a.ad_show_type,a.position_id,a.ads_name,main_strategy_id,event_strategy_id ORDER BY a.create_tm,a.ad_unit ) AS rk_asc
-              ,ROW_NUMBER()OVER(PARTITION BY a.dt,a.product_id,a.user_id,a.corever,a.mt,a.appver,a.ad_show_type,a.position_id,a.ads_name,main_strategy_id,event_strategy_id ORDER BY a.create_tm DESC ,a.ad_unit DESC) AS rk_desc
-          FROM dwd.dwd_advertisement_user_position_amt_west5_p_di a     -- --------阅读及海外短剧--广告预估收益明细宽表,数据起始时间23年1月
-          LEFT JOIN dim.dim_ads_source_abbr b
-            ON a.ads_name = b.ads_name
-           AND a.ads_source = b.ads_source
-         WHERE dt = '${bf_1_dt}'
-       ) x
-  LEFT JOIN user_info_tmp acc
-    ON x.product_id = acc.product_id
-   AND x.user_id = acc.user_id
- GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14
---新增position_id=59 的数据
-UNION ALL
-SELECT a.dt
-      ,a.product_id
-      ,a.user_id
-      ,a.core
-      ,CASE WHEN lower(a.mt)='ios' THEN 1
-            WHEN lower(a.mt)='android' THEN 4
-            ELSE a.mt END AS mt
-      ,acc.currentlanguage2 AS current_language2
-      ,a.appver
-      ,a.ad_show_type
-      ,a.positions
-      ,b.ads_name
-      ,NULL AS ads_source
-      ,a.main_strategy_id
-      ,a.event_strategy_id
-      ,a.programme_id
-      ,NULL AS fst_amt
-      ,NULL AS lst_amt
-      ,SUM(a.ad_click_count) AS cnt
-      ,SUM(a.ad_click_count)*MAX(b.ad_avg_click_amt) AS amt
-      ,NOW() AS etl_tm
-  FROM ad_click_count a
-  LEFT JOIN avg_click_amount b
-    ON a.dt = b.dt
-   AND a.system_type = b.system_type
-  LEFT JOIN user_info_tmp acc
-    ON a.product_id = acc.product_id
-   AND a.user_id = acc.user_id
- GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+select a1.dt                                       as dt                   -- 事件时间
+      ,a1.product_id                               as product_id           -- 产品id
+      ,a1.user_id                                  as user_id              -- 用户id
+      ,a1.core                                     as corever              -- core
+      ,a1.mt                                       as mt                   -- 终端
+      ,case when a1.product_id = 6833 and a1.positions = 12 then 'Starmobi-H5'
+            when a1.product_id <> 6833 and a1.positions = 59 then 'Starmobi-H5'
+            else a2.currentlanguage2
+        end                                        as current_language2    -- 投放语言
+      ,a1.appver                                   as appver               -- 版本号
+      ,a1.ad_show_type                             as ad_show_type         -- 广告类型
+      ,a1.positions                                as positions            -- 广告位置
+      ,a1.ads_name                                 as ads_name             -- 广告来源-广告平台,adomob,topon,max
+      ,a1.ads_source                               as ads_source           -- admob广告源,可通过这个反推是哪家具体的广告
+      ,a1.main_strategy_id                         as main_strategy_id     -- 主策略id
+      ,a1.event_strategy_id                        as event_strategy_id    -- 策略id
+      ,a1.programme_id                             as programme_id         -- 频道方案ID
+      ,max(case when rk_asc=1 then amount end)     as fst_amt              -- 首次广告收益
+      ,max(case when rk_desc=1 then amount end)    as lst_amt              -- 末次广告收益
+      ,count(1)                                    as cnt                  -- 次数
+      ,sum(amount)                                 as amt                  -- 广告收益
+      ,now()                                       as etl_tm               -- 清洗时间
+  from (select date(date_add(b1.create_tm,interval -13 hour)) as dt
+              ,b1.product_id
+              ,b1.user_id
+              ,b1.corever                                     as core
+              ,b1.mt
+              ,b1.appver
+              ,b1.create_tm
+              ,b1.ad_unit
+              ,b1.ad_show_type
+              ,b1.position_id                                 as positions
+              ,b1.ad_position_amt                             as amount
+              ,b1.ads_name
+              ,coalesce(b2.ads_source_abbr, b1.ads_source)    as ads_source
+              ,b1.main_strategy_id
+              ,b1.event_strategy_id
+              ,b1.programme_id
+              ,row_number() over (partition by date(date_add(b1.create_tm,interval -13 hour))
+                                              ,b1.product_id
+                                              ,b1.user_id
+                                              ,b1.corever
+                                              ,b1.mt
+                                              ,b1.appver
+                                              ,b1.ad_show_type
+                                              ,b1.position_id
+                                              ,b1.ads_name
+                                              ,b1.main_strategy_id
+                                              ,b1.event_strategy_id
+                                              ,b1.programme_id
+                                              ,b1.create_tm
+                                              ,b1.ad_unit
+                                      order by b1.create_tm
+                                              ,b1.ad_unit
+                                  )                           as rk_asc
+              ,row_number() over (partition by date(date_add(b1.create_tm,interval -13 hour))
+                                              ,b1.product_id
+                                              ,b1.user_id
+                                              ,b1.corever
+                                              ,b1.mt
+                                              ,b1.appver
+                                              ,b1.ad_show_type
+                                              ,b1.position_id
+                                              ,b1.ads_name
+                                              ,b1.main_strategy_id
+                                              ,b1.event_strategy_id
+                                              ,b1.programme_id
+                                              ,b1.create_tm
+                                              ,b1.ad_unit
+                                      order by b1.create_tm desc
+                                              ,b1.ad_unit   desc
+                                 )                          as rk_desc
+        from dwd.dwd_advertisement_user_position_amt_p_di           as b1
+        left join dim.dim_ads_source_abbr                           as b2
+          on b1.ads_name = b2.ads_name
+         and b1.ads_source = b2.ads_source
+       where b1.dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+         and b1.dt <= '${dt}'
+         and date(date_add(b1.create_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+     )                       as a1
+  left join user_info_tmp    as a2
+    on a1.product_id = a2.product_id
+   and a1.user_id = a2.user_id
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+ union all
+select a1.dt                                              as dt                   -- 事件时间
+      ,a1.product_id                                      as product_id           -- 产品id
+      ,a1.user_id                                         as user_id              -- 用户id
+      ,a1.core                                            as core                 -- core
+      ,case when lower(a1.mt)='ios' then 1
+            when lower(a1.mt)='android' then 4
+            else a1.mt
+        end                                               as mt                   -- 终端
+      ,a4.currentlanguage2                                as current_language2    -- 投放语言
+      ,a1.appver                                          as appver               -- 版本号
+      ,a1.ad_show_type                                    as ad_show_type         -- 广告类型
+      ,a1.positions                                       as positions            -- 广告位置
+      ,a3.ads_name                                        as ads_name             -- 广告来源-广告平台,adomob,topon,max
+      ,null                                               as ads_source           -- 广告来源
+      ,a1.main_strategy_id                                as main_strategy_id     -- 主策略id
+      ,a1.event_strategy_id                               as event_strategy_id    -- 策略id
+      ,a1.programme_id                                    as programme_id         -- 频道方案ID
+      ,null                                               as fst_amt              -- 首次广告收益
+      ,null                                               as lst_amt              -- 末次广告收益
+      ,sum(a1.ad_click_count)                             as cnt                  -- 次数
+      ,sum(a1.ad_click_count)*max(a3.ad_avg_click_amt)    as amt                  -- 广告收益
+      ,now()                                              as etl_tm               -- 清洗时间
+  from ad_click_count                        as a1
+  left join dim.dim_pub_code_mapping_dict    as a2
+    on a1.ads_src=a2.cd_val
+   and a2.app_plat='pub'
+   and a2.cd_col='ad_src'
+  left join avg_click_amount                 as a3
+    on a1.dt = a3.dt
+   and a1.system_type = a3.system_type
+   and a2.cd_val_desc=a3.ads_name
+  left join user_info_tmp                    as a4
+    on a1.product_id = a4.product_id
+   and a1.user_id = a4.user_id
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
 ;
