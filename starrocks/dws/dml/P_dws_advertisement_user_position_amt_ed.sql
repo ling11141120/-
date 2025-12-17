@@ -4,7 +4,7 @@
 -- 目标表： dws.dws_advertisement_user_position_amt_ed
 -- 开发人： xjc
 -- 开发日期： 2025-11-06
--- 版本号： v0.0.0
+-- 版本号： v0.0.1
 ----------------------------------------------------------------
 
 insert into dws.dws_advertisement_user_position_amt_ed
@@ -154,10 +154,10 @@ with ad_click_count as (
                     and Date<='${dt}'
                   group by 1,2,3
                   union all
-                 select dt
-                       ,system_type
-                       ,'Starmobi_2'    as ads_name
-                       ,income          as revenue_share
+                 select dt                        as dt
+                       ,system_type               as system_type
+                       ,'Starmobi_2'              as ads_name
+                       ,income                    as revenue_share
                    from (select date(day)         as dt
                                ,system_type
                                ,sum(ecpm)         as ecpm
@@ -169,13 +169,13 @@ with ad_click_count as (
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
                   union all
-                 select dt
+                 select dt                    as dt
                        ,case when ProjectType = 1 then 2
                              when ProjectType = 2 then 1
                              else ProjectType
-                         end                as system_type
-                       ,'synjoy'            as ads_name
-                       ,sum(revenue)        as revenue_share
+                         end                  as system_type
+                       ,'synjoy'              as ads_name
+                       ,sum(revenue) * 0.8    as revenue_share    -- 20251217 fjb: 合作方接口返回的收益是分成前收益，我方分成0.8
                    from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
