@@ -169,7 +169,7 @@ with z6 as (
 )
 
 -- 未基建成功保留前日基建
-select date(hours_add(now(),-13))    as dt
+select date(hours_add('${dt_tm}',-13))    as dt
       ,book_id
       ,template_id
       ,source2
@@ -244,7 +244,7 @@ select date(hours_add(now(),-13))    as dt
       ,adsetnum_1
       ,adsetnum_2
       ,has_plan
-      ,case when dt=date(hours_add(now(),-13)) then adsetnum_plan
+      ,case when dt=date(hours_add('${dt_tm}',-13)) then adsetnum_plan
             else ceiling(adsetnum_plan*0.6)
         end     as adsetnum_plan
       ,opt_eid              -- 优化师工号
@@ -259,20 +259,21 @@ select date(hours_add(now(),-13))    as dt
       ,std_amt1             -- 新组+老组指标
       ,d0_amt_pow1          -- 新组+老组指标
       ,std_amt_pow1         -- 新组+老组指标
-      ,now()    as etl_time
+      ,'${dt_tm}'    as etl_time
   from (select *
               ,row_number() over(partition by book_id,template_id,source2,project_code order by dt desc)    as rn
           from z6_2
-         where days_diff(hours_add(now(),-13),dt)<=7
-           and dt<=hours_add(now(),-13)
+         where days_diff(hours_add('${dt_tm}',-13),dt)<=7
+           and dt<=hours_add('${dt_tm}',-13)
        )    as x
  where rn=1
    and (    test_status=1
          or (    test_status>1
-             and days_diff(hours_add(now(),-13),dt)<=1
+             and days_diff(hours_add('${dt_tm}',-13),dt)<=1
             )
        )
    and !(    adsetnum_plan=0
-         and days_diff(hours_add(now(),-13),dt)>=1
+         and days_diff(hours_add('${dt_tm}',-13),dt)>=1
         )
 ;
+commit;
