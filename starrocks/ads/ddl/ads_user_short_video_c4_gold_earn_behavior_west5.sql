@@ -1,5 +1,5 @@
-drop table if exists ads.ads_user_short_video_c4_gold_earn_behavior;
-create table ads.ads_user_short_video_c4_gold_earn_behavior (
+drop table if exists ads.ads_user_short_video_c4_gold_earn_behavior_west5;
+create table ads.ads_user_short_video_c4_gold_earn_behavior_west5 (
      dt                     date       not null    comment "日期"
     ,user_id                bigint     not null    comment "用户id"
     ,total_cash_amt         decimal(16,2)          comment "用户拥有现金(累计值)，显示保留2位小数"
@@ -14,7 +14,7 @@ create table ads.ads_user_short_video_c4_gold_earn_behavior (
     ,etl_tm                 datetime               comment "etl清洗时间"
 )
 primary key (dt,user_id)
-comment "海剧C4金币网赚版本1.6.5用户行为报表"
+comment "海剧C4金币网赚版本1.6.5用户行为报表_西五区"
 partition by date_trunc("day",dt)
 distributed by hash (dt,user_id)
 properties (
