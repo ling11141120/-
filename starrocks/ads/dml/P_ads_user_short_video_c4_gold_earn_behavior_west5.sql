@@ -1,17 +1,17 @@
 ----------------------------------------------------------------
--- 程序功能： 海剧C4金币网赚版本1.6.5用户行为报表
--- 程序名： P_ads_user_short_video_c4_gold_earn_behavior
--- 目标表： ads.ads_user_short_video_c4_gold_earn_behavior
+-- 程序功能： 海剧C4金币网赚版本1.6.5用户行为报表_西五区
+-- 程序名： P_ads_user_short_video_c4_gold_earn_behavior_west5
+-- 目标表： ads.ads_user_short_video_c4_gold_earn_behavior_west5
 -- 负责人： xjc
--- 开发日期： 2025-12-12
+-- 开发日期： 2025-12-24
 ----------------------------------------------------------------
 
-insert into ads.ads_user_short_video_c4_gold_earn_behavior
+insert into ads.ads_user_short_video_c4_gold_earn_behavior_west5
 with total_amount as (
     select account_id             as user_id
           ,round(sum(value),2)    as total_amount -- 用户拥有现金
       from ads.ads_sv_online_earn_view
-     where date(create_time) ='${dt}'
+     where DATE(date_add(create_time, interval -13 hour)) = '${dt}'
       group by 1
 )
 , ad_cnt_amt as (
@@ -19,7 +19,7 @@ with total_amount as (
           ,sum(if(ad_show_type=5,1,0))    as interstitial_ad_cnt -- 插屏展现次数
           ,sum(if(ad_show_type=3,1,0))    as rewarded_ad_cnt     -- 激励展现次数
           ,sum(amt)                       as ad_all_amt          -- 总广告价值
-      from dws.dws_advertisement_user_position_amt_ed
+      from dws.dws_advertisement_user_position_amt_west5_ed
      where dt='${dt}'
        and core=4
      group by 1
@@ -28,7 +28,9 @@ with total_amount as (
     select login_id              as user_id
          ,sum(event_duration)    as app_duration -- app使用时长, 单位秒
      from ods_log.ods_sensors_append
-    where dt='${dt}'
+    where dt >= '${bf_1_dt}'
+      and dt <= '${dt}'
+      and DATE(date_add(event_tm, interval -13 hour)) = '${dt}'
       and login_id is not null
     group by 1
 )
@@ -36,7 +38,9 @@ with total_amount as (
     select AccountId                as user_id
          ,count(distinct EpisId)    as watch_episode_count -- 观看集数
     from ods.ods_tidb_short_video_log_ext_epis_history_part2
-    where dt='${dt}'
+    where dt >= '${bf_1_dt}'
+      and dt <= '${dt}'
+      and DATE(date_add(CreateTime, interval -13 hour)) = '${dt}'
     group by 1
 )
 , user_coin_tmp as (
@@ -48,17 +52,19 @@ with total_amount as (
                select account_id
                      ,sum(coin)  as coin_num -- 金币数
                from ods.ods_tidb_short_video_account_coin_claim_record
-               where dt = '${dt}'
+               where dt >= '${bf_1_dt}'
+                 and dt <= '${dt}'
+                 and DATE(date_add(created_time, interval -13 hour)) = '${dt}'
                group by 1
               ) coin
       on ae.AccountId = coin.account_id
-    where dt >= '2025-12-01'
+    where dt >= '2025-12-01' -- 业务逻辑开始时间
 )
 , active_user_cnt as (
     select userid as user_id
           ,1      as is_active
     from ods.ods_tidb_short_video_log_client_info
-    where date(CreateTime) = '${dt}'
+    where DATE(date_add(CreateTime, interval -13 hour)) = '${dt}'
       and userid is not null
       and corever = 4
     group by 1
@@ -87,12 +93,13 @@ select '${dt}'                                                                  
     on a1.user_id=a5.user_id
   left join user_coin_tmp                                  as a6
     on a1.user_id=a6.user_id
-  left join ads.ads_user_short_video_c4_gold_earn_behavior as a7
+  left join ads.ads_user_short_video_c4_gold_earn_behavior_west5 as a7
     on a1.user_id=a7.user_id
    and a7.dt = '${bf_1_dt}'
   left join active_user_cnt                                as a8
     on a1.user_id=a8.user_id
  where a1.corever=4
    and a1.dt <= '${dt}'
+   and DATE(date_add(create_time, interval -13 hour)) <= '${dt}'
 ;
 
