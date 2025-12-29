@@ -210,6 +210,7 @@ select a1.dt
             end
           )                                    as click_pv
       ,sum(if(a1.event = 'vtc',a1.pv,0))       as watch_completion_pv
+      ,sum(if(a1.event = 'rev',a1.pv,0))       as ad_revenue_pv
       ,sum(a1.amount)                          as ad_revenue_amount
       ,now()                                   as etl_time
   from event_detail      as a1

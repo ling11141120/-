@@ -27,6 +27,7 @@ create table ads.ads_sv_ad_efficiency_report (
    ,watchsuccess_pv           int(11)                     comment "观看成功用户pv"
    ,unlock_id                 varchar(200)                comment "解锁用户id"
    ,unlock_pv                 int(11)                     comment "解锁用户pv"
+   ,ad_revenue_pv             bigint(20)                  comment "广告收益pv"
    ,amt                       decimal(12, 6)              comment "广告收益"
    ,row_amt                   int(11)                     comment "主策略收益倒序"
    ,recharge_amount           decimal(12, 2)              comment "充值金额"
