@@ -8,19 +8,14 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_video_user_watch_lte5s_di
-select a1.dt            as dt             -- 日期
-      ,a1.account_id    as user_id        -- 用户id
-      ,a1.series_id     as series_id      -- 剧集id
-      ,a1.total         as watch_stamp    -- 看剧时间，秒
-      ,now()            as etl_tm         -- etl时间
-  from (select dt
-              ,account_id
-              ,series_id
-              ,sum(watch_stamp) as total
-          from dwd.dwd_video_short_video_epis_history
-         where dt >='${bf_1_dt}'
-           and dt <='${dt}'
-         group by dt,account_id,series_id
-        having total <= 5
-       )    as a1
+select dt                  as dt             -- 日期
+      ,account_id          as user_id        -- 用户id
+      ,series_id           as series_id      -- 剧集id
+      ,sum(watch_stamp)    as watch_stamp    -- 看剧时间，秒
+      ,now()               as etl_tm         -- etl时间
+  from dwd.dwd_video_short_video_epis_history
+ where dt >='${bf_1_dt}'
+   and dt <='${dt}'
+ group by 1,2,3
+having sum(watch_stamp) <= 5
 ;
