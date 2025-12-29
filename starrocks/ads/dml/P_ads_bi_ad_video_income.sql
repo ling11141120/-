@@ -173,6 +173,7 @@ select a1.dt                                                              as dt 
             when a1.ads_name in ('pengpai') then 6
             when a1.ads_name in ('Starmobi_2') then 7
             when a1.ads_name in ('synjoy') then 8
+            when a1.ads_name in ('Bees') then 9
             else a1.ads_name
         end                                                               as tps               -- 标识
       ,now()                                                              as etl_time          -- 数据清洗时间
@@ -227,38 +228,45 @@ select a1.dt                                                              as dt 
                       where date(day) >= '${bf_4_dt}'
                         and system_type = 1
                       group by 1
-                     union all
+                      union all
                      select dt
-                          ,'synjoy'                as ads_name
-                          ,sum(Requests)           as ad_request
-                          ,sum(MatchedRequests)    as match_request
-                          ,sum(Impressions)        as ad_show_count
-                          ,sum(Clicks)             as ad_click_count
-                     from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
-                     where dt >= '${bf_4_dt}'
-                       and ProjectType = 2
-                     group by 1,2
-
-               )          as b1
+                           ,'synjoy'                as ads_name
+                           ,sum(Requests)           as ad_request
+                           ,sum(MatchedRequests)    as match_request
+                           ,sum(Impressions)        as ad_show_count
+                           ,sum(Clicks)             as ad_click_count
+                       from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
+                      where dt >= '${bf_4_dt}'
+                        and ProjectType = 2
+                      group by 1,2
+                      union all
+                     select dt
+                           ,'Bees'                  as ads_name
+                           ,sum(totaladrequests)    as ad_request
+                           ,0                       as match_request
+                           ,sum(Impressions)        as ad_show_count
+                           ,sum(Clicks)             as ad_click_count
+                       from ods.ods_tidb_readernovel_tidb_xx_beesadsdata
+                      where dt >= '${bf_4_dt}'
+                        and ProjectType = 2
+                      group by 1,2
+                    )    as b1
           left join (select dt
-                          ,ads_name
-                          ,sum(cnt)    as all_cnt
-                     from dws.dws_advertisement_user_position_amt_ed
-                     where dt >= '${bf_4_dt}'
-                       and product_id <> 6833
-                       and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy')
-                     group by 1, 2
-                    )     as b2
+                           ,ads_name
+                           ,sum(cnt)    as all_cnt
+                       from dws.dws_advertisement_user_position_amt_ed
+                      where dt >= '${bf_4_dt}'
+                        and product_id <> 6833
+                        and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees')
+                      group by 1, 2
+                    )    as b2
             on b1.ads_name = b2.ads_name
            and b1.dt = b2.dt
             )                                        as a2
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where product_id = 6833
-   and a1.ads_name in ('H5', 'MonKing', 'Starmobi', 'MobKing', 'pengpai', 'Starmobi_2','synjoy')
+   and a1.ads_name in ('H5', 'MonKing', 'Starmobi', 'MobKing', 'pengpai', 'Starmobi_2','synjoy','Bees')
    and a1.dt >= '${bf_4_dt}'
  group by 1,2,3,4,5,6,7,8
 ;
-
-
-

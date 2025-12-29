@@ -180,6 +180,18 @@ with ad_click_count as (
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
                   group by 1,2,3
+                  union all
+                 select dt                 as dt
+                       ,case when ProjectType = 1 then 2
+                             when ProjectType = 2 then 1
+                             else ProjectType
+                         end               as system_type
+                       ,'Bees'             as ads_name
+                       ,sum(netrevenue)    as revenue_share
+                   from ods.ods_tidb_readernovel_tidb_xx_beesadsdata
+                  where dt>='${bf_1_dt}'
+                    and dt<='${dt}'
+                  group by 1,2,3
                 )    as a2
         on a1.dt=a2.dt
        and a1.system_type = a2.system_type
