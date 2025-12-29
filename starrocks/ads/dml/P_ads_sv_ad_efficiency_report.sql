@@ -111,13 +111,18 @@ with active as (
 , ad_revenue as (
     select a1.dt
           ,a1.product_id
-          ,a1.ads_name                       as ad_src
+          ,a2.cd_val          as ad_src
           ,a1.positions
-          ,a1.ad_show_type                   as ad_type
+          ,a1.ad_show_type    as ad_type
           ,a1.event_strategy_id
           ,a1.user_id
-          ,sum(a1.amt)                       as amt
+          ,sum(a1.cnt)        as cnt
+          ,sum(a1.amt)        as amt
       from dws.dws_advertisement_user_position_amt_ed    as a1
+      left join dim.dim_pub_code_mapping_dict            as a2
+        on a1.ads_name = a2.cd_val_desc
+       and a2.app_plat = 'pub'
+       and a2.cd_col = 'ad_src'
      where a1.dt >= '${bf_1_dt}'
        and a1.product_id = 6833
      group by 1, 2, 3, 4, 5, 6, 7
@@ -218,6 +223,7 @@ select a1.dt                              as dt                        -- 日期
       ,a1.watchsuccess_pv                 as watchsuccess_pv           -- 观看成功用户pv
       ,a1.unlock_id                       as unlock_id                 -- 解锁用户id
       ,a1.unlock_pv                       as unlock_pv                 -- 解锁用户pv
+      ,a1.ad_revenue_pv                   as ad_revenue_pv             -- 广告收益pv
       ,a1.amt                             as amt                       -- 广告收益
       ,a1.row_amt                         as row_amt                   -- 主策略收益倒序
       ,ifnull(a3.recharge_amount, 0)      as recharge_amount           -- 充值金额
@@ -246,6 +252,7 @@ select a1.dt                              as dt                        -- 日期
               ,b2.watchsuccess_pv
               ,b2.unlock_id
               ,b2.unlock_pv
+              ,b2.ad_revenue_pv
               ,b2.amt
               ,if(b2.main_strategy_id is null
                  ,1
@@ -282,6 +289,7 @@ select a1.dt                              as dt                        -- 日期
                            ,sum(ifnull(c3.pv, 0))                                                                     as watchsuccess_pv
                            ,max(c4.login_id)                                                                          as unlock_id
                            ,sum(ifnull(c4.pv, 0))                                                                     as unlock_pv
+                           ,sum(ifnull(c5.cnt, 0))                                                                    as ad_revenue_pv
                            ,sum(ifnull(c5.amt, 0))                                                                    as amt
                        from ad_exposure             as c1
                        full join ad_click           as c2
