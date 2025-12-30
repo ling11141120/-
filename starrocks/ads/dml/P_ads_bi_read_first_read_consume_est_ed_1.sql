@@ -6,6 +6,11 @@
 -- 开发日期： 2025-12-30
 ----------------------------------------------------------------
 
+-- 在查询前设置内存限制
+SET enable_spill = true;
+SET query_mem_limit = 118111600640;  -- 110GB
+SET exec_mem_limit = 214748364800;   -- 200GB
+
 insert into tmp.ads_bi_read_first_read_consume_est_ed
 with read_dtl as (
     select user_id                        as user_id
@@ -41,7 +46,7 @@ with read_dtl as (
          , fstr.product_id
          , fstr.user_id
          , fstr.book_id
-         , fstr.chapter_id
+--         , fstr.chapter_id
          , fstr.mt
          , fstr.corever
          , fstr.user_tp
@@ -59,7 +64,7 @@ with read_dtl as (
            end as lang_id
       from dws.dws_user_first_read_book_est_ed as fstr
       left join dim.dim_pub_code_mapping_dict  as dict
-        on rigtht(fstr.book_id, 3) = dict.cd_val
+        on right(fstr.book_id, 3) = dict.cd_val
        and dict.app_plat = 'pub'
        and dict.cd_col = 'book_lang_cd'
      where fstr.dt >= date_sub('${bf_1_dt}', interval 31 day)
@@ -70,7 +75,7 @@ with read_dtl as (
          , fr.product_id
          , fr.user_id
          , fr.book_id
-         , fr.chapter_id
+         , rd.chapter_id
          , fr.mt
          , fr.corever
          , fr.user_tp
@@ -95,6 +100,27 @@ with read_dtl as (
        and fr.book_id = rd.book_id
        and rd.create_time >= fr.fst_read_tm    -- 关键：时间条件前置，消除825亿行中间结果
        and rd.create_time <= fr.d30_time       -- 最大时间窗口边界
+    group by fr.dt
+           , fr.product_id
+           , fr.user_id
+           , fr.book_id
+           , rd.chapter_id
+           , fr.mt
+           , fr.corever
+           , fr.user_tp
+           , fr.source_user_tp
+           , fr.source
+           , fr.fst_read_tm
+           , fr.h12_time
+           , fr.h24_time
+           , fr.d3_time
+           , fr.d7_time
+           , fr.d30_time
+           , fr.lang_id
+           , rd.tps
+           , rd.types
+           , rd.amt
+           , rd.create_time
 )
 , win_agg as (
     select dt
@@ -106,42 +132,51 @@ with read_dtl as (
          , user_tp
          , source_user_tp
          , source
-         , bitmap_agg(case when tps = 1 and dt = date(create_time) then user_book_bitmap end)                   as read_unt
-         , bitmap_agg(case when tps = 2 and dt = date(create_time) then user_book_bitmap end)                   as tot_csm_unt
-         , bitmap_agg(case when tps = 2 and dt = date(create_time) and types = 1 then user_book_bitmap end)     as csm_unt
+         , bitmap_union(case when tps = 1 and dt = date(create_time) then user_book_bitmap end)                   as read_unt
+         , bitmap_union(case when tps = 2 and dt = date(create_time) then user_book_bitmap end)                   as tot_csm_unt
+         , bitmap_union(case when tps = 2 and dt = date(create_time) and types = 1 then user_book_bitmap end)     as csm_unt
          , sum(case when tps = 2 and dt = date(create_time) then amt else 0 end)                                as tot_csm_amt
          , sum(case when tps = 2 and dt = date(create_time) and types = 1 then amt else 0 end)                  as csm_amt
          -- h12窗口
-         , bitmap_agg(case when tps = 1 and create_time <= h12_time then user_book_bitmap end)                  as h12_read_unt
-         , bitmap_agg(case when tps = 2 and create_time <= h12_time then user_book_bitmap end)                  as h12_tot_csm_unt
-         , bitmap_agg(case when tps = 2 and create_time <= h12_time and types = 1 then user_book_bitmap end)    as h12_csm_unt
+         , bitmap_union(case when tps = 1 and create_time <= h12_time then user_book_bitmap end)                  as h12_read_unt
+         , bitmap_union(case when tps = 2 and create_time <= h12_time then user_book_bitmap end)                  as h12_tot_csm_unt
+         , bitmap_union(case when tps = 2 and create_time <= h12_time and types = 1 then user_book_bitmap end)    as h12_csm_unt
          , sum(case when tps = 2 and create_time <= h12_time then amt else 0 end)                               as h12_tot_csm_amt
          , sum(case when tps = 2 and create_time <= h12_time and types = 1 then amt else 0 end)                 as h12_csm_amt
          -- h24窗口
-         , bitmap_agg(case when tps = 1 and create_time <= h24_time then user_book_bitmap end)                  as h24_read_unt
-         , bitmap_agg(case when tps = 2 and create_time <= h24_time then user_book_bitmap end)                  as h24_tot_csm_unt
-         , bitmap_agg(case when tps = 2 and create_time <= h24_time and types = 1 then user_book_bitmap end)    as h24_csm_unt
+         , bitmap_union(case when tps = 1 and create_time <= h24_time then user_book_bitmap end)                  as h24_read_unt
+         , bitmap_union(case when tps = 2 and create_time <= h24_time then user_book_bitmap end)                  as h24_tot_csm_unt
+         , bitmap_union(case when tps = 2 and create_time <= h24_time and types = 1 then user_book_bitmap end)    as h24_csm_unt
          , sum(case when tps = 2 and create_time <= h24_time then amt else 0 end)                               as h24_tot_csm_amt
          , sum(case when tps = 2 and create_time <= h24_time and types = 1 then amt else 0 end)                 as h24_csm_amt
          -- d3窗口
-         , bitmap_agg(case when tps = 1 and create_time <= d3_time then user_book_bitmap end)                   as d3_read_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d3_time then user_book_bitmap end)                   as d3_tot_csm_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d3_time and types = 1 then user_book_bitmap end)     as d3_csm_unt
+         , bitmap_union(case when tps = 1 and create_time <= d3_time then user_book_bitmap end)                   as d3_read_unt
+         , bitmap_union(case when tps = 2 and create_time <= d3_time then user_book_bitmap end)                   as d3_tot_csm_unt
+         , bitmap_union(case when tps = 2 and create_time <= d3_time and types = 1 then user_book_bitmap end)     as d3_csm_unt
          , sum(case when tps = 2 and create_time <= d3_time then amt else 0 end)                                as d3_tot_csm_amt
          , sum(case when tps = 2 and create_time <= d3_time and types = 1 then amt else 0 end)                  as d3_csm_amt
          -- d7窗口
-         , bitmap_agg(case when tps = 1 and create_time <= d7_time then user_book_bitmap end)                   as d7_read_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d7_time then user_book_bitmap end)                   as d7_tot_csm_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d7_time and types = 1 then user_book_bitmap end)     as d7_csm_unt
+         , bitmap_union(case when tps = 1 and create_time <= d7_time then user_book_bitmap end)                   as d7_read_unt
+         , bitmap_union(case when tps = 2 and create_time <= d7_time then user_book_bitmap end)                   as d7_tot_csm_unt
+         , bitmap_union(case when tps = 2 and create_time <= d7_time and types = 1 then user_book_bitmap end)     as d7_csm_unt
          , sum(case when tps = 2 and create_time <= d7_time then amt else 0 end)                                as d7_tot_csm_amt
          , sum(case when tps = 2 and create_time <= d7_time and types = 1 then amt else 0 end)                  as d7_csm_amt
          -- d30窗口
-         , bitmap_agg(case when tps = 1 and create_time <= d30_time then user_book_bitmap end)                  as d30_read_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d30_time then user_book_bitmap end)                  as d30_tot_csm_unt
-         , bitmap_agg(case when tps = 2 and create_time <= d30_time and types = 1 then user_book_bitmap end)    as d30_csm_unt
+         , bitmap_union(case when tps = 1 and create_time <= d30_time then user_book_bitmap end)                  as d30_read_unt
+         , bitmap_union(case when tps = 2 and create_time <= d30_time then user_book_bitmap end)                  as d30_tot_csm_unt
+         , bitmap_union(case when tps = 2 and create_time <= d30_time and types = 1 then user_book_bitmap end)    as d30_csm_unt
          , sum(case when tps = 2 and create_time <= d30_time then amt else 0 end)                               as d30_tot_csm_amt
          , sum(case when tps = 2 and create_time <= d30_time and types = 1 then amt else 0 end)                 as d30_csm_amt
       from joined_data
+      group by dt
+             , lang_id
+             , book_id
+             , chapter_id
+             , mt
+             , corever
+             , user_tp
+             , source_user_tp
+             , source
 )
 select wa.dt
      , md5(concat( wa.lang_id
