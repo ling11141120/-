@@ -14,12 +14,14 @@ with plans as (
           ,begindate
           ,enddate
           ,sourcechl
+          ,D0StdAmount
       from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan
      where isdel = 0
        and projectcode = 1
        and sourcechl != ''
        and enddate > '${dt}'
        and begindate < '${dt}'
+       and substr(code,1,2)='ZD'
 )
 -- 计算用户成本与收入相关指标
 ,user_cost_revenue as (
@@ -31,6 +33,7 @@ with plans as (
           ,case when a1.sourcechl in ('fbs2s', 'facebook') then 'fb'
                 else a1.sourcechl
             end                  as sourcechl
+          ,a4.D0StdAmount
       from ods.ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer    as a1
       left join ods.ods_tidb_sharpengine_ads_global_adext                as a2
         on a1.productid = a2.productid
@@ -50,15 +53,16 @@ with plans as (
                              where project_code = 1
                             )
        and a1.sourcechl in ('fbs2s', 'facebook', 'tt')
-     group by 4,5,6
+     group by 4,5,6,7
 )
-select a1.createtime                                             as dt                -- 数据创建时间
-      ,a1.bookid                                                 as book_id           -- 书籍id
-      ,a1.sourcechl                                              as chl_src           -- 渠道来源
-      ,(a1.day0amount/ a1.devnum)/ (a1.costamount/ a1.devnum)    as roi               -- 投资回报率
-      ,a1.costamount / a1.devnum                                 as cpi               -- 平均注册用户花费数
-      ,a1.day0amount / a1.devnum                                 as arpu              -- 日均用户收入
-      ,a1.costamount                                             as ttl_amt           -- 总成本
-      ,now()                                                     as etl_time          -- etl处理时间
-  from user_cost_revenue                                         as a1
+select a1.createtime                                             as dt               -- 数据创建时间
+      ,a1.bookid                                                 as book_id          -- 书籍id
+      ,a1.sourcechl                                              as chl_src          -- 渠道来源
+      ,(a1.day0amount/ a1.devnum)/ (a1.costamount/ a1.devnum)    as roi              -- 投资回报率
+      ,a1.costamount / a1.devnum                                 as cpi              -- 平均注册用户花费数
+      ,a1.day0amount / a1.devnum                                 as arpu             -- 日均用户收入
+      ,a1.costamount                                             as ttl_amt          -- 总成本
+      ,now()                                                     as etl_time         -- etl处理时间
+      ,day0amount/D0StdAmount                                    as d0_reach_rate    -- d0达标率
+  from user_cost_revenue    as a1
 ;
