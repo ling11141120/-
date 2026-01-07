@@ -53,4 +53,5 @@ select ifnull(tar.dt, ori.dt)                              as dt
   left join dwd.dwd_srsv_trade_hk_sync_payorder_di_daily    as tar
     on ori.order_serial_id = tar.order_serial_id
  where ori.dt >= '${bf_1_dt}'
+   and ori.dt <= '${dt}'
    and ori.product_id != '8211';
