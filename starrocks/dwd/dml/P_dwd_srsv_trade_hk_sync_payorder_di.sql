@@ -1,3 +1,11 @@
+----------------------------------------------------------------
+-- 程序功能： 海阅海剧充值表（带国家）
+-- 程序名： P_dwd_srsv_trade_hk_sync_payorder_di
+-- 目标表： dwd.dwd_srsv_trade_hk_sync_payorder_di
+-- 负责人： qhr
+-- 开发日期： 2026-01-07
+----------------------------------------------------------------
+
 insert into dwd.dwd_srsv_trade_hk_sync_payorder_di
 select date(CreateTime)                    as dt
      , Id                                  as id
