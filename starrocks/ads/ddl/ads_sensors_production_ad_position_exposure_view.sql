@@ -1,95 +1,98 @@
-create view ads.ads_sensors_production_ad_position_exposure_view(
-     dt
-    ,id
-    ,track_id
-    ,rid
-    ,event_tm
-    ,device_id
-    ,login_id
-    ,identity_login_id
-    ,device_lang
-    ,event
-    ,distinct_id
-    ,identity_user_id
-    ,app_product_id
-    ,send_id
-    ,app_core_ver
-    ,app_channel
-    ,app_product_x
-    ,app_lang_id
-    ,lib_version
-    ,app_version
-    ,page_id
-    ,page_name
-    ,ad_position_id
-    ,ad_position_id1
-    ,project_id
-    ,etl_tm
-    ,app_id
-    ,os
-    ,core
-    ,ip
-    ,city
-    ,ad_type
-    ,element_id
-    ,element_name
-    ,element_type
-    ,product_id
-    ,ad_strategy_id
-    ,ad_group_id
-    ,current_language2
+create or replace view ads.ads_sensors_production_ad_position_exposure_view(
+     dt                   comment "日期"
+    ,id                   comment "nvl(rid,track_id)"
+    ,track_id             comment "跟踪id"
+    ,rid                  comment "记录ID"
+    ,event_tm             comment "事件时间"
+    ,device_id            comment "设备id"
+    ,login_id             comment "login_id"
+    ,identity_login_id    comment "identity_login_id"
+    ,device_lang          comment "设备语言"
+    ,event                comment "事件"
+    ,distinct_id          comment "distinct_id"
+    ,identity_user_id     comment "identity_userid"
+    ,app_product_id       comment "包体ID"
+    ,send_id              comment "转化来源"
+    ,app_core_ver         comment "core"
+    ,app_channel          comment "渠道编号"
+    ,app_product_x        comment "应用程序ID"
+    ,app_lang_id          comment "界面语言"
+    ,lib_version          comment "lib版本"
+    ,app_version          comment "app版本"
+    ,page_id              comment "页面ID"
+    ,page_name            comment "页面名称"
+    ,ad_position_id       comment "广告位ID"
+    ,ad_position_id1      comment "广告位ID_new"
+    ,project_id           comment "5阅读 8 短剧"
+    ,etl_tm               comment "清洗时间"
+    ,app_id               comment "app_id"
+    ,os                   comment "操作系统"
+    ,core                 comment "core,废弃"
+    ,ip                   comment "IP"
+    ,city                 comment "城市"
+    ,ad_type              comment "广告类型"
+    ,element_id           comment "控件id"
+    ,element_name         comment "控件名称"
+    ,element_type         comment "控件类型"
+    ,product_id           comment "产品id"
+    ,ad_strategy_id       comment "广告策略id"
+    ,ad_group_id          comment "广告人群包id"
+    ,current_language2    comment "当前语言"
     ,event_strategy_id    comment "策略ID"
     ,main_strategy_id     comment "主策略ID"
     ,programme_id         comment "方案ID"
     ,module_channel_id    comment "频道id"
+    ,ad_src               comment "广告来源"
 )
+comment "event=ADPositionExposure 资源位曝光"
 as
-select a.dt
-      ,a.id
-      ,a.track_id
-      ,a.rid
-      ,a.event_tm
-      ,a.device_id
-      ,a.login_id
-      ,a.identity_login_id
-      ,a.device_lang
-      ,a.event
-      ,a.distinct_id
-      ,a.identity_user_id
-      ,a.app_product_id
-      ,a.send_id
-      ,a.app_core_ver
-      ,a.app_channel
-      ,a.app_product_x
-      ,a.app_lang_id
-      ,a.lib_version
-      ,a.app_version
-      ,a.page_id
-      ,a.page_name
-      ,a.ad_position_id
-      ,a.ad_position_id1
-      ,a.project_id
-      ,a.etl_tm
-      ,a.app_id
-      ,a.os
-      ,a.core
-      ,a.ip
-      ,a.city
-      ,a.ad_type
-      ,a.element_id
-      ,a.element_name
-      ,a.element_type
-      ,a.product_id
-      ,a.ad_strategy_id
-      ,a.ad_group_id
-      ,b.current_language2
-      ,a.event_strategy_id
-      ,a.main_strategy_id
-      ,a.programme_id
-      ,a.module_channel_id
-  from ods_log.ods_sensors_production_adpositionexposure as a
-  left join dim.dim_user_account_info_view               as b
-    on a.app_product_id = b.product_id
-   and a.identity_user_id = b.id
- where a.project_id = 5
+select a1.dt                   as dt                   -- 分区日期
+      ,a1.id                   as id                   -- nvl(rid,track_id)
+      ,a1.track_id             as track_id             -- 跟踪id
+      ,a1.rid                  as rid                  -- 记录ID
+      ,a1.event_tm             as event_tm             -- 事件时间
+      ,a1.device_id            as device_id            -- 设备id
+      ,a1.login_id             as login_id             -- login_id
+      ,a1.identity_login_id    as identity_login_id    -- identity_login_id
+      ,a1.device_lang          as device_lang          -- 设备语言
+      ,a1.event                as event                -- 事件
+      ,a1.distinct_id          as distinct_id          -- distinct_id
+      ,a1.identity_user_id     as identity_user_id     -- identity_userid
+      ,a1.app_product_id       as app_product_id       -- 包体ID
+      ,a1.send_id              as send_id              -- 转化来源
+      ,a1.app_core_ver         as app_core_ver         -- core
+      ,a1.app_channel          as app_channel          -- 渠道编号
+      ,a1.app_product_x        as app_product_x        -- 应用程序ID
+      ,a1.app_lang_id          as app_lang_id          -- 界面语言
+      ,a1.lib_version          as lib_version          -- lib版本
+      ,a1.app_version          as app_version          -- app版本
+      ,a1.page_id              as page_id              -- 页面ID
+      ,a1.page_name            as page_name            -- 页面名称
+      ,a1.ad_position_id       as ad_position_id       -- 广告位ID
+      ,a1.ad_position_id1      as ad_position_id1      -- 广告位ID_new
+      ,a1.project_id           as project_id           -- 5阅读 8 短剧
+      ,a1.etl_tm               as etl_tm               -- 清洗时间
+      ,a1.app_id               as app_id               -- app_id
+      ,a1.os                   as os                   -- 操作系统
+      ,a1.core                 as core                 -- core
+      ,a1.ip                   as ip                   -- IP
+      ,a1.city                 as city                 -- 城市
+      ,a1.ad_type              as ad_type              -- 广告类型
+      ,a1.element_id           as element_id           -- 控件id
+      ,a1.element_name         as element_name         -- 控件名称
+      ,a1.element_type         as element_type         -- 控件类型
+      ,a1.product_id           as product_id           -- 产品id
+      ,a1.ad_strategy_id       as ad_strategy_id       -- 广告策略id
+      ,a1.ad_group_id          as ad_group_id          -- 广告人群包id
+      ,a2.current_language2    as current_language2    -- 当前语言
+      ,a1.event_strategy_id    as event_strategy_id    -- 策略ID
+      ,a1.main_strategy_id     as main_strategy_id     -- 主策略ID
+      ,a1.programme_id         as programme_id         -- 方案ID
+      ,a1.module_channel_id    as module_channel_id    -- 频道id
+      ,a1.ad_source            as ad_source            -- 广告来源
+  from ods_log.ods_sensors_production_adpositionexposure    as a1
+  left join dim.dim_user_account_info_view                  as a2
+    on a1.app_product_id = a2.product_id
+   and a1.identity_user_id = a2.id
+ where a1.project_id = 5
 ;
