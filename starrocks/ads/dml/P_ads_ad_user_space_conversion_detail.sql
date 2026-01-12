@@ -19,6 +19,7 @@ with event_detail as (
              ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
+          ,'其他'                               as ad_src
           ,'exposure'                          as event
           ,'ad'                                as ad_type
           ,count(1)                            as pv
@@ -27,7 +28,7 @@ with event_detail as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and ad_position_id is not null
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 福利中心H5广告曝光 (策略ID存方案）
     select dt
@@ -35,6 +36,7 @@ with event_detail as (
           ,59                                   as ad_position_id
           ,coalesce(event_strategy_id,'-99')    as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')     as main_strategy_id
+          ,ad_src                               as ad_src
           ,'exposure'                           as event
           ,'task'                               as ad_type
           ,count(1)                             as pv
@@ -44,7 +46,7 @@ with event_detail as (
        and dt <= '${dt}'
        and element_id = '100772'
        and type = '121'
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- H5广告位广告曝光
     select dt
@@ -55,6 +57,7 @@ with event_detail as (
              ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
+          ,ad_src                              as ad_src
           ,'exposure'                          as event
           ,'h5_ad'                             as ad_type
           ,count(1)                            as pv
@@ -64,7 +67,7 @@ with event_detail as (
        and dt <= '${dt}'
        and element_id = '100356'
        and ad_position_id > 0
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 原始广告位点击
     select dt
@@ -75,6 +78,7 @@ with event_detail as (
              ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
+          ,'其他'                               as ad_src
           ,'click'                             as event
           ,'ad'                                as ad_type
           ,count(1)                            as pv
@@ -84,7 +88,7 @@ with event_detail as (
        and dt <= '${dt}'
        and ad_position_id is not null
        and project_id = 5
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 广告位观看完成
     select dt
@@ -95,6 +99,7 @@ with event_detail as (
              ,coalesce(ad_strategy_id,programme_id,'-99')
              )                                 as ad_strategy_id
           ,coalesce(main_strategy_id,'-99')    as main_strategy_id
+          ,'其他'                               as ad_src
           ,'vtc'                               as event
           ,'ad'                                as ad_type
           ,count(1)                            as pv
@@ -102,7 +107,7 @@ with event_detail as (
       from ads.ads_sensors_production_ad_watch_success_view
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- h5广告位观看完成
     select dt
@@ -116,6 +121,7 @@ with event_detail as (
                 )
              )                                  as ad_strategy_id
           ,coalesce(main_strategy_id, '-99')    as main_strategy_id
+          ,ad_src                               as ad_src
           ,'vtc'                                as event
           ,case when task_id is null then 'h5_ad'
                 when task_id is not null then 'task'
@@ -126,7 +132,7 @@ with event_detail as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and status = '任务成功'
-     group by 1,2,3,4,5,6,7
+     group by 1,2,3,4,5,6,7,8
      union all
     select dt
           ,user_id      as login_id
@@ -141,6 +147,7 @@ with event_detail as (
              ,'-99'
              ,main_strategy_id
              )          as main_strategy_id
+          ,a2.cd_val    as ad_src
           ,'rev'        as event
           ,case when ad_show_type = '5' and positions = 59 then 'task'
                 when ad_show_type = '5' and positions <> 59 then 'h5_ad'
@@ -148,11 +155,15 @@ with event_detail as (
             end         as ad_type
           ,sum(cnt)     as pv
           ,sum(amt)     as amount
-      from dws.dws_advertisement_user_position_amt_ed
+      from dws.dws_advertisement_user_position_amt_ed    as a1
+      left join dim.dim_pub_code_mapping_dict            as a2
+        on a1.ads_name = a2.cd_val_desc
+       and a2.app_plat = 'pub'
+       and a2.cd_col = 'ad_src'
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
-       and product_id <> 6833
-     group by 1,2,3,4,5,6,7
+           and product_id <> 6833
+     group by 1,2,3,4,5,6,7,8
 )
 -- 用户维度信息
 , user_info as (
@@ -213,9 +224,14 @@ select a1.dt
       ,sum(if(a1.event = 'rev',a1.pv,0))       as ad_revenue_pv
       ,sum(a1.amount)                          as ad_revenue_amount
       ,now()                                   as etl_time
-  from event_detail      as a1
-  left join user_info    as a2
+      ,ifnull(a3.cd_val_desc,'其他')            as ad_src
+  from event_detail                          as a1
+  left join user_info                        as a2
     on a1.dt = a2.dt
    and a1.login_id = a2.user_id
- group by 1,2,3,4,5,6,7,8,9,10,11,12
+  left join dim.dim_pub_code_mapping_dict    as a3
+    on a1.ad_src = a3.cd_val
+   and a3.app_plat = 'pub'
+   and a3.cd_col = 'ad_src'
+ group by 1,2,3,4,5,6,7,8,9,10,11,12,19
 ;
