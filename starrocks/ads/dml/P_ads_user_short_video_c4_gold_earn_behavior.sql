@@ -16,9 +16,9 @@ with total_amount as (
 )
 , ad_cnt_amt as (
     select user_id
-          ,sum(if(ad_show_type=5,1,0))    as interstitial_ad_cnt -- 插屏展现次数
-          ,sum(if(ad_show_type=3,1,0))    as rewarded_ad_cnt     -- 激励展现次数
-          ,sum(amt)                       as ad_all_amt          -- 总广告价值
+         , sum(if(ad_show_type = 5, cnt, 0)) as interstitial_ad_cnt -- 插屏展现次数
+         , sum(if(ad_show_type = 3, cnt, 0)) as rewarded_ad_cnt     -- 激励展现次数
+         , sum(amt)                          as ad_all_amt          -- 总广告价值
       from dws.dws_advertisement_user_position_amt_ed
      where dt='${dt}'
        and core=4
