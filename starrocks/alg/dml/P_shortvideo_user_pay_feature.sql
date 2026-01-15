@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
 -- 程序功能：海剧用户充值信息
--- 程序名： P_ads_sv_trade_user_recharge_info
--- 目标表： ads.ads_sv_trade_user_recharge_info
+-- 程序名： P_shortvideo_user_pay_feature
+-- 目标表： alg.shortvideo_user_pay_feature
 -- 负责人： qhr
 -- 开发日期：2026-01-08
 ----------------------------------------------------------------
