@@ -27,7 +27,7 @@ select concat('sv', x1.user_id)    as user_id
              , cast(charge_mode as int)           as charge_mode
              , cast(total_refund_amt as int)      as total_refund_amt
              , cast(total_refund_cnt as int)      as total_refund_cnt
-          from dws.dws_trade_short_video_subscribe_payorder_a_view
+          from dws.dws_user_sv_idx_his_15d_view
          where dt = '${bf_1_dt}'
            and total_recharge_amt > 0
            and user_id > 0

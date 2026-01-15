@@ -16,13 +16,8 @@ select a.user_id
      , b.last_recharge_tm
      , now()                                             as etl_time
   from dim.dim_short_video_user_accountinfo    as a
-  left join(select 6833                        as product_id
-                 , user_id
-                 , last_recharge_tm
-              from dws.dws_trade_short_video_subscribe_payorder_a_view
-             where dt = '${bf_1_dt}'
-            )                                  as b
-    on a.product_id = b.product_id
-   and a.user_id = b.user_id
- where create_time < '${dt}'
+  left join dws.dws_user_sv_idx_his_15d_view   as b
+    on a.user_id = b.user_id
+   and b.dt = '${bf_1_dt}'
+ where a.create_time < '${dt}'
 ;

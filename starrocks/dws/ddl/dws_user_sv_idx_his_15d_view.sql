@@ -1,18 +1,6 @@
-create or replace view ads.ads_wide_short_video_user_info_a_view (
+create or replace view dws.dws_user_sv_idx_his_15d_view (
      dt                            comment "统计日期"
     ,user_id                       comment "用户id"
-    ,sex                           comment "性别"
-    ,reg_tm                        comment "用户的注册时间"
-    ,mt                            comment "平台 0未知 1iphone 4安卓 9书城"
-    ,mt2                           comment "注册时平台 0未知 1iphone 4安卓 9书城"
-    ,corever                       comment "当前core"
-    ,corever2                      comment "注册时core"
-    ,app_ver                       comment "app版本"
-    ,ver                           comment "客户端版本号"
-    ,current_language              comment "用户当前语言"
-    ,current_language2             comment "注册时语言"
-    ,reg_country                   comment "注册时国家，不会变化"
-    ,is_bound_email                comment "是否绑定邮箱 1:是 0：否"
     ,fst_login_tm                  comment "首次登录时间"
     ,lst_login_tm                  comment "上一次登录时间"
     ,new_login_tm                  comment "最新登录时间"
@@ -71,82 +59,69 @@ create or replace view ads.ads_wide_short_video_user_info_a_view (
     ,lst_source                    comment "最新媒体值"
     ,lst_install_date              comment "最新激活时间"
 )
-comment "海剧用户累计指标"
+comment "用户域-海剧-累计的状态指标15天视图"
 as
-select uidx.dt
-     , uidx.user_id
-     , uinfo.sex
-     , uinfo.create_time                                     as reg_tm
-     , uinfo.mt
-     , uinfo.mt2
-     , uinfo.corever
-     , uinfo.corever2
-     , uinfo.app_ver
-     , uinfo.ver
-     , uinfo.current_language
-     , uinfo.current_language2
-     , uinfo.reg_country
-     , case when uinfo.email is not null then 1
-            else 0
-       end                                                   as is_bound_email
-     , uidx.fst_login_tm
-     , uidx.lst_login_tm
-     , uidx.new_login_tm
-     , uidx.login_days_td
-     , uidx.login_cnt_td
-     , uidx.remain_day
-     , uidx.consume_amt_td
-     , uidx.fst_consume_tm
-     , uidx.lst_consume_tm
-     , uidx.consume_cnt_td
-     , uidx.consume_money_amt_td
-     , uidx.fst_consume_money_tm
-     , uidx.lst_consume_money_tm
-     , uidx.consume_money_cnt_td
-     , uidx.consume_cert_amt_td
-     , uidx.fst_consume_cert_tm
-     , uidx.lst_consume_cert_tm
-     , uidx.consume_cert_cnt_td
-     , uidx.fst_watch_tm
-     , uidx.lst_watch_tm
-     , uidx.watch_series_td
-     , uidx.watch_tv_td
-     , uidx.watch_days_td
-     , uidx.watch_cnt_td
-     , uidx.new_epis_series_td
-     , uidx.total_subscribe_amt
-     , uidx.first_subscribe_amt
-     , uidx.first_subscribe_tp
-     , uidx.first_subscribe_tm
-     , uidx.last_subscribe_amt
-     , uidx.last_subscribe_tp
-     , uidx.last_subscribe_tm
-     , uidx.total_subscribe_cnt
-     , uidx.total_subscribe_refund_cnt
-     , uidx.is_mul_subscribe
-     , uidx.has_subscribe
-     , uidx.first_recharge_amt
-     , uidx.first_recharge_tm
-     , uidx.total_recharge_amt
-     , uidx.total_refund_amt
-     , uidx.total_recharge_cnt
-     , uidx.total_refund_cnt
-     , uidx.recharge_avg
-     , uidx.recharge_max
-     , uidx.month_recharge_max
-     , uidx.last_recharge_amt
-     , uidx.last_recharge_tm
-     , uidx.charge_mode
-     , uidx.fst_like_tm
-     , uidx.lst_like_tm
-     , uidx.like_series_td
-     , uidx.like_epis_td
-     , uidx.like_cnt_td
-     , uidx.fst_install_book_id
-     , uidx.lst_install_book_id
-     , uidx.lst_source
-     , uidx.lst_install_date
-  from dws.dws_user_sv_his_15d_view                 as uidx
-  left join dim.dim_short_video_user_accountinfo    as uinfo
-    on uidx.user_id = uinfo.user_id
+select acc.dt
+     , acc.user_id
+     , stat.fst_login_tm
+     , stat.lst_login_tm
+     , stat.new_login_tm
+     , acc.login_days_td
+     , acc.login_cnt_td
+     , stat.remain_day
+     , acc.consume_amt_td
+     , stat.fst_consume_tm
+     , stat.lst_consume_tm
+     , acc.consume_cnt_td
+     , acc.consume_money_amt_td
+     , stat.fst_consume_money_tm
+     , stat.lst_consume_money_tm
+     , acc.consume_money_cnt_td
+     , acc.consume_cert_amt_td
+     , stat.fst_consume_cert_tm
+     , stat.lst_consume_cert_tm
+     , acc.consume_cert_cnt_td
+     , stat.fst_watch_tm
+     , stat.lst_watch_tm
+     , acc.watch_series_td
+     , acc.watch_tv_td
+     , acc.watch_days_td
+     , acc.watch_cnt_td
+     , stat.new_epis_series_td
+     , acc.total_subscribe_amt
+     , stat.first_subscribe_amt
+     , stat.first_subscribe_tp
+     , stat.first_subscribe_tm
+     , stat.last_subscribe_amt
+     , stat.last_subscribe_tp
+     , stat.last_subscribe_tm
+     , acc.total_subscribe_cnt
+     , acc.total_subscribe_refund_cnt
+     , if(bitmap_count(acc.mul_subscribe_item) > 1, 1, 0)    as is_mul_subscribe
+     , acc.has_subscribe
+     , stat.first_recharge_amt
+     , stat.first_recharge_tm
+     , acc.total_recharge_amt
+     , acc.total_refund_amt
+     , acc.total_recharge_cnt
+     , acc.total_refund_cnt
+     , acc.recharge_avg
+     , stat.recharge_max
+     , stat.month_recharge_max
+     , stat.last_recharge_amt
+     , stat.last_recharge_tm
+     , stat.charge_mode
+     , stat.fst_like_tm
+     , stat.lst_like_tm
+     , acc.like_series_td
+     , acc.like_epis_td
+     , acc.like_cnt_td
+     , stat.fst_install_book_id
+     , stat.lst_install_book_id
+     , stat.lst_source
+     , stat.lst_install_date
+  from dws.dws_user_sv_accumulate_idx_his_15df      as acc
+  left join dws.dws_user_sv_status_idx_his_15df     as stat
+    on acc.dt = stat.dt
+   and acc.user_id = stat.user_id
 ;

@@ -35,5 +35,6 @@ select '${bf_1_dt}'    as dt
      , total_refund_cnt
      , mul_subscribe_item
      , has_subscribe
+     , idx_ddl
   from dws.dws_user_sv_accumulate_idx_di
 ;

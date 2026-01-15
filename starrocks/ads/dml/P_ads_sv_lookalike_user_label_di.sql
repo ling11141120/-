@@ -10,58 +10,33 @@ insert into ads.ads_sv_lookalike_user_label_di
 with base as (
     select a.product_id
          , a.user_id
-         , login.login_days_td
-         , login.new_login_tm
-         , recharge.last_recharge_tm
-         , recharge.first_recharge_amt
-         , recharge.total_recharge_amt
-         , recharge.recharge_avg
-         , csm.consume_money_amt_td
-         , csm.total_consumption
+         , uidx.login_days_td
+         , uidx.new_login_tm
+         , uidx.last_recharge_tm
+         , uidx.first_recharge_amt
+         , uidx.total_recharge_amt
+         , round(uidx.recharge_avg, 2)    as recharge_avg
+         , uidx.consume_money_amt_td
+         , bitmap_count(uidx.consume_tv_td)    as total_consumption
          , coin_cnt
       from (select acc.product_id
                  , acc.user_id
-                 , ifnull(coin.coin_cnt, 0)    as coin_cnt
+                 , ifnull(coin.coin_cnt, 0) as coin_cnt
               from dim.dim_short_video_user_accountinfo acc
-              left join (select 6833           as product_id
-                              , account_id     as user_id
-                              , max(value)     as coin_cnt
+              left join (select 6833       as product_id
+                              , account_id as user_id
+                              , max(value) as coin_cnt
                            from dim.dim_sv_accountinfo_user_coin_view
                           group by 1, 2
-                        )                                as coin
+                         ) as                           coin
                 on acc.product_id = coin.product_id
                and acc.user_id = coin.user_id
              where create_time < '${dt}'
-           )                                             as a
-      left join dws.dws_user_short_video_login_a_view    as login
-        on a.product_id = login.product_id
-       and a.user_id = login.user_id
-       and login.dt = '${bf_1_dt}'
-      left join (select dt
-                      , 6833                                                as product_id
-                      , user_id
-                      , last_recharge_tm
-                      , first_recharge_amt
-                      , total_recharge_amt
-                      , round(recharge_avg, 2) as recharge_avg
-                   from dws.dws_trade_short_video_subscribe_payorder_a_view
-                  where dt >= '${bf_1_dt}'
-                    and dt < '${dt}'
-                )                             as recharge
-        on a.product_id = recharge.product_id
-       and a.user_id = recharge.user_id
-      left join (select dt
-                      , 6833                        as product_id
-                      , user_id
-                      , consume_money_amt_td
-                      , bitmap_count(consume_tv_td) as total_consumption
-                   from dws.dws_consume_short_video_consume_a_view
-                  where dt >= '${bf_1_dt}'
-                    and dt < '${dt}'
-                )                             as csm
-        on a.product_id = csm.product_id
-       and a.user_id = csm.user_id
-      left join dim.dim_short_video_user_accountinfo coin
+            )                                                          as a
+      left join dws.dws_user_sv_idx_his_15d_view                       as uidx
+        on a.user_id = uidx.user_id
+       and uidx.dt = '${bf_1_dt}'
+      left join dim.dim_short_video_user_accountinfo                   as coin
         on a.product_id = coin.product_id
        and a.user_id = coin.user_id
 )
@@ -78,13 +53,9 @@ select base.product_id
      , base.total_consumption
      , now()                        as elt_time
   from base
-  join(select dt
-            , product_id
-            , user_id
-         from dws.dws_user_short_video_wide_active_ed
-        where dt = '${bf_1_dt}'
-          and product_id = 6833
-      ) b
+  join dws.dws_user_short_video_wide_active_ed    as b
     on base.product_id = b.product_id
    and base.user_id = b.user_id
+   and b.product_id = 6833
+   and b.dt = '${bf_1_dt}'
 ;
