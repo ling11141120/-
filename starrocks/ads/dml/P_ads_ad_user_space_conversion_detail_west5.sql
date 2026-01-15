@@ -29,6 +29,26 @@ with event_detail as (
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
      group by 1,2,3,4,5
      union all
+    -- 广告展示成功事件
+    select DATE(date_add(event_tm, interval -13 hour)) as dt
+         ,coalesce(login_id, identity_login_id) as login_id
+         ,ad_position_id
+         ,if(ad_position_id in ('19','63','5','61','23','29')
+        ,programme_id
+        ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
+         ,coalesce(main_strategy_id,'-99') as main_strategy_id
+         ,'ad_show' as event
+         ,'ad' as ad_type
+         ,count(1) as pv
+         ,0 as amount
+      from ods_log.ods_sensors_production_adshow
+     where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+       and dt <= '${dt}'
+       and ad_position_id is not null
+       and project_id = 5  -- 海阅项目
+       and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
+     group by 1,2,3,4,5
+     union all
     -- 福利中心H5广告曝光 (策略ID存方案）
     select DATE(date_add(event_tm, interval -13 hour)) as dt
           ,login_id
@@ -211,6 +231,7 @@ select a1.dt
       ,sum(if(a1.event = 'rev',a1.pv,0)) as ad_revenue_pv  -- 【新增】广告收益pv
       ,sum(a1.amount) as ad_revenue_amount
       ,now() as etl_time
+      ,sum(if(event = 'ad_show',a1.pv,0)) as ad_show_pv
   from event_detail as a1
   left join user_info                        as a2
     on a1.dt = a2.dt

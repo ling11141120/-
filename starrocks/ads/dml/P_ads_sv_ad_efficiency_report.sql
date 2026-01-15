@@ -272,6 +272,16 @@ select a1.dt                              as dt                        -- 日期
                            ,case when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) in (7, 11, 13, 19, 22) then '播放页'
                                  when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) in (4, 5, 6) then '福利中心'
                                  when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) in (8, 9, 18) then '其他'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 32 then '金币网赚提现打卡任务-激励'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 33 then '我的-常驻原生'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 34 then '安卓退出-挽留弹窗原生'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 35 then '金币网赚-提现弹窗通用原生'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 36 then '金币网赚-提现返回插屏'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 37 then '金币网赚-现金不足弹窗激励'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 38 then '金币网赚-任务直接获取金币激励'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 39 then '金币网赚-转盘弹窗激励'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 40 then '金币网赚-转盘弹窗原生'
+                                 when coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id) = 41 then '金币网赚-天降福利激励'
                                  else coalesce(c1.position_id, c2.position_id, c3.position_id, c5.positions, c4.position_id)
                              end                                                                                      as ad_position_type
                            ,coalesce(c1.event_strategy_id
