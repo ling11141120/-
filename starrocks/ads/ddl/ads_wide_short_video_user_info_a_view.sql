@@ -13,6 +13,9 @@ create or replace view ads.ads_wide_short_video_user_info_a_view (
     ,current_language2             comment "注册时语言"
     ,reg_country                   comment "注册时国家，不会变化"
     ,is_bound_email                comment "是否绑定邮箱 1:是 0：否"
+    ,bind_email                    comment "登录绑定邮箱"
+    ,last_login_time               comment "dim-最新登录时间"
+    ,expire_time                   comment "用户过期时间"
     ,fst_login_tm                  comment "首次登录时间"
     ,lst_login_tm                  comment "上一次登录时间"
     ,new_login_tm                  comment "最新登录时间"
@@ -89,6 +92,9 @@ select uidx.dt
      , case when uinfo.email is not null then 1
             else 0
        end                                                   as is_bound_email
+     , uinfo.bind_email
+     , uinfo.last_login_time
+     , from_unixtime(ifnull(uinfo.expire_time, 0) / 1000)    as expire_time
      , uidx.fst_login_tm
      , uidx.lst_login_tm
      , uidx.new_login_tm
@@ -146,7 +152,7 @@ select uidx.dt
      , uidx.lst_install_book_id
      , uidx.lst_source
      , uidx.lst_install_date
-  from dws.dws_user_sv_his_15d_view                 as uidx
+  from dws.dws_user_sv_idx_his_15d_view                 as uidx
   left join dim.dim_short_video_user_accountinfo    as uinfo
     on uidx.user_id = uinfo.user_id
 ;

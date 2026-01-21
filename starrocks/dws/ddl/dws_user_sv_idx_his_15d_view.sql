@@ -10,6 +10,7 @@ create or replace view dws.dws_user_sv_idx_his_15d_view (
     ,consume_amt_td                comment "累计消耗(代币、赠币)"
     ,fst_consume_tm                comment "首次消费时间"
     ,lst_consume_tm                comment "最近一次消费时间"
+    ,consume_tv_td                 comment "累积消费剧集bitmap(剧id+集序号)"
     ,consume_cnt_td                comment "累积消费次数"
     ,consume_money_amt_td          comment "累计消耗代币数"
     ,fst_consume_money_tm          comment "首次消费代币时间"
@@ -72,6 +73,7 @@ select acc.dt
      , acc.consume_amt_td
      , stat.fst_consume_tm
      , stat.lst_consume_tm
+     , stat.consume_tv_td
      , acc.consume_cnt_td
      , acc.consume_money_amt_td
      , stat.fst_consume_money_tm
