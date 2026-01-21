@@ -4,7 +4,7 @@ insert into dwm.dwm_consume_user_consume_mild_ed
 with t1 as (
     select dt, product_id, types, user_id,
            (case
-                when  product_id in(3311,3322,3333,3366,3371,3388,3501,3511,3399) and book_id % 1000 in(322,375,409,410,418,419,414,433,435,436,445,412,413,415,447,448,491) then book_id % 1000
+                when  product_id in(3311,3322,3333,3366,3371,3388,3501,3511,3399) and book_id % 1000 in(322,375,409,410,418,419,414,433,435,436,445,412,413,415,447,448,491,497) then book_id % 1000
                 when  product_id in (7757,8858,7777,8888) then 777
                 else 333 end ) as site_id,
            book_id,substr(chapter_ids,2,length(chapter_ids) - 2) as chapter_ids,Chapter_id,pay_type,
@@ -14,7 +14,7 @@ with t1 as (
 )
 select t1.dt,md5(concat_ws('_',t1.dt, t1.product_id,t1.user_id,t1.types,t1.pay_type,t1.site_id,t1.book_id,t1.chapter_ids,t1.Chapter_id)) as md5_key,
        t1.product_id,t1.user_id,t1.types,t1.pay_type,
-       if(acc.current_language2 = 22, 497, t1.site_id) as site_id
+       t1.site_id as site_id
        ,t1.book_id,t1.chapter_ids,t1.Chapter_id,
        acc.corever,acc.mt ,acc.ver ,acc.current_language as currentlanguage,
        (case when acc.product_id = 3311 and (acc.Current_Language2 is null or acc.Current_Language2 = 0) then  6
