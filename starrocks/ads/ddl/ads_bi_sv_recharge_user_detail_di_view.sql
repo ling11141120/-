@@ -158,6 +158,6 @@ select a.dt
              , create_order_num
              , etl_ime
              , third_recharge_amount
-          from tmp.ads_bi_sv_recharge_user_detail_di
+          from ads.ads_bi_sv_recharge_user_detail_di
        ) a
 ;
