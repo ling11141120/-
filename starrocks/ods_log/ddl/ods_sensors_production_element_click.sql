@@ -57,13 +57,17 @@ create table ods_log.ods_sensors_production_element_click (
     ,zffs_strategy_id         varchar(65533)                comment "支付方式策略id"
     ,zffs_id_list             varchar(65533)                comment "支付方式id列表"
     ,add_source               varchar(255)                  comment "广告来源"
+    ,appCoreVer               varchar(255)                  comment "海阅新core值"
+    ,dollar_app_id            varchar(255)                  comment "海剧海阅共用，可转换为core值"
+    ,app_id                   varchar(255)                  comment "海剧app_id值"
+    ,appId                    varchar(255)                  comment "海阅app_id值"
 )
 primary key (dt, id)
 comment "event=element_click 控件点击时上报"
 partition by range (dt)()
 distributed by hash (dt, id) buckets 3
 properties (
-    "replication_num" = "3"
+     "replication_num" = "3"
     ,"dynamic_partition.enable" = "true"
     ,"dynamic_partition.time_unit" = "DAY"
     ,"dynamic_partition.time_zone" = "Asia/Shanghai"
