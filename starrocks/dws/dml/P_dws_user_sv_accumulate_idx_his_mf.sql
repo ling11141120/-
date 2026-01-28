@@ -35,6 +35,8 @@ select '${bf_1_dt}'    as dt
      , total_refund_cnt
      , mul_subscribe_item
      , has_subscribe
-     , idx_ddl
+     , sign_card_total_price
+     , vip_total_price
+     , svip_total_price
   from dws.dws_user_sv_accumulate_idx_di
 ;

@@ -1,4 +1,4 @@
-create or replace view ads.ads_bi_sv_recharge_user_detail_di_view (
+create or replace view tmp.ads_bi_sv_recharge_user_detail_di_view (
      dt                          comment "日期分区"
     ,period_type                 comment "周期类型"
     ,strategy_id                 comment "策略ID"
@@ -158,6 +158,6 @@ select a.dt
              , create_order_num
              , etl_ime
              , third_recharge_amount
-          from ads.ads_bi_sv_recharge_user_detail_di
+          from tmp.ads_bi_sv_recharge_user_detail_di
        ) a
 ;

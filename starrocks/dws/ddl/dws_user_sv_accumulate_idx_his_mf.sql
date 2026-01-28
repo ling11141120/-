@@ -27,6 +27,9 @@ create table dws.dws_user_sv_accumulate_idx_his_mf (
     ,total_refund_cnt           bigint                  comment "累计退款次数"
     ,mul_subscribe_item         bitmap                  comment "累计订阅类型bitmap"
     ,has_subscribe              bigint                  comment "历史有无订阅"
+    ,sign_card_total_price      decimal(18, 2)          comment "累计签到卡金额"
+    ,vip_total_price            decimal(18, 2)          comment "累计VIP金额"
+    ,svip_total_price           decimal(18, 2)          comment "累计SVIP金额"
 )
 primary key(dt, user_id)
 comment "用户域-海剧用户累计指标历史-按月全量"

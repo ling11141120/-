@@ -175,7 +175,8 @@ with svpt as (
                               , max(create_time)    as create_time
                            from svpt
                           group by 1, 2
-                         ) as tmode qualify row_number() over (partition by tmode.user_id order by tmode.num desc, tmode.create_time desc) = 1
+                         ) as tmode
+                qualify row_number() over (partition by tmode.user_id order by tmode.num desc, tmode.create_time desc) = 1
                  )                                  as mode
         on svptrn.user_id = mode.user_id
      group by 1
@@ -183,17 +184,17 @@ with svpt as (
 select calc.user_id
      , if(ori.user_id is null, calc.first_subscribe_amt, ori.first_subscribe_amt)    as first_subscribe_amt
      , if(ori.user_id is null, calc.first_subscribe_tp, ori.first_subscribe_tp)      as first_subscribe_tp
-     , ori.first_subscribe_tm                                                        as first_subscribe_tm
-     , ori.last_subscribe_amt
-     , ori.last_subscribe_tp
-     , ori.last_subscribe_tm
+     , calc.first_subscribe_amt                                                      as first_subscribe_tm
+     , calc.last_subscribe_amt
+     , calc.last_subscribe_tp
+     , calc.last_subscribe_tm
      , if(ori.user_id is null, calc.first_recharge_amt, ori.first_recharge_amt)      as first_recharge_amt
-     , ori.first_recharge_tm
-     , ori.recharge_max
-     , ori.month_recharge_max
-     , ori.last_recharge_amt
-     , ori.last_recharge_tm
-     , ori.charge_mode
+     , calc.first_recharge_tm
+     , calc.recharge_max
+     , calc.month_recharge_max
+     , calc.last_recharge_amt
+     , calc.last_recharge_tm
+     , calc.charge_mode
      , now()                                                                         as etl_time
   from month_calc                            as calc
   left join dws.dws_user_sv_status_idx_di    as ori
@@ -252,4 +253,69 @@ select calc.user_id
        )                                     as calc
   left join dws.dws_user_sv_status_idx_di    as ori
     on calc.user_id = ori.user_id
+;
+
+-- 用户支付扩展
+insert into dws.dws_user_sv_status_idx_di(
+     user_id                       -- 用户id
+    ,fst_recharge_watch_series_num -- 首冲观看剧数
+    ,fst_recharge_watch_epis_num   -- 首充观看集数
+    ,lst_third_recharge_tm         -- 最近三方充值时间
+    ,reg_fst_recharge_duration     -- 注册到首充的分钟数
+    ,fst_sign_card_price           -- 首次签到卡金额
+    ,fst_vip_price                 -- 首次VIP金额
+    ,fst_svip_price                -- 首次SVIP金额
+    ,max_bonus_ratio               -- 最高礼券加赠比例
+    ,lst_bonus_ratio               -- 最近一次礼券加赠比例
+    ,etl_time                      -- etl时间
+)
+select id                                  as user_id
+     , first_recharge_watch_series_num     as fst_recharge_watch_series_num
+     , first_recharge_watch_epis_num       as fst_recharge_watch_epis_num
+     , latest_third_recharge_time          as lst_third_recharge_tm
+     , registry_first_recharge_duration    as reg_fst_recharge_duration
+     , first_sign_card_price               as fst_sign_card_price
+     , first_vip_price                     as fst_vip_price
+     , first_svip_price                    as fst_svip_price
+     , max_bonus_ratio                     as max_bonus_ratio
+     , latest_bonus_ratio                  as lst_bonus_ratio
+     , now()                               as etl_time
+  from ods.ods_tidb_short_video_account_pay_extend
+;
+
+-- 广告
+insert into dws.dws_user_sv_status_idx_di (
+     user_id                      -- 用户id
+    ,fst_preload_reward_ecpm      -- 首次预加载激励视频eCPM
+    ,lst_preload_reward_ecpm      -- 最近预加载激励视频eCPM
+    ,fst_preload_intersitial_ecpm -- 首次预加载插屏eCPM
+    ,lst_preload_intersitial_ecpm -- 最近预加载插屏eCPM
+    ,etl_time                     -- etl时间
+)
+with curr as (
+    select account_id    as user_id
+         , ad_type       as ad_type
+         , min_by(value_micros, create_time) * 1000 as fst_reward_ecpm
+         , max_by(value_micros, create_time) * 1000 as lst_reward_ecpm
+      from dwd.dwd_sv_advertise_ad_preload_revenue_di_view
+     where create_time >= '${bf_1_dt}'
+       and create_time < '${dt}'
+     group by 1, 2
+)
+select coalesce(curra.user_id, ori.user_id)                                               as user_id
+     , coalesce(curra.fst_preload_reward_ecpm, ori.fst_preload_reward_ecpm)               as fst_preload_reward_ecpm
+     , coalesce(curra.lst_preload_reward_ecpm, ori.lst_preload_reward_ecpm)               as lst_preload_reward_ecpm
+     , coalesce(curra.fst_preload_intersitial_ecpm, ori.fst_preload_intersitial_ecpm)     as fst_preload_intersitial_ecpm
+     , coalesce(curra.lst_preload_intersitial_ecpm, ori.lst_preload_intersitial_ecpm)     as lst_preload_intersitial_ecpm
+     , now()                                                                              as etl_time
+  from (select user_id
+             , sum(case when ad_type = 3 then fst_reward_ecpm else 0 end)    as fst_preload_reward_ecpm
+             , sum(case when ad_type = 3 then lst_reward_ecpm else 0 end)    as lst_preload_reward_ecpm
+             , sum(case when ad_type = 5 then fst_reward_ecpm else 0 end)    as fst_preload_intersitial_ecpm
+             , sum(case when ad_type = 5 then lst_reward_ecpm else 0 end)    as lst_preload_intersitial_ecpm
+          from curr
+         group by 1
+       )                                     as curra
+  left join dws.dws_user_sv_status_idx_di    as ori
+    on curra.user_id = ori.user_id
 ;
