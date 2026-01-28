@@ -42,6 +42,8 @@ create table ods_log.ods_sensors_production_complete_task_click (
     ,task_type            varchar(65533)                comment "任务类型"
     ,corever              int(11)                       comment "corever"
     ,add_source           varchar(255)                  comment "广告来源"
+    ,appCoreVer           varchar(255)                  comment "海阅新core值"
+    ,dollar_app_id        varchar(255)                  comment "海剧海阅共用，可转换为core值"
 )
 primary key (dt, id)
 comment "event=completetaskclick 控件点击时上报"
