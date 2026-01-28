@@ -48,6 +48,8 @@ create table ods_log.ods_sensors_production_H5BackToApp (
     ,module_channel_id    string                                   comment "频道id"
     ,etl_tm               datetime    default current_timestamp    comment "清洗时间"
     ,ad_source            varchar(30)                              comment "广告来源"
+    ,appCoreVer           varchar(255)                             comment "海阅新core值"
+    ,dollar_app_id        varchar(255)                             comment "海剧海阅共用，可转换为core值"
 )
 primary key(dt, id)
 comment "event=H5BackToApp H5广告返回APP"
@@ -55,18 +57,18 @@ partition by range(dt)
 (partition p20251201 values less than ('2025-12-02'))
 distributed by hash(dt, id) buckets 3
 properties (
-    "replication_num" = "3",
-    "dynamic_partition.enable" = "true",
-    "dynamic_partition.time_unit" = "DAY",
-    "dynamic_partition.time_zone" = "Asia/Shanghai",
-    "dynamic_partition.start" = "-92",
-    "dynamic_partition.end" = "3",
-    "dynamic_partition.prefix" = "p",
-    "dynamic_partition.buckets" = "3",
-    "dynamic_partition.history_partition_num" = "0",
-    "in_memory" = "false",
-    "enable_persistent_index" = "true",
-    "replicated_storage" = "true",
-    "compression" = "ZSTD"
+    "replication_num" = "3"
+   ,"dynamic_partition.enable" = "true"
+   ,"dynamic_partition.time_unit" = "DAY"
+   ,"dynamic_partition.time_zone" = "Asia/Shanghai"
+   ,"dynamic_partition.start" = "-92"
+   ,"dynamic_partition.end" = "3"
+   ,"dynamic_partition.prefix" = "p"
+   ,"dynamic_partition.buckets" = "3"
+   ,"dynamic_partition.history_partition_num" = "0"
+   ,"in_memory" = "false"
+   ,"enable_persistent_index" = "true"
+   ,"replicated_storage" = "true"
+   ,"compression" = "ZSTD"
 )
 ;
