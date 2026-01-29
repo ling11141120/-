@@ -25,7 +25,7 @@ select act.dt                                                              as dt
      , act.reg_time                                                        as register_time              -- 注册时间
      , act.current_language                                                as ui_lang                    -- 界面语言
      , act.current_language2                                               as ad_lang                    -- 渠道推广语言
-     , uinfo.app_ver                                                       as client_ver_num             -- 服务器版本
+     , uinfo.version                                                       as client_ver_num             -- 服务器版本
      , act.reg_country                                                     as nation                     -- 国家
      , act.country_level                                                   as nation_level               -- 国家等级
      , act.mt                                                              as platform                   -- 平台

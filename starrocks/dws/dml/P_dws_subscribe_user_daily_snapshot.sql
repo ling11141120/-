@@ -29,12 +29,12 @@ select coalesce(susc.product_id, uds.product_id)      as product_id
 insert into dws.dws_subscribe_user_daily_snapshot
 select product_id
      , user_id
-     , 2        as sub_type
-     , expire_time
-     , case when level = 1 and vip_status = 1 and expire_time > now() then 1
+     , 2                                                                          as sub_type
+     , str_to_jodatime(from_unixtime(expire_time/1000), 'yyyy-MM-dd HH:mm:ss')    as expire_time
+     , case when level = 1 and vip_status = 1 and str_to_jodatime(from_unixtime(expire_time/1000), 'yyyy-MM-dd HH:mm:ss') > now() then 1
             else 0
-       end      as is_valid
-     , now()    as etl_time
+       end                                                                        as is_valid
+     , now()                                                                      as etl_time
   from dim.dim_short_video_user_accountinfo -- 海剧用户信息
 ;
 

@@ -127,45 +127,43 @@ insert into dws.dws_user_sv_status_idx_di (
     ,charge_mode             -- 充值众数（不考虑退款因素）
     ,etl_time                -- etl时间
 )
-with svpt as (
-    select svp.user_id
-         , if(svp.shop_item in (810, 840), 1, 0)    as types
-         , svp.item_count
-         , svp.create_time
-         , svp.shop_item
-         , svp.id
-         , svp.status
-      from dwd.dwd_trade_short_video_payorder       as svp
-     where svp.dt >= date_sub('${bf_1_dt}', interval 30 day)
-       and svp.dt <= '${bf_1_dt}'
-       and svp.status = 0
-       and svp.test_flag = 0
+with svp as (
+    select user_id
+         , if(shop_item in (810, 840), 1, 0)    as is_sub    -- 是否订阅
+         , item_count
+         , create_time
+         , shop_item
+         , id
+      from dwd.dwd_trade_short_video_payorder
+     where dt >= date_sub('${bf_1_dt}', interval 30 day)
+       and dt <= '${bf_1_dt}'
+       and status = 0
+       and test_flag = 0
 )
 , month_calc as (
-    select svptrn.user_id                                                                as user_id
-         , max(if(svptrn.rn = 1 and svptrn.types = 1, svptrn.item_count, null))          as first_subscribe_amt
-         , max(if(svptrn.rn = 1 and svptrn.types = 1, svptrn.shop_item, null))           as first_subscribe_tp
-         , max(if(svptrn.rn = 1 and svptrn.types = 1, svptrn.create_time, null))         as first_subscribe_tm
-         , max(if(svptrn.rn_desc = 1 and svptrn.types = 1, svptrn.item_count, null))     as last_subscribe_amt
-         , max(if(svptrn.rn_desc = 1 and svptrn.types = 1, svptrn.shop_item, null))      as last_subscribe_tp
-         , max(if(svptrn.rn_desc = 1 and svptrn.types = 1, svptrn.create_time, null))    as last_subscribe_tm
-         , max(if(svptrn.rn = 1 and svptrn.types = 0, svptrn.item_count, null))          as first_recharge_amt
-         , max(if(svptrn.rn = 1 and svptrn.types = 0, svptrn.create_time, null))         as first_recharge_tm
-         , max(if(svptrn.status = 0, svptrn.item_count, null))                           as recharge_max
-         , max(if(svptrn.status = 0, svptrn.item_count, null))                           as month_recharge_max
-         , max(if(svptrn.rn_desc = 1 and svptrn.types = 0, svptrn.item_count, null))     as last_recharge_amt
-         , max(if(svptrn.rn_desc = 1 and svptrn.types = 0, svptrn.create_time, null))    as last_recharge_tm
-         , max(mode.charge_mode)                                                         as charge_mode
-      from (select svpt.user_id
-                 , svpt.types
-                 , svpt.item_count
-                 , svpt.create_time
-                 , svpt.shop_item
-                 , svpt.id
-                 , svpt.status
-                 , row_number() over (partition by svpt.types, svpt.user_id order by svpt.create_time, svpt.id)              as rn
-                 , row_number() over (partition by svpt.types, svpt.user_id order by svpt.create_time desc, svpt.id desc)    as rn_desc
-              from svpt
+    select svptrn.user_id                                                                 as user_id
+         , max(if(svptrn.rn = 1 and svptrn.is_sub = 1, svptrn.item_count, null))          as first_subscribe_amt
+         , max(if(svptrn.rn = 1 and svptrn.is_sub = 1, svptrn.shop_item, null))           as first_subscribe_tp
+         , max(if(svptrn.rn = 1 and svptrn.is_sub = 1, svptrn.create_time, null))         as first_subscribe_tm
+         , max(if(svptrn.rn_desc = 1 and svptrn.is_sub = 1, svptrn.item_count, null))     as last_subscribe_amt
+         , max(if(svptrn.rn_desc = 1 and svptrn.is_sub = 1, svptrn.shop_item, null))      as last_subscribe_tp
+         , max(if(svptrn.rn_desc = 1 and svptrn.is_sub = 1, svptrn.create_time, null))    as last_subscribe_tm
+         , max(if(svptrn.rn = 1, svptrn.item_count, null))                                as first_recharge_amt
+         , max(if(svptrn.rn = 1, svptrn.create_time, null))                               as first_recharge_tm
+         , max(svptrn.item_count)                                                         as recharge_max
+         , max(svptrn.item_count)                                                         as month_recharge_max
+         , max(if(svptrn.rn_desc = 1, svptrn.item_count, null))                           as last_recharge_amt
+         , max(if(svptrn.rn_desc = 1, svptrn.create_time, null))                          as last_recharge_tm
+         , max(mode.charge_mode)                                                          as charge_mode
+      from (select svp.user_id
+                 , svp.is_sub
+                 , svp.item_count
+                 , svp.create_time
+                 , svp.shop_item
+                 , svp.id
+                 , row_number() over (partition by svp.user_id order by svp.create_time, svp.id)              as rn
+                 , row_number() over (partition by svp.user_id order by svp.create_time desc, svp.id desc)    as rn_desc
+              from svp
             )                                       as svptrn
       left join (select tmode.user_id
                       , tmode.item_count            as charge_mode
@@ -173,7 +171,7 @@ with svpt as (
                               , item_count
                               , count(1)            as num
                               , max(create_time)    as create_time
-                           from svpt
+                           from svp
                           group by 1, 2
                          ) as tmode
                 qualify row_number() over (partition by tmode.user_id order by tmode.num desc, tmode.create_time desc) = 1
@@ -181,23 +179,23 @@ with svpt as (
         on svptrn.user_id = mode.user_id
      group by 1
 )
-select calc.user_id
-     , if(ori.user_id is null, calc.first_subscribe_amt, ori.first_subscribe_amt)    as first_subscribe_amt
-     , if(ori.user_id is null, calc.first_subscribe_tp, ori.first_subscribe_tp)      as first_subscribe_tp
-     , calc.first_subscribe_amt                                                      as first_subscribe_tm
+select coalesce(calc.user_id, ori.user_id)                            as user_id
+     , coalesce(ori.first_subscribe_amt, calc.first_subscribe_amt)    as first_subscribe_amt
+     , coalesce(ori.first_subscribe_tp, calc.first_subscribe_tp)      as first_subscribe_tp
+     , calc.first_subscribe_amt                                       as first_subscribe_tm
      , calc.last_subscribe_amt
      , calc.last_subscribe_tp
      , calc.last_subscribe_tm
-     , if(ori.user_id is null, calc.first_recharge_amt, ori.first_recharge_amt)      as first_recharge_amt
+     , coalesce(ori.first_recharge_amt, calc.first_recharge_amt)      as first_recharge_amt
      , calc.first_recharge_tm
      , calc.recharge_max
      , calc.month_recharge_max
      , calc.last_recharge_amt
      , calc.last_recharge_tm
-     , calc.charge_mode
-     , now()                                                                         as etl_time
-  from month_calc                            as calc
-  left join dws.dws_user_sv_status_idx_di    as ori
+     , coalesce(calc.charge_mode, ori.charge_mode)                    as charge_mode
+     , now()                                                          as etl_time
+  from month_calc                         as calc
+  left join dws.dws_user_sv_status_idx_di as ori
     on calc.user_id = ori.user_id
 ;
 

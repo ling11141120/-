@@ -20,7 +20,7 @@ create table tmp.ads_sv_group_at_active_user_tag (
     ,double_first_svip_price  decimal(12, 2)          comment "首次SVIP金额(小数)"
     ,double_first_vip_price   decimal(12, 2)          comment "首次VIP金额(小数)"
 )
-primary key(dt, user_id)
+primary key(dt, user_id, period_type)
 comment "海剧人群标签表-提供给付费墙中台等使用"
 partition by date_trunc('day', dt)
 distributed by hash(dt, user_id)
