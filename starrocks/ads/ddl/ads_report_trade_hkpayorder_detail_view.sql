@@ -37,7 +37,7 @@ create or replace view ads.ads_report_trade_hkpayorder_detail_view (
     ,ip_to_country        comment "由ip转换为国家"
     ,source_chl           comment "最新渠道"
 )
-as (
+as
 select x.product_id
      , x.user_id
      , x.order_serial_id
@@ -76,7 +76,7 @@ select x.product_id
      , x.sub_scribe_status
      , x.Ext1
      , x.Ext5
-     , x.CooExtStatus
+     , x.CooExtStatus                         as coo_ext_status
      , x.ip_to_country
      , ifnull(e.source_chl, dim.f.source_chl) as late_chl
   from (select a.productid                                                               as product_id
