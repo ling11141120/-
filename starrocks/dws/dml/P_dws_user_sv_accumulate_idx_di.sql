@@ -125,3 +125,19 @@ select user_id
    and test_flag = 0
  group by 1
 ;
+
+-- 用户支付拓展
+insert into dws.dws_user_sv_accumulate_idx_di (
+     user_id                  -- 用户id
+    ,sign_card_total_price    -- 累计签到卡金额
+    ,vip_total_price          -- 累计VIP金额
+    ,svip_total_price         -- 累计SVIP金额
+    ,idx_ddl                  -- 指标截止日期
+)
+select id              as user_id
+     , sign_card_total_price
+     , vip_total_price
+     , svip_total_price
+     , '${bf_1_dt}'    as idx_ddl
+  from ods.ods_tidb_short_video_account_pay_extend
+;

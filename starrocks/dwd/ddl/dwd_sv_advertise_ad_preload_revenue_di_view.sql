@@ -1,4 +1,4 @@
-create or replace view ads.ads_sv_advertise_ad_preload_revenue_di_view(
+create or replace view dwd.dwd_sv_advertise_ad_preload_revenue_di_view(
      id                              comment "唯一ID"
     ,create_time                     comment "创建时间"
     ,account_id                      comment "账户id"
