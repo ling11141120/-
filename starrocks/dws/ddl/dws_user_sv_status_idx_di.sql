@@ -50,6 +50,7 @@ create table dws.dws_user_sv_status_idx_di (
     ,lst_preload_reward_ecpm       decimal(16, 8) replace_if_not_null comment "最近预加载激励视频eCPM"
     ,fst_preload_intersitial_ecpm  decimal(16, 8) replace_if_not_null comment "首次预加载插屏eCPM"
     ,lst_preload_intersitial_ecpm  decimal(16, 8) replace_if_not_null comment "最近预加载插屏eCPM"
+    ,lst_position_reward_ecpm      decimal(16, 8) replace_if_not_null comment "最近展示位激励视频eCPM"
 )
 aggregate key(user_id)
 comment "用户域-海剧用户状态指标表"

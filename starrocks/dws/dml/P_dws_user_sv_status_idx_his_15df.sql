@@ -58,5 +58,6 @@ select '${bf_1_dt}'    as dt            -- 分区日期
      , lst_preload_reward_ecpm          -- 最近预加载激励视频eCPM
      , fst_preload_intersitial_ecpm     -- 首次预加载插屏eCPM
      , lst_preload_intersitial_ecpm     -- 最近预加载插屏eCPM
+     , lst_position_reward_ecpm         -- 最近展示位激励视频eCPM
   from dws.dws_user_sv_status_idx_di
 ;
