@@ -281,7 +281,7 @@ select id                                  as user_id
   from ods.ods_tidb_short_video_account_pay_extend
 ;
 
--- 广告
+-- 广告预加载
 insert into dws.dws_user_sv_status_idx_di (
      user_id                      -- 用户id
     ,fst_preload_reward_ecpm      -- 首次预加载激励视频eCPM
@@ -316,4 +316,20 @@ select coalesce(curra.user_id, ori.user_id)                                     
        )                                     as curra
   left join dws.dws_user_sv_status_idx_di    as ori
     on curra.user_id = ori.user_id
+;
+
+-- 广告展示位收益
+insert into dws.dws_user_sv_status_idx_di (
+     user_id                     -- 用户id
+    ,lst_position_reward_ecpm    -- 最近展示位激励视频eCPM
+    ,etl_time                    -- etl时间
+)
+select user_id
+     , sum(ad_position_amt) * 1000 as lst_position_reward_ecpm
+     , now()                       as etl_time
+  from dwd.dwd_advertisement_user_position_amt_p_di
+ where dt = '${bf_1_dt}'
+   and product_id = 6833
+   and ad_show_type = 3
+ group by 1
 ;
