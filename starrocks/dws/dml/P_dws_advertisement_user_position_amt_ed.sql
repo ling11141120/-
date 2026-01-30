@@ -11,19 +11,19 @@ insert into dws.dws_advertisement_user_position_amt_ed
 -- 统计每日H5点击
 with ad_click_count as (
     select a1.dt
-          ,a1.app_product_id       as product_id
-          ,a1.login_id             as user_id
-          ,a1.app_core_ver         as core
+          ,a1.app_product_id            as product_id
+          ,a1.login_id                  as user_id
+          ,a1.app_core_ver              as core
           ,a1.mt
           ,a1.appver
-          ,5                       as ad_show_type
-          ,59                      as positions
-          ,a1.ad_src               as ads_src
-          ,null                    as main_strategy_id
-          ,null                    as event_strategy_id
-          ,a1.event_strategy_id    as programme_id
-          ,2                       as system_type
-          ,count(1)                as ad_click_count
+          ,5                            as ad_show_type
+          ,59                           as positions
+          ,a1.ad_src                    as ads_src
+          ,null                         as main_strategy_id
+          ,null                         as event_strategy_id
+          ,a1.event_strategy_id         as programme_id
+          ,if(a1.app_core_ver=4,3,2)    as system_type
+          ,count(1)                     as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -33,19 +33,19 @@ with ad_click_count as (
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
     select a1.dt
-          ,a1.app_product_id       as product_id
-          ,a1.login_id             as user_id
-          ,a1.app_core_ver         as core
+          ,a1.app_product_id            as product_id
+          ,a1.login_id                  as user_id
+          ,a1.app_core_ver              as core
           ,a1.mt
           ,a1.appver
-          ,5                       as ad_show_type
-          ,a1.ad_position_id       as positions
-          ,a1.ad_src               as ads_src
+          ,5                            as ad_show_type
+          ,a1.ad_position_id            as positions
+          ,a1.ad_src                    as ads_src
           ,a1.main_strategy_id
-          ,a1.ad_strategy_id       as event_strategy_id
-          ,a1.programme_id         as programme_id
-          ,2                       as system_type
-          ,count(1)                as ad_click_count
+          ,a1.ad_strategy_id            as event_strategy_id
+          ,a1.programme_id              as programme_id
+          ,if(a1.app_core_ver=4,3,2)    as system_type
+          ,count(1)                     as ad_click_count
       from dwd.dwd_sensors_production_element_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -62,14 +62,14 @@ with ad_click_count as (
           ,a1.core
           ,a1.mt
           ,a1.appver
-          ,a1.ad_type             as ad_show_type
-          ,a2.ad_position         as positions
-          ,a1.ad_src              as ads_src
+          ,a1.ad_type           as ad_show_type
+          ,a2.ad_position       as positions
+          ,a1.ad_src            as ads_src
           ,a1.main_strategy_id
           ,a1.event_strategy_id
           ,a1.programme_id
-          ,1                      as system_type
-          ,count(1)               as ad_click_count
+          ,if(a1.core=4,3,1)    as system_type
+          ,count(1)             as ad_click_count
       from dwd.dwd_sensors_production_adpositionclick_view    as a1
       left join dim.dim_sv_ads_position_view                  as a2
         on a1.ad_position_id = a2.ad_position
@@ -81,19 +81,19 @@ with ad_click_count as (
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
     select dt
-          ,6833              as product_id
-          ,login_id          as user_id
-          ,corever           as core
+          ,6833                    as product_id
+          ,login_id                as user_id
+          ,corever                 as core
           ,mt
           ,appver
-          ,6                 as ad_show_type
-          ,null              as positions
-          ,a1.ad_src         as ads_src
-          ,null              as main_strategy_id
+          ,6                       as ad_show_type
+          ,null                    as positions
+          ,a1.ad_src               as ads_src
+          ,null                    as main_strategy_id
           ,event_strategy_id
-          ,null              as programme_id
-          ,1                 as system_type
-          ,count(1)          as ad_click_count
+          ,null                    as programme_id
+          ,if(a1.corever=4,3,1)    as system_type
+          ,count(1)                as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -111,30 +111,30 @@ with ad_click_count as (
           ,sum(a2.revenue_share)                                    as ad_amt
           ,round(sum(a2.revenue_share)/sum(a1.ad_click_count),9)    as ad_avg_click_amt
       from (select dt
-                  ,system_type
-                  ,a2.cd_val_desc        as ads_name
-                  ,sum(ad_click_count)   as ad_click_count
+                  ,a1.system_type
+                  ,a2.cd_val_desc         as ads_name
+                  ,sum(ad_click_count)    as ad_click_count
               from ad_click_count                        as a1
               left join dim.dim_pub_code_mapping_dict    as a2
                 on a1.ads_src=a2.cd_val
                and a2.app_plat='pub'
                and a2.cd_col='ad_src'
              group by 1,2,3
-           )         as a1
-      left join (select date(day)                 as dt
+           )    as a1
+      left join (select date(day)             as dt
                        ,system_type
-                       ,'Starmobi'                as ads_name
-                       ,sum(revenue_share)        as revenue_share
+                       ,'Starmobi'            as ads_name
+                       ,sum(revenue_share)    as revenue_share
                    from dim.dim_sv_ad_advertise_info_view
                   where date(day)>='${bf_1_dt}'
                     and date(day)<='${dt}'
                   group by 1, 2,3
                   union all
-                 select Date as dt
+                 select Date                  as dt
                        ,case when ProjectType = 0 then 2
                              else ProjectType
-                         end                      as system_type
-                       ,'MobKing'                 as ads_name
+                         end                  as system_type
+                       ,'MobKing'             as ads_name
                        ,sum(SubNetRevenue)    as revenue_share
                    from ods.ods_tidb_mobkingaddata
                   where Date>='${bf_1_dt}'
@@ -164,8 +164,8 @@ with ad_click_count as (
                                ,sum(income)       as income
                                ,sum(page_view)    as page_view
                            from ods.ods_tidb_short_video_log_firefly_income_report
-                         group by 1,2
-                        )     as c1
+                          group by 1,2
+                        )    as c1
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
                   union all
