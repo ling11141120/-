@@ -6,7 +6,7 @@
 -- 开发日期： 2026-01-23
 ----------------------------------------------------------------
 
-insert into tmp.ads_bi_sv_recharge_user_detail_di
+insert into ads.ads_bi_sv_recharge_user_detail_di
 -- 活跃表
 with t123 as(
     select svact.dt
@@ -57,7 +57,7 @@ with t123 as(
                  )                                     as vip_type
          , a.recharge_channel                          as subpay_type
          , seconds_diff(c.FinishTime,a.create_time)    as finish_time
-    from tmp.dwd_trade_pay_succ_recharge_order_hi                    as a
+    from dwd.dwd_trade_pay_succ_recharge_order_hi                    as a
     left join (select item_id
                     , shop_item_id
                     , vip_type
@@ -278,7 +278,7 @@ with t123 as(
            end                                                                 as strategy_id
          , t2.shop_item_type
          , t2.vip_type
-         , case when ifnull(t2.subpay_type, '-99') in ('GooglePlay', 'AppStore', 'AppGallery') then t2.subpay_type
+         , case when ifnull(t2.subpay_type, '-99') in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal') then t2.subpay_type
                 else ifnull(t2.subpay_type, '三方支付')
             end                                                                as subpay_type
          , item_count
@@ -289,7 +289,7 @@ with t123 as(
          , sum(case when t2.recharge_type_cd = '840' then base_amount end)     as signin_recharge_amount
          , sum(case when t2.recharge_type_cd = '810' then base_amount end)     as svip_recharge_amount
          , sum(case when t2.recharge_type_cd = '860' then base_amount end)     as nsvip_recharge_amount
-         , sum(case when ifnull(t2.subpay_type, '-99') not in ('GooglePlay', 'AppStore', 'AppGallery') then base_amount
+         , sum(case when ifnull(t2.subpay_type, '-99') not in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal') then base_amount
                     else 0
                 end
               )                                                                as third_recharge_amount

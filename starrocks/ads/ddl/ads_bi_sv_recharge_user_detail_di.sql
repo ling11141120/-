@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_bi_sv_recharge_user_detail_di;
-create table tmp.ads_bi_sv_recharge_user_detail_di (
+drop table if exists ads.ads_bi_sv_recharge_user_detail_di;
+create table ads.ads_bi_sv_recharge_user_detail_di (
      dt                       date           not null                  comment "日期分区"
     ,period_type              varchar(50)    not null                  comment "周期类型"
     ,strategy_id              varchar(200)   not null                  comment "策略ID"

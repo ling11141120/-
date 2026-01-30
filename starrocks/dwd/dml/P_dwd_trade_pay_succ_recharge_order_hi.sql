@@ -7,7 +7,7 @@
 ----------------------------------------------------------------
 
 -- 海剧
-insert into tmp.dwd_trade_pay_succ_recharge_order_hi
+insert into dwd.dwd_trade_pay_succ_recharge_order_hi
 select dt
      , 6833                                                        as product_id
      , orderid                                                     as order_id

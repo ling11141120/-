@@ -1,5 +1,5 @@
-drop table if exists tmp.dwd_trade_pay_succ_recharge_order_hi;
-create table tmp.dwd_trade_pay_succ_recharge_order_hi(
+drop table if exists dwd.dwd_trade_pay_succ_recharge_order_hi;
+create table dwd.dwd_trade_pay_succ_recharge_order_hi(
      dt                date         not null comment "分区日期"
     ,product_id        int          not null comment "product_id"
     ,order_id          varchar(128) not null comment "订单id"
