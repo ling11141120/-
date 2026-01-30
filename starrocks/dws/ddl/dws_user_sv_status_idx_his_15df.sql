@@ -51,6 +51,7 @@ create table dws.dws_user_sv_status_idx_his_15df (
     ,lst_preload_reward_ecpm       decimal(16, 8)          comment "最近预加载激励视频eCPM"
     ,fst_preload_intersitial_ecpm  decimal(16, 8)          comment "首次预加载插屏eCPM"
     ,lst_preload_intersitial_ecpm  decimal(16, 8)          comment "最近预加载插屏eCPM"
+    ,lst_position_reward_ecpm      decimal(16, 8)          comment "最近展示位激励视频eCPM"
 )
 primary key(dt, user_id)
 comment "用户域-海剧用户状态指标表-近15天全量"
