@@ -8,7 +8,18 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_sv_beidou_series_source_stat_di
-with stat_tmp as (
+with yinliu_tmp as (
+    select lv.series_id
+         , b.user_id
+    from ads.ads_short_video_video_dl_log_view lv
+    left join dim.dim_short_video_user_accountinfo b
+      on lv.unique_cdreader_id = b.unique_cdreader_id
+    where lv.has_open = 1
+      and lv.create_time >= date_add(cast('${dt}' as datetime), -200)
+      and lv.create_time <= cast('${dt}' as datetime)
+    group by 1, 2
+),
+stat_tmp as (
     select dt
          , coalesce(core, 0)              as core
          , coalesce(current_language2, 0) as language_code
@@ -21,6 +32,7 @@ with stat_tmp as (
                , current_language2
                , coalesce(shortplay_id, split(activity_link, '_')[8]) as shortplay_id
                , case
+                     when t.user_id is not null then 'DL拉剧'
                      when split(activity_link, '_')[1] = 202100
                          and split(activity_link, '_')[2] in (0, 1) then '普通弹窗'
                      when split(activity_link, '_')[1] = 202100
@@ -47,7 +59,10 @@ with stat_tmp as (
                      else "" end as source
                , count(1) as startwatching_num
                , 0        as exposure_num
-          from ads.ads_sensors_cd_video_startwatching_view
+           from ads.ads_sensors_cd_video_startwatching_view s
+           left join yinliu_tmp t
+             on coalesce(shortplay_id, split(activity_link, '_')[8]) = t.series_id
+            and s.login_id = t.user_id
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
             and current_language2 is not null
@@ -59,6 +74,7 @@ with stat_tmp as (
                , current_language2
                , split(activity_link, '_')[8] as shortplay_id -- 解析为 series_id 短剧ID
                , case
+                     when t.user_id is not null then 'DL拉剧'
                      when split(activity_link, '_')[1] = 202100
                          and split(activity_link, '_')[2] in (0, 1) then '普通弹窗'
                      when split(activity_link, '_')[1] = 202100
@@ -85,14 +101,18 @@ with stat_tmp as (
                      else "" end as source
                , 0        as startwatching_num
                , count(1) as exposure_num
-          from ads.ads_sensors_cd_video_operationpositionexposure_view
+           from ads.ads_sensors_cd_video_operationpositionexposure_view e
+           left join yinliu_tmp t
+             on split(activity_link, '_')[8] = t.series_id
+            and e.login_id = t.user_id
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
             and current_language2 is not null
             and split(activity_link, '_')[8] != 0 -- 解析为 series_id 短剧ID
           group by 1, 2, 3, 4, 5
          ) tb
-    where source != ""
+    -- 过滤掉 source 为空的数据
+    where source != ''
     group by dt
            , core
            , current_language2
