@@ -101,6 +101,7 @@ insert into dws.dws_user_sv_accumulate_idx_di (
     ,total_refund_amt              -- 累计退款金额
     ,total_refund_cnt              -- 累计退款次数
     ,mul_subscribe_item            -- 累计订阅类型bitmap
+    ,has_subscribe                 -- 历史有无订阅
     ,idx_ddl                       -- 指标截止日期
 )
 select user_id
@@ -119,6 +120,9 @@ select user_id
                                 )
                              )
                    )                                                               as mul_subscribe_item
+     , case when sum(if(status = 0 and shop_item in (810, 840) and item_count > 0, 1, 0)) >= 1 then 1
+            else 0
+        end                                                                        as has_subscribe
      , '${bf_1_dt}'                                                                as idx_ddl
   from dwd.dwd_trade_short_video_payorder
  where dt = '${bf_1_dt}'

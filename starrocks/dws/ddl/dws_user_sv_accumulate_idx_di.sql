@@ -27,6 +27,9 @@ create table dws.dws_user_sv_accumulate_idx_di (
     ,mul_subscribe_item         bitmap         bitmap_union        comment "累计订阅类型bitmap"
     ,has_subscribe              bigint         max                 comment "历史有无订阅"
     ,idx_ddl                    date           replace_if_not_null comment "指标截止日期"
+    ,sign_card_total_price      decimal(18, 2) sum                 comment "累计签到卡金额"
+    ,vip_total_price            decimal(18, 2) sum                 comment "累计VIP金额"
+    ,svip_total_price           decimal(18, 2) sum                 comment "累计SVIP金额"
 )
 aggregate key(user_id)
 comment "用户域-海剧用户累计指标表"
