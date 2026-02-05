@@ -129,16 +129,16 @@ insert into dws.dws_user_sv_status_idx_di (
 )
 with svp as (
     select user_id
-         , if(shop_item in (810, 840), 1, 0)    as is_sub    -- 是否订阅
-         , item_count
+         , if(recharge_type_cd in (810, 840), 1, 0)    as is_sub -- 是否订阅
+         , recharge_amt                                as item_count
          , create_time
-         , shop_item
-         , id
-      from dwd.dwd_trade_short_video_payorder
+         , recharge_type_cd                            as shop_item
+         , log_id                                      as id
+         , actual_recharge_amt
+      from dwd.dwd_trade_pay_succ_recharge_order_hi
      where dt >= date_sub('${bf_1_dt}', interval 30 day)
        and dt <= '${bf_1_dt}'
-       and status = 0
-       and test_flag = 0
+       and product_id = 6833
 )
 , month_calc as (
     select svptrn.user_id                                                                 as user_id
@@ -165,17 +165,12 @@ with svp as (
                  , row_number() over (partition by svp.user_id order by svp.create_time desc, svp.id desc)    as rn_desc
               from svp
             )                                       as svptrn
-      left join (select tmode.user_id
-                      , tmode.item_count            as charge_mode
-                   from (select user_id
-                              , item_count
-                              , count(1)            as num
-                              , max(create_time)    as create_time
-                           from svp
-                          group by 1, 2
-                         ) as tmode
-                qualify row_number() over (partition by tmode.user_id order by tmode.num desc, tmode.create_time desc) = 1
-                 )                                  as mode
+      left join (select user_id
+                      , recharge_tier               as charge_mode
+                   from dwd.dwd_trade_user_recharge_tier_agg_di
+                  where product_id = 6833
+                qualify row_number() over (partition by user_id order by recharge_cnt desc, max_create_time desc) = 1
+                )                                   as mode
         on svptrn.user_id = mode.user_id
      group by 1
 )
@@ -325,8 +320,8 @@ insert into dws.dws_user_sv_status_idx_di (
     ,etl_time                    -- etl时间
 )
 select user_id
-     , sum(ad_position_amt) * 1000 as lst_position_reward_ecpm
-     , now()                       as etl_time
+     , max_by(ad_position_amt, create_tm) * 1000 as lst_position_reward_ecpm
+     , now()                                     as etl_time
   from dwd.dwd_advertisement_user_position_amt_p_di
  where dt = '${bf_1_dt}'
    and product_id = 6833
