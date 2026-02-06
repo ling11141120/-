@@ -10,17 +10,21 @@
 -- DML
 insert into ads.ads_sv_beidou_series_play_trend_hi
 with 
--- 按小时统计播放量(日志上报2次事件start/end，播放量=ceil(记录数/2)，关联用户表获取core和language_code)
+-- 按小时统计播放量(日志上报2次事件start/end，播放量=ceil(记录数/2)，core用dws，language用短剧维表)
 hourly_play as (
     select t1.dt
          , date_trunc('hour', t1.create_time) as hour_time
-         , coalesce(t2.corever2, 0)           as core
-         , coalesce(t2.current_language2, 0)  as language_code
+         , coalesce(t2.corever, 0)            as core
+         , coalesce(s.language, 0)            as language_code
          , t1.series_id
          , ceil(count(1) / 2)                 as play_count
     from dwd.dwd_video_short_video_epis_history t1
-    left join dim.dim_short_video_user_accountinfo t2
-      on t1.account_id = t2.user_id
+    left join dws.dws_user_short_video_wide_active_period_ed t2
+      on t1.dt = t2.dt
+     and t1.account_id = t2.user_id
+     and t2.period_type = 'ctt'
+    left join dim.dim_short_video_series_view s
+      on t1.series_id = s.series_id
     where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'
     group by 1, 2, 3, 4, 5
 )
