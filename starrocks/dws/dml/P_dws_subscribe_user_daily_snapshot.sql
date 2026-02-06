@@ -38,6 +38,8 @@ select '${bf_1_dt}'                                                             
        end                                                                        as is_valid
      , now()                                                                      as etl_time
   from dim.dim_short_video_user_accountinfo -- 海剧用户信息
+ where expire_time <> 0
+   and expire_time is not null
 ;
 
 -- svip
