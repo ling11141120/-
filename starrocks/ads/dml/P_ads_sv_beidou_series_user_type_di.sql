@@ -23,15 +23,21 @@ watch_user as (
            , series_id
 ),
 
--- 关联用户表和字典表获取core, language_code, country_name
+-- 关联dws/短剧维表/用户表获取core, language_code, country_name
 user_with_info as (
     select w.dt
          , w.user_id
          , w.series_id
-         , coalesce(u.corever2, 0)              as core
-         , coalesce(u.current_language2, 0)     as language_code
+         , coalesce(dws.corever, 0)             as core
+         , coalesce(s.language, 0)              as language_code
          , coalesce(dic.cd_val_desc, 'Unknown') as country -- 国家名称(如:美国)
     from watch_user w
+    left join dws.dws_user_short_video_wide_active_period_ed dws
+      on w.dt = dws.dt
+     and w.user_id = dws.user_id
+     and dws.period_type = 'ctt'
+    left join dim.dim_short_video_series_view s
+      on w.series_id = s.series_id
     left join dim.dim_short_video_user_accountinfo u
       on w.user_id = u.user_id
     left join dim.dim_pub_code_mapping_dict dic

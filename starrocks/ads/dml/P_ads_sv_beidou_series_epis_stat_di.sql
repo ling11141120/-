@@ -21,21 +21,25 @@ epis_info as (
     from dim.dim_short_video_epis_view
 ),
 
--- 用户每集观看记录 + 时间聚合(一次扫描DWD，同时产出观看进度与续看用min/max create_time)
+-- 用户每集观看记录 + 时间聚合(一次扫描DWD，core用dws活跃表，language用短剧维表)
 user_epis_watch as (
     select t1.dt
          , t1.account_id                     as user_id
          , t1.series_id
          , t1.epis_id
          , t1.epis_num
-         , coalesce(t2.corever2, 0)          as core
-         , coalesce(t2.current_language2, 0) as language_code
+         , coalesce(t2.corever, 0)           as core
+         , coalesce(s.language, 0)           as language_code
          , max(t1.watch_stamp)               as max_watch_stamp
          , min(t1.create_time)               as min_create_time
          , max(t1.create_time)               as max_create_time
     from dwd.dwd_video_short_video_epis_history t1
-    left join dim.dim_short_video_user_accountinfo t2
-      on t1.account_id = t2.user_id
+    left join dws.dws_user_short_video_wide_active_period_ed t2
+      on t1.dt = t2.dt
+     and t1.account_id = t2.user_id
+     and t2.period_type = 'ctt'
+    left join dim.dim_short_video_series_view s
+      on t1.series_id = s.series_id
     where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'  -- 回刷窗口 bf_4_dt～dt
     group by 1, 2, 3, 4, 5, 6, 7
 ),
@@ -70,8 +74,9 @@ nxt_watch_tmp as (
      and cur.core = nxt.core
      and cur.language_code = nxt.language_code
      and nxt.epis_num = cur.epis_num + 1
-     and nxt.min_create_time >= cur.max_create_time
-     and nxt.min_create_time <= hours_add(cur.max_create_time, 24)
+    -- 优化续集关联条件
+     and nxt.min_create_time >= cur.min_create_time
+     and nxt.min_create_time <= hours_add(cur.min_create_time, 24)
     group by 1, 2, 3, 4, 5, 6
 ),
 

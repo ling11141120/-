@@ -10,20 +10,23 @@
 -- DML
 insert into ads.ads_sv_beidou_series_daily_stat_di
 with 
--- 观看记录基础数据(按用户+短剧+集聚合，关联用户表获取core和language_code)
+-- 观看记录基础数据(按用户+短剧+集聚合，core用dws活跃表，language用短剧维表)
 watch_base as (
     select t1.dt
          , t1.account_id                     as user_id
          , t1.series_id
          , t1.epis_id
          , t1.epis_num
-         , coalesce(t2.corever2, 0)          as core
-         , coalesce(t2.current_language2, 0) as language_code
+         , coalesce(t2.corever, 0)           as core
+         , coalesce(s.language, 0)           as language_code
          , sum(t1.watch_stamp)               as sum_watch_stamp -- 用户在该集的观看时长
          , max(t1.watch_stamp)               as max_watch_stamp -- 用户在该集的观看进度
     from dwd.dwd_video_short_video_epis_history t1
-    left join dim.dim_short_video_user_accountinfo t2
-      on t1.account_id = t2.user_id
+    left join dws.dws_user_short_video_wide_active_period_ed t2
+      on t1.dt = t2.dt and t1.account_id = t2.user_id 
+     and t2.period_type = 'ctt'
+    left join dim.dim_short_video_series_view s
+      on t1.series_id = s.series_id
     where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'
     group by 1, 2, 3, 4, 5, 6, 7
 ),
@@ -93,18 +96,21 @@ series_stat as (
     group by dt, core, language_code, series_id
 ),
 
--- 播放量统计(日志上报2次事件start/end，播放量=ceil(记录数/2))
+-- 播放量统计(日志上报2次事件start/end，播放量=ceil(记录数/2)，core用dws，language用短剧维表)
 play_count_stat as (
     select t1.dt
-         , t2.corever2          as core
-         , t2.current_language2 as language_code
+         , coalesce(t2.corever, 0)  as core
+         , coalesce(s.language, 0)  as language_code
          , t1.series_id
-         , ceil(count(1) / 2)   as play_count
+         , ceil(count(1) / 2)       as play_count
     from dwd.dwd_video_short_video_epis_history t1
-    left join dim.dim_short_video_user_accountinfo t2
-      on t1.account_id = t2.user_id
+    left join dws.dws_user_short_video_wide_active_period_ed t2
+      on t1.dt = t2.dt and t1.account_id = t2.user_id
+     and t2.period_type = 'ctt'
+    left join dim.dim_short_video_series_view s
+      on t1.series_id = s.series_id
     where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'
-    group by t1.dt, t2.corever2, t2.current_language2, t1.series_id
+    group by 1, 2, 3, 4
 ),
 
 -- 点击曝光统计
