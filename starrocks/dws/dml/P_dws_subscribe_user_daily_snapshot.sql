@@ -8,7 +8,8 @@
 
 -- 签到卡
 insert into dws.dws_subscribe_user_daily_snapshot
-select coalesce(susc.product_id, uds.product_id)      as product_id
+select '${bf_1_dt}'                                   as dt
+     , coalesce(susc.product_id, uds.product_id)      as product_id
      , coalesce(susc.user_id, uds.user_id)            as user_id
      , 1                                              as sub_type
      , coalesce(susc.expire_time, uds.expire_time)    as expire_time
@@ -27,7 +28,8 @@ select coalesce(susc.product_id, uds.product_id)      as product_id
 
 -- vip
 insert into dws.dws_subscribe_user_daily_snapshot
-select product_id
+select '${bf_1_dt}'                                                               as dt
+     , product_id
      , user_id
      , 2                                                                          as sub_type
      , str_to_jodatime(from_unixtime(expire_time/1000), 'yyyy-MM-dd HH:mm:ss')    as expire_time
@@ -40,14 +42,15 @@ select product_id
 
 -- svip
 insert into dws.dws_subscribe_user_daily_snapshot
-select product_id
+select '${bf_1_dt}'    as dt
+     , product_id
      , user_id
-     , 3        as sub_type
+     , 3               as sub_type
      , expire_time
      , case when is_vip = 1 and expire_time >= '${bf_1_dt}' then 1
             else 0
-       end      as is_valid
-     , now()    as etl_time
+       end             as is_valid
+     , now()           as etl_time
   from dwd.dwd_subscribe_vip_info
  where vip_type = 1
 ;

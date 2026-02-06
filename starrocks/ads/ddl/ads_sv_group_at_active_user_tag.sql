@@ -1,8 +1,8 @@
-drop table if exists ads.ads_sv_group_at_active_user_tag;
-create table ads.ads_sv_group_at_active_user_tag (
+drop table if exists tmp.ads_sv_group_at_active_user_tag;
+create table tmp.ads_sv_group_at_active_user_tag (
      dt                       date           not null comment "日期"
     ,user_id                  bigint         not null comment "用户id"
-    ,period_type              varchar(20)    not null comment "统计周期类型"
+    ,stat_period_type         varchar(5)     not null comment "统计周期类型"
     ,core                     varchar(50)             comment "core"
     ,register_time            datetime                comment "注册时间"
     ,ui_lang                  varchar(50)             comment "界面语言"
@@ -20,7 +20,7 @@ create table ads.ads_sv_group_at_active_user_tag (
     ,double_first_svip_price  decimal(12, 2)          comment "首次SVIP金额(小数)"
     ,double_first_vip_price   decimal(12, 2)          comment "首次VIP金额(小数)"
 )
-primary key(dt, user_id, period_type)
+primary key(dt, user_id, stat_period_type)
 comment "海剧人群标签表-提供给付费墙中台等使用"
 partition by date_trunc('day', dt)
 distributed by hash(dt, user_id)
