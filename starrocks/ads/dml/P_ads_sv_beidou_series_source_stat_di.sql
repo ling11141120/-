@@ -22,14 +22,14 @@ with yinliu_tmp as (
 stat_tmp as (
     select dt
          , coalesce(core, 0)              as core
-         , coalesce(current_language2, 0) as language_code
+         , coalesce(language_code, 0)     as language_code
          , shortplay_id                   as series_id
          , source
          , sum(startwatching_num)         as startwatching_num
          , sum(exposure_num)              as exposure_num
-    from (select dt
-               , core
-               , current_language2
+    from (select s.dt
+               , s.core
+               , coalesce(sv.language, 0) as language_code
                , coalesce(shortplay_id, split(activity_link, '_')[8]) as shortplay_id
                , case
                      when t.user_id is not null then 'DL拉剧'
@@ -56,22 +56,23 @@ stat_tmp as (
                      when split(activity_link, '_')[1] = 203100     then '我的评论页'
                      when split(activity_link, '_')[1] = 204600     then 'edm'
                      when split(activity_link, '_')[1] = 204700     then 'for you'
-                     else "" end as source
+                     else '' end as source
                , count(1) as startwatching_num
                , 0        as exposure_num
            from ads.ads_sensors_cd_video_startwatching_view s
+           left join dim.dim_short_video_series_view sv
+             on coalesce(s.shortplay_id, split(s.activity_link, '_')[8]) = sv.series_id
            left join yinliu_tmp t
              on coalesce(shortplay_id, split(activity_link, '_')[8]) = t.series_id
             and s.login_id = t.user_id
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
-            and current_language2 is not null
           group by 1, 2, 3, 4, 5
 
           union all
-          select dt
-               , core
-               , current_language2
+          select e.dt
+               , e.core
+               , coalesce(sv.language, 0) as language_code
                , split(activity_link, '_')[8] as shortplay_id -- 解析为 series_id 短剧ID
                , case
                      when t.user_id is not null then 'DL拉剧'
@@ -98,26 +99,23 @@ stat_tmp as (
                      when split(activity_link, '_')[1] = 203100     then '我的评论页'
                      when split(activity_link, '_')[1] = 204600     then 'edm'
                      when split(activity_link, '_')[1] = 204700     then 'for you'
-                     else "" end as source
+                     else '' end as source
                , 0        as startwatching_num
                , count(1) as exposure_num
            from ads.ads_sensors_cd_video_operationpositionexposure_view e
+           left join dim.dim_short_video_series_view sv
+             on split(e.activity_link, '_')[8] = sv.series_id
            left join yinliu_tmp t
              on split(activity_link, '_')[8] = t.series_id
             and e.login_id = t.user_id
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
-            and current_language2 is not null
             and split(activity_link, '_')[8] != 0 -- 解析为 series_id 短剧ID
           group by 1, 2, 3, 4, 5
          ) tb
     -- 过滤掉 source 为空的数据
     where source != ''
-    group by dt
-           , core
-           , current_language2
-           , shortplay_id
-           , source
+    group by 1, 2, 3, 4, 5
 )
 
 select s.dt
