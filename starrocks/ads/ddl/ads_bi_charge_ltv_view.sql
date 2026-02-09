@@ -1,6 +1,6 @@
-create or replace view ads.ads_bi_charge_ltv_est_view (
+create or replace view ads.ads_bi_charge_ltv_view (
     dt                   comment "日期,来自stat_period"
-   ,user_period          comment "用户类型 1:新用户 3:rmt(拉活用户)"
+   ,user_period          comment "用户类型 1：新用户 3：rmt(拉活用户)"
    ,product_id           comment "产品id"
    ,which_weeks          comment "第几周"
    ,which_months         comment "第几月"
@@ -9,11 +9,11 @@ create or replace view ads.ads_bi_charge_ltv_est_view (
    ,reg_country          comment "国家"
    ,country_level        comment "国家等级"
    ,current_language2    comment "注册语言"
-   ,source               comment "3是付费 2是官网  1 是自然和其他 条件:source in ('fbs2s','facebook','tt','appleadservice','fixadinfo','sem','adwords') then 3 when source in ('officialsite','(not set)') then 2 else 1"
+   ,source               comment "3是付费 2是官网  1 是自然和其他 条件：source in ('fbs2s','facebook','tt','appleadservice','fixadinfo','sem','adwords') then 3 when source in ('officialsite','(not set)') then 2 else 1"
    ,chl2                 comment "注册时渠道"
    ,chl                  comment "最新渠道"
    ,source_chl           comment "最新引流渠道"
-   ,user_ad_source       comment "广告投流用户:0:正常用户,1:vip投流用户"
+   ,user_ad_source       comment "广告投流用户：0：正常用户，1：vip投流用户"
    ,ecpm_level           comment "ecpm"
    ,book_id              comment "海阅用户归因book_id"
    ,unt                  comment "用户数"
@@ -89,7 +89,7 @@ create or replace view ads.ads_bi_charge_ltv_est_view (
    ,pay_user_cnt120      comment "累计前120天付费用户数"
    ,ltv120               comment "累计前120天付费金额"
 )
-comment "累计付费统计-西五区"
+comment "累计付费统计"
 as
 select a1.dt                                                                                                                 as dt
       ,a1.user_period                                                                                                        as user_period
@@ -201,7 +201,7 @@ select a1.dt                                                                    
       ,sum(if(a1.pay_days = 90, a1.ltv, 0))                                                                                  as ltv90
       ,if(datediff(now(), a1.dt) >= 120, count(distinct if(a1.pay_days <= 120 and a1.ltv > 0, a1.user_id, null)), null)      as pay_user_cnt120
       ,sum(if(a1.pay_days = 120, a1.ltv, 0))                                                                                 as ltv120
-  from ads.ads_trade_user_type_ltv_est_mid          as a1
+  from ads.ads_trade_user_type_ltv_mid              as a1
   left join dim.dim_short_video_user_accountinfo    as a2
     on a1.product_id = a2.product_id
    and a1.user_id = a2.user_id
@@ -212,7 +212,7 @@ select a1.dt                                                                    
                            ,t.user_id
                            ,t.last_source
                            ,row_number() over (partition by t.product_id, t.user_id order by t.install_date desc, t.mt asc, t.corever asc, t.lang2 asc)    as rn
-                       from dws.dws_user_market_channel_info_detail_est_da    as t
+                       from dws.dws_user_market_channel_info_detail_td    as t
                       where t.dt = date_sub(current_date(), interval 1 day)
                         and t.product_id in (6833)
                     )    as b1

@@ -41,6 +41,10 @@ create or replace view dwd.dwd_sensors_production_adpositionclick_view (
     ,module_channel_id    comment "频道id"
     ,etl_tm               comment "ETL时间"
     ,ad_src               comment "广告来源"
+    ,shortplay_id         comment "短剧ID"
+    ,episode_id           comment "剧集ID"
+    ,appId                comment "海阅appId"
+    ,dollar_app_id        comment "海剧海阅共用，可转换为core值"
 )
 comment "event=ADPositionClick 资源位点击"
 as
@@ -86,5 +90,9 @@ select a1.dt                                                                as d
       ,a1.module_channel_id                                                 as module_channel_id    -- 频道id
       ,a1.etl_tm                                                            as etl_tm               -- ETL时间
       ,a1.ad_source                                                         as ad_src               -- 广告来源
+      ,a1.shortplay_id                                                      as shortplay_id         -- 短剧ID
+      ,a1.episode_id                                                        as episode_id           -- 剧集ID
+      ,a1.appId                                                             as appId                -- 海阅appId
+      ,a1.dollar_app_id                                                     as dollar_app_id        -- 海剧海阅共用，可转换为core值
   from ods_log.ods_sensors_production_adpositionclick    as a1
 ;
