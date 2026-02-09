@@ -63,7 +63,7 @@ select
     ,a1.identity_user_id                        as identity_user_id         -- identity_userid
     ,if(coalesce(a1.app_core_ver,a1.appCoreVer)=4
         ,'3366'
-        ,coalesce(a1.app_core_ver,a1.appCoreVer)
+        ,a1.app_product_id
        )                                        as app_product_id           -- 包体 ID
     ,a1.send_id                                 as send_id                  -- 转化来源
     ,coalesce(a1.app_core_ver,a1.appCoreVer)    as app_core_ver             -- core

@@ -54,6 +54,10 @@ create table ods_log.ods_sensors_production_adpositionclick (
     ,programme_id         varchar(65533)                comment "方案id"
     ,module_channel_id    varchar(65533)                comment "频道id"
     ,ad_source            varchar(255)                  comment "广告来源"
+    ,shortplay_id         varchar(255)                  comment "短剧id"
+    ,episode_id           varchar(255)                  comment "剧集id"
+    ,appId                varchar(255)                  comment "海阅appId"
+    ,dollar_app_id        varchar(255)                  comment "海剧海阅共用，可转换为core值"
 )
 primary key (dt, id)
 comment "event=ADPositionClick 资源位点击"
