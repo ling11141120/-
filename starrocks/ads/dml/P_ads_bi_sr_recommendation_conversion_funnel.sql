@@ -74,9 +74,6 @@ with itemexposure as (
           ,if(starts_with(position_type, 'a_'), 0, list_id)         as list_id
           ,if(starts_with(position_type, 'a_'), activity_id, 0)     as activity_id
           ,login_id
-          ,app_product_id
-          ,app_core_ver
-          ,os
           ,cnt
       from (select dt
                   ,case when element_id = '100363' then 'a_开屏'
@@ -102,15 +99,12 @@ with itemexposure as (
                   ,list_id
                   ,activity_id
                   ,login_id
-                  ,app_product_id
-                  ,os
-                  ,app_core_ver
                   ,count(1)    as cnt
               from ads.ads_sensors_production_itemclick_view    as b1
              where dt between '${bf_1_dt}'
                and '${dt}'
                and app_core_ver is not null
-             group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+             group by 1, 2, 3, 4, 5, 6, 7
            )    as a1
      where position_type <> ''
 )
@@ -122,9 +116,6 @@ with itemexposure as (
           ,if(starts_with(position_type, 'a_'), 0, split(activity_link, '_')[4])    as list_id
           ,if(starts_with(position_type, 'a_'), split(activity_link, '_')[4], 0)    as activity_id
           ,login_id
-          ,app_product_id
-          ,os
-          ,app_core_ver
           ,sum(cnt)                                                                 as cnt
       from (select dt
                   ,case when book_id like '1110000%' then '书城-榜单集合'
@@ -150,18 +141,15 @@ with itemexposure as (
                         else activity_link
                     end        as activity_link
                   ,login_id
-                  ,app_product_id
-                  ,os
-                  ,app_core_ver
                   ,count(1)    as cnt
               from ads.ads_sensors_production_endreadingchapter_view    as b1
              where dt between '${bf_1_dt}'
                and '${dt}'
                and app_core_ver is not null
-             group by 1, 2, 3, 4, 5, 6, 7
+             group by 1, 2, 3, 4
            )    as a1
      where position_type <> ''
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     group by 1, 2, 3, 4, 5, 6, 7
 )
 , unlockchapter as (
     select dt
@@ -171,9 +159,6 @@ with itemexposure as (
           ,if(starts_with(position_type, 'a_'), 0, split(activity_link, '_')[4])    as list_id
           ,if(starts_with(position_type, 'a_'), split(activity_link, '_')[4], 0)    as activity_id
           ,login_id
-          ,if(os = 4, 'Android', 'IOS')                                             as os
-          ,app_product_id
-          ,app_core_ver
           ,sum(unlock_chapter_num)                                                  as unlock_chapter_num
           ,sum(consume)                                                             as consume
       from (select dt
@@ -196,6 +181,7 @@ with itemexposure as (
                         else ''
                     end                                     as position_type
                   ,activity_link
+                  ,if(b1.unlock_type='106',"广告解锁","非广告解锁")    as un
                   ,identity_login_id                        as login_id
                   ,length(chapter_ids)
                     -
@@ -205,43 +191,39 @@ with itemexposure as (
                   ,if(coin_consume > 0, coin_consume, 0)
                     +
                    if(gift_consume > 0, gift_consume, 0)    as consume
-                  ,app_product_id
-                  ,os
-                  ,app_core_ver
               from ads.ads_sensors_production_unlockchapter_view    as b1
              where dt between '${bf_1_dt}'
                and '${dt}'
                and app_core_ver is not null
-               and b1.unlock_type <> 106
            )    as a1
      where position_type <> ''
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+     group by 1, 2, 3, 4, 5, 6, 7
 )
-select a1.dt                                  as dt                        -- 日期
-      ,a1.app_product_id                      as app_product_id            -- 应用产品id
-      ,ifnull(a1.app_core_ver,'-99')          as app_core_ver              -- core
-      ,ifnull(a1.os,'-99')                    as os                        -- 操作系统
-      ,ifnull(a1.position_type,'-99')         as position_type             -- 场景
-      ,ifnull(a1.programme_id,-99)            as programme_id              -- 方案ID
-      ,ifnull(a1.module_channel_id,-99)       as module_channel_id         -- 频道ID
-      ,ifnull(a1.list_id,-99)                 as list_id                   -- 榜单ID
-      ,ifnull(a1.activity_id,-99)             as activity_id               -- 活动策略ID
-      ,ifnull(a1.login_id,-99)                as exposure_login_id         -- 曝光用户ID
-      ,a9.cd_val_desc                         as product_name              -- 产品名称
-      ,scheme_name                            as scheme_name               -- 方案名称
-      ,a6.name                                as module_channel_name       -- 频道名称
-      ,a7.name                                as list_name                 -- 榜单名称
-      ,tactics_name                           as tactics_name              -- 策略名称
-      ,coalesce(tactics_name, scheme_name)    as tatics_scheme_name        -- 策略/方案
-      ,a1.cnt                                 as exposure_cnt              -- 曝光次数
-      ,a2.login_id                            as click_login_id            -- 点击用户id
-      ,a2.cnt                                 as click_cnt                 -- 点击次数
-      ,a3.login_id                            as reading_login_id          -- 阅读用户id
-      ,a3.cnt                                 as reading_chapter_cnt       -- 阅读章节数
-      ,a4.login_id                            as unlockchapter_login_id    -- 解锁用户id
-      ,a4.unlock_chapter_num                  as unlock_chapter_num        -- 解锁章节数
-      ,a4.consume                             as unlockchapter_consume     -- 消耗金币数
-      ,now()                                  as etl_tm                    -- etl时间
+select a1.dt                                      as dt                        -- 日期
+      ,a1.app_product_id                          as app_product_id            -- 应用产品id
+      ,ifnull(a1.app_core_ver,'-99')              as app_core_ver              -- core
+      ,ifnull(a1.os,'-99')                        as os                        -- 操作系统
+      ,ifnull(a1.position_type,'-99')             as position_type             -- 场景
+      ,ifnull(a1.programme_id,-99)                as programme_id              -- 方案ID
+      ,ifnull(a1.module_channel_id,-99)           as module_channel_id         -- 频道ID
+      ,ifnull(a1.list_id,-99)                     as list_id                   -- 榜单ID
+      ,ifnull(a1.activity_id,-99)                 as activity_id               -- 活动策略ID
+      ,ifnull(cast(a1.login_id as bigint),-99)    as exposure_login_id         -- 曝光用户ID
+      ,a9.cd_val_desc                             as product_name              -- 产品名称
+      ,scheme_name                                as scheme_name               -- 方案名称
+      ,a6.name                                    as module_channel_name       -- 频道名称
+      ,a7.name                                    as list_name                 -- 榜单名称
+      ,tactics_name                               as tactics_name              -- 策略名称
+      ,coalesce(tactics_name, scheme_name)        as tatics_scheme_name        -- 策略/方案
+      ,a1.cnt                                     as exposure_cnt              -- 曝光次数
+      ,a2.login_id                                as click_login_id            -- 点击用户id
+      ,a2.cnt                                     as click_cnt                 -- 点击次数
+      ,a3.login_id                                as reading_login_id          -- 阅读用户id
+      ,a3.cnt                                     as reading_chapter_cnt       -- 阅读章节数
+      ,a4.login_id                                as unlockchapter_login_id    -- 解锁用户id
+      ,a4.unlock_chapter_num                      as unlock_chapter_num        -- 解锁章节数
+      ,a4.consume                                 as unlockchapter_consume     -- 消耗金币数
+      ,now()                                      as etl_tm                    -- etl时间
   from itemexposure                                  as a1
   left join itemclick                                as a2
     on a1.dt = a2.dt
@@ -251,9 +233,6 @@ select a1.dt                                  as dt                        -- �
    and a1.list_id = a2.list_id
    and a1.activity_id = a2.activity_id
    and a1.login_id = a2.login_id
-   and a1.os = a2.os
-   and a1.app_core_ver = a2.app_core_ver
-   and a1.app_product_id = a2.app_product_id
   left join endreadingchapter                        as a3
     on a1.dt = a3.dt
    and a1.position_type = a3.position_type
@@ -262,9 +241,6 @@ select a1.dt                                  as dt                        -- �
    and a1.list_id = a3.list_id
    and a1.activity_id = a3.activity_id
    and a1.login_id = a3.login_id
-   and a1.os = a3.os
-   and a1.app_core_ver = a3.app_core_ver
-   and a1.app_product_id = a3.app_product_id
   left join unlockchapter                            as a4
     on a1.dt = a4.dt
    and a1.position_type = a4.position_type
@@ -273,9 +249,6 @@ select a1.dt                                  as dt                        -- �
    and a1.list_id = a4.list_id
    and a1.activity_id = a4.activity_id
    and a1.login_id = a4.login_id
-   and a1.os = a4.os
-   and a1.app_core_ver = a4.app_core_ver
-   and a1.app_product_id = a4.app_product_id
   left join dim.dim_sr_tag_scheme_management_view    as a5
     on a1.programme_id = a5.scheme_id
   left join (select id
