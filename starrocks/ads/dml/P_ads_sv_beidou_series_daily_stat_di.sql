@@ -22,8 +22,12 @@ watch_base as (
          , sum(t1.watch_stamp)               as sum_watch_stamp -- 用户在该集的观看时长
          , max(t1.watch_stamp)               as max_watch_stamp -- 用户在该集的观看进度
     from dwd.dwd_video_short_video_epis_history t1
+    left semi join dim.dim_short_video_epis_view ep
+      on t1.series_id = ep.series_id
+     and t1.epis_id = ep.epis_id
     left join dws.dws_user_short_video_wide_active_period_ed t2
-      on t1.dt = t2.dt and t1.account_id = t2.user_id 
+      on t1.dt = t2.dt 
+     and t1.account_id = t2.user_id 
      and t2.period_type = 'ctt'
     left join dim.dim_short_video_series_view s
       on t1.series_id = s.series_id
@@ -104,8 +108,11 @@ play_count_stat as (
          , t1.series_id
          , ceil(count(1) / 2)       as play_count
     from dwd.dwd_video_short_video_epis_history t1
+    left semi join dim.dim_short_video_epis_view ep
+      on t1.series_id = ep.series_id and t1.epis_id = ep.epis_id
     left join dws.dws_user_short_video_wide_active_period_ed t2
-      on t1.dt = t2.dt and t1.account_id = t2.user_id
+      on t1.dt = t2.dt 
+     and t1.account_id = t2.user_id
      and t2.period_type = 'ctt'
     left join dim.dim_short_video_series_view s
       on t1.series_id = s.series_id

@@ -9,18 +9,19 @@
 
 insert into ads.ads_sv_beidou_series_user_type_di
 with 
--- 当日观看用户
+-- 当日观看用户(left semi join过滤脏epis_id)
 watch_user as (
-    select dt
-         , account_id as user_id
-         , series_id
-    from dwd.dwd_video_short_video_epis_history
-    where dt >= '${bf_4_dt}'
-      and dt <= '${dt}'
-      and series_id is not null
-    group by dt
-           , account_id
-           , series_id
+    select t1.dt
+         , t1.account_id as user_id
+         , t1.series_id
+    from dwd.dwd_video_short_video_epis_history t1
+    left semi join dim.dim_short_video_epis_view ep
+      on t1.series_id = ep.series_id
+     and t1.epis_id = ep.epis_id
+    where t1.dt >= '${bf_4_dt}'
+      and t1.dt <= '${dt}'
+      and t1.series_id is not null
+    group by 1, 2, 3
 ),
 
 -- 关联dws/短剧维表/用户表获取core, language_code, country_name
@@ -34,7 +35,7 @@ user_with_info as (
     from watch_user w
     left join dws.dws_user_short_video_wide_active_period_ed dws
       on w.dt = dws.dt
-     and w.user_id = dws.user_id
+     and w.user_id = dws.user_id 
      and dws.period_type = 'ctt'
     left join dim.dim_short_video_series_view s
       on w.series_id = s.series_id
