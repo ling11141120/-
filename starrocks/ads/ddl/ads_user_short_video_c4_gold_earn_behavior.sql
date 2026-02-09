@@ -6,7 +6,7 @@ create table ads.ads_user_short_video_c4_gold_earn_behavior (
     ,total_coin_num         decimal(16,4)          comment "金币数(累计值)"
     ,interstitial_ad_cnt    int                    comment "插屏广告次数"
     ,rewarded_ad_cnt        int                    comment "激励视次数"
-    ,today_ad_value         decimal(16,2)          comment "广告总价值"
+    ,today_ad_value         double                 comment "广告总价值"
     ,app_duration           decimal(16,2)          comment "app使用时长(秒)"
     ,total_login_days       int                    comment "总登录天数(累计值)"
     ,watch_episode_count    int                    comment "观看剧集次数"

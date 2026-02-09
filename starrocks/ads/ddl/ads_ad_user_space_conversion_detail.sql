@@ -1,28 +1,31 @@
-DROP TABLE IF EXISTS ads.ads_ad_user_space_conversion_detail;
-CREATE TABLE ads.ads_ad_user_space_conversion_detail (
-     dt                  DATE           NOT NULL                  COMMENT "时间"
-    ,user_id             BIGINT(20)     NOT NULL                  COMMENT "登录id"
-    ,ad_position_id      VARCHAR(60)    NOT NULL                  COMMENT "广告位id"
-    ,ad_strategy_id      VARCHAR(60)    NOT NULL                  COMMENT "策略id"
-    ,main_strategy_id    VARCHAR(60)    NOT NULL                  COMMENT "主策略id"
-    ,ad_type             VARCHAR(60)    NOT NULL                  COMMENT "广告类型"
-    ,period_type         VARCHAR(60)    NOT NULL                  COMMENT "周期类型"
-    ,user_type           VARCHAR(60)                              COMMENT "用户类型"
-    ,put_language        VARCHAR(60)                              COMMENT "投放语言"
-    ,country_leve        VARCHAR(60)                              COMMENT "国家等级"
-    ,mt                  VARCHAR(60)                              COMMENT "终端"
-    ,corever             VARCHAR(60)                              COMMENT "core"
-    ,impression_pv       INT(11)                                  COMMENT "曝光pv"
-    ,click_pv            INT(11)                                  COMMENT "点击pv"
-    ,watch_completion_pv INT(11)                                  COMMENT "观看完成pv"
-    ,ad_revenue_amount   DECIMAL(12, 6)                           COMMENT "广告收益"
-    ,etl_time            DATETIME       DEFAULT CURRENT_TIMESTAMP COMMENT "清洗时间"
+drop table if exists ads.ads_ad_user_space_conversion_detail;
+create table ads.ads_ad_user_space_conversion_detail (
+     dt                     date           not null                     comment "时间"
+    ,user_id                bigint(20)     not null                     comment "登录id"
+    ,ad_position_id         varchar(60)    not null                     comment "广告位id"
+    ,ad_strategy_id         varchar(60)    not null                     comment "策略id"
+    ,main_strategy_id       varchar(60)    not null                     comment "主策略id"
+    ,ad_type                varchar(60)    not null                     comment "广告类型"
+    ,period_type            varchar(60)    not null                     comment "周期类型"
+    ,user_type              varchar(60)                                 comment "用户类型"
+    ,put_language           varchar(60)                                 comment "投放语言"
+    ,country_leve           varchar(60)                                 comment "国家等级"
+    ,mt                     varchar(60)                                 comment "终端"
+    ,corever                varchar(60)                                 comment "core"
+    ,impression_pv          int(11)                                     comment "曝光pv"
+    ,click_pv               int(11)                                     comment "点击pv"
+    ,watch_completion_pv    int(11)                                     comment "观看完成pv"
+    ,ad_revenue_pv          bigint(20)                                  comment "广告收益pv"
+    ,ad_revenue_amount      decimal(12, 6)                              comment "广告收益"
+    ,etl_time               datetime       default current_timestamp    comment "清洗时间"
+    ,ad_src                 varchar(255)                                comment "广告来源"
+    ,ad_show_pv             bigint(20)                                  comment "广告展示成功PV"
 )
-PRIMARY KEY (dt, user_id, ad_position_id, ad_strategy_id, main_strategy_id, ad_type, period_type)
-COMMENT "用户广告位转化明细"
-PARTITION BY RANGE (dt)
-DISTRIBUTED BY HASH (user_id) BUCKETS 3
-PROPERTIES (
+primary key (dt, user_id, ad_position_id, ad_strategy_id, main_strategy_id, ad_type, period_type)
+comment "用户广告位转化明细"
+partition by range (dt)
+distributed by hash (user_id) buckets 3
+properties (
     "replication_num" = "3",
     "dynamic_partition.enable" = "true",
     "dynamic_partition.time_unit" = "DAY",
