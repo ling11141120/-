@@ -61,6 +61,8 @@ create table ods_log.ods_sensors_production_element_click (
     ,dollar_app_id            varchar(255)                  comment "海剧海阅共用，可转换为core值"
     ,app_id                   varchar(255)                  comment "海剧app_id值"
     ,appId                    varchar(255)                  comment "海阅app_id值"
+    ,book_id                  varchar(255)                  comment "小说ID"
+    ,chapter_id               varchar(255)                  comment "章节ID"
 )
 primary key (dt, id)
 comment "event=element_click 控件点击时上报"

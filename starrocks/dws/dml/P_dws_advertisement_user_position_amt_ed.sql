@@ -11,41 +11,43 @@ insert into dws.dws_advertisement_user_position_amt_ed
 -- 统计每日H5点击
 with ad_click_count as (
     select a1.dt
-          ,a1.app_product_id            as product_id
-          ,a1.login_id                  as user_id
-          ,a1.app_core_ver              as core
+          ,a1.app_product_id                            as product_id
+          ,a1.login_id                                  as user_id
+          ,a1.app_core_ver                              as core
           ,a1.mt
           ,a1.appver
-          ,5                            as ad_show_type
-          ,59                           as positions
-          ,a1.ad_src                    as ads_src
-          ,null                         as main_strategy_id
-          ,null                         as event_strategy_id
-          ,a1.event_strategy_id         as programme_id
-          ,if(a1.app_core_ver=4,3,2)    as system_type
-          ,count(1)                     as ad_click_count
+          ,5                                            as ad_show_type
+          ,59                                           as positions
+          ,a1.ad_src                                    as ads_src
+          ,null                                         as main_strategy_id
+          ,null                                         as event_strategy_id
+          ,a1.event_strategy_id                         as programme_id
+          ,0                                            as book_id
+          ,if(a1.app_core_ver=4 and a1.ad_src=7,3,2)    as system_type
+          ,count(1)                                     as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100772'
        and type = '121'
        and ad_src is not null
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
      union all
     select a1.dt
-          ,a1.app_product_id            as product_id
-          ,a1.login_id                  as user_id
-          ,a1.app_core_ver              as core
+          ,a1.app_product_id                            as product_id
+          ,a1.login_id                                  as user_id
+          ,a1.app_core_ver                              as core
           ,a1.mt
           ,a1.appver
-          ,5                            as ad_show_type
-          ,a1.ad_position_id            as positions
-          ,a1.ad_src                    as ads_src
+          ,5                                            as ad_show_type
+          ,a1.ad_position_id                            as positions
+          ,a1.ad_src                                    as ads_src
           ,a1.main_strategy_id
-          ,a1.ad_strategy_id            as event_strategy_id
-          ,a1.programme_id              as programme_id
-          ,if(a1.app_core_ver=4,3,2)    as system_type
-          ,count(1)                     as ad_click_count
+          ,a1.ad_strategy_id                            as event_strategy_id
+          ,a1.programme_id                              as programme_id
+          ,a1.book_id                                   as book_id
+          ,if(a1.app_core_ver=4 and a1.ad_src=7,3,2)    as system_type
+          ,count(1)                                     as ad_click_count
       from dwd.dwd_sensors_production_element_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -62,14 +64,15 @@ with ad_click_count as (
           ,a1.core
           ,a1.mt
           ,a1.appver
-          ,a1.ad_type           as ad_show_type
-          ,a2.ad_position       as positions
-          ,a1.ad_src            as ads_src
+          ,a1.ad_type                           as ad_show_type
+          ,a2.ad_position                       as positions
+          ,a1.ad_src                            as ads_src
           ,a1.main_strategy_id
           ,a1.event_strategy_id
           ,a1.programme_id
-          ,if(a1.core=4,3,1)    as system_type
-          ,count(1)             as ad_click_count
+          ,a1.shortplay_id
+          ,if(a1.core=4 and a1.ad_src=7,3,1)    as system_type
+          ,count(1)                             as ad_click_count
       from dwd.dwd_sensors_production_adpositionclick_view    as a1
       left join dim.dim_sv_ads_position_view                  as a2
         on a1.ad_position_id = a2.ad_position
@@ -78,29 +81,30 @@ with ad_click_count as (
        and a1.ad_type = 6
        and a1.product_id = 6833
        and ad_src is not null
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
      union all
     select dt
-          ,6833                    as product_id
-          ,login_id                as user_id
-          ,corever                 as core
+          ,6833                                    as product_id
+          ,login_id                                as user_id
+          ,corever                                 as core
           ,mt
           ,appver
-          ,6                       as ad_show_type
-          ,null                    as positions
-          ,a1.ad_src               as ads_src
-          ,null                    as main_strategy_id
+          ,6                                       as ad_show_type
+          ,null                                    as positions
+          ,a1.ad_src                               as ads_src
+          ,null                                    as main_strategy_id
           ,event_strategy_id
-          ,null                    as programme_id
-          ,if(a1.corever=4,3,1)    as system_type
-          ,count(1)                as ad_click_count
+          ,null                                    as programme_id
+          ,0                                       as shortplay_id
+          ,if(a1.corever=4 and a1.ad_src=7,3,1)    as system_type
+          ,count(1)                                as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and task_type in('9', '浏览第三方页面')
        and app_product_id is null
        and length(ad_src)>=1
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 )
 -- 统计每日H5总收益
 , avg_click_amount as (
@@ -244,6 +248,7 @@ select a1.dt                                       as dt                   -- �
       ,a1.main_strategy_id                         as main_strategy_id     -- 主策略id
       ,a1.event_strategy_id                        as event_strategy_id    -- 策略id
       ,a1.programme_id                             as programme_id         -- 频道方案ID
+      ,a1.book_id                                  as book_id              -- 书籍id/剧id
       ,max(case when rk_asc=1 then amount end)     as fst_amt              -- 首次广告收益
       ,max(case when rk_desc=1 then amount end)    as lst_amt              -- 末次广告收益
       ,count(1)                                    as cnt                  -- 次数
@@ -265,6 +270,7 @@ select a1.dt                                       as dt                   -- �
               ,b1.main_strategy_id
               ,b1.event_strategy_id
               ,b1.programme_id
+              ,b1.book_id
               ,row_number() over (partition by b1.dt
                                               ,b1.product_id
                                               ,b1.user_id
@@ -277,6 +283,7 @@ select a1.dt                                       as dt                   -- �
                                               ,b1.main_strategy_id
                                               ,b1.event_strategy_id
                                               ,b1.programme_id
+                                              ,b1.book_id
                                               ,b1.create_tm
                                               ,b1.ad_unit
                                       order by b1.create_tm
@@ -294,6 +301,7 @@ select a1.dt                                       as dt                   -- �
                                               ,b1.main_strategy_id
                                               ,b1.event_strategy_id
                                               ,b1.programme_id
+                                              ,b1.book_id
                                               ,b1.create_tm
                                               ,b1.ad_unit
                                       order by b1.create_tm desc
@@ -309,7 +317,7 @@ select a1.dt                                       as dt                   -- �
   left join user_info_tmp    as a2
     on a1.product_id = a2.product_id
    and a1.user_id = a2.user_id
- group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
  union all
 select a1.dt                                              as dt                   -- 事件时间
       ,a1.product_id                                      as product_id           -- 产品id
@@ -328,6 +336,7 @@ select a1.dt                                              as dt                 
       ,a1.main_strategy_id                                as main_strategy_id     -- 主策略id
       ,a1.event_strategy_id                               as event_strategy_id    -- 策略id
       ,a1.programme_id                                    as programme_id         -- 频道方案ID
+      ,a1.book_id                                         as book_id              -- 书籍id/剧id
       ,null                                               as fst_amt              -- 首次广告收益
       ,null                                               as lst_amt              -- 末次广告收益
       ,sum(a1.ad_click_count)                             as cnt                  -- 次数
@@ -345,5 +354,5 @@ select a1.dt                                              as dt                 
   left join user_info_tmp                    as a4
     on a1.product_id = a4.product_id
    and a1.user_id = a4.user_id
- group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
 ;

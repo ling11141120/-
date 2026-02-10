@@ -45,6 +45,8 @@ create or replace view dwd.dwd_sensors_production_element_click_view (
     ,appCoreVer               comment "海阅新core值"
     ,dollar_app_id            comment "海剧海阅共用，可转换为core值"
     ,app_id                   comment "海剧海阅app_id"
+    ,book_id                  comment "书籍id"
+    ,chapter_id               comment "章节id"
 )
 comment "event=element_click 控件点击时上报"
 as
@@ -98,5 +100,7 @@ select
     ,a1.appCoreVer                              as appCoreVer               -- 海阅新core值
     ,a1.dollar_app_id                           as dollar_app_id            -- 海剧海阅共用，可转换为core值
     ,coalesce(a1.app_id,a1.appId)               as app_id                   -- 海剧海阅app_id
+    ,a1.book_id                                 as book_id                  -- 书籍id
+    ,a1.chapter_id                              as chapter_id               -- 章节id
   from ods_log.ods_sensors_production_element_click    as a1
 ;
