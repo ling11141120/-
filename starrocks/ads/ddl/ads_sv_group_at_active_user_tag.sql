@@ -19,6 +19,7 @@ create table tmp.ads_sv_group_at_active_user_tag (
     ,current_svip_status      varchar(50)             comment "当前SVIP状态"
     ,double_first_svip_price  decimal(12, 2)          comment "首次SVIP金额(小数)"
     ,double_first_vip_price   decimal(12, 2)          comment "首次VIP金额(小数)"
+    ,etl_time                 datetime                comment "etl时间"
 )
 primary key(dt, user_id, stat_period_type)
 comment "海剧人群标签表-提供给付费墙中台等使用"
