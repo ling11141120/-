@@ -45,6 +45,7 @@ create table ods.ods_tidb_short_video_payorder(
     ,CustomData          string                                                     comment "自定义数据,透传,json格式"
     ,sr_createtime       datetime        not null default current_timestamp         comment "starrocks数据注入时间"
     ,sr_updatetime       datetime        not null default current_timestamp         comment "starrocks数据更新时间"
+    ,ActualAmount        decimal(18,2)                                              comment "总支付金额，小数类型"
 )
 primary key(dt, id)
 comment '海外短剧-用户充值表'
