@@ -1,5 +1,5 @@
-drop table if exists ads.ads_srsv_bi_koc_attribution_result_data;
-create table ads.ads_srsv_bi_koc_attribution_result_data (
+drop table if exists tmp.ads_srsv_bi_koc_attribution_result_data;
+create table tmp.ads_srsv_bi_koc_attribution_result_data (
      dt                     date           not null comment "统计日期"
     ,product_id             int            not null comment "产品id"
     ,ad_id                  varchar(755)   not null comment "koc的广告ID"
