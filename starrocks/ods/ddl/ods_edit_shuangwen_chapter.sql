@@ -1,15 +1,18 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_edit_shuangwen_chapter
 -- 来源实例： old_tidb_source
--- 来源表：uploadbook_tidb_en.shuangwen_chapter
+-- 来源表：
+--        uploadbook_tidb_en.shuangwen_chapter
 --        uploadbook_tidb_sp.shuangwen_chapter
+--        uploadbook_tidb_fr.shuangwen_chapter
+--        uploadbook_tidb_pt.shuangwen_chapter
 -- 来源负责：
 -- 采集工具：定时-批量
 -- 开发人：wx
 -- 开发日期： 2025-10-27
 ----------------------------------------------------------------
 drop table if exists ods.ods_edit_shuangwen_chapter;
-create table if not exists ods.ods_edit_shuangwen_chapter (
+create table ods.ods_edit_shuangwen_chapter (
      productid          int(11)       not null        comment "产品id"
     ,book_id            bigint(20)    not null        comment "书籍id"
     ,chapter_id         bigint(20)    not null        comment "章节id"
