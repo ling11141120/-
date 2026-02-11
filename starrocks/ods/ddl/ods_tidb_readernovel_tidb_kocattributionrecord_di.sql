@@ -22,29 +22,29 @@
 -- 开发日期： 2025-09-11
 ----------------------------------------------------------------
 
-DROP TABLE IF EXISTS ods.ods_tidb_readernovel_tidb_kocattributionrecord_di;
-CREATE TABLE ods.ods_tidb_readernovel_tidb_kocattributionrecord_di (
-     Id              BIGINT(20)     NOT NULL                  COMMENT "自增id"
-    ,product_id      INT(11)        NOT NULL                  COMMENT "产品id"
-    ,Pid             BIGINT(20)     NOT NULL                  COMMENT "用户id"
-    ,Mt              INT(11)                                  COMMENT "mt"
-    ,Core            INT(11)                                  COMMENT "core"
-    ,Chl             VARCHAR(65533)                           COMMENT "渠道"
-    ,CurrentLanguage INT(11)                                  COMMENT "语言"
-    ,BeginTime       DATETIME                                 COMMENT "开始时间"
-    ,EndTime         DATETIME                                 COMMENT "结束时间"
-    ,ResourceId      BIGINT(20)                               COMMENT "书籍id"
-    ,KocText         VARCHAR(65533)                           COMMENT "口令"
-    ,AdId            VARCHAR(65533)                           COMMENT "adid"
-    ,CreateTime      DATETIME                                 COMMENT "创建时间"
-    ,UpdateTime      DATETIME                                 COMMENT "更新时间"
-    ,sr_createtime   DATETIME       DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间"
-    ,sr_updatetime   DATETIME       DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+drop table if exists ods.ods_tidb_readernovel_tidb_kocattributionrecord_di;
+create table ods.ods_tidb_readernovel_tidb_kocattributionrecord_di (
+     Id              bigint         not null                  comment "自增id"
+    ,product_id      int            not null                  comment "产品id"
+    ,Pid             bigint         not null                  comment "用户id"
+    ,Mt              int                                      comment "mt"
+    ,Core            int                                      comment "core"
+    ,Chl             string                                   comment "渠道"
+    ,CurrentLanguage int                                      comment "语言"
+    ,BeginTime       datetime                                 comment "开始时间"
+    ,EndTime         datetime                                 comment "结束时间"
+    ,ResourceId      bigint                                   comment "书籍id"
+    ,KocText         string                                   comment "口令"
+    ,AdId            string                                   comment "adid"
+    ,CreateTime      datetime                                 comment "创建时间"
+    ,UpdateTime      datetime                                 comment "更新时间"
+    ,sr_createtime   datetime       default current_timestamp comment "starrocks数据注入时间"
+    ,sr_updatetime   datetime       default current_timestamp comment "starrocks数据更新时间"
 )
-PRIMARY KEY (Id, product_id)
-COMMENT "海阅海剧-用户koc归因记录"
-DISTRIBUTED BY HASH (Id, product_id) BUCKETS 6
-PROPERTIES (
+primary key (Id, product_id)
+comment "海阅海剧-用户koc归因记录"
+distributed by hash (Id, product_id) buckets 6
+properties (
     "replication_num" = "3",
     "bloom_filter_columns" = "Pid",
     "in_memory" = "false",
