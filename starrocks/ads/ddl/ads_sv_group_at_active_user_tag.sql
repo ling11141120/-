@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_sv_group_at_active_user_tag;
-create table tmp.ads_sv_group_at_active_user_tag (
+drop table if exists ads.ads_sv_group_at_active_user_tag;
+create table ads.ads_sv_group_at_active_user_tag (
      dt                       date           not null comment "日期"
     ,user_id                  bigint         not null comment "用户id"
     ,stat_period_type         varchar(5)     not null comment "统计周期类型"

@@ -6,7 +6,7 @@
 -- 开发日期：2026-01-26
 ----------------------------------------------------------------
 
-insert into tmp.ads_sv_group_at_active_user_tag
+insert into ads.ads_sv_group_at_active_user_tag
 with base_user as (
     select rcgex.user_id
          , uinfo.corever              as core
