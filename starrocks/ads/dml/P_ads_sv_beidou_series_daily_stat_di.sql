@@ -9,30 +9,45 @@
 
 -- DML
 insert into ads.ads_sv_beidou_series_daily_stat_di
-with 
--- 观看记录基础数据(按用户+短剧+集聚合，core用dws活跃表，language用短剧维表)
+with
+-- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
+epis_watch_view as (
+    select ew.dt
+         , ew.login_id                                          as user_id
+         , coalesce(cast(substring(ew.app_id, 4, 3) as int), 0) as core
+         , ew.shortplay_id                                      as series_id
+         , ew.episode_id                                        as epis_id
+         , ew.watch_episode_sort                                as epis_num
+         , min(ew.event_tm)                                     as create_time
+         , max(if(cast(ew.watch_progress as double) > 1, 1,
+                  cast(ew.watch_progress as double)))           as watch_progress
+    from dwd.dwd_sensors_cd_video_endwatching_view ew
+    left semi join dim.dim_short_video_epis_view e
+      on ew.shortplay_id = e.series_id
+     and ew.episode_id = e.epis_id
+    where ew.dt >= '${bf_4_dt}'
+      and ew.dt <= '${dt}'
+      and ew.shortplay_id is not null
+      and ew.app_id is not null
+    group by 1, 2, 3, 4, 5, 6
+),
+
+-- 观看记录基础数据(底表已去重+含core，join dim取duration和language)
 watch_base as (
-    select t1.dt
-         , t1.account_id                     as user_id
-         , t1.series_id
-         , t1.epis_id
-         , t1.epis_num
-         , coalesce(t2.corever, 0)           as core
-         , coalesce(s.language, 0)           as language_code
-         , sum(t1.watch_stamp)               as sum_watch_stamp -- 用户在该集的观看时长
-         , max(t1.watch_stamp)               as max_watch_stamp -- 用户在该集的观看进度
-    from dwd.dwd_video_short_video_epis_history t1
-    left semi join dim.dim_short_video_epis_view ep
-      on t1.series_id = ep.series_id
-     and t1.epis_id = ep.epis_id
-    left join dws.dws_user_short_video_wide_active_period_ed t2
-      on t1.dt = t2.dt 
-     and t1.account_id = t2.user_id 
-     and t2.period_type = 'ctt'
+    select ew.dt
+         , ew.user_id
+         , ew.series_id
+         , ew.epis_id
+         , ew.epis_num
+         , ew.core
+         , coalesce(s.language, 0)                        as language_code
+         , ew.watch_progress * coalesce(ev.duration, 0)   as sum_watch_stamp
+         , ew.watch_progress * coalesce(ev.duration, 0)   as max_watch_stamp
+    from epis_watch_view ew
+    left join dim.dim_short_video_epis_view ev
+      on ew.series_id = ev.series_id and ew.epis_id = ev.epis_id
     left join dim.dim_short_video_series_view s
-      on t1.series_id = s.series_id
-    where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'
-    group by 1, 2, 3, 4, 5, 6, 7
+      on ew.series_id = s.series_id
 ),
 
 -- 短剧每集时长信息
@@ -43,6 +58,7 @@ epis_duration as (
          , duration
          , row_number() over(partition by series_id order by epis_num desc) as rn  -- 最后一集rn=1
     from dim.dim_short_video_epis_view
+    where is_delete = 0
 ),
 
 -- 用户维度的短剧观看汇总
@@ -100,23 +116,16 @@ series_stat as (
     group by dt, core, language_code, series_id
 ),
 
--- 播放量统计(日志上报2次事件start/end，播放量=ceil(记录数/2)，core用dws，language用短剧维表)
+-- 播放量统计(底表每行=一次播放，count(1)=播放量)
 play_count_stat as (
-    select t1.dt
-         , coalesce(t2.corever, 0)  as core
+    select ew.dt
+         , ew.core
          , coalesce(s.language, 0)  as language_code
-         , t1.series_id
-         , ceil(count(1) / 2)       as play_count
-    from dwd.dwd_video_short_video_epis_history t1
-    left semi join dim.dim_short_video_epis_view ep
-      on t1.series_id = ep.series_id and t1.epis_id = ep.epis_id
-    left join dws.dws_user_short_video_wide_active_period_ed t2
-      on t1.dt = t2.dt 
-     and t1.account_id = t2.user_id
-     and t2.period_type = 'ctt'
+         , ew.series_id
+         , count(1)                 as play_count
+    from epis_watch_view ew
     left join dim.dim_short_video_series_view s
-      on t1.series_id = s.series_id
-    where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'
+      on ew.series_id = s.series_id
     group by 1, 2, 3, 4
 ),
 
@@ -166,6 +175,7 @@ select s.dt                                 as dt
      , v.cover_url
      , v.publish_edat                       as publish_time
      , se.series_duration                   as series_duration
+     , se.first_pay_epis_num                 as first_pay_epis_num
      -- 点击曝光
      , coalesce(ce.click_num, 0)            as click_num
      , coalesce(ce.exposure_num, 0)         as exposure_num
@@ -201,8 +211,10 @@ left join click_exposure_stat                 ce
  and s.language_code = ce.language_code
  and s.series_id = ce.series_id
 left join (select series_id
-                , sum(Duration) as series_duration
+                , sum(duration)                                as series_duration
+                , min(case when is_free = 0 then epis_num end) as first_pay_epis_num
            from dim.dim_short_video_epis_view
+           where is_delete = 0
            group by series_id
           ) se on s.series_id = se.series_id
 ;

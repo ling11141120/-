@@ -12,6 +12,7 @@ create table ads.ads_sv_beidou_series_daily_stat_di
     ,cover_url                   varchar(512)          comment "短剧封面"
     ,publish_time                datetime              comment "发布时间"
     ,series_duration             bigint                comment "短剧总时长(秒)"
+    ,first_pay_epis_num          int                   comment "第几集开始收费"
     -- 点击曝光指标
     ,click_num                   bigint                comment "短剧点击量"
     ,exposure_num                bigint                comment "短剧曝光量"
@@ -43,3 +44,8 @@ properties (
     "replicated_storage" = "true",
     "compression" = "LZ4"
 );
+
+-- 已有表增加字段时执行(仅运行一次)
+-- ALTER TABLE ads.ads_sv_beidou_series_daily_stat_di
+-- ADD COLUMN first_pay_epis_num int comment "第几集开始收费"
+-- AFTER series_duration;
