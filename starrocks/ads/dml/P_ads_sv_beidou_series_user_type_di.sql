@@ -8,35 +8,48 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_sv_beidou_series_user_type_di
-with 
--- 当日观看用户(left semi join过滤脏epis_id)
-watch_user as (
-    select t1.dt
-         , t1.account_id as user_id
-         , t1.series_id
-    from dwd.dwd_video_short_video_epis_history t1
-    left semi join dim.dim_short_video_epis_view ep
-      on t1.series_id = ep.series_id
-     and t1.epis_id = ep.epis_id
-    where t1.dt >= '${bf_4_dt}'
-      and t1.dt <= '${dt}'
-      and t1.series_id is not null
-    group by 1, 2, 3
+with
+-- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
+epis_watch_view as (
+    select ew.dt
+         , ew.login_id                                          as user_id
+         , coalesce(cast(substring(ew.app_id, 4, 3) as int), 0) as core
+         , ew.shortplay_id                                      as series_id
+         , ew.episode_id                                        as epis_id
+         , ew.watch_episode_sort                                as epis_num
+         , min(ew.event_tm)                                     as create_time
+         , max(if(cast(ew.watch_progress as double) > 1, 1,
+                  cast(ew.watch_progress as double)))           as watch_progress
+    from dwd.dwd_sensors_cd_video_endwatching_view ew
+    left semi join dim.dim_short_video_epis_view e
+      on ew.shortplay_id = e.series_id
+     and ew.episode_id = e.epis_id
+    where ew.dt >= '${bf_4_dt}'
+      and ew.dt <= '${dt}'
+      and ew.shortplay_id is not null
+      and ew.app_id is not null
+    group by 1, 2, 3, 4, 5, 6
 ),
 
--- 关联dws/短剧维表/用户表获取core, language_code, country_name
+-- 当日观看用户(从底表提取唯一 dt, user, core, series)
+watch_user as (
+    select ew.dt
+         , ew.user_id
+         , ew.core
+         , ew.series_id
+    from epis_watch_view ew
+    group by 1, 2, 3, 4
+),
+
+-- 关联短剧维表/用户表获取 language_code, country_name(core 来自 watch_user)
 user_with_info as (
     select w.dt
          , w.user_id
          , w.series_id
-         , coalesce(dws.corever, 0)             as core
+         , w.core
          , coalesce(s.language, 0)              as language_code
          , coalesce(dic.cd_val_desc, 'Unknown') as country -- 国家名称(如:美国)
     from watch_user w
-    left join dws.dws_user_short_video_wide_active_period_ed dws
-      on w.dt = dws.dt
-     and w.user_id = dws.user_id 
-     and dws.period_type = 'ctt'
     left join dim.dim_short_video_series_view s
       on w.series_id = s.series_id
     left join dim.dim_short_video_user_accountinfo u

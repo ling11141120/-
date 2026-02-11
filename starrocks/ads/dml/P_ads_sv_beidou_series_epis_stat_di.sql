@@ -12,39 +12,45 @@ SET cbo_cte_reuse = true;  -- 开启 CTE 复用
 -- DML
 insert into ads.ads_sv_beidou_series_epis_stat_di
 with
--- 短剧每集时长信息
-epis_info as (
-    select series_id
-         , epis_id
-         , epis_num
-         , duration
-    from dim.dim_short_video_epis_view
+-- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
+epis_watch_view as (
+    select ew.dt
+         , ew.login_id                                          as user_id
+         , coalesce(cast(substring(ew.app_id, 4, 3) as int), 0) as core
+         , ew.shortplay_id                                      as series_id
+         , ew.episode_id                                        as epis_id
+         , ew.watch_episode_sort                                as epis_num
+         , min(ew.event_tm)                                     as create_time
+         , max(if(cast(ew.watch_progress as double) > 1, 1,
+                  cast(ew.watch_progress as double)))           as watch_progress
+    from dwd.dwd_sensors_cd_video_endwatching_view ew
+    left semi join dim.dim_short_video_epis_view e
+      on ew.shortplay_id = e.series_id
+     and ew.episode_id = e.epis_id
+    where ew.dt >= '${bf_4_dt}'
+      and ew.dt <= '${dt}'
+      and ew.shortplay_id is not null
+      and ew.app_id is not null
+    group by 1, 2, 3, 4, 5, 6
 ),
 
--- 用户每集观看记录 + 时间聚合(一次扫描DWD，core用dws活跃表，language用短剧维表)
+-- 用户每集观看记录(底表已去重+含core，join dim取duration和language)
 user_epis_watch as (
-    select t1.dt
-         , t1.account_id                     as user_id
-         , t1.series_id
-         , t1.epis_id
-         , t1.epis_num
-         , coalesce(t2.corever, 0)           as core
-         , coalesce(s.language, 0)           as language_code
-         , max(t1.watch_stamp)               as max_watch_stamp
-         , min(t1.create_time)               as min_create_time
-         , max(t1.create_time)               as max_create_time
-    from dwd.dwd_video_short_video_epis_history t1
-    left semi join dim.dim_short_video_epis_view ep
-      on t1.series_id = ep.series_id
-     and t1.epis_id = ep.epis_id
-    left join dws.dws_user_short_video_wide_active_period_ed t2
-      on t1.dt = t2.dt
-     and t1.account_id = t2.user_id
-     and t2.period_type = 'ctt'
+    select ew.dt
+         , ew.user_id
+         , ew.series_id
+         , ew.epis_id
+         , ew.epis_num
+         , ew.core
+         , coalesce(s.language, 0)                        as language_code
+         , ew.watch_progress * coalesce(ev.duration, 0)   as max_watch_stamp
+         , ew.create_time                                 as min_create_time
+         , ew.create_time                                 as max_create_time
+    from epis_watch_view ew
+    left join dim.dim_short_video_epis_view ev
+      on ew.series_id = ev.series_id and ew.epis_id = ev.epis_id
     left join dim.dim_short_video_series_view s
-      on t1.series_id = s.series_id
-    where t1.dt >= '${bf_4_dt}' and t1.dt <= '${dt}'  -- 回刷窗口 bf_4_dt～dt
-    group by 1, 2, 3, 4, 5, 6, 7
+      on ew.series_id = s.series_id
 ),
 
 -- 续看用：按(dt, user, series, core, lang, epis_num)聚合min/max create_time(同剧多epis_id合并)
@@ -100,9 +106,8 @@ user_next_epis as (
                else a.max_watch_stamp end                    as capped_watch_stamp
          , case when n.next_min_create_time is not null then 1 else 0 end as has_next_epis
     from user_epis_watch a
-    left join epis_info e
-      on a.series_id = e.series_id
-     and a.epis_id = e.epis_id
+    left join dim.dim_short_video_epis_view e
+      on a.series_id = e.series_id and a.epis_id = e.epis_id
     left join epis_time_agg cur
       on a.dt = cur.dt and a.user_id = cur.user_id and a.series_id = cur.series_id
      and a.core = cur.core and a.language_code = cur.language_code and a.epis_num = cur.epis_num
