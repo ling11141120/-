@@ -123,7 +123,7 @@ select b.dt
 ;
 
 -- 当天
-insert into tmp.dws_user_wide_active_ed
+insert into dws.dws_user_wide_active_ed
 with lang_mapping as (
     select prod.prod_val
          , lang.lang_val
