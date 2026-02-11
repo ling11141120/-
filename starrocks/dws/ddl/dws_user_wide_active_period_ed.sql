@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS dws.dws_user_wide_active_period_ed;
-CREATE TABLE dws.dws_user_wide_active_period_ed (
+drop table if exists dws.dws_user_wide_active_period_ed;
+create table dws.dws_user_wide_active_period_ed (
      dt                 date           not null comment "日期"
     ,product_id         bigint(20)     not null comment "产品id"
     ,user_id            bigint(20)     not null comment "用户id"
