@@ -259,6 +259,8 @@ with attribution_user as (
                 )               as c
         on a.product_id = c.product_id
        and a.resource_id = c.book_id
+     where a.dt >= '${bf_20_dt}'
+       and a.dt <= '${dt}'
 )
 , payorder_data as (
     select dt
@@ -334,6 +336,8 @@ with attribution_user as (
       from attribution_data      as a
       left join payorder_data    as b
         on a.dt = b.dt
+       and b.dt >= '${bf_20_dt}'
+       and b.dt <= '${dt}'
        and if(a.product_id = 6833, 2, 1) = if(b.product_id = 6833, 2, 1)
        and a.user_id = b.user_id
        and b.create_time >= a.begin_time
@@ -341,7 +345,117 @@ with attribution_user as (
      where b.dt is not null
 )
 , ltv_data as (
-
+    select dt
+         , product_id
+         , ad_id
+         , is_new_user
+         , reg_country
+         , sum(case when ltv.diff_dt_num = 0 then ltv.pay_amt else 0 end) as ltv0_amt
+         , case when sum(case when ltv.diff_dt_num = 1 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 1 then ltv.pay_amt else 0 end)
+           end                                                            as ltv1_amt
+         , case when sum(case when ltv.diff_dt_num = 2 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 2 then ltv.pay_amt else 0 end)
+           end                                                            as ltv2_amt
+         , case when sum(case when ltv.diff_dt_num = 3 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 3 then ltv.pay_amt else 0 end)
+           end                                                            as ltv3_amt
+         , case when sum(case when ltv.diff_dt_num = 4 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 4 then ltv.pay_amt else 0 end)
+           end                                                            as ltv4_amt
+         , case when sum(case when ltv.diff_dt_num = 5 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 5 then ltv.pay_amt else 0 end)
+           end                                                            as ltv5_amt
+         , case when sum(case when ltv.diff_dt_num = 6 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 6 then ltv.pay_amt else 0 end)
+           end                                                            as ltv6_amt
+         , case when sum(case when ltv.diff_dt_num = 7 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 7 then ltv.pay_amt else 0 end)
+           end                                                            as ltv7_amt
+         , case when sum(case when ltv.diff_dt_num = 8 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 8 then ltv.pay_amt else 0 end)
+           end                                                            as ltv8_amt
+         , case when sum(case when ltv.diff_dt_num = 9 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 9 then ltv.pay_amt else 0 end)
+           end                                                            as ltv9_amt
+         , case when sum(case when ltv.diff_dt_num = 10 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 10 then ltv.pay_amt else 0 end)
+           end                                                            as ltv10_amt
+         , case when sum(case when ltv.diff_dt_num = 11 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 11 then ltv.pay_amt else 0 end)
+           end                                                            as ltv11_amt
+         , case when sum(case when ltv.diff_dt_num = 12 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 12 then ltv.pay_amt else 0 end)
+           end                                                            as ltv12_amt
+         , case when sum(case when ltv.diff_dt_num = 13 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 13 then ltv.pay_amt else 0 end)
+           end                                                            as ltv13_amt
+         , case when sum(case when ltv.diff_dt_num = 14 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 14 then ltv.pay_amt else 0 end)
+           end                                                            as ltv14_amt
+         , case when sum(case when ltv.diff_dt_num = 15 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 15 then ltv.pay_amt else 0 end)
+           end                                                            as ltv15_amt
+         , case when sum(case when ltv.diff_dt_num = 16 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 16 then ltv.pay_amt else 0 end)
+           end                                                            as ltv16_amt
+         , case when sum(case when ltv.diff_dt_num = 17 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 17 then ltv.pay_amt else 0 end)
+           end                                                            as ltv17_amt
+         , case when sum(case when ltv.diff_dt_num = 18 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 18 then ltv.pay_amt else 0 end)
+           end                                                            as ltv18_amt
+         , case when sum(case when ltv.diff_dt_num = 19 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 19 then ltv.pay_amt else 0 end)
+           end                                                            as ltv19_amt
+         , case when sum(case when ltv.diff_dt_num = 20 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 20 then ltv.pay_amt else 0 end)
+           end                                                            as ltv20_amt
+         , case when sum(case when ltv.diff_dt_num = 21 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 21 then ltv.pay_amt else 0 end)
+           end                                                            as ltv21_amt
+         , case when sum(case when ltv.diff_dt_num = 22 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 22 then ltv.pay_amt else 0 end)
+           end                                                            as ltv22_amt
+         , case when sum(case when ltv.diff_dt_num = 23 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 23 then ltv.pay_amt else 0 end)
+           end                                                            as ltv23_amt
+         , case when sum(case when ltv.diff_dt_num = 24 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 24 then ltv.pay_amt else 0 end)
+           end                                                            as ltv24_amt
+         , case when sum(case when ltv.diff_dt_num = 25 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 25 then ltv.pay_amt else 0 end)
+           end                                                            as ltv25_amt
+         , case when sum(case when ltv.diff_dt_num = 26 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 26 then ltv.pay_amt else 0 end)
+           end                                                            as ltv26_amt
+         , case when sum(case when ltv.diff_dt_num = 27 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 27 then ltv.pay_amt else 0 end)
+           end                                                            as ltv27_amt
+         , case when sum(case when ltv.diff_dt_num = 28 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 28 then ltv.pay_amt else 0 end)
+           end                                                            as ltv28_amt
+         , case when sum(case when ltv.diff_dt_num = 29 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 29 then ltv.pay_amt else 0 end)
+           end                                                            as ltv29_amt
+         , case when sum(case when ltv.diff_dt_num = 30 then ltv.pay_amt else 0 end) is null then null
+                else sum(case when ltv.diff_dt_num <= 30 then ltv.pay_amt else 0 end)
+           end                                                            as ltv30_amt
+      from (select uinfo.dt
+                 , uinfo.product_id
+                 , uinfo.ad_id
+                 , uinfo.is_new_user
+                 , uinfo.reg_country
+                 , uinfo.user_id
+                 , datediff(pay.dt, uinfo.dt)     as diff_dt_num
+                 , coalesce(pay.item_count, 0)    as pay_amt
+              from attribution_user      as uinfo
+              left join payorder_data    as pay
+                on pay.dt between '${bf_30_dt}' and '${dt}'
+               and pay.dt between uinfo.dt and date_add(uinfo.dt, interval 30 day)
+               and uinfo.user_id = pay.user_id
+           ) ltv
+     group by 1, 2, 3, 4, 5
 )
 , first_order as (
     select dt
@@ -401,6 +515,37 @@ select a.dt
             when g.cooperation_type = 1 and g.transaction_fee_type <> 3 then a.koc_amt * (1 - g.transaction_fee / 100) * (1 - g.cost_factor / 100) * g.distribute_ratio / 100
         end                 as real_distrib_income
      , now()                as etl_tm
+     ,ltv.ltv0_amt          as ltv0
+     ,ltv.ltv1_amt          as ltv1
+     ,ltv.ltv2_amt          as ltv2
+     ,ltv.ltv3_amt          as ltv3
+     ,ltv.ltv4_amt          as ltv4
+     ,ltv.ltv5_amt          as ltv5
+     ,ltv.ltv6_amt          as ltv6
+     ,ltv.ltv7_amt          as ltv7
+     ,ltv.ltv8_amt          as ltv8
+     ,ltv.ltv9_amt          as ltv9
+     ,ltv.ltv10_amt         as ltv10
+     ,ltv.ltv11_amt         as ltv11
+     ,ltv.ltv12_amt         as ltv12
+     ,ltv.ltv13_amt         as ltv13
+     ,ltv.ltv14_amt         as ltv14
+     ,ltv.ltv15_amt         as ltv15
+     ,ltv.ltv16_amt         as ltv16
+     ,ltv.ltv17_amt         as ltv17
+     ,ltv.ltv18_amt         as ltv18
+     ,ltv.ltv19_amt         as ltv19
+     ,ltv.ltv20_amt         as ltv20
+     ,ltv.ltv21_amt         as ltv21
+     ,ltv.ltv22_amt         as ltv22
+     ,ltv.ltv23_amt         as ltv23
+     ,ltv.ltv24_amt         as ltv24
+     ,ltv.ltv25_amt         as ltv25
+     ,ltv.ltv26_amt         as ltv26
+     ,ltv.ltv27_amt         as ltv27
+     ,ltv.ltv28_amt         as ltv28
+     ,ltv.ltv29_amt         as ltv29
+     ,ltv.ltv30_amt         as ltv30
   from (select a.dt
              , a.product_id
              , a.ad_id
@@ -423,6 +568,9 @@ select a.dt
              , sum(item_count)                              as koc_amt
              , sum(base_amount)                             as koc_amt_after
           from koc_order    as a
+         where a.dt >= '${bf_3_dt}'
+           and a.dt <= '${dt}'
+           and a.core = 1
          group by 1, 2, 3, 4, 5
        )                    as a
   left join active_user     as b
@@ -431,19 +579,19 @@ select a.dt
    and a.ad_id = b.ad_id
    and a.is_new_user = b.is_new_user
    and a.reg_country = b.reg_country
-  left join consume_chapter c
+  left join consume_chapter as c
     on a.dt = c.dt
    and a.product_id = c.product_id
    and a.ad_id = c.ad_id
    and a.is_new_user = c.is_new_user
    and a.reg_country = c.reg_country
-  left join chapter_watch   d
+  left join chapter_watch   as d
     on a.dt = d.dt
    and a.product_id = d.product_id
    and a.ad_id = d.ad_id
    and a.is_new_user = d.is_new_user
    and a.reg_country = d.reg_country
-  left join first_order     e
+  left join first_order     as e
     on a.dt = e.dt
    and a.product_id = e.product_id
    and a.ad_id = e.ad_id
@@ -455,7 +603,7 @@ select a.dt
                from dim.dim_koc_b_userinfo_tb_view as a
                left join dim.dim_koc_starinfo_view as b
                  on a.user_id = b.UserId
-            )              f
+            )              as f
     on a.star_id = f.id
   left join (select date_key as dt
                   , product_id
@@ -476,10 +624,16 @@ select a.dt
                   , star_status
                from dwd.dwd_koc_adltvitem
               group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
-            )              g
+            )              as g
     on a.dt = g.dt
    and a.product_id = g.product_id
    and a.ad_id = g.ad_id
+  left join ltv_data       as ltv
+    on a.dt = ltv.dt
+   and a.product_id = ltv.product_id
+   and a.ad_id = ltv.ad_id
+   and a.is_new_user = ltv.is_new_user
+   and a.reg_country = ltv.reg_country
  where (    b.dev_unt > 0
          or bitmap_count(d.user_watch_chapter) > 0
          or bitmap_count(d.watch_user_id) > 0
@@ -487,7 +641,4 @@ select a.dt
          or e.pay_user_num > 0
          or a.koc_amt > 0
        )
-   and a.dt >= '${bf_3_dt}'
-   and a.dt >= '2024-09-01'
-   and a.core = 1
 ;
