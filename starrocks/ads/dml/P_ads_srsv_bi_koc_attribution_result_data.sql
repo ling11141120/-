@@ -6,7 +6,7 @@
 -- 开发日期： 2026-02-10
 ----------------------------------------------------------------
 
-insert into tmp.ads_srsv_bi_koc_attribution_result_data
+insert into ads.ads_srsv_bi_koc_attribution_result_data
 with attribution_user as (
     select a.product_id
          , a.dt
@@ -245,7 +245,7 @@ with attribution_user as (
          , a.reg_country
       from attribution_user     as a
       left join dim.dim_date    as b
-        on b.datestr >= '${bf_20_dt}'
+        on b.datestr >= '${bf_30_dt}'
        and b.datestr <= '${dt}'
       left join (select 6833          as product_id
                       , series_id     as book_id
@@ -259,7 +259,7 @@ with attribution_user as (
                 )               as c
         on a.product_id = c.product_id
        and a.resource_id = c.book_id
-     where a.dt >= '${bf_20_dt}'
+     where a.dt >= '${bf_30_dt}'
        and a.dt <= '${dt}'
 )
 , payorder_data as (
@@ -336,13 +336,12 @@ with attribution_user as (
       from attribution_data      as a
       left join payorder_data    as b
         on a.dt = b.dt
-       and b.dt >= '${bf_20_dt}'
+       and b.dt >= '${bf_30_dt}'
        and b.dt <= '${dt}'
        and if(a.product_id = 6833, 2, 1) = if(b.product_id = 6833, 2, 1)
        and a.user_id = b.user_id
        and b.create_time >= a.begin_time
        and b.create_time < a.end_time
-     where b.dt is not null
 )
 , ltv_data as (
     select dt
@@ -351,96 +350,156 @@ with attribution_user as (
          , is_new_user
          , reg_country
          , sum(case when ltv.diff_dt_num = 0 then ltv.pay_amt else 0 end) as ltv0_amt
-         , case when sum(case when ltv.diff_dt_num = 1 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 1 then ltv.pay_amt else 0 end)
-           end                                                            as ltv1_amt
-         , case when sum(case when ltv.diff_dt_num = 2 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 2 then ltv.pay_amt else 0 end)
-           end                                                            as ltv2_amt
-         , case when sum(case when ltv.diff_dt_num = 3 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 3 then ltv.pay_amt else 0 end)
-           end                                                            as ltv3_amt
-         , case when sum(case when ltv.diff_dt_num = 4 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 4 then ltv.pay_amt else 0 end)
-           end                                                            as ltv4_amt
-         , case when sum(case when ltv.diff_dt_num = 5 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 5 then ltv.pay_amt else 0 end)
-           end                                                            as ltv5_amt
-         , case when sum(case when ltv.diff_dt_num = 6 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 6 then ltv.pay_amt else 0 end)
-           end                                                            as ltv6_amt
-         , case when sum(case when ltv.diff_dt_num = 7 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 7 then ltv.pay_amt else 0 end)
-           end                                                            as ltv7_amt
-         , case when sum(case when ltv.diff_dt_num = 8 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 8 then ltv.pay_amt else 0 end)
-           end                                                            as ltv8_amt
-         , case when sum(case when ltv.diff_dt_num = 9 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 9 then ltv.pay_amt else 0 end)
-           end                                                            as ltv9_amt
-         , case when sum(case when ltv.diff_dt_num = 10 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 10 then ltv.pay_amt else 0 end)
-           end                                                            as ltv10_amt
-         , case when sum(case when ltv.diff_dt_num = 11 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 11 then ltv.pay_amt else 0 end)
-           end                                                            as ltv11_amt
-         , case when sum(case when ltv.diff_dt_num = 12 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 12 then ltv.pay_amt else 0 end)
-           end                                                            as ltv12_amt
-         , case when sum(case when ltv.diff_dt_num = 13 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 13 then ltv.pay_amt else 0 end)
-           end                                                            as ltv13_amt
-         , case when sum(case when ltv.diff_dt_num = 14 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 14 then ltv.pay_amt else 0 end)
-           end                                                            as ltv14_amt
-         , case when sum(case when ltv.diff_dt_num = 15 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 15 then ltv.pay_amt else 0 end)
-           end                                                            as ltv15_amt
-         , case when sum(case when ltv.diff_dt_num = 16 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 16 then ltv.pay_amt else 0 end)
-           end                                                            as ltv16_amt
-         , case when sum(case when ltv.diff_dt_num = 17 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 17 then ltv.pay_amt else 0 end)
-           end                                                            as ltv17_amt
-         , case when sum(case when ltv.diff_dt_num = 18 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 18 then ltv.pay_amt else 0 end)
-           end                                                            as ltv18_amt
-         , case when sum(case when ltv.diff_dt_num = 19 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 19 then ltv.pay_amt else 0 end)
-           end                                                            as ltv19_amt
-         , case when sum(case when ltv.diff_dt_num = 20 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 20 then ltv.pay_amt else 0 end)
-           end                                                            as ltv20_amt
-         , case when sum(case when ltv.diff_dt_num = 21 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 21 then ltv.pay_amt else 0 end)
-           end                                                            as ltv21_amt
-         , case when sum(case when ltv.diff_dt_num = 22 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 22 then ltv.pay_amt else 0 end)
-           end                                                            as ltv22_amt
-         , case when sum(case when ltv.diff_dt_num = 23 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 23 then ltv.pay_amt else 0 end)
-           end                                                            as ltv23_amt
-         , case when sum(case when ltv.diff_dt_num = 24 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 24 then ltv.pay_amt else 0 end)
-           end                                                            as ltv24_amt
-         , case when sum(case when ltv.diff_dt_num = 25 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 25 then ltv.pay_amt else 0 end)
-           end                                                            as ltv25_amt
-         , case when sum(case when ltv.diff_dt_num = 26 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 26 then ltv.pay_amt else 0 end)
-           end                                                            as ltv26_amt
-         , case when sum(case when ltv.diff_dt_num = 27 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 27 then ltv.pay_amt else 0 end)
-           end                                                            as ltv27_amt
-         , case when sum(case when ltv.diff_dt_num = 28 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 28 then ltv.pay_amt else 0 end)
-           end                                                            as ltv28_amt
-         , case when sum(case when ltv.diff_dt_num = 29 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 29 then ltv.pay_amt else 0 end)
-           end                                                            as ltv29_amt
-         , case when sum(case when ltv.diff_dt_num = 30 then ltv.pay_amt else 0 end) is null then null
-                else sum(case when ltv.diff_dt_num <= 30 then ltv.pay_amt else 0 end)
-           end                                                            as ltv30_amt
+         , case when datediff('${dt}', dt) < 1 then null
+                else case when sum(case when ltv.diff_dt_num = 1 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num = 0 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 1 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv1_amt
+         , case when datediff('${dt}', dt) < 2 then null
+                else case when sum(case when ltv.diff_dt_num = 2 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 1 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 2 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv2_amt
+         , case when datediff('${dt}', dt) < 3 then null
+                else case when sum(case when ltv.diff_dt_num = 3 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 2 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 3 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv3_amt
+         , case when datediff('${dt}', dt) < 4 then null
+                else case when sum(case when ltv.diff_dt_num = 4 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 3 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 4 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv4_amt
+         , case when datediff('${dt}', dt) < 5 then null
+                else case when sum(case when ltv.diff_dt_num = 5 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 4 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 5 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv5_amt
+         , case when datediff('${dt}', dt) < 6 then null
+                else case when sum(case when ltv.diff_dt_num = 6 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 5 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 6 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv6_amt
+         , case when datediff('${dt}', dt) < 7 then null
+                else case when sum(case when ltv.diff_dt_num = 7 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 6 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 7 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv7_amt
+         , case when datediff('${dt}', dt) < 8 then null
+                else case when sum(case when ltv.diff_dt_num = 8 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 7 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 8 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv8_amt
+         , case when datediff('${dt}', dt) < 9 then null
+                else case when sum(case when ltv.diff_dt_num = 9 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 8 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 9 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv9_amt
+         , case when datediff('${dt}', dt) < 10 then null
+                else case when sum(case when ltv.diff_dt_num = 10 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 9 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 10 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv10_amt
+         , case when datediff('${dt}', dt) < 11 then null
+                else case when sum(case when ltv.diff_dt_num = 11 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 10 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 11 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv11_amt
+         , case when datediff('${dt}', dt) < 12 then null
+                else case when sum(case when ltv.diff_dt_num = 12 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 11 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 12 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv12_amt
+         , case when datediff('${dt}', dt) < 13 then null
+                else case when sum(case when ltv.diff_dt_num = 13 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 12 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 13 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv13_amt
+         , case when datediff('${dt}', dt) < 14 then null
+                else case when sum(case when ltv.diff_dt_num = 14 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 13 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 14 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv14_amt
+         , case when datediff('${dt}', dt) < 15 then null
+                else case when sum(case when ltv.diff_dt_num = 15 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 14 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 15 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv15_amt
+         , case when datediff('${dt}', dt) < 16 then null
+                else case when sum(case when ltv.diff_dt_num = 16 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 15 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 16 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv16_amt
+         , case when datediff('${dt}', dt) < 17 then null
+                else case when sum(case when ltv.diff_dt_num = 17 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 16 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 17 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv17_amt
+         , case when datediff('${dt}', dt) < 18 then null
+                else case when sum(case when ltv.diff_dt_num = 18 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 17 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 18 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv18_amt
+         , case when datediff('${dt}', dt) < 19 then null
+                else case when sum(case when ltv.diff_dt_num = 19 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 18 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 19 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv19_amt
+         , case when datediff('${dt}', dt) < 20 then null
+                else case when sum(case when ltv.diff_dt_num = 20 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 19 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 20 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv20_amt
+         , case when datediff('${dt}', dt) < 21 then null
+                else case when sum(case when ltv.diff_dt_num = 21 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 20 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 21 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv21_amt
+         , case when datediff('${dt}', dt) < 22 then null
+                else case when sum(case when ltv.diff_dt_num = 22 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 21 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 22 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv22_amt
+         , case when datediff('${dt}', dt) < 23 then null
+                else case when sum(case when ltv.diff_dt_num = 23 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 22 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 23 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv23_amt
+         , case when datediff('${dt}', dt) < 24 then null
+                else case when sum(case when ltv.diff_dt_num = 24 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 23 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 24 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv24_amt
+         , case when datediff('${dt}', dt) < 25 then null
+                else case when sum(case when ltv.diff_dt_num = 25 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 24 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 25 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv25_amt
+         , case when datediff('${dt}', dt) < 26 then null
+                else case when sum(case when ltv.diff_dt_num = 26 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 25 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 26 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv26_amt
+         , case when datediff('${dt}', dt) < 27 then null
+                else case when sum(case when ltv.diff_dt_num = 27 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 26 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 27 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv27_amt
+         , case when datediff('${dt}', dt) < 28 then null
+                else case when sum(case when ltv.diff_dt_num = 28 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 27 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 28 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv28_amt
+         , case when datediff('${dt}', dt) < 29 then null
+                else case when sum(case when ltv.diff_dt_num = 29 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 28 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 29 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv29_amt
+         , case when datediff('${dt}', dt) < 30 then null
+                else case when sum(case when ltv.diff_dt_num = 30 then ltv.pay_amt else 0 end) = 0 then sum(case when ltv.diff_dt_num <= 29 then ltv.pay_amt else 0 end)
+                          else sum(case when ltv.diff_dt_num <= 30 then ltv.pay_amt else 0 end)
+                      end
+            end                                                           as ltv30_amt
       from (select uinfo.dt
                  , uinfo.product_id
                  , uinfo.ad_id
@@ -568,9 +627,6 @@ select a.dt
              , sum(item_count)                              as koc_amt
              , sum(base_amount)                             as koc_amt_after
           from koc_order    as a
-         where a.dt >= '${bf_3_dt}'
-           and a.dt <= '${dt}'
-           and a.core = 1
          group by 1, 2, 3, 4, 5
        )                    as a
   left join active_user     as b
@@ -641,4 +697,7 @@ select a.dt
          or e.pay_user_num > 0
          or a.koc_amt > 0
        )
+   and a.dt >= '${bf_30_dt}'
+   and a.dt <= '${dt}'
+   and a.core = 1
 ;
