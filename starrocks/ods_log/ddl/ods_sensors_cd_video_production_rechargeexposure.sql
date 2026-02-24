@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
--- 目标表： ods_log.ods_sensors_cd_video_endwatching
+-- 目标表： ods_log.ods_sensors_cd_video_production_rechargeexposure
 -- 来源实例：
 -- 来源表：
 -- 来源负责：
