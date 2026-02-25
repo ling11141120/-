@@ -1,0 +1,152 @@
+----------------------------------------------------------------
+-- 程序功能： 海剧-广告触达到播放转化报表-分广告位置转化统计
+-- 程序名： P_ads_sv_ad_position_conversion_stat
+-- 目标表： ads.ads_sv_ad_position_conversion_stat
+-- 负责人： xjc
+-- 开发日期：2026-01-05
+-- 版本号： v0.0.1
+----------------------------------------------------------------
+
+insert into ads.ads_sv_ad_position_conversion_stat
+with adinvocation as (
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+          ,count(1)    as ad_invocation_pv
+      from dws.dws_ad_srsv_ad_position_request_df
+     where dt = '${bf_1_dt}'
+       and event_name='ADInvocation'
+       and ad_position_id != '0'
+     group by 1, 2, 3, 4, 5, 6, 7, 8
+)
+, adshow as (
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+          ,count(1)                 as ad_show_success_pv
+          ,sum(request_duration)    as total_show_duration
+      from dws.dws_ad_srsv_ad_position_request_df
+     where dt = '${bf_1_dt}'
+       and event_name='ADShow'
+       and ad_position_id != '0'
+     group by 1, 2, 3, 4, 5, 6, 7, 8
+)
+, adtrigger as (
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+          ,count(1)    as ad_show_fail_pv
+      from dws.dws_ad_srsv_ad_position_request_df
+     where dt = '${bf_1_dt}'
+       and event_name='ADTrigger'
+       and ad_position_id != '0'
+     group by 1, 2, 3, 4, 5, 6, 7, 8
+)
+, union_result as (
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+      from adinvocation
+     union
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+      from adshow
+     union
+    select dt
+          ,ad_position_id
+          ,ad_position_name
+          ,core
+          ,mt
+          ,language_id
+          ,reg_country
+          ,project_id
+      from adtrigger
+)
+select a1.dt                     as dt                     -- 日期
+      ,md5(concat_ws('_'
+           ,ifnull(a1.project_id, '')
+           ,ifnull(a1.ad_position_id, '')
+           ,ifnull(a1.core, '')
+           ,ifnull(a1.mt, '')
+           ,ifnull(a1.language_id, '')
+           ,ifnull(a1.reg_country, '')
+                    )
+          )                      as md5_key                -- md5key
+      ,a1.ad_position_id         as ad_position_id         -- 广告位id
+      ,a1.core                   as core                   -- 核心
+      ,a1.mt                     as mt                     -- 媒体类型
+      ,a1.language_id            as language_id            -- 语言id
+      ,a1.reg_country            as reg_country            -- 注册国家
+      ,a1.ad_position_name       as ad_position_name       -- 广告位名称
+      ,case when a1.mt = 1 then 'iOS'
+            when a1.mt = 4 then 'Android'
+            else null
+        end                      as mt_name                -- 媒体类型名称
+      ,a5.cd_val_desc            as language_name          -- 语言
+      ,a6.cd_val_desc            as reg_country_name       -- 国家
+      ,a2.ad_invocation_pv       as ad_invocation_pv       -- 广告调用数
+      ,a3.ad_show_success_pv     as ad_show_success_pv     -- 广告展示成功数
+      ,a3.total_show_duration    as total_show_duration    -- 总展示时长
+      ,a4.ad_show_fail_pv        as ad_show_fail_pv        -- 广告展示失败数
+      ,now()                     as etl_time               -- etl时间
+      ,a1.project_id             as project_id             -- 项目id,5:海阅8:海剧
+  from union_result                          as a1
+  left join adinvocation                     as a2
+    on a1.dt = a2.dt
+   and a1.ad_position_id = a2.ad_position_id
+   and a1.core = a2.core
+   and a1.mt = a2.mt
+   and a1.language_id = a2.language_id
+   and a1.reg_country = a2.reg_country
+   and a1.project_id = a2.project_id
+  left join adshow                           as a3
+    on a1.dt = a3.dt
+   and a1.ad_position_id = a3.ad_position_id
+   and a1.core = a3.core
+   and a1.mt = a3.mt
+   and a1.language_id = a3.language_id
+   and a1.reg_country = a3.reg_country
+   and a1.project_id = a3.project_id
+  left join adtrigger                        as a4
+    on a1.dt = a4.dt
+   and a1.ad_position_id = a4.ad_position_id
+   and a1.core = a4.core
+   and a1.mt = a4.mt
+   and a1.language_id = a4.language_id
+   and a1.reg_country = a4.reg_country
+   and a1.project_id = a4.project_id
+  left join dim.dim_pub_code_mapping_dict    as a5
+    on a1.language_id = a5.cd_val
+   and a5.app_plat='pub'
+   and a5.cd_col='lang_cd'
+  left join dim.dim_pub_code_mapping_dict    as a6
+    on a1.reg_country = a6.cd_val
+   and a6.app_plat='pub'
+   and a6.cd_col='lang_cd'
+;
