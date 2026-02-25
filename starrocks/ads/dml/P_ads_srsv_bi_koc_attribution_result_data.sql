@@ -106,7 +106,7 @@ with attribution_user as (
                       , create_time
                       , chapter_id     as chapter_sign
                    from dwd.dwd_read_user_chapter_view
-                  where dt >= '${bf_20_dt}'
+                  where dt >= '${bf_30_dt}'
                     and dt <= '${dt}'
                   union all
                  select dt             as dt
@@ -118,7 +118,7 @@ with attribution_user as (
                       , create_time    as create_time
                       , epis_num       as chapter_sign
                    from ods.ods_tidb_short_video_log_ext_epis_watch_log_part2
-                  where dt >= '${bf_20_dt}'
+                  where dt >= '${bf_30_dt}'
                     and dt <= '${dt}'
                  )          as b
         on a.begin_time <= b.create_time
