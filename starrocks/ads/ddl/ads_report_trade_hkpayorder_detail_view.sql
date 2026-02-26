@@ -58,7 +58,7 @@ select x.product_id
             when (x.sub_pay_type = 'AppStore') then 'AppStore'
             when (x.product_id != 6833) then y.PaymentWay
             else z.PaymentWay
-       end                                    as pay_ment_way
+       end                                   as pay_ment_way
      , x.package_id
      , x.coo_notify_time
      , x.finish_time
@@ -76,9 +76,9 @@ select x.product_id
      , x.sub_scribe_status
      , x.Ext1
      , x.Ext5
-     , x.CooExtStatus                         as coo_ext_status
+     , x.CooExtStatus                        as coo_ext_status
      , x.ip_to_country
-     , ifnull(e.source_chl, dim.f.source_chl) as late_chl
+     , ifnull(e.source_chl, f.source_chl)    as late_chl
   from (select a.productid                                                               as product_id
              , a.userid                                                                  as user_id
              , a.OrderSerialId                                                           as order_serial_id
@@ -96,9 +96,9 @@ select x.product_id
              , b.merchantname                                                            as merchant_name
              , case when a.SubPayType = 'PayPalV2' and a.amount / 100 < 10 then 'PayPalV2-HK'
                     when a.SubPayType = 'PayPalV2' and a.amount / 100 >= 10 then 'PayPalV2-HK-2'
-                    else ods.a.SubPayType
-                end                                                                      as sub_pay_type
-             , if(a.packageid = '' or a.packageid is null, 'null_other',a.packageid)     as package_id
+                    else a.SubPayType
+               end                                                                       as sub_pay_type
+             , if(a.packageid = '' or a.packageid is null, 'null_other', a.packageid)    as package_id
              , a.coonotifytime                                                           as coo_notify_time
              , a.finishtime                                                              as finish_time
              , a.orderstatus                                                             as order_status
@@ -117,22 +117,22 @@ select x.product_id
              , a.Ext5
              , a.CooExtStatus
              , udf.ip2country(a.UserIPAddress)                                           as ip_to_country
-          from ods.ods_tidb_sharpenginepaycenter_hk_payorder                             as a
-          left join ods.ods_tidb_sharpenginepaycenter_hk_paychanel                       as b
+          from ods.ods_tidb_sharpenginepaycenter_hk_payorder                         as a
+          left join ods.ods_tidb_sharpenginepaycenter_hk_paychanel                   as b
             on a.productid = b.productid
            and a.paychanelid = b.id
-       )                                                                                 as x
-  left join (select upper(c.PaymentId)    as PaymentId
-                  , max(c.PaymentWay)     as PaymentWay
-                   from ods.ods_tidb_readernovel_tidb_tag_center_third_payment_map_da    as c
-                  group by 1
-            )                                                                            as y
-    on upper(x.sub_pay_type) = upper(y.PaymentId)
-  left join (select upper(ods.d.pay_id)       as PaymentId
-                  , max(ods.d.pay_channel)    as PaymentWay
-               from ods.ods_tidb_short_video_third_payment_rate                          as d
+       )                                                                             as x
+  left join (select upper(PaymentId) as PaymentId
+                  , max(PaymentWay) as PaymentWay
+               from ods.ods_tidb_readernovel_tidb_tag_center_third_payment_map_da
               group by 1
-            )                                                                            as z
+            )                                                                        as y
+    on upper(x.sub_pay_type) = upper(y.PaymentId)
+  left join (select upper(pay_id)       as PaymentId
+                  , max(pay_channel)    as PaymentWay
+               from ods.ods_tidb_short_video_third_payment_rate
+              group by 1
+            )                                                                        as z
     on upper(x.sub_pay_type) = upper(z.PaymentId)
    and x.product_id = 6833
   left join (select s1.product_id
@@ -142,17 +142,20 @@ select x.product_id
                           , user_id
                           , last_source
                           , row_number() over (partition by product_id, user_id
-                                                   order by install_date desc, mt asc, corever asc, lang2 asc
+                                                    order by install_date desc
+                                                           , mt asc
+                                                           , corever asc
+                                                           , lang2 asc
                                               ) as rn
                        from dws.dws_user_market_channel_info_detail_td
                       where dt = date_sub(current_date(), interval 1 day)
                         and product_id not in (6833)
-                     ) s1
+                    )                                                                as s1
               where s1.rn = 1
-            )                                                                            as e
+            )                                                                        as e
     on x.product_id = e.product_id
    and x.user_id = e.user_id
-  left join dim.dim_short_video_user_accountinfo                                         as f
+  left join dim.dim_short_video_user_accountinfo                                     as f
     on x.product_id = f.product_id
    and x.user_id = f.user_id
 ;
