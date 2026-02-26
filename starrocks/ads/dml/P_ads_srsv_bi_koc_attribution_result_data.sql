@@ -207,8 +207,13 @@ with attribution_user as (
          , a.ad_id
          , a.is_new_user
          , a.reg_country
-         , bitmap_union(to_bitmap(concat(a.user_id, a.book_id, a.user_watch_chapter))) as user_watch_chapter
-         , bitmap_union(to_bitmap(a.user_id))                                          as watch_user_id
+         , bitmap_union(
+               to_bitmap(
+                   cast(murmur_hash3_32(concat(a.user_id, a.book_id, a.user_watch_chapter))as bigint
+                   )
+               )
+           )                                     as user_watch_chapter
+         , bitmap_union(to_bitmap(a.user_id))    as watch_user_id
       from (select a.product_id
                  , a.dt
                  , a.ad_id
