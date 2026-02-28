@@ -10,36 +10,36 @@
 drop table if exists ods.ods_tidb_short_video_payorder;
 create table ods.ods_tidb_short_video_payorder(
      dt                  date            not null                                   comment "createtime分区"
-    ,id                  int(11)         not null                                   comment "自增id"
-    ,type                int(11)         not null default '0'                       comment "类型"
-    ,userid              bigint(20)      not null                                   comment "用户id"
-    ,used                int(11)         not null default ''                        comment "是否执行"
+    ,id                  int             not null                                   comment "自增id"
+    ,type                int             not null default '0'                       comment "类型"
+    ,userid              bigint          not null                                   comment "用户id"
+    ,used                int             not null default '0'                       comment "是否执行"
     ,orderid             varchar(128)    not null                                   comment "订单id"
-    ,flag                int(11)         not null default '0'                       comment "标识"
+    ,flag                int             not null default '0'                       comment "标识"
     ,createtime          datetime        not null default '1970-01-01 00:00:00.000' comment '创建时间'
     ,gettime             datetime        not null default '1970-01-01 00:00:00.000' comment '获取时间'
-    ,itemcount           int(11)         not null default '0'                       comment "金额数"
-    ,systemtype          int(11)         not null default '0'                       comment "系统类型"
+    ,itemcount           int             not null default '0'                       comment "金额数"
+    ,systemtype          int             not null default '0'                       comment "系统类型"
     ,receivedate         datetime                                                   comment "被接收时间"
-    ,MT                  int(11)         not null default '0'                       comment "终端"
+    ,MT                  int             not null default '0'                       comment "终端"
     ,CouponId            varchar(128)                                               comment "礼券id"
     ,PackageId           varchar(255)                                               comment "存放充值页面来源"
     ,ShopItem            varchar(128)                                               comment "充值类型"
     ,ExtInfo             varchar(128)                                               comment "信息"
-    ,VipExpireTime       varchar(20)                                                comment "充值订阅卡时,过期时间"
-    ,RealMoney           int(11)                                                    comment "给的阅币数"
-    ,GiveMoney           int(11)                                                    comment "暂时无用"
-    ,Amount              int(11)                                                    comment "暂时无用"
-    ,ProdId              int(11)         not null default '0'                       comment "暂时无用"
-    ,PayConfigId         int(11)                                                    comment "充值项的Id,可能不准确"
-    ,CoreVer             int(11)                                                    comment "包体"
+    ,VipExpireTime       varchar                                                    comment "充值订阅卡时,过期时间"
+    ,RealMoney           int                                                        comment "给的阅币数"
+    ,GiveMoney           int                                                        comment "暂时无用"
+    ,Amount              int                                                        comment "暂时无用"
+    ,ProdId              int             not null default '0'                       comment "暂时无用"
+    ,PayConfigId         int                                                        comment "充值项的Id,可能不准确"
+    ,CoreVer             int                                                        comment "包体"
     ,UniqueGuid          varchar(255)                                               comment "用户设备id"
-    ,TestFlag            int(11)         not null default '0'                       comment "是否是测试号充值(0正式,1测试)"
+    ,TestFlag            int             not null default '0'                       comment "是否是测试号充值(0正式,1测试)"
     ,BuyToken            varchar(255)                                               comment "购买时候的google的token"
-    ,BaseAmount          int(11)         not null default ''                        comment "分成后的数量"
+    ,BaseAmount          int             not null default '0'                       comment "分成后的数量"
     ,Version             varchar(255)                                               comment "购买时,用户客户端的版本号"
     ,SubPayType          varchar(50)                                                comment "充值渠道"
-    ,GiftMoney           int(11)                                                    comment "充值赠送的礼券数(可能不准确)"
+    ,GiftMoney           int                                                        comment "充值赠送的礼券数(可能不准确)"
     ,OrderInitTime       datetime                                                   comment "用户订单创建时间"
     ,CooOrderExtInfo     varchar(1000)                                              comment "合作方订单扩展"
     ,CustomData          string                                                     comment "自定义数据,透传,json格式"
@@ -50,7 +50,7 @@ create table ods.ods_tidb_short_video_payorder(
 primary key(dt, id)
 comment '海外短剧-用户充值表'
 partition by range(dt)
-(start ("2023-07-05") end ("2023-11-24") every (interval 1 day))
+(partition p20260227 values less than ("2026-02-28"))
 distributed by hash(dt, id) buckets 1
 properties (
     "replication_num" = "3",
