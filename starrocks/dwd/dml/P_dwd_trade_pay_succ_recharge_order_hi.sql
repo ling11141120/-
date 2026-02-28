@@ -72,6 +72,7 @@ select dt
      , now()                                                       as etl_time
      , id                                                          as log_id
      , ActualAmount                                                as actual_recharge_amt
+     , CoreVer                                                     as core
   from ods.ods_tidb_short_video_payorder
  where dt >= '${bf_1_dt}'
    and dt <= '${dt}'
