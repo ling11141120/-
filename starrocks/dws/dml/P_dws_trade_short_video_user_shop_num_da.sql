@@ -18,7 +18,7 @@ with pay_order as (
        and shop_item in (840, 810, 860)
        and status = 0
      union all
-     elect product_id
+    select product_id
          , user_id
          , shop_item
          , item_id
