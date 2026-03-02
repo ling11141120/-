@@ -4,19 +4,15 @@ insert into dws.dws_trade_short_video_user_shop_num_da
 with pay_order as (
     select product_id
          , user_id
-         , shop_item
-         , substring_index(substring_index(substring_index(
-                                                   substring_index(substring_index(ExtInfo, '|', -1),
-                                                                   'com.changdu.mobovideo.', -1),
-                                                   'com.changdu.moboshort.', -1),
-                                           'com.changjian.moboshortcj.', -1), 'third.', -1) as item_id
-         , 1                                                                                as shop_num
-         , create_time                                                                      as first_time
+         , recharge_type_cd as shop_item
+         , item_id
+         , 1                as shop_num
+         , create_time      as first_time
          , create_time
-      from dwd.dwd_trade_short_video_payorder
+      from dwd.dwd_trade_pay_succ_recharge_order_hi
      where dt = '${bf_1_dt}'
-       and shop_item in (840, 810, 860)
-       and status = 0
+       and recharge_type_cd in ('840', '810', '860')
+       and product_id = 6833
      union all
     select product_id
          , user_id
@@ -39,4 +35,5 @@ select '${bf_1_dt}'      as dt
      , max(create_time)  as create_time
      , now()             as etl_time
   from pay_order
- group by product_id, user_id, shop_item, item_id;
+ group by product_id, user_id, shop_item, item_id
+;
