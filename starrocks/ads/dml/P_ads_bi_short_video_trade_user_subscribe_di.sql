@@ -1,42 +1,48 @@
-delete from ads.ads_bi_short_video_trade_user_subscribe_di where dt ='${bf_1_dt}'
+----------------------------------------------------------------
+-- 程序功能： 海外短剧-用户充值表
+-- 程序名： P_ads_bi_short_video_trade_user_subscribe_di
+-- 目标表： ads.ads_bi_short_video_trade_user_subscribe_di
+-- 负责人： qhr
+-- 开发日期： 2026-03-03
+----------------------------------------------------------------
 
-insert into ads.ads_bi_short_video_trade_user_subscribe_di
+truncate table tmp.ads_bi_short_video_trade_user_subscribe_di partition(p${bf_1_dtNum});
+insert into tmp.ads_bi_short_video_trade_user_subscribe_di
 with t1 as (
     select dt
-         , id
+         , log_id                  as id
          , product_id
          , order_id
          , user_id
-         , corever
+         , core                    as corever
          , mt
-         , shop_item
-         , substring_index(substring_index(substring_index(substring_index(substring_index(ExtInfo, '|', -1),
-                                                                           'com.changdu.mobovideo.', -1),
-                                                           'com.changdu.moboshort.', -1),
-                                           'com.changjian.moboshortcj.', -1), 'third.', -1) as item_id
-         , item_count
-         , subpay_type
-         , pay_config_id
-         , str_to_date(vip_expire_time, '%Y-%m-%d %H:%i:%s')                                as vip_expire_time
-         , base_amount / 100                                                                as after_charge
-         , row_number() over (partition by user_id, shop_item, substring_index(substring_index(substring_index(substring_index(substring_index(ExtInfo,'|',-1),'com.changdu.mobovideo.',-1),'com.changdu.moboshort.',-1),'com.changjian.moboshortcj.',-1),'third.',-1) order by create_time desc) as shop_num
-         , get_json_int(cooorder_extinfo, "$.SubscribeStatus") as subscribe_status
+         , recharge_type_cd        as shop_item
+         , item_id
+         , recharge_amt            as item_count
+         , recharge_channel        as subpay_type
+         , card_expire_time        as vip_expire_time
+         , base_amount / 100       as after_charge
+         , row_number() over (partition by user_id, shop_item, item_id
+                                  order by create_time desc
+                             )     as shop_num
+         , subscribe_status
          , create_time
-      from dwd.dwd_trade_short_video_payorder
+      from dwd.dwd_trade_pay_succ_recharge_order_hi
      where dt = '${bf_1_dt}'
-       and shop_item in (840, 810, 860)
-       and status = 0
-       and test_flag = 0 -- 【修改点2】新增测试账号过滤
+       and product_id = 6833
+       and recharge_type_cd in ('840', '810', '860')
 )
 , tmp_user_shop_num_da as (
     select product_id
          , user_id
-         , shop_item
+         , recharge_type_cd        as shop_item
          , item_id
-         , first_time
-         , shop_num
-      from dws.dws_trade_short_video_user_shop_num_da
+         , first_subscribe_time    as first_time
+         , subscribe_num           as shop_num
+         , subscribe_status
+      from tmp.dws_trade_user_subscription_agg
      where dt = '${bf_1_dt}'
+       and product_id = 6833
 )
 , t2 as (
     select t1.dt
@@ -48,7 +54,7 @@ with t1 as (
          , t3.current_language2
          , t3.country
          , t1.user_id
-         , t1.shop_item
+         , if(t1.shop_item,860,810)                as shop_item
          , t1.item_id
          , t1.item_count
          , t2.vip_type_info                        as vip_type
@@ -61,31 +67,29 @@ with t1 as (
          , t1.after_charge
          , if(  t1.vip_expire_time is not null
               , t1.vip_expire_time
-              , case when t2.vip_type = 1 then date_add(t1.create_time, interval 1 month) -- 1,'月卡'
-                     when t2.vip_type = 2 then date_add(t1.create_time, interval 3 month) -- 2,'季卡'
-                     when t2.vip_type = 3 then date_add(t1.create_time, interval 1 year) -- 3,'年卡'
-                     when t2.vip_type = 4 then date_add(t1.create_time, interval 7 day) -- 4,'周卡'
-                     when t2.vip_type = 5 then date_add(t1.create_time, interval effective_time day) -- 5,'天卡'
+              , case when t2.vip_type = 1 then date_add(t1.create_time, interval 1 month)            -- 1, 月卡
+                     when t2.vip_type = 2 then date_add(t1.create_time, interval 3 month)            -- 2, 季卡
+                     when t2.vip_type = 3 then date_add(t1.create_time, interval 1 year)             -- 3, 年卡
+                     when t2.vip_type = 4 then date_add(t1.create_time, interval 7 day)              -- 4, 周卡
+                     when t2.vip_type = 5 then date_add(t1.create_time, interval effective_time day) -- 5, 天卡
                  end
              )                                     as vip_expire_time
          , if(  t1.vip_expire_time is null
               , t1.create_time
-              , case when shop_item_id = 810 and vip_type = 1 then months_add(vip_expire_time, -effective_time) -- 'SVIP月卡'
-                  when shop_item_id = 840 and vip_type = 1 then date_sub(vip_expire_time, effective_time) -- '新福利包月卡'
-                  when shop_item_id = 860 and vip_type = 1 then date_sub(vip_expire_time, effective_time) -- 'NSVIP月卡'
-                  when vip_type = 2 then months_add(vip_expire_time, -effective_time) -- '季卡'
-                  when vip_type = 3 then months_add(vip_expire_time, -effective_time) -- '年卡'
-                  when vip_type = 4 then date_sub(vip_expire_time, effective_time) -- '周卡'
-                  when vip_type = 5 then date_sub(vip_expire_time, effective_time) -- '天卡'
+              , case when shop_item_id = 810 and vip_type = 1 then months_add(vip_expire_time, -effective_time) -- SVIP月卡
+                     when shop_item_id = 840 and vip_type = 1 then date_sub(vip_expire_time, effective_time)    -- 新福利包月卡
+                     when shop_item_id = 860 and vip_type = 1 then date_sub(vip_expire_time, effective_time)    -- NSVIP月卡
+                     when vip_type = 2 then months_add(vip_expire_time, -effective_time)                        -- 季卡
+                     when vip_type = 3 then months_add(vip_expire_time, -effective_time)                        -- 年卡
+                     when vip_type = 4 then date_sub(vip_expire_time, effective_time)                           -- 周卡
+                     when vip_type = 5 then date_sub(vip_expire_time, effective_time)                           -- 天卡
                   end
              )                                     as vip_start_time
          , if(t4.shop_num - t1.shop_num = 0, 1, 2) as subscribe_status
          , t4.shop_num - t1.shop_num               as autoRenew_times
          , t5.shop_num
       from t1
-      left join (select product_id, user_id, shop_item, item_id, shop_num
-                   from tmp_user_shop_num_da
-                ) t4
+      left join tmp_user_shop_num_da as t4
         on t1.product_id = t4.product_id
        and t1.user_id = t4.user_id
        and t1.shop_item = t4.shop_item
@@ -112,7 +116,7 @@ with t1 as (
                       , goods_attribute
                       , first_price
                       , first_effective_time
-                      , max(price                  as price
+                      , max(price)                 as price
                    from dim.dim_short_video_goods_view
                   where shop_item_id in (840, 810, 860)
                     and is_remove = 0
@@ -177,7 +181,7 @@ select dt
      , greatest(datediff(least(vip_expire_date, last_day(time12)), date_format(time12, '%Y-%m-01')) + 1, 0) as M12
      , now()                                                                                                as etl_time
   from (select *
-             , date (vip_start_time)                       as time0
+             , date(vip_start_time)                        as time0
              , date(vip_expire_time)                       as vip_expire_date
              , date_add(vip_start_time, interval 1 month)  as time1
              , date_add(vip_start_time, interval 2 month)  as time2
