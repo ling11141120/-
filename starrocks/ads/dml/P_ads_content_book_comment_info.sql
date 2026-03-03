@@ -32,7 +32,8 @@ select
     on a1.productid = a2.productid
    and a1.pid=a2.BookId*1000+a2.SiteId
    and a2.IsWashingBook = 1
- where a1.dt = '${bf_1_dt}'
+ where a1.dt >= '${bf_1_dt}'
+   and a1.dt <= '${dt}'
    and a1.bookcommenttype = 0
  union all
 select
@@ -55,9 +56,10 @@ select
     ,a1.sendtime                                    as sendtime        -- 评论发送时间
     ,now()                                          as etl_tm          -- etl清洗时间
   from ods.ods_tidb_readernovel_tidb_xx_paragraphcommentitem    as a1
-  join ods_edit_book                                            as a2
+  join ods.ods_edit_book                                        as a2
     on a1.productid = a2.productid
    and a1.pid=a2.BookId*1000+a2.SiteId
    and a2.IsWashingBook = 1
- where a1.dt = '${bf_1_dt}'
+ where a1.dt >= '${bf_1_dt}'
+   and a1.dt<= '${dt}'
 ;
