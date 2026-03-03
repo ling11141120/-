@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-03
 ----------------------------------------------------------------
 
-truncate table tmp.ads_bi_short_video_trade_user_subscribe_di partition(p${bf_1_dtNum});
+delete from tmp.ads_bi_short_video_trade_user_subscribe_di where dt = '${bf_1_dt}';
 insert into tmp.ads_bi_short_video_trade_user_subscribe_di
 with t1 as (
     select dt
@@ -22,7 +22,7 @@ with t1 as (
          , recharge_channel        as subpay_type
          , card_expire_time        as vip_expire_time
          , base_amount / 100       as after_charge
-         , row_number() over (partition by user_id, shop_item, item_id
+         , row_number() over (partition by user_id, recharge_type_cd, item_id
                                   order by create_time desc
                              )     as shop_num
          , subscribe_status
