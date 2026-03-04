@@ -54,15 +54,15 @@ with t1 as (
          , t3.current_language2
          , t3.country
          , t1.user_id
-         , if(t1.shop_item,860,810)                as shop_item
+         , if(t1.shop_item=860,810,t1.shop_item)    as shop_item
          , t1.item_id
          , t1.item_count
-         , t2.vip_type_info                        as vip_type
+         , t2.vip_type_info                         as vip_type
          , t1.subpay_type
-         , t2.goods_attribute                      as charge_type
+         , t2.goods_attribute                       as charge_type
          , t2.price
          , t2.first_price
-         , t2.first_effective_time                 as first_validity
+         , t2.first_effective_time                  as first_validity
          , t5.first_time
          , t1.after_charge
          , if(  t1.vip_expire_time is not null
@@ -73,7 +73,7 @@ with t1 as (
                      when t2.vip_type = 4 then date_add(t1.create_time, interval 7 day)              -- 4, 周卡
                      when t2.vip_type = 5 then date_add(t1.create_time, interval effective_time day) -- 5, 天卡
                  end
-             )                                     as vip_expire_time
+             )                                      as vip_expire_time
          , if(  t1.vip_expire_time is null
               , t1.create_time
               , case when shop_item_id = 810 and vip_type = 1 then months_add(vip_expire_time, -effective_time) -- SVIP月卡
