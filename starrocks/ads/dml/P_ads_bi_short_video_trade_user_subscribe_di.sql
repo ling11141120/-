@@ -6,8 +6,8 @@
 -- 开发日期： 2026-03-03
 ----------------------------------------------------------------
 
-delete from ads.ads_bi_short_video_trade_user_subscribe_di where dt = '${bf_1_dt}';
-insert into ads.ads_bi_short_video_trade_user_subscribe_di
+delete from tmp.ads_bi_short_video_trade_user_subscribe_di where dt = '${bf_1_dt}';
+insert into tmp.ads_bi_short_video_trade_user_subscribe_di
 with t1 as (
     select dt
          , log_id                  as id
