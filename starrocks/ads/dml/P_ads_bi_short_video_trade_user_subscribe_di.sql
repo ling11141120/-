@@ -6,8 +6,8 @@
 -- 开发日期： 2026-03-03
 ----------------------------------------------------------------
 
-delete from tmp.ads_bi_short_video_trade_user_subscribe_di where dt = '${bf_1_dt}';
-insert into tmp.ads_bi_short_video_trade_user_subscribe_di
+delete from ads.ads_bi_short_video_trade_user_subscribe_di where dt = '${bf_1_dt}';
+insert into ads.ads_bi_short_video_trade_user_subscribe_di
 with t1 as (
     select dt
          , log_id                  as id
@@ -40,7 +40,7 @@ with t1 as (
          , first_subscribe_time    as first_time
          , subscribe_num           as shop_num
          , subscribe_status
-      from tmp.dws_trade_user_subscription_agg
+      from dws.dws_trade_user_subscription_agg
      where dt = '${bf_1_dt}'
        and product_id = 6833
 )

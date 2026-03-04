@@ -1,5 +1,5 @@
-drop table if exists tmp.dws_trade_user_subscription_agg;
-create table tmp.dws_trade_user_subscription_agg (
+drop table if exists dws.dws_trade_user_subscription_agg;
+create table dws.dws_trade_user_subscription_agg (
      dt                   date         not null comment "分区日期"
     ,product_id           int          not null comment "产品ID"
     ,user_id              bigint       not null comment "用户ID"

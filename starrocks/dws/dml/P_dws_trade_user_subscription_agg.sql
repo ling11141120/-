@@ -6,9 +6,9 @@
 -- 开发日期： 2026-03-03
 ----------------------------------------------------------------
 
-delete from tmp.dws_trade_user_subscription_agg where dt = '${bf_1_dt}';
-insert into tmp.dws_trade_user_subscription_agg
-with yes_data as (
+delete from dws.dws_trade_user_subscription_agg where dt = '${bf_1_dt}';
+insert into dws.dws_trade_user_subscription_agg
+with yes_data_tmp as (
     select dt
          , product_id
          , user_id
@@ -23,6 +23,32 @@ with yes_data as (
      and product_id = 6833
    group by 1, 2, 3, 4, 5
 )
+, yes_data as (
+    select ydt.dt
+         , ydt.product_id
+         , ydt.user_id
+         , ydt.recharge_type_cd
+         , ydt.item_id
+         , case when ydt.recharge_type_cd = '860' and y8c.yes_810_cnt > 0 then ydt.yesterday_cnt + y8c.yes_810_cnt
+                else ydt.yesterday_cnt
+            end                as yesterday_cnt
+         , case when ydt.recharge_type_cd = '860' and y8c.yes_810_cnt > 0 then 2
+                else ydt.yesterday_max_status
+            end                as yesterday_max_status
+         , ydt.first_create_time
+      from yes_data_tmp        as ydt
+      left join (select dt
+                      , product_id
+                      , user_id
+                      , count(1)    as yes_810_cnt
+                   from yes_data_tmp
+                  where recharge_type_cd = '810'
+                  group by 1, 2, 3
+                )                   as y8c
+        on ydt.dt = y8c.dt
+       and ydt.product_id = y8c.product_id
+       and ydt.user_id = y8c.user_id
+)
 , his_data as (
     select '${bf_1_dt}'        as dt
          , product_id
@@ -32,7 +58,7 @@ with yes_data as (
          , subscribe_num       as history_sub_num
          , subscribe_status    as history_subscribe_status
          , first_subscribe_time
-      from tmp.dws_trade_user_subscription_agg
+      from dws.dws_trade_user_subscription_agg
      where dt = '${bf_2_dt}'
 )
 -- 获取810历史数据
