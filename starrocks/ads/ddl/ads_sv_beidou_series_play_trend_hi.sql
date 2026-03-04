@@ -25,3 +25,14 @@ properties (
     "replicated_storage" = "true",
     "compression" = "LZ4"
 );
+
+
+-- 已有表增加字段时执行(仅运行一次)
+alter table ads.ads_sv_beidou_series_play_trend_hi
+    add column series_level       int comment "短剧等级(1.S 2.A 3.B 4.C)" after series_name,
+    add column work_type          int comment "作品类型(1.男频 2.女频 3.双番)" after series_level,
+    add column local_type         int comment "类型 (1.本土剧 2.译制剧 4.动态漫)" after work_type,
+    add column local_sub_type     int comment "短剧子类型(0.默认 1.本土剧-AI短剧)" after local_type,
+    add column audio_type         int comment "音轨类型(1.原声剧 2.配音剧)" after local_sub_type,
+    add column dubbed_type        int comment "配音类型(1.人工配音 2.AI配音)" after audio_type
+;

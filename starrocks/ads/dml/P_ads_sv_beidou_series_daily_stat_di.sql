@@ -43,6 +43,7 @@ watch_base as (
          , coalesce(s.language, 0)                        as language_code
          , ew.watch_progress * coalesce(ev.duration, 0)   as sum_watch_stamp
          , ew.watch_progress * coalesce(ev.duration, 0)   as max_watch_stamp
+         , ev.is_free
     from epis_watch_view ew
     left join dim.dim_short_video_epis_view ev
       on ew.series_id = ev.series_id and ew.epis_id = ev.epis_id
@@ -59,6 +60,21 @@ epis_duration as (
          , row_number() over(partition by series_id order by epis_num desc) as rn  -- 最后一集rn=1
     from dim.dim_short_video_epis_view
     where is_delete = 0
+),
+
+-- 短剧每集时长信息
+epis_stat as (
+    select dt
+    , core
+    , language_code
+    , series_id
+    -- 本剧解锁用户数
+    , bitmap_agg(case when is_free = 0 then user_id end) as unlock_user
+    -- 本剧解锁集数
+    , bitmap_agg(case when is_free = 0 then epis_id end) as unlock_epis
+    from watch_base w
+    where series_id is not null
+    group by dt, core, language_code, series_id
 ),
 
 -- 用户维度的短剧观看汇总
@@ -95,6 +111,10 @@ series_stat as (
          , bitmap_agg(case when first_epis_watch_duration > 0 then user_id end) as first_epis_total_user
          -- <=10s流失用户
          , bitmap_agg(case when total_watch_duration <= 10 then user_id end) as loss_10s_user
+         -- <=5s跳出用户
+         , bitmap_agg(case when total_watch_duration <= 5 then user_id end)  as exit_5s_user
+         -- >=10秒用户
+         , bitmap_agg(case when total_watch_duration >= 10 then user_id end) as complete_10s_user
          -- >=10分钟用户
          , bitmap_agg(case when total_watch_duration >= 600 then user_id end) as complete_10min_user
          -- >=30分钟用户
@@ -161,6 +181,128 @@ click_exposure_stat as (
         group by dt, core, current_language2, shortplay_id
     ) t
     group by dt, core, current_language2, shortplay_id
+),
+
+-- 枚举基础信息(名称使用 case when 映射)
+series_attr as (
+    select sv.SeriesId as series_id
+         , sv.SeriesLevel as series_level
+         , case sv.SeriesLevel
+               when 1 then 'S'
+               when 2 then 'A'
+               when 3 then 'B'
+               when 4 then 'C'
+               else null
+           end as series_level_name
+         , sv.WorkType as work_type
+         , case sv.WorkType
+               when 1 then '男频'
+               when 2 then '女频'
+               when 3 then '双番'
+               else null
+           end as work_type_name
+         , ssv.LocalType as local_type
+         , case ssv.LocalType
+               when 1 then '本土剧'
+               when 2 then '译制剧'
+               when 4 then '动态漫'
+               else null
+           end as local_type_name
+         , ssv.LocalSubType as local_sub_type
+         , case ssv.LocalSubType
+               when 1 then '本土剧-AI短剧'
+               else null
+           end as local_sub_type_name
+         , ssv.AudioType as audio_type
+         , case ssv.AudioType
+               when 1 then '原声剧'
+               when 2 then '配音剧'
+               else null
+           end as audio_type_name
+         , ssv.DubbedType as dubbed_type
+         , case ssv.DubbedType
+               when 1 then '人工配音'
+               when 2 then 'AI配音'
+               else null
+           end as dubbed_type_name
+    from ads.ads_series_view sv
+    left join ads.ads_source_series_view ssv
+      on sv.SeriesId = ssv.SeriesId
+),
+
+-- 分类标签聚合
+series_type_agg as (
+    select srt.series_id                          as series_id
+         , group_concat(st.name order by st.name) as series_type_labels
+    from dim.dim_short_video_series_ref_type_view           srt
+    left join dim.dim_short_video_series_type_view st
+    on srt.series_type_id = st.id
+    group by srt.series_id
+),
+
+-- 解锁明细(广告解锁 + 币券解锁 + VIP解锁)
+unlock_raw as (
+    select ue.dt
+         , coalesce(cast(substring(ue.app_id, 4, 3) as int), 0) as core
+         , ue.shortplay_id as series_id
+         , ue.login_id as user_id
+    from ads.ads_sensors_cd_video_unlockEpisode_view ue
+    join dim.dim_short_video_epis_view se
+      on ue.shortplay_id = se.series_id
+     and ue.episode_id = se.epis_id
+     and se.is_free = 0
+     and se.is_delete = 0
+    where ue.dt >= '${bf_4_dt}'
+      and ue.dt <= '${dt}'
+      and ue.unlock_type = '8' -- 广告解锁
+      and ue.project_id = '8'  -- 5阅读 8 短剧
+      and ue.shortplay_id is not null
+      and ue.login_id is not null
+
+    union all
+
+    select cb.dt
+         , coalesce(ed.corever, 0) as core
+         , cb.series_id
+         , cb.account_id as user_id
+    from dwd.dwd_sv_consume_user_consume_bill_pdi cb
+    join dim.dim_short_video_epis_view se
+      on cb.series_id = se.series_id
+     and cb.epis_id = se.epis_id
+     and se.is_free = 0
+     and se.is_delete = 0
+    join dws.dws_user_short_video_wide_active_period_ed ed
+      on cb.dt = ed.dt
+     and cb.account_id = ed.user_id
+     and ed.period_type = 'ctt'
+    where cb.dt >= '${bf_4_dt}'
+      and cb.dt <= '${dt}'
+      and cb.series_id is not null
+      and cb.account_id is not null
+
+    union all
+
+    select dt
+         , coalesce(cast(corever2 as int), 0) as core
+         , get_json_int(custom_data, '$.seriesId') as series_id
+         , user_id
+    from ads.ads_short_video_payorder_view
+    where dt >= '${bf_4_dt}'
+      and dt <= '${dt}'
+      and shop_item in (810, 860)
+      and get_json_int(custom_data, '$.seriesId') is not null
+      and user_id is not null
+),
+
+-- 本剧直充用户数
+unlock_stat as (
+    select dt
+         , core
+         , series_id
+         -- 本剧直充用户数
+         , bitmap_agg(user_id) as series_charge_user
+    from unlock_raw
+    group by 1, 2, 3
 )
 
 -- 最终输出
@@ -173,9 +315,22 @@ select s.dt                                 as dt
      , v.series_name
      , v.all_epis
      , v.cover_url
+     , sa.series_level
+     , sa.series_level_name
+     , sta.series_type_labels
+     , sa.work_type
+     , sa.work_type_name
+     , sa.local_type
+     , sa.local_type_name
+     , sa.local_sub_type
+     , sa.local_sub_type_name
+     , sa.audio_type
+     , sa.audio_type_name
+     , sa.dubbed_type
+     , sa.dubbed_type_name
      , v.publish_edat                       as publish_time
      , se.series_duration                   as series_duration
-     , se.first_pay_epis_num                 as first_pay_epis_num
+     , se.first_pay_epis_num                as first_pay_epis_num
      -- 点击曝光
      , coalesce(ce.click_num, 0)            as click_num
      , coalesce(ce.exposure_num, 0)         as exposure_num
@@ -183,6 +338,8 @@ select s.dt                                 as dt
      , s.first_epis_complete_user
      , s.first_epis_total_user
      , s.loss_10s_user
+     , s.exit_5s_user
+     , s.complete_10s_user
      , s.complete_10min_user
      , s.complete_30min_user
      , s.complete_60min_user
@@ -192,10 +349,17 @@ select s.dt                                 as dt
      , coalesce(s.total_play_duration, 0)   as total_play_duration
      , s.play_user
      , coalesce(p.play_count, 0)            as play_count
-     , now()                                as etl_time
-from series_stat                                       s
+     , es.unlock_user                       as series_unlock_user
+     , us.series_charge_user
+     , es.unlock_epis                       as total_unlock_epis_cnt
+     , now() as etl_time
+from series_stat s
 left join dim.dim_short_video_series_view v
   on s.series_id = v.series_id
+left join series_attr sa
+  on s.series_id = sa.series_id
+left join series_type_agg sta
+  on s.series_id = sta.series_id
 left join dim.dim_pub_code_mapping_dict dic
   on dic.app_plat = 'pub'
  and dic.cd_col = 'lang_cd'
@@ -210,6 +374,15 @@ left join click_exposure_stat                 ce
  and s.core = ce.core
  and s.language_code = ce.language_code
  and s.series_id = ce.series_id
+left join epis_stat es
+  on s.dt = es.dt
+ and s.core = es.core
+ and s.language_code = es.language_code
+ and s.series_id = es.series_id
+left join unlock_stat us
+  on s.dt = us.dt
+ and s.core = us.core
+ and s.series_id = us.series_id
 left join (select series_id
                 , sum(duration)                                as series_duration
                 , min(case when is_free = 0 then epis_num end) as first_pay_epis_num
@@ -218,4 +391,3 @@ left join (select series_id
            group by series_id
           ) se on s.series_id = se.series_id
 ;
-
