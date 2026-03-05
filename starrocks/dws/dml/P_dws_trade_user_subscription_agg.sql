@@ -31,20 +31,20 @@ with yes_data_tmp as (
          , ydt.item_id
          , case when ydt.recharge_type_cd = '860' and y8c.yes_810_cnt > 0 then ydt.yesterday_cnt + y8c.yes_810_cnt
                 else ydt.yesterday_cnt
-            end                as yesterday_cnt
+            end                               as yesterday_cnt
          , case when ydt.recharge_type_cd = '860' and y8c.yes_810_cnt > 0 then 2
                 else ydt.yesterday_max_status
-            end                as yesterday_max_status
+            end                               as yesterday_max_status
          , ydt.first_create_time
-      from yes_data_tmp        as ydt
+      from yes_data_tmp                       as ydt
       left join (select dt
                       , product_id
                       , user_id
-                      , count(1)    as yes_810_cnt
+                      , sum(yesterday_cnt)    as yes_810_cnt
                    from yes_data_tmp
                   where recharge_type_cd = '810'
                   group by 1, 2, 3
-                )                   as y8c
+                )                             as y8c
         on ydt.dt = y8c.dt
        and ydt.product_id = y8c.product_id
        and ydt.user_id = y8c.user_id
