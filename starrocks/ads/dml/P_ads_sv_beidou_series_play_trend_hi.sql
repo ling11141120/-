@@ -54,6 +54,12 @@ select h.dt
      , dic.cd_val_desc                  as language_name
      , v.series_code
      , v.series_name
+     , sv.SeriesLevel                   as series_level
+     , sv.WorkType                      as work_type
+     , ssv.LocalType                    as local_type
+     , ssv.LocalSubType                 as local_sub_type
+     , ssv.AudioType                    as audio_type
+     , ssv.DubbedType                   as dubbed_type
      , date(h.hour_time)                as day_time
      , date_trunc('month', h.hour_time) as month_time
      , h.play_count
@@ -61,6 +67,10 @@ select h.dt
 from hourly_play h
 left join dim.dim_short_video_series_view v
   on h.series_id = v.series_id
+left join ads.ads_series_view sv
+  on h.series_id = sv.SeriesId
+left join ads.ads_source_series_view ssv
+  on h.series_id = ssv.SeriesId
 left join dim.dim_pub_code_mapping_dict dic
   on dic.app_plat = 'pub'
  and dic.cd_col = 'lang_cd'
