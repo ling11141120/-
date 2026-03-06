@@ -44,6 +44,19 @@ hourly_play as (
     left join dim.dim_short_video_series_view s
       on ew.series_id = s.series_id
     group by 1, 2, 3, 4, 5
+),
+-- 枚举基础信息
+series_attr as (
+    select sv.SeriesId      as series_id
+         , sv.SeriesLevel   as series_level
+         , sv.WorkType      as work_type
+         , ssv.LocalType    as local_type
+         , ssv.LocalSubType as local_sub_type
+         , ssv.AudioType    as audio_type
+         , ssv.DubbedType   as dubbed_type
+    from ads.ads_series_view sv
+    left join ads.ads_source_series_view ssv
+      on sv.SourceSeriesId = ssv.SeriesId
 )
 
 select h.dt
@@ -54,12 +67,12 @@ select h.dt
      , dic.cd_val_desc                  as language_name
      , v.series_code
      , v.series_name
-     , sv.SeriesLevel                   as series_level
-     , sv.WorkType                      as work_type
-     , ssv.LocalType                    as local_type
-     , ssv.LocalSubType                 as local_sub_type
-     , ssv.AudioType                    as audio_type
-     , ssv.DubbedType                   as dubbed_type
+     , s.series_level                   as series_level
+     , s.work_type                      as work_type
+     , s.local_type                     as local_type
+     , s.local_sub_type                 as local_sub_type
+     , s.audio_type                     as audio_type
+     , s.dubbed_type                    as dubbed_type
      , date(h.hour_time)                as day_time
      , date_trunc('month', h.hour_time) as month_time
      , h.play_count
@@ -67,10 +80,8 @@ select h.dt
 from hourly_play h
 left join dim.dim_short_video_series_view v
   on h.series_id = v.series_id
-left join ads.ads_series_view sv
-  on h.series_id = sv.SeriesId
-left join ads.ads_source_series_view ssv
-  on h.series_id = ssv.SeriesId
+left join series_attr s
+  on h.series_id = s.series_id
 left join dim.dim_pub_code_mapping_dict dic
   on dic.app_plat = 'pub'
  and dic.cd_col = 'lang_cd'
