@@ -7,6 +7,11 @@
 -- 版本号： v1.0
 ----------------------------------------------------------------
 
+-- 尝试开启Bitmap预聚合优化
+SET new_planner_optimize_timeout = 3000;
+-- 关闭 runtime 自适应并行（防止 bitmap 放大）
+SET enable_runtime_adaptive_dop = false;
+
 -- DML
 insert into ads.ads_sv_beidou_series_daily_stat_di
 with
@@ -71,7 +76,7 @@ epis_stat as (
     -- 本剧解锁用户数
     , bitmap_agg(case when is_free = 0 then user_id end) as unlock_user
     -- 本剧解锁集数
-    , bitmap_agg(case when is_free = 0 then epis_id end) as unlock_epis
+    , bitmap_union(case when is_free = 0 then bitmap_hash(concat(cast(user_id as string), '_', epis_id)) end) as unlock_epis
     from watch_base w
     where series_id is not null
     group by dt, core, language_code, series_id
@@ -227,7 +232,7 @@ series_attr as (
            end as dubbed_type_name
     from ads.ads_series_view sv
     left join ads.ads_source_series_view ssv
-      on sv.SeriesId = ssv.SeriesId
+      on sv.SourceSeriesId = ssv.SeriesId
 ),
 
 -- 分类标签聚合
