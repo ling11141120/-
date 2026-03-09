@@ -10,6 +10,9 @@ create table ads.ads_user_short_video_c4_gold_earn_behavior (
     ,app_duration           decimal(16,2)          comment "app使用时长(秒)"
     ,total_login_days       int                    comment "总登录天数(累计值)"
     ,watch_episode_count    int                    comment "观看剧集次数"
+    ,ad_request_pv          bigint                 comment "广告请求数"
+    ,ad_show_success_pv     bigint                 comment "广告成功展示数"
+    ,ad_show_fail_pv        bigint                 comment "广告失败数"
     ,coin_user_type         int                    comment "金币用户类型,0=非金币|1=金币"
     ,etl_tm                 datetime               comment "etl清洗时间"
 )
@@ -26,4 +29,15 @@ properties (
     "compression" = "lz4"
 )
 ;
+
+-- 已有表增加字段时执行(仅运行一次)
+-- ALTER TABLE ads.ads_user_short_video_c4_gold_earn_behavior
+-- ADD COLUMN ad_request_pv bigint comment "广告请求数"
+-- AFTER watch_episode_count;
+-- ALTER TABLE ads.ads_user_short_video_c4_gold_earn_behavior
+-- ADD COLUMN ad_show_success_pv bigint comment "广告成功展示数"
+-- AFTER ad_request_pv;
+-- ALTER TABLE ads.ads_user_short_video_c4_gold_earn_behavior
+-- ADD COLUMN ad_show_fail_pv bigint comment "广告失败数"
+-- AFTER ad_show_success_pv;
 
