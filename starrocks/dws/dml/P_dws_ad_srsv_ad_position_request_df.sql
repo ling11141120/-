@@ -79,6 +79,7 @@ with ad_position as (
            cast(substring_index(substring_index(app_version, '.', 3), '.', -1) as unsigned)    as app_ver
           ,a1.request_result
           ,null                                                                                as request_duration
+          ,a1.event_tm
       from ods_log.ods_sensors_cd_video_adrequest    as a1
       left join ad_position                          as a2
         on coalesce(a1.ad_position_id1,a1.ad_position_id,'-99') = a2.ad_position
@@ -125,6 +126,7 @@ with ad_position as (
            cast(substring_index(substring_index(app_version, '.', 3), '.', -1) as unsigned)    as app_ver
           ,null                                                                                as request_result
           ,null                                                                                as request_duration
+          ,a1.event_tm
       from ods_log.ods_sensors_production_adinvocation    as a1
       left join ad_position                               as a2
         on coalesce(a1.ad_position_id1,a1.ad_position_id,'-99') = a2.ad_position
@@ -171,6 +173,7 @@ with ad_position as (
            cast(substring_index(substring_index(app_version, '.', 3), '.', -1) as unsigned)    as app_ver
           ,null                                                                                as request_result
           ,request_duration
+          ,a1.event_tm
       from ods_log.ods_sensors_production_adshow    as a1
       left join ad_position                         as a2
         on coalesce(a1.ad_position_id1,a1.ad_position_id,'-99') = a2.ad_position
@@ -217,6 +220,7 @@ with ad_position as (
            cast(substring_index(substring_index(app_version, '.', 3), '.', -1) as unsigned)    as app_ver
           ,null                                                                                as request_result
           ,null                                                                                as request_duration
+          ,a1.event_tm
       from ods_log.ods_sensors_production_adtrigger   as a1
       left join ad_position                           as a2
         on coalesce(a1.ad_position_id1,a1.ad_position_id,'-99') = a2.ad_position
@@ -259,6 +263,7 @@ select a1.dt                                            as dt                   
       ,a1.app_ver                                       as app_ver              -- 应用版本号
       ,a1.request_result                                as request_result       -- 广告请求结果
       ,a1.request_duration                              as request_duration     -- 请求时长
+      ,a1.event_tm                                      as event_tm             -- 事件时间
       ,now()                                            as etl_tm               -- 清洗时间
   from union_result                         as a1
   left join dim.dim_sr_ads_position_view    as a2

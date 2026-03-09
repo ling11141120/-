@@ -28,8 +28,8 @@ with total_amount as (
     select login_id              as user_id
          ,sum(event_duration)    as app_duration -- app使用时长, 单位秒
      from ods_log.ods_sensors_append
-    where dt >= '${bf_1_dt}'
-      and dt <= '${dt}'
+    where dt >= '${dt}'
+      and dt <= '${af_1_dt}'
       and DATE(date_add(event_tm, interval -13 hour)) = '${dt}'
       and login_id is not null
     group by 1
@@ -38,8 +38,8 @@ with total_amount as (
     select AccountId                as user_id
          ,count(distinct EpisId)    as watch_episode_count -- 观看集数
     from ods.ods_tidb_short_video_log_ext_epis_history_part2
-    where dt >= '${bf_1_dt}'
-      and dt <= '${dt}'
+    where dt >= '${dt}'
+      and dt <= '${af_1_dt}'
       and DATE(date_add(CreateTime, interval -13 hour)) = '${dt}'
     group by 1
 )
@@ -52,8 +52,8 @@ with total_amount as (
                select account_id
                      ,sum(coin)  as coin_num -- 金币数
                from ods.ods_tidb_short_video_account_coin_claim_record
-               where dt >= '${bf_1_dt}'
-                 and dt <= '${dt}'
+               where dt >= '${dt}'
+                 and dt <= '${af_1_dt}'
                  and DATE(date_add(created_time, interval -13 hour)) = '${dt}'
                group by 1
               ) coin
@@ -69,6 +69,20 @@ with total_amount as (
       and corever = 4
     group by 1
 )
+, ad_behavior_west5 as (
+    select user_id
+          ,sum(if(event_name = 'ADRequest', 1, 0))    as ad_request_pv
+          ,sum(if(event_name = 'ADShow', 1, 0))       as ad_show_success_pv
+          ,sum(if(event_name = 'ADTrigger', 1, 0))    as ad_show_fail_pv
+      from dws.dws_ad_srsv_ad_position_request_df
+     where dt >= '${dt}'
+       and dt <= '${af_1_dt}'
+       and project_id = 8
+       and ad_position_id != '0'
+       and user_id is not null
+       and DATE(date_add(event_tm, interval -13 hour)) = '${dt}'
+     group by 1
+ )
 
 select '${dt}'                                                                          -- 日期
       ,a1.user_id                                                                       -- 用户id
@@ -80,6 +94,9 @@ select '${dt}'                                                                  
       ,coalesce(a4.app_duration,0)                                 as app_duration      -- app使用时长
       ,coalesce(a7.total_login_days,0) + coalesce(a8.is_active,0)  as total_login_days  -- 总登录天数
       ,a5.watch_episode_count                                                           -- 观看剧集次数
+      ,coalesce(a9.ad_request_pv,0)                                as ad_request_pv     -- 广告请求数
+      ,coalesce(a9.ad_show_success_pv,0)                           as ad_show_success_pv -- 广告成功展示数
+      ,coalesce(a9.ad_show_fail_pv,0)                              as ad_show_fail_pv   -- 广告失败数
       ,a6.user_type                                                as coin_user_type    -- 金币用户类型
       ,now() as etl_tm
   from dim.dim_short_video_user_accountinfo                as a1
@@ -98,6 +115,8 @@ select '${dt}'                                                                  
    and a7.dt = '${bf_1_dt}'
   left join active_user_cnt                                as a8
     on a1.user_id=a8.user_id
+  left join ad_behavior_west5                              as a9
+    on a1.user_id=a9.user_id
  where a1.corever=4
    and a1.dt <= '${dt}'
    and DATE(date_add(create_time, interval -13 hour)) <= '${dt}'

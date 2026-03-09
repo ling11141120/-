@@ -17,6 +17,7 @@ create table dws.dws_ad_srsv_ad_position_request_df (
     ,app_ver              bigint                                comment "应用版本号"
     ,request_result       varchar(50)                           comment "广告请求结果"
     ,request_duration     decimal(20, 3)                        comment "请求时长"
+    ,event_tm             datetime                              comment "事件时间"
     ,etl_tm               datetime default current_timestamp    comment "清洗时间"
 )
 primary key(dt, event_name, id)
@@ -31,3 +32,8 @@ properties (
    ,"compression" = "LZ4"
 )
 ;
+
+-- 已有表增加字段时执行(仅运行一次)
+# ALTER TABLE dws.dws_ad_srsv_ad_position_request_df
+# ADD COLUMN event_tm datetime null comment "事件时间"
+# AFTER request_duration;
