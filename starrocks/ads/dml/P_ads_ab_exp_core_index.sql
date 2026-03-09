@@ -1,4 +1,12 @@
-insert into ads.ads_ab_exp_core_index
+----------------------------------------------------------------
+-- 程序功能： AB实验核心指标表
+-- 程序名： P_ads_ab_exp_core_index
+-- 目标表： ads.ads_ab_exp_core_index
+-- 负责人： qhr
+-- 开发日期： 2026-03-09
+----------------------------------------------------------------
+
+insert into tmp.ads_ab_exp_core_index
 -- 去重指标
 with distinct_data_tmp as (
     select '${dt}'                                                                                                     as dt
@@ -48,8 +56,8 @@ with distinct_data_tmp as (
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then coin_consume          end)    as coin_consume           -- 阅币消费金额
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then gift_consume          end)    as gift_consume           -- 礼券消费金额
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then adv_unlock_times      end)    as adv_unlock_times       -- 广告解锁剧集次数
-      from dwm.dwm_ab_exp_accumulation_stat_di a
-      left join dim.dim_date              b
+      from dwm.dwm_ab_exp_accumulation_stat_di    as a
+      left join dim.dim_date                      as b
         on a.dt >= b.datestr
        and b.datestr >= date_sub(a.dt, interval 30 day)
      where a.dt >= date_add('${dt}', -31)
@@ -69,8 +77,8 @@ with distinct_data_tmp as (
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.signin_recharge_amount end)                           as signin_recharge_amount
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.svip_recharge_amount end)                             as svip_recharge_amount
          , sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.normal_recharge_amount end)                           as normal_recharge_amount
-      from dwm.dwm_ab_exp_recharge_data_di  as a
-      left join dim.dim_date                as b
+      from dwm.dwm_ab_exp_recharge_data_di    as a
+      left join dim.dim_date                  as b
         on a.dt >= b.datestr
        and b.datestr >= date_sub(a.dt, interval 30 day)
      where a.dt >= date_add('${dt}', -31)
@@ -232,14 +240,15 @@ select a.exp_id
      , f.buyersNum
      , f.buyAmount
      , a.exposureNum                                                                                            as episodeExposureNum
-     , round(a.clickNum / a.exposureNum, 6) as clickCTR
+     , round(a.clickNum / a.exposureNum, 6)                                                                     as clickCTR
      , f.ctr
      , f.unlockArppu
      , f.unlockArpu
-     , NOW()                                                                                                    as saveTime
-     , NOW()                                                                                                    as updateTime
+     , now()                                                                                                    as saveTime
+     , now()                                                                                                    as updateTime
      , b.start_time
      , b.end_time
+     , round(e.viewEpisodeNum / a.viewNum, 6)                                                                   as watchEpisodeNumAvg
   from distinct_data_tmp                     as a
   left join dwd.dwd_ab_exp_version_detail    as b
     on a.exp_id = b.exp_id
@@ -257,6 +266,6 @@ select a.exp_id
    and a.exp_grp_id = f.exp_grp_id
    and a.exp_grp_ver_id = f.exp_grp_ver_id
    and a.windowNum = f.windowNum
- where date (b.end_time)>='${dt}'
-   and date (b.exp_end_time)>='${dt}'
+ where date(b.end_time)>='${dt}'
+   and date(b.exp_end_time)>='${dt}'
 ;

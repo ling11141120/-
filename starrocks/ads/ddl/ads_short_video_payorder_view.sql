@@ -37,7 +37,7 @@ create or replace view ads.ads_short_video_payorder_view (
     ,corever2         comment "当前core"
     ,vip_type         comment "订阅周期"
 )
-# comment "短剧支付订单视图"
+comment "短剧支付订单视图"
 as
 select a.dt                 as dt                  -- createtime分区
      , 6833                 as product_id          -- 产品id 6833海外短剧
