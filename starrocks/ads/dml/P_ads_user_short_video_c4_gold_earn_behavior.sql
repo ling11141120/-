@@ -63,6 +63,18 @@ with total_amount as (
       and corever = 4
     group by 1
 )
+, ad_behavior as (
+    select user_id
+          ,sum(if(event_name = 'ADRequest', 1, 0))    as ad_request_pv
+          ,sum(if(event_name = 'ADShow', 1, 0))       as ad_show_success_pv
+          ,sum(if(event_name = 'ADTrigger', 1, 0))    as ad_show_fail_pv
+      from dws.dws_ad_srsv_ad_position_request_df
+     where dt = '${dt}'
+       and project_id = 8
+       and ad_position_id != '0'
+       and user_id is not null
+     group by 1
+ )
 
 select '${dt}'                                                                          -- 日期
       ,a1.user_id                                                                       -- 用户id
@@ -74,6 +86,9 @@ select '${dt}'                                                                  
       ,coalesce(a4.app_duration,0)                                 as app_duration      -- app使用时长
       ,coalesce(a7.total_login_days,0) + coalesce(a8.is_active,0)  as total_login_days  -- 总登录天数
       ,a5.watch_episode_count                                                           -- 观看剧集次数
+      ,coalesce(a9.ad_request_pv,0)                                as ad_request_pv     -- 广告请求数
+      ,coalesce(a9.ad_show_success_pv,0)                           as ad_show_success_pv -- 广告成功展示数
+      ,coalesce(a9.ad_show_fail_pv,0)                              as ad_show_fail_pv   -- 广告失败数
       ,a6.user_type                                                as coin_user_type    -- 金币用户类型
       ,now() as etl_tm
   from dim.dim_short_video_user_accountinfo                as a1
@@ -92,6 +107,8 @@ select '${dt}'                                                                  
    and a7.dt = '${bf_1_dt}'
   left join active_user_cnt                                as a8
     on a1.user_id=a8.user_id
+  left join ad_behavior                                    as a9
+    on a1.user_id=a9.user_id
  where a1.corever=4
    and a1.dt <= '${dt}'
 ;
