@@ -46,7 +46,7 @@ with exp_user_tmp as (
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.adv_amount end), 0)          as adv_amount          -- 广告收入
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.adv_unlock_times end), 0)    as adv_unlock_times    -- 广告解锁剧集次数
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.unlock_amount end), 0)       as unlock_amount       -- 解锁数量
-         , ifnull(sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then watch_episodes end), 0)       as viewEpisodeNum      -- 观看集数
+         , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.watch_episodes end), 0)      as viewEpisodeNum      -- 观看集数
       from dwm.dwm_ab_exp_user_accumulation_stat_di as a
       left join dim.dim_date                        as b
         on a.dt >= b.datestr
