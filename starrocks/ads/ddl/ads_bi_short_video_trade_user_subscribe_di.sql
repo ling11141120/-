@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_bi_short_video_trade_user_subscribe_di;
-create table tmp.ads_bi_short_video_trade_user_subscribe_di (
+drop table if exists ads.ads_bi_short_video_trade_user_subscribe_di;
+create table ads.ads_bi_short_video_trade_user_subscribe_di (
      dt                date           not null comment "统计日期"
     ,product_id        int            not null comment "产品id 6833海外短剧"
     ,id                int            not null comment "id"
