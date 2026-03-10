@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_ab_exp_core_index_stream;
-create table tmp.ads_ab_exp_core_index_stream (
+drop table if exists ads.ads_ab_exp_core_index_stream;
+create table ads.ads_ab_exp_core_index_stream (
      experimentId                 bigint         not null comment "实验id"
     ,experimentGroupId            bigint         not null comment "实验组id"
     ,projectId                    int            not null comment "项目id"
@@ -90,5 +90,3 @@ properties (
     "compression" = "LZ4"
 )
 ;
-
-alter table tmp.ads_ab_exp_core_index_stream add columns watchEpisodeNumAvg decimal(20, 6) comment "人均观看集数"

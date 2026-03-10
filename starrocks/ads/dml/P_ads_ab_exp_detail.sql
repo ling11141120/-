@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-09
 ----------------------------------------------------------------
 
-insert into tmp.ads_ab_exp_detail
+insert into ads.ads_ab_exp_detail
 -- 实验总人数
 with exp_user_tmp as (
     select a.exp_id                                             -- 实验ID
@@ -46,7 +46,7 @@ with exp_user_tmp as (
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.adv_amount end), 0)          as adv_amount          -- 广告收入
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.adv_unlock_times end), 0)    as adv_unlock_times    -- 广告解锁剧集次数
          , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.unlock_amount end), 0)       as unlock_amount       -- 解锁数量
-         , ifnull(sum(case when date('${dt}') - a.dt <= datediff(a.dt, b.datestr) then a.watch_episodes end), 0)      as viewEpisodeNum      -- 观看集数
+         , ifnull(sum(case when date ('${dt}') - a.dt <= datediff(a.dt, b.datestr) then watch_episodes end), 0)       as viewEpisodeNum      -- 观看集数
       from dwm.dwm_ab_exp_user_accumulation_stat_di as a
       left join dim.dim_date                        as b
         on a.dt >= b.datestr
@@ -208,13 +208,13 @@ select dt
           from exp_core_index_detail
          group by 1, 2, 3, 4, 5, 6, 7
          union all
-        select a.dt
-             , a.experimentId
-             , a.experimentGroupId
-             , a.projectId
-             , a.experimentType
-             , a.trackficVersion
-             , a.windowNum
+        select a.dt                               as dt
+             , a.experimentId                     as experimentId
+             , a.experimentGroupId                as experimentGroupId
+             , a.projectId                        as projectId
+             , a.experimentType                   as experimentType
+             , a.trackficVersion                  as trackficVersion
+             , a.windowNum                        as windowNum
              , 0                                  as totalNumberGroup
              , 0                                  as arpuMean
              , 0                                  as arpuVar
@@ -224,16 +224,16 @@ select dt
              , 0                                  as totalAdverArpuVar
              , 0                                  as adverUnlockEpisodeNumMean
              , 0                                  as adverUnlockEpisodeNumVar
-             , a.oneExposureArpuMean
-             , a.oneExposureArpuVar
-             , b.oneExposureAllArpuMean
-             , b.oneExposureAllArpuVar
-             , a.oneExposureArpuDingYueMean
-             , a.oneExposureArpuDingYueVar
-             , a.predictARPUMean
-             , a.predictARPUVar
-             , a.buyersNum
-             , a.buyAmount
+             , a.oneExposureArpuMean              as oneExposureArpuMean
+             , a.oneExposureArpuVar               as oneExposureArpuVar
+             , b.oneExposureAllArpuMean           as oneExposureAllArpuMean
+             , b.oneExposureAllArpuVar            as oneExposureAllArpuVar
+             , a.oneExposureArpuDingYueMean       as oneExposureArpuDingYueMean
+             , a.oneExposureArpuDingYueVar        as oneExposureArpuDingYueVar
+             , a.predictARPUMean                  as predictARPUMean
+             , a.predictARPUVar                   as predictARPUVar
+             , a.buyersNum                        as buyersNum
+             , a.buyAmount                        as buyAmount
              , 0                                  as unlockArppuMean
              , 0                                  as unlockArppuVar
              , 0                                  as watchEpisodeNumAvgMean

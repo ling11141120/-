@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_sv_act_user_stat_mi;
-create table tmp.ads_sv_act_user_stat_mi (
+drop table if exists ads.ads_sv_act_user_stat_mi;
+create table ads.ads_sv_act_user_stat_mi (
      dt                          date            not null comment "日期分区(月)"
     ,projectId                   int             not null comment "项目id"
     ,totalUsers                  int             not null comment "总的用户数"
@@ -74,9 +74,3 @@ properties (
     "compression" = "LZ4"
 )
 ;
-
-alter table ads.ads_sv_act_user_stat_mi add columns (
-     watchEpisodeNumAvgMean decimal(20, 6) comment "人均观看集数均值"
-    ,watchEpisodeNumAvgSt   decimal(20, 6) comment "人均观看集数标准差"
-    ,watchEpisodeNumAvgVar  decimal(20, 6) comment "人均观看集数方差"
-)

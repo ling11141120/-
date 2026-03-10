@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-09
 ----------------------------------------------------------------
 
-insert into tmp.ads_ab_exp_core_index_stream
+insert into ads.ads_ab_exp_core_index_stream
 -- 实验总人数
 with exp_user_tmp as (
     select a.exp_id                                          -- 实验ID
@@ -260,8 +260,8 @@ select a.exp_id
      , c.ctr
      , c.unlockArppu
      , c.unlockArpu
-     , NOW()                                     as saveTime
-     , NOW()                                     as updateTime
+     , now()                                     as saveTime
+     , now()                                     as updateTime
      , round(b.viewEpisodeNum / a.viewNum, 6)    as watchEpisodeNumAvg
   from distinct_data_tmp                     as a
   left join accumulate_data_tmp              as b

@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_ab_exp_detail;
-create table tmp.ads_ab_exp_detail (
+drop table if exists ads.ads_ab_exp_detail;
+create table ads.ads_ab_exp_detail (
      dt                         date           not null comment "日期分区"
     ,experimentId               bigint         not null comment "实验id"
     ,experimentGroupId          bigint         not null comment "实验组id"
@@ -47,8 +47,3 @@ properties (
     "compression" = "LZ4"
 )
 ;
-
-alter table tmp.ads_ab_exp_detail add columns (
-     watchEpisodeNumAvgMean decimal(20, 6) comment "人均观看剧集均值"
-    ,watchEpisodeNumAvgVar  decimal(20, 6) comment "人均观看剧集方差"
-)

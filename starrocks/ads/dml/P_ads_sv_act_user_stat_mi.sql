@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-09
 ----------------------------------------------------------------
 
-insert into tmp.ads_sv_act_user_stat_mi
+insert into ads.ads_sv_act_user_stat_mi
 -- 阅读用户
 with t3  as(
     select date_format(a.dt, '%Y-%m-01')           as dt

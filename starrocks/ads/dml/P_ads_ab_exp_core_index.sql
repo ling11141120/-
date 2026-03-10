@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-09
 ----------------------------------------------------------------
 
-insert into tmp.ads_ab_exp_core_index
+insert into ads.ads_ab_exp_core_index
 -- 去重指标
 with distinct_data_tmp as (
     select '${dt}'                                                                                                     as dt

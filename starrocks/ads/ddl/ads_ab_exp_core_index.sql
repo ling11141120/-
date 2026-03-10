@@ -1,5 +1,5 @@
-drop table if exists tmp.ads_ab_exp_core_index;
-create table tmp.ads_ab_exp_core_index (
+drop table if exists ads.ads_ab_exp_core_index;
+create table ads.ads_ab_exp_core_index (
      experimentId                    bigint          not null comment "实验id"
     ,experimentGroupId               bigint          not null comment "实验组id"
     ,dt                              date            not null comment "日期分区"
@@ -96,5 +96,3 @@ properties (
     "compression" = "LZ4"
 )
 ;
-
-alter table ads.ads_ab_exp_core_index add columns watchEpisodeNumAvg decimal(20, 6) comment "人均观看集数";
