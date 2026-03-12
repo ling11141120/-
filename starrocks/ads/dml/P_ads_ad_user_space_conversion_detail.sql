@@ -66,7 +66,7 @@ with event_detail as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100772'
-       and type = '121'
+       and type in('121','123') 
      group by 1,2,3,4,5,6
      union all
     -- H5广告位广告曝光
