@@ -258,6 +258,17 @@ select a1.dt                                                                 as 
                       where dt >= '${bf_4_dt}'
                         and ProjectType = 1
                       group by 1,2
+                      union all
+                     select dt
+                           ,'adjoe'    as ads_name
+                           ,0          as ad_request
+                           ,0          as match_request
+                           ,0          as ad_show_count
+                           ,0          as ad_click_count
+                       from ods.ods_tidb_readernovel_tidb_xx_adjoedata
+                      where dt >= '${bf_4_dt}'
+                        and ProjectType = 1
+                      group by 1,2
                     )          as b1
                left join (select dt
                                 ,ads_name
