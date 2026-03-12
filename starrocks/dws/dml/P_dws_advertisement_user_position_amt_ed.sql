@@ -29,7 +29,7 @@ with ad_click_count as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and element_id = '100772'
-       and type = '121'
+       and type in ('121', '123')
        and ad_src is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
      union all
@@ -193,6 +193,18 @@ with ad_click_count as (
                        ,'Bees'             as ads_name
                        ,sum(netrevenue)    as revenue_share
                    from ods.ods_tidb_readernovel_tidb_xx_beesadsdata
+                  where dt>='${bf_1_dt}'
+                    and dt<='${dt}'
+                  group by 1,2,3
+                  union all
+                 select dt                 as dt
+                       ,case when projecttype = 1 then 2
+                             when projecttype = 2 then 1
+                             else projecttype
+                         end               as system_type
+                       ,'adjoe'            as ads_name
+                       ,sum(revenue)       as revenue_share
+                   from ods.ods_tidb_readernovel_tidb_xx_adjoedata
                   where dt>='${bf_1_dt}'
                     and dt<='${dt}'
                   group by 1,2,3

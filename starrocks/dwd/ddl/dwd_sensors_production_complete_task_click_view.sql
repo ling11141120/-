@@ -67,7 +67,10 @@ select a1.dt                                      as dt                   -- 分
       ,a1.etl_tm                                  as etl_tm               -- etl_tm
       ,a1.task_type                               as task_type            -- 任务类型
       ,a1.corever                                 as corever              -- corever
-      ,a1.add_source                              as ad_src               -- 广告来源
+      ,if(a1.type='123' and a1.element_id='100772'
+         ,'10'
+         ,a1.add_source
+         )                                        as ad_src               -- 广告来源
       ,a1.appCoreVer                              as appCoreVer           -- 海阅新core值
       ,a1.dollar_app_id                           as dollar_app_id        -- 海剧海阅共用，可转换为core值
   from ods_log.ods_sensors_production_complete_task_click    as a1
