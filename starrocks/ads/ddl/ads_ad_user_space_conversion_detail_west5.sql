@@ -19,6 +19,7 @@ create table ads.ads_ad_user_space_conversion_detail_west5 (
     ,ad_revenue_amount      decimal(12, 6)                              comment "广告收益"
     ,etl_time               datetime       default current_timestamp    comment "清洗时间"
     ,ad_show_pv             bigint(20)                                  comment "广告展示成功PV"
+    ,ad_src_name            varchar(20)                                 comment "广告来源名称"
 )
 primary key (dt, user_id, ad_position_id, ad_strategy_id, main_strategy_id, ad_type, period_type)
 comment "用户广告位转化明细_西五区"

@@ -177,6 +177,7 @@ select a1.dt                                                                 as 
             when a1.ads_name in('Starmobi_2') then 7
             when a1.ads_name in('synjoy') then 8
             when a1.ads_name in('Bees') then 9
+            when a1.ads_name in('adjoe') then 10
             else null
         end                                                                  as tps                    -- 标签
       ,sum(a1.amt)                                                           as ad_amt                 -- AdMob 发布商的估算收入,单位，美元
@@ -276,7 +277,7 @@ select a1.dt                                                                 as 
                             from dws.dws_advertisement_user_position_amt_ed
                            where dt >= '${bf_4_dt}'
                              and product_id <> 6833
-                             and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees')
+                             and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees','adjoe')
                            group by 1, 2
                          )    as b2
                  on b1.dt = b2.dt
@@ -286,7 +287,7 @@ select a1.dt                                                                 as 
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where a1.product_id <> 6833
-   and a1.ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees')
+   and a1.ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees','adjoe')
    and a1.dt >= '${bf_4_dt}'
  group by 1, 2, 3, 4, 5, 6, 7, 8
 ;

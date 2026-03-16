@@ -2,7 +2,7 @@
 -- 程序功能： 阅读及海剧用户广告展现位置收益表_西五区
 -- 程序名： dws_advertisement_user_position_amt_west5_ed
 -- 目标表： dws.dws_advertisement_user_position_amt_west5_ed
--- 负责人： roger
+-- 负责人： roger/xjc
 -- 开发日期：2025/12/11
 -- 版本号： v0.1
 ----------------------------------------------------------------
@@ -12,47 +12,47 @@ delete from  dws.dws_advertisement_user_position_amt_west5_ed where dt>='${bf_1_
 insert into dws.dws_advertisement_user_position_amt_west5_ed
 -- 统计每日H5点击
 with ad_click_count as (
-    select date(date_add(event_tm,interval -13 hour)) as dt
-          ,a1.app_product_id       as product_id
-          ,a1.login_id             as user_id
-          ,a1.app_core_ver         as core
+    select date(date_add(event_tm,interval -13 hour))   as dt
+          ,a1.app_product_id                            as product_id
+          ,a1.login_id                                  as user_id
+          ,a1.app_core_ver                              as core
           ,a1.mt
           ,a1.appver
-          ,5                       as ad_show_type
-          ,59                      as positions
-          ,a1.ad_src               as ads_src
-          ,null                    as main_strategy_id
-          ,null                    as event_strategy_id
-          ,a1.event_strategy_id    as programme_id
-          ,2                       as system_type
-          ,count(1)                as ad_click_count
+          ,5                                            as ad_show_type
+          ,59                                           as positions
+          ,a1.ad_src                                    as ads_src
+          ,null                                         as main_strategy_id
+          ,null                                         as event_strategy_id
+          ,a1.event_strategy_id                         as programme_id
+          ,if(a1.app_core_ver=4 and a1.ad_src=7,3,2)    as system_type
+          ,count(1)                                     as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
        and element_id = '100772'
-       and type = '121'
+       and type in('121', '123')
        and ad_src is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
-    select date(date_add(event_tm,interval -13 hour)) as dt
-          ,a1.app_product_id       as product_id
-          ,a1.login_id             as user_id
-          ,a1.app_core_ver         as core
+    select date(date_add(event_tm,interval -13 hour))   as dt
+          ,a1.app_product_id                            as product_id
+          ,a1.login_id                                  as user_id
+          ,a1.app_core_ver                              as core
           ,a1.mt
           ,a1.appver
-          ,5                       as ad_show_type
-          ,a1.ad_position_id       as positions
-          ,a1.ad_src               as ads_src
+          ,5                                            as ad_show_type
+          ,a1.ad_position_id                            as positions
+          ,a1.ad_src                                    as ads_src
           ,a1.main_strategy_id
-          ,a1.ad_strategy_id       as event_strategy_id
-          ,a1.programme_id         as programme_id
-          ,2                       as system_type
-          ,count(1)                as ad_click_count
+          ,a1.ad_strategy_id                            as event_strategy_id
+          ,a1.programme_id                              as programme_id
+          ,if(a1.app_core_ver=4 and a1.ad_src=7,3,2)    as system_type
+          ,count(1)                                     as ad_click_count
       from dwd.dwd_sensors_production_element_click_view    as a1
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
-       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')
        and element_id = '100356'
        and ad_position_id > 0
        and app_product_id is not null
@@ -60,113 +60,67 @@ with ad_click_count as (
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
     -- 海剧每日H5点击
-    select date(date_add(event_tm,interval -13 hour)) as dt
+    select date(date_add(event_tm,interval -13 hour))    as dt
           ,a1.product_id
           ,a1.user_id
           ,a1.core
           ,a1.mt
           ,a1.appver
-          ,a1.ad_type             as ad_show_type
-          ,a2.ad_position         as positions
-          ,a1.ad_src              as ads_src
+          ,a1.ad_type                                    as ad_show_type
+          ,a2.ad_position                                as positions
+          ,a1.ad_src                                     as ads_src
           ,a1.main_strategy_id
           ,a1.event_strategy_id
           ,a1.programme_id
-          ,1                      as system_type
-          ,count(1)               as ad_click_count
+          ,if(a1.core=4 and a1.ad_src=7,3,1)             as system_type
+          ,count(1)                                      as ad_click_count
       from dwd.dwd_sensors_production_adpositionclick_view    as a1
       left join dim.dim_sv_ads_position_view                  as a2
         on a1.ad_position_id = a2.ad_position
      where a1.dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and a1.dt <= '${dt}'
-       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')
        and a1.ad_type = 6
        and a1.product_id = 6833
        and ad_src is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
-    select date(date_add(event_tm,interval -13 hour)) as dt
-          ,6833              as product_id
-          ,login_id          as user_id
-          ,corever           as core
+    select date(date_add(event_tm,interval -13 hour))    as dt
+          ,6833                                          as product_id
+          ,login_id                                      as user_id
+          ,corever                                       as core
           ,mt
           ,appver
-          ,6                 as ad_show_type
-          ,null              as positions
-          ,a1.ad_src         as ads_src
-          ,null              as main_strategy_id
+          ,6                                             as ad_show_type
+          ,null                                          as positions
+          ,a1.ad_src                                     as ads_src
+          ,null                                          as main_strategy_id
           ,event_strategy_id
-          ,null              as programme_id
-          ,1                 as system_type
-          ,count(1)          as ad_click_count
+          ,null                                          as programme_id
+          ,if(a1.corever=4 and a1.ad_src=7,3,1)          as system_type
+          ,count(1)                                      as ad_click_count
       from dwd.dwd_sensors_production_complete_task_click_view    as a1
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
-       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')    -- 取西五区的时间数据
+       and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')
        and task_type in('9', '浏览第三方页面')
        and app_product_id is null
        and length(ad_src)>=1
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
-)
--- 东八区昨日H5点击
-, ad_click_count_east8 as (
-    select a1.dt
-         ,a1.ad_src               as ads_src
-         ,2                       as system_type
-         ,count(1)                as ad_click_count
-    from dwd.dwd_sensors_production_complete_task_click_view    as a1
-    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
-      and element_id = '100772'
-      and type = '121'
-      and ad_src is not null
-    group by 1, 2, 3
-    union all
-    select a1.dt
-         ,a1.ad_src               as ads_src
-         ,2                       as system_type
-         ,count(1)                as ad_click_count
-    from dwd.dwd_sensors_production_element_click_view    as a1
-    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
-      and element_id = '100356'
-      and ad_position_id > 0
-      and app_product_id is not null
-      and ad_src is not null
-    group by 1, 2, 3
-    union all
-    -- 海剧每日H5点击
-    select a1.dt
-         ,a1.ad_src              as ads_src
-         ,1                      as system_type
-         ,count(1)               as ad_click_count
-    from dwd.dwd_sensors_production_adpositionclick_view    as a1
-    where a1.dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
-      and a1.ad_type = 6
-      and a1.product_id = 6833
-      and a1.ad_src is not null
-    group by 1, 2, 3
-    union all
-    select a1.dt
-         ,a1.ad_src         as ads_src
-         ,1                 as system_type
-         ,count(1)          as ad_click_count
-    from dwd.dwd_sensors_production_complete_task_click_view    as a1
-    where dt >= '${bf_1_dt}' and dt <= '${bf_1_dt}'
-      and task_type in('9', '浏览第三方页面')
-      and app_product_id is null
-      and length(ad_src)>=1
-    group by 1, 2, 3
 )
 -- 统计每日H5点击平均收益
 , avg_click_amount as (
     select a1.dt
           ,a1.system_type
           ,a2.ads_name
+          ,sum(a1.ad_click_count)                                   as ad_click_count
+          ,sum(a2.revenue_share)                                    as ad_amt
           ,round(sum(a2.revenue_share)/sum(a1.ad_click_count),9)    as ad_avg_click_amt
       from (select dt
-                  ,system_type
-                  ,a2.cd_val_desc        as ads_name
-                  ,sum(ad_click_count)   as ad_click_count
-              from ad_click_count_east8                        as a1
+                  ,a1.system_type
+                  ,a2.cd_val_desc         as ads_name
+                  ,sum(ad_click_count)    as ad_click_count
+              from ad_click_count                        as a1
               left join dim.dim_pub_code_mapping_dict    as a2
                 on a1.ads_src=a2.cd_val
                and a2.app_plat='pub'
@@ -225,7 +179,31 @@ with ad_click_count as (
                        ,'synjoy'            as ads_name
                        ,sum(revenue)*0.8    as revenue_share
                    from ods.ods_tidb_readernovel_tidb_xx_synjoyaddata
-                 where dt in ('${bf_1_dt}', '${dt}')
+                  where dt in ('${bf_1_dt}', '${dt}')
+                  group by 1,2,3
+                  union all
+                 select dt                 as dt
+                       ,case when ProjectType = 1 then 2
+                             when ProjectType = 2 then 1
+                             else ProjectType
+                         end               as system_type
+                       ,'Bees'             as ads_name
+                       ,sum(netrevenue)    as revenue_share
+                   from ods.ods_tidb_readernovel_tidb_xx_beesadsdata
+                  where dt>='${bf_1_dt}'
+                    and dt<='${dt}'
+                  group by 1,2,3
+                  union all
+                 select dt             as dt
+                       ,case when projecttype = 1 then 2
+                             when projecttype = 2 then 1
+                             else projecttype
+                         end           as system_type
+                      ,'adjoe'         as ads_name
+                      ,sum(revenue)    as revenue_share
+                   from ods.ods_tidb_readernovel_tidb_xx_adjoedata
+                  where dt>='${bf_1_dt}'
+                    and dt<='${dt}'
                   group by 1,2,3
                 )    as a2
         on a1.dt=a2.dt
