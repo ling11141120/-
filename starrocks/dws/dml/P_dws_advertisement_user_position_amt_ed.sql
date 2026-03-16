@@ -55,7 +55,7 @@ with ad_click_count as (
        and ad_position_id > 0
        and app_product_id is not null
        and ad_src is not null
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
      union all
     -- 海剧每日H5点击
     select a1.dt

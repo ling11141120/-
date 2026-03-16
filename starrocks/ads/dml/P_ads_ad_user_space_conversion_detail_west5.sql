@@ -1,177 +1,198 @@
--- =====================================================================================
--- 2. 海阅-用户广告位转化明细表_西五区
--- 说明: 西五区时区数据统计,逻辑与主表一致,时区转换为UTC-13
--- 数据源: 神策埋点事件表、dws广告收益表(西五区)、用户宽表
--- 关键逻辑:
---   - 时区转换: DATE(date_add(event_tm, interval -13 hour))
---   - 【新增】收益事件(event='rev')的pv数统计为ad_revenue_pv
---   - 用户维度关联时不按dt关联,只按user_id关联
--- =====================================================================================
+----------------------------------------------------------------
+-- 程序功能： 用户广告位转化明细
+-- 程序名： P_ads_ad_user_space_conversion_detail_west5
+-- 目标表： ads.ads_ad_user_space_conversion_detail_west5
+-- 负责人： lj/xjc
+-- 开发日期： 2026-03-16
+-- 版本号： v0.0.0
+----------------------------------------------------------------
+
 insert into ads.ads_ad_user_space_conversion_detail_west5
 -- 统计各事件用户pv、金额
 with event_detail as (
     -- 原始广告位曝光
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
              ,programme_id
-             ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
-          ,coalesce(main_strategy_id,'-99') as main_strategy_id
-          ,'exposure' as event
-          ,'ad' as ad_type
-          ,count(1) as pv
-          ,0 as amount
+             ,coalesce(ad_strategy_id,programme_id,'-99')
+             )                                            as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99')               as main_strategy_id
+          ,'其他'                                          as ad_src
+          ,'exposure'                                     as event
+          ,'ad'                                           as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ads.ads_sensors_production_ad_position_exposure_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and ad_position_id is not null
-       and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+       and date(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
+     group by 1,2,3,4,5,6
      union all
     -- 广告展示成功事件
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
-         ,coalesce(login_id, identity_login_id) as login_id
-         ,ad_position_id
-         ,if(ad_position_id in ('19','63','5','61','23','29')
-        ,programme_id
-        ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
-         ,coalesce(main_strategy_id,'-99') as main_strategy_id
-         ,'ad_show' as event
-         ,'ad' as ad_type
-         ,count(1) as pv
-         ,0 as amount
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
+          ,coalesce(login_id, identity_login_id)          as login_id
+          ,ad_position_id
+          ,if(ad_position_id in ('19','63','5','61','23','29')
+             ,programme_id
+             ,coalesce(ad_strategy_id,programme_id,'-99')
+             )                                            as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99') as main_strategy_id
+          ,coalesce(ad_source,'其他')                      as ad_src
+          ,'ad_show'                                      as event
+          ,'ad'                                           as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ods_log.ods_sensors_production_adshow
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and ad_position_id is not null
        and project_id = 5  -- 海阅项目
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 福利中心H5广告曝光 (策略ID存方案）
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
           ,59 as ad_position_id
-          ,coalesce(event_strategy_id,'-99') as ad_strategy_id
-          ,coalesce(main_strategy_id,'-99') as main_strategy_id
-          ,'exposure' as event
-          ,'task' as ad_type
-          ,count(1) as pv
-          ,0 as amount
+          ,coalesce(event_strategy_id,'-99')              as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99')               as main_strategy_id
+          ,ad_src                                         as ad_src
+          ,'exposure'                                     as event
+          ,'task'                                         as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ads.ads_sensors_production_element_expose_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and element_id = '100772'
-       and type = '121'
+       and type in ('121','123')
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- H5广告位广告曝光
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
-          ,ad_position_id as ad_position_id
+          ,ad_position_id                                 as ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
              ,programme_id
-             ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
-          ,coalesce(main_strategy_id,'-99') as main_strategy_id
-          ,'exposure' as event
-          ,'h5_ad' as ad_type
-          ,count(1) as pv
-          ,0 as amount
+             ,coalesce(ad_strategy_id,programme_id,'-99')
+             )                                            as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99')               as main_strategy_id
+          ,ad_src                                         as ad_src
+          ,'exposure'                                     as event
+          ,'h5_ad'                                        as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ads.ads_sensors_production_element_expose_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and element_id = '100356'
        and ad_position_id > 0
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 原始广告位点击
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
              ,programme_id
-             ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
-          ,coalesce(main_strategy_id,'-99') as main_strategy_id
-          ,'click' as event
-          ,'ad' as ad_type
-          ,count(1) as pv
-          ,0 as amount
+             ,coalesce(ad_strategy_id,programme_id,'-99')
+             )                                            as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99')               as main_strategy_id
+          ,'其他'                                          as ad_src
+          ,'click'                                        as event
+          ,'ad'                                           as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ads.ads_sensors_production_adpositionclick_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and ad_position_id is not null
        and project_id = 5
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- 广告位观看完成
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in ('19','63','5','61','23','29')
              ,programme_id
-             ,coalesce(ad_strategy_id,programme_id,'-99')) as ad_strategy_id
-          ,coalesce(main_strategy_id,'-99') as main_strategy_id
-          ,'vtc' as event
-          ,'ad' as ad_type
-          ,count(1) as pv
-          ,0 as amount
+             ,coalesce(ad_strategy_id,programme_id,'-99')
+             )                                           as ad_strategy_id
+          ,coalesce(main_strategy_id,'-99')              as main_strategy_id
+          ,'其他'                                         as ad_src
+          ,'vtc'                                         as event
+          ,'ad'                                          as ad_type
+          ,count(1)                                      as pv
+          ,0                                             as amount
       from ads.ads_sensors_production_ad_watch_success_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5
+     group by 1,2,3,4,5,6
      union all
     -- h5广告位观看完成
-    select DATE(date_add(event_tm, interval -13 hour)) as dt
+    select DATE(date_add(event_tm, interval -13 hour))    as dt
           ,login_id
           ,ad_position_id
           ,if(ad_position_id in (19,63,5,61,23,29)
              ,programme_id
              ,if(task_id is null
                 ,ad_strategy_id
-                ,coalesce(event_strategy_id,programme_id))) as ad_strategy_id
-          ,coalesce(main_strategy_id, '-99') as main_strategy_id
-          ,'vtc' as event
+                ,coalesce(event_strategy_id,programme_id)
+                )
+             )                                            as ad_strategy_id
+          ,coalesce(main_strategy_id, '-99')              as main_strategy_id
+          ,ad_src                                         as ad_src
+          ,'vtc'                                          as event
           ,case when task_id is null then 'h5_ad'
                 when task_id is not null then 'task'
-            end as ad_type
-          ,count(1) as pv
-          ,0 as amount
+            end                                           as ad_type
+          ,count(1)                                       as pv
+          ,0                                              as amount
       from ads.ads_sensors_production_H5BackToApp_view
      where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
        and dt <= '${dt}'
        and status = '任务成功'
        and DATE(date_add(event_tm, interval -13 hour)) in ('${bf_1_dt}', '${dt}')
-     group by 1,2,3,4,5,6,7
+     group by 1,2,3,4,5,6,7,8
      union all
     -- 广告收益事件（【新增】用于统计ad_revenue_pv）
     select dt
-          ,user_id as login_id
-          ,positions as ad_position_id
+          ,user_id      as login_id
+          ,positions    as ad_position_id
           ,case when positions in (19,63,5,61,23,29) then programme_id
                 else if(event_strategy_id > 1
                        ,event_strategy_id
-                       ,programme_id)
-            end as ad_strategy_id
+                       ,programme_id
+                       )
+            end         as ad_strategy_id
           ,if(main_strategy_id = 'null' or main_strategy_id is null
              ,'-99'
-             ,main_strategy_id) as main_strategy_id
-          ,'rev' as event
+             ,main_strategy_id
+             )          as main_strategy_id
+          ,a2.cd_val    as ad_src
+          ,'rev'        as event
           ,case when ad_show_type = '5' and positions = 59 then 'task'
                 when ad_show_type = '5' and positions <> 59 then 'h5_ad'
                 else 'ad'
-            end as ad_type
-          ,sum(cnt) as pv
-          ,sum(amt) as amount
-      from dws.dws_advertisement_user_position_amt_west5_ed
+            end         as ad_type
+          ,sum(cnt)     as pv
+          ,sum(amt)     as amount
+      from dws.dws_advertisement_user_position_amt_west5_ed    as a1
+      left join dim.dim_pub_code_mapping_dict                  as a2
+        on a1.ads_name = a2.cd_val_desc
+       and a2.app_plat = 'pub'
+       and a2.cd_col = 'ad_src'
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and product_id <> 6833
-     group by 1,2,3,4,5,6,7
+     group by 1,2,3,4,5,6,7,8
 )
 -- 用户维度信息
 , user_info as (
@@ -232,9 +253,14 @@ select a1.dt
       ,sum(a1.amount) as ad_revenue_amount
       ,now() as etl_time
       ,sum(if(event = 'ad_show',a1.pv,0)) as ad_show_pv
+      ,ifnull(a3.cd_val_desc,'其他')            as ad_src
   from event_detail as a1
   left join user_info                        as a2
     on a1.dt = a2.dt
    and a1.login_id = a2.user_id
- group by 1,2,3,4,5,6,7,8,9,10,11,12
+  left join dim.dim_pub_code_mapping_dict    as a3
+    on a1.ad_src = a3.cd_val
+   and a3.app_plat = 'pub'
+   and a3.cd_col = 'ad_src'
+ group by 1,2,3,4,5,6,7,8,9,10,11,12,20
 ;
