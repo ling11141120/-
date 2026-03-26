@@ -50,7 +50,7 @@ book_info as (
       on t1.book_nature = dic_booknature.enum_id
      and dic_booknature.table_name = 'dim_shuangwen_book_read_consume_info'
      and dic_booknature.dic_column = 'book_nature'
-    left join (select book_id
+    left join (select (book_id * 1000) + site_id as book_id
                     , cover_src
                from dim.dim_edit_book_view
                where cover_src is not null
@@ -67,6 +67,7 @@ end_main as (
          , cast(a.book_id as bigint)                     as book_id
          , cast(a.chapter_id as bigint)                  as chapter_id
          , cast(a.login_id as bigint)                    as user_id
+         , cast(a.read_chapter_sort as int)              as chapter_sort
          , coalesce(cast(a.reading_duration as bigint), 0) as reading_duration
     from ads.ads_sensors_production_endreadingchapter_view a
     left semi join dim.dim_shuangwen_book_read_consume_info eb_filter
@@ -133,7 +134,7 @@ item_exposure_stat as (
          ) it
     group by 1, 2, 3
 ),
--- 首章流失 / 章节留存 / 付费相关指标（core 来自 corever）
+-- 首章流失 / 付费相关指标（core 来自 corever）
 first_read_stat as (
     select a.dt
          , a.core
@@ -141,51 +142,46 @@ first_read_stat as (
          , bitmap_union(case when a.serial_number = 1 then a.read_unt end) as chapter1_read_uv
          , bitmap_union(case when a.serial_number = 2 then a.read_unt end) as chapter2_read_uv
          , bitmap_union(case when a.is_pay_amount = 0 and a.free_last_chapter = a.serial_number then a.d7_read_unt end) as before_paid_chapter_read_uv
-         , bitmap_union(case when a.serial_number > b.free_chapter_num then a.tot_csm_unt end) as paid_chapter_unlock_uv
-         , bitmap_union(case when a.serial_number >= 30 then a.d7_read_unt end) as chapter30_retention_uv
-         , bitmap_union(case when a.serial_number >= 60 then a.d7_read_unt end) as chapter60_retention_uv
+         , bitmap_union(a.tot_csm_unt) as paid_chapter_unlock_uv
+         , bitmap_union(a.d7_read_unt) as paid_chapter_read_uv
     from (
-             select x.dt
-                  , x.core
-                  , x.lang_id
-                  , x.book_id
-                  , x.serial_number
-                  , x.read_unt
-                  , x.d7_read_unt
-                  , x.tot_csm_unt
-                  , x.is_pay_amount
-                  , max(case when x.serial_number > 20 then 20 else x.serial_number end)
-                        over (
-                            partition by x.lang_id
-                                , x.book_id
-                                , x.core
-                                , x.is_pay_amount
-                        ) as free_last_chapter
-             from (
-                      select t.dt
-                           , coalesce(t.corever, 0) as core
-                           , t.lang_id
-                           , t.book_id
-                           , t.serial_number
-                           , t.read_unt
-                           , t.d7_read_unt
-                           , t.tot_csm_unt
-                           , case
-                                 when max(coalesce(t.chapter_length, 0))
-                                          over (
-                                              partition by t.lang_id
-                                                  , t.book_id
-                                                  , coalesce(t.corever, 0)
-                                          ) > 0 then 1
-                                 else 0
-                             end as is_pay_amount
-                      from ads.ads_bi_read_first_read_consume_est_ed t
-                      where t.dt >= '${bf_3_dt}'
-                        and t.dt <= '${dt}'
-                  ) x
+          select dt
+               , coalesce(t.corever, 0)                                                     as core
+               , lang_id                                                                    as lang_id_
+               , book_id
+               , serial_number                                                              as serial_number
+               , if(max(chapter_length) > 0, 1, 0)                                          as is_pay_amount
+               , max(if(serial_number > 20, 20, serial_number))
+                     over (partition by lang_id,book_id,if(max(chapter_length) > 0, 1, 0) ) as free_last_chapter
+               , bitmap_union(read_unt)                                                     as read_unt
+               , bitmap_union(tot_csm_unt)                                                  as tot_csm_unt
+               , bitmap_union(d7_read_unt)                                                  as d7_read_unt
+          from ads.ads_bi_read_first_read_consume_est_ed t
+          where t.dt >= '${bf_3_dt}'
+            and t.dt <= '${dt}'
+          group by 1, 2, 3, 4, 5
          ) a
     left join book_info b
       on a.book_id = b.book_id
+    group by 1, 2, 3
+),
+-- 章节留存指标（与 chapter_stat 同源：endReading 用户最大阅读章）
+chapter_retention_stat as (
+    select dt
+         , core
+         , book_id
+         , bitmap_agg(case when max_chapter_sort > 30 then user_id end) as chapter30_retention_uv
+         , bitmap_agg(case when max_chapter_sort > 60 then user_id end) as chapter60_retention_uv
+    from (
+          select dt
+               , core
+               , book_id
+               , user_id
+               , max(chapter_sort) as max_chapter_sort
+          from end_main
+          where chapter_sort > 0
+          group by 1, 2, 3, 4
+         ) t
     group by 1, 2, 3
 ),
 -- 次留分母：首读 cohort（core 取 corever）
@@ -256,8 +252,9 @@ select e.dt
      , e.total_read_chapter_num
      , fr.before_paid_chapter_read_uv
      , fr.paid_chapter_unlock_uv
-     , fr.chapter30_retention_uv
-     , fr.chapter60_retention_uv
+     , fr.paid_chapter_read_uv
+     , cr.chapter30_retention_uv
+     , cr.chapter60_retention_uv
      , d1.d1_retention_uv
      , d1.d1_retention_first_read_uv
      , now() as etl_time
@@ -272,6 +269,10 @@ left join first_read_stat fr
   on e.dt = fr.dt
  and e.core = fr.core
  and e.book_id = fr.book_id
+left join chapter_retention_stat cr
+  on e.dt = cr.dt
+ and e.core = cr.core
+ and e.book_id = cr.book_id
 left join d1_retention_stat d1
   on e.dt = d1.dt
  and e.core = d1.core

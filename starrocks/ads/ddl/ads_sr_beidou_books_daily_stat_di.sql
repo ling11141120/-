@@ -27,6 +27,7 @@ create table ads.ads_sr_beidou_books_daily_stat_di
     ,total_read_chapter_num      bigint                comment "阅读总章数"
     ,before_paid_chapter_read_uv bitmap                comment "付费前章阅读UV"
     ,paid_chapter_unlock_uv      bitmap                comment "付费章解锁UV"
+    ,paid_chapter_read_uv        bitmap                comment "付费书籍阅读UV"
     ,chapter30_retention_uv      bitmap                comment "30章留存UV"
     ,chapter60_retention_uv      bitmap                comment "60章留存UV"
     ,d1_retention_uv             bitmap                comment "次日留存UV"

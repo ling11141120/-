@@ -111,7 +111,7 @@ scope_stat as (
          , k.book_id
          , s.chapter_scope
          , bitmap_agg(case when u.max_chapter_sort > s.chapter_scope then u.user_id end) as gt_chapter_scope_read_uv -- 大于章节范围阅读UV
-         , bitmap_agg(case when u.max_chapter_sort >= 1 then u.user_id end) as book_read_uv -- 书籍阅读UV（大于等于1章用户）
+         , bitmap_agg(u.user_id) as book_read_uv
     from end_main_key k
     cross join chapter_scope s
     left join user_max_chapter u
