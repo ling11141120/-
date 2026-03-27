@@ -49,8 +49,7 @@ book_info as (
       on t1.book_nature = dic_booknature.enum_id
      and dic_booknature.table_name = 'dim_shuangwen_book_read_consume_info'
      and dic_booknature.dic_column = 'book_nature'
-    where t1.is_put_down = 1
-      and t1.build_time != '1970-01-01 00:00:00'
+
 ),
 -- 主表：endReading 键集（西五区口径 + 分区 dt 过滤）
 end_main_key as (

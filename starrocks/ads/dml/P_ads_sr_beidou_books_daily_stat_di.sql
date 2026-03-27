@@ -57,8 +57,7 @@ book_info as (
                group by 1, 2
               ) as eb
       on t1.book_id = eb.book_id
-    where t1.is_put_down = 1
-      and t1.build_time != '1970-01-01 00:00:00'
+
 ),
 -- 主表：endReading 明细（西五区口径 + 分区 dt 过滤）
 end_main as (
