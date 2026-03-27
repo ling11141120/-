@@ -142,8 +142,8 @@ first_read_stat as (
          , bitmap_union(case when a.serial_number = 1 then a.read_unt end) as chapter1_read_uv
          , bitmap_union(case when a.serial_number = 2 then a.read_unt end) as chapter2_read_uv
          , bitmap_union(case when a.is_pay_amount = 0 and a.free_last_chapter = a.serial_number then a.d7_read_unt end) as before_paid_chapter_read_uv
-         , bitmap_union(a.tot_csm_unt) as paid_chapter_unlock_uv
-         , bitmap_union(a.d7_read_unt) as paid_chapter_read_uv
+         , bitmap_union(a.d7_tot_csm_unt) as paid_chapter_unlock_uv
+         , bitmap_union(a.d7_read_unt)    as paid_chapter_read_uv
     from (
           select dt
                , coalesce(t.corever, 0)                                                     as core
@@ -154,7 +154,7 @@ first_read_stat as (
                , max(if(serial_number > 20, 20, serial_number))
                      over (partition by lang_id,book_id,if(max(chapter_length) > 0, 1, 0) ) as free_last_chapter
                , bitmap_union(read_unt)                                                     as read_unt
-               , bitmap_union(tot_csm_unt)                                                  as tot_csm_unt
+               , bitmap_union(d7_tot_csm_unt)                                               as d7_tot_csm_unt
                , bitmap_union(d7_read_unt)                                                  as d7_read_unt
           from ads.ads_bi_read_first_read_consume_est_ed t
           where t.dt >= '${bf_3_dt}'
