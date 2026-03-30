@@ -48,12 +48,12 @@ table2_stats AS (
 
 table3_stats AS (
     SELECT
-        'ads_sr_beidou_books_retention_stat_di' AS table_name,
+        'ads_sv_beidou_series_daily_stat_di' AS table_name,
         dt,
         COUNT(1) AS row_count,
         min(etl_time) as min_etl_time,
         max(etl_time) as max_etl_time
-    FROM ads.ads_sr_beidou_books_retention_stat_di
+    FROM ads.ads_sv_beidou_series_daily_stat_di
     WHERE dt BETWEEN '2025-12-25' AND '${dt}'
     GROUP BY dt
 ),
@@ -82,6 +82,18 @@ table5_stats AS (
     GROUP BY dt
 ),
 
+table6_stats AS (
+    SELECT
+        'ads_sv_beidou_series_play_trend_hi' AS table_name,
+        dt,
+        COUNT(1) AS row_count,
+        min(etl_time) as min_etl_time,
+        max(etl_time) as max_etl_time
+    FROM ads.ads_sv_beidou_series_play_trend_hi
+    WHERE dt BETWEEN '2025-12-25' AND '${dt}'
+    GROUP BY dt
+),
+
 all_tables_stats AS (
     SELECT table_name, dt, row_count, min_etl_time, max_etl_time FROM table1_stats
     UNION ALL
@@ -92,6 +104,8 @@ all_tables_stats AS (
     SELECT table_name, dt, row_count, min_etl_time, max_etl_time FROM table4_stats
     UNION ALL
     SELECT table_name, dt, row_count, min_etl_time, max_etl_time FROM table5_stats
+    UNION ALL
+    SELECT table_name, dt, row_count, min_etl_time, max_etl_time FROM table6_stats
 ),
 
 expected_data AS (
