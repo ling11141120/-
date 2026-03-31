@@ -50,6 +50,8 @@ create table ods_log.ods_sensors_cd_video_ElmentExposure (
     ,app_core_ver          string                comment "core"
     ,anonymous_id          string                comment "匿名id"
     ,etl_tm                datetime              comment "清洗时间"
+    ,element_type          string                comment "控件类型"
+    ,push_type             string                comment "推送类型"
 )
 primary key(dt, id)
 comment "event=elmentExposure 控件曝光事件"

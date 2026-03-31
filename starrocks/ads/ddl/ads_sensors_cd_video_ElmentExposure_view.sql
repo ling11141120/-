@@ -39,8 +39,10 @@ create or replace view ads.ads_sensors_cd_video_ElmentExposure_view (
     ,app_core_ver          comment "core"
     ,anonymous_id          comment "匿名ID"
     ,etl_tm                comment "清洗时间"
+    ,element_type          comment "控件类型"
+    ,push_type             comment "推送类型"
 )
-comment "event=elmentExposure 控件曝光事件"
+comment "event=elementExposure 控件曝光事件"
 as
 select a1.dt                    as dt                    -- 日期
       ,a1.id                    as id                    -- 主键
@@ -82,5 +84,7 @@ select a1.dt                    as dt                    -- 日期
       ,a1.app_core_ver          as app_core_ver          -- 应用核心版本
       ,a1.anonymous_id          as anonymous_id          -- 匿名ID
       ,a1.etl_tm                as etl_tm                -- 清洗时间
+      ,a1.element_type          as element_type          -- 控件类型
+      ,a1.push_type             as push_type             -- 推送类型
   from ods_log.ods_sensors_cd_video_ElmentExposure    as a1
 ;

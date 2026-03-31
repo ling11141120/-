@@ -1,3 +1,11 @@
+----------------------------------------------------------------
+-- 程序功能： 海外短剧-新用户留存表
+-- 程序名： P_ads_ad_new_user_view_retention_df
+-- 目标表： ads.ads_ad_new_user_view_retention_df
+-- 负责人： xjc
+-- 开发日期： 2026-01-26
+----------------------------------------------------------------
+
 insert into ads.ads_ad_new_user_view_retention_df
 with video_watch_duration as (
     select dt
