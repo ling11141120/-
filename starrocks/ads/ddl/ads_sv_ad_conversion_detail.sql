@@ -7,6 +7,7 @@ create table ads.ads_sv_ad_conversion_detail (
    ,ad_id                    varchar(200)                                comment "广告id"
    ,core                     varchar(50)                                 comment "core版本"
    ,mt                       int(11)                                     comment "终端 1=ios 4=android"
+   ,version                  varchar(50)                                 comment "版本号"
    ,language_id              int(11)                                     comment "投放语言id"
    ,reg_country              varchar(200)                                comment "注册国家code"
    ,ad_show_type_name        varchar(200)                                comment "广告类型名称"
