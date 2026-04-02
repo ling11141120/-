@@ -21,6 +21,7 @@ create table dwd.dwd_trade_pay_succ_recharge_order_hi(
     ,log_id              bigint                comment "记录id"
     ,actual_recharge_amt decimal(18,2)         comment "实际充值金额"
     ,core                int                   comment "包体"
+    ,vip_type_cd         int                   comment "会员类型编码"
 )
 primary key(dt, product_id, order_id)
 comment '交易域-支付成功充值订单'
