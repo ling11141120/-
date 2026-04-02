@@ -184,6 +184,6 @@ select a1.dt                            as dt                       -- 日期
   left join dim.dim_pub_code_mapping_dict    as a7
     on a1.reg_country = a7.cd_val
    and a7.app_plat='pub'
-   and a7.cd_col='lang_cd'
+   and a7.cd_col='ctry_cd'
  group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 19
 ;
