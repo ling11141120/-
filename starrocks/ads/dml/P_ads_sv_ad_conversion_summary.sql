@@ -178,6 +178,6 @@ select
   left join dim.dim_pub_code_mapping_dict    as a3
     on a1.reg_country = a3.cd_val
    and a3.app_plat='pub'
-   and a3.cd_col='lang_cd'
+   and a3.cd_col='ctry_cd'
  group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 21
 ;

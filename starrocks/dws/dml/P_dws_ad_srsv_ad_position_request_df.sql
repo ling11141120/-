@@ -240,31 +240,32 @@ with ad_position as (
        and a1.project_id = a4.project_id
      where a1.dt = '${bf_1_dt}'
 )
-select a1.dt                                            as dt                   -- 日期
-      ,a1.event_name                                    as event_name           -- 事件名称
-      ,a1.id                                            as id                   -- id
-      ,a1.user_id                                       as user_id              -- 用户id
-      ,if(a1.project_id=5 and a1.event_name='ADRequest'
+select a1.dt                                              as dt                   -- 日期
+      ,a1.event_name                                      as event_name           -- 事件名称
+      ,a1.id                                              as id                   -- id
+      ,coalesce(cast(a1.user_id as bigint),-99)           as user_id              -- 用户id
+      ,coalesce(
+       if(a1.project_id=5 and a1.event_name='ADRequest'
          ,a2.ad_show_type
          ,a1.ad_show_type
-         )                                              as ad_show_type         -- 广告展示类型
+         ),'-99')                                         as ad_show_type         -- 广告展示类型
       ,case when a1.project_id=5 and a1.ad_position_id=8 then 'Banner'
             when a1.project_id=5 and a1.event_name='ADRequest' then a2.ad_show_type_name
             else a1.ad_show_type_name
-        end                                             as ad_show_type_name    -- 广告展示类型名称
-      ,a1.ad_position_id                                as ad_position_id       -- 广告位id
-      ,a1.ad_position_name                              as ad_position_name     -- 广告位名称
-      ,a1.ad_id                                         as ad_id                -- 广告id
-      ,coalesce(a1.sv_core,a1.sr_core,a1.core,'-99')    as core                 -- core
-      ,a1.mt                                            as mt                   -- mt
-      ,coalesce(a1.language_id,'-99')                   as language_id          -- 语言id
-      ,coalesce(a1.reg_country,-99)                     as reg_country          -- 注册国家
-      ,coalesce(a1.project_id,-99)                      as project_id           -- 5：海阅，8：海剧
-      ,a1.app_ver                                       as app_ver              -- 应用版本号
-      ,a1.request_result                                as request_result       -- 广告请求结果
-      ,a1.request_duration                              as request_duration     -- 请求时长
-      ,a1.event_tm                                      as event_tm             -- 事件时间
-      ,now()                                            as etl_tm               -- 清洗时间
+        end                                               as ad_show_type_name    -- 广告展示类型名称
+      ,coalesce(cast(a1.ad_position_id as bigint),-99)    as ad_position_id       -- 广告位id
+      ,a1.ad_position_name                                as ad_position_name     -- 广告位名称
+      ,coalesce(a1.ad_id,'-99')                           as ad_id                -- 广告id
+      ,coalesce(a1.sv_core,a1.sr_core,a1.core,'-99')      as core                 -- core
+      ,a1.mt                                              as mt                   -- mt
+      ,coalesce(a1.language_id,'-99')                     as language_id          -- 语言id
+      ,coalesce(reg_country,'-99')                        as reg_country          -- 注册国家
+      ,coalesce(cast(a1.project_id as bigint),-99)        as project_id           -- 5：海阅，8：海剧
+      ,a1.app_ver                                         as app_ver              -- 应用版本号
+      ,a1.request_result                                  as request_result       -- 广告请求结果
+      ,a1.request_duration                                as request_duration     -- 请求时长
+      ,a1.event_tm                                        as event_tm             -- 事件时间
+      ,now()                                              as etl_tm               -- 清洗时间
   from union_result                         as a1
   left join dim.dim_sr_ads_position_view    as a2
     on a1.ad_position_id = a2.ad_position

@@ -148,5 +148,5 @@ select a1.dt                     as dt                     -- 日期
   left join dim.dim_pub_code_mapping_dict    as a6
     on a1.reg_country = a6.cd_val
    and a6.app_plat='pub'
-   and a6.cd_col='lang_cd'
+   and a6.cd_col='ctry_cd'
 ;
