@@ -17,6 +17,13 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,case 
+               when app_ver >= 1000000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 3))
+               when app_ver >= 10000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 2))
+               when app_ver >= 1000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 2))
+               when app_ver >= 100 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 1))
+               else cast(app_ver as varchar)
+           end as version
           ,language_id
           ,reg_country
           ,project_id
@@ -29,7 +36,7 @@ with adrequest as (
      where dt = '${bf_1_dt}'
        and ad_position_id != '0'
        and event_name = 'ADRequest'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
 )
 , adinvocation as (
     select dt
@@ -40,6 +47,13 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,case 
+               when app_ver >= 1000000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 3))
+               when app_ver >= 10000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 2))
+               when app_ver >= 1000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 2))
+               when app_ver >= 100 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 1))
+               else cast(app_ver as varchar)
+           end as version
           ,language_id
           ,reg_country
           ,project_id
@@ -48,7 +62,7 @@ with adrequest as (
      where dt = '${bf_1_dt}'
        and ad_position_id != '0'
        and event_name = 'ADInvocation'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
 )
 , adshow as (
     select dt
@@ -59,6 +73,13 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,case 
+               when app_ver >= 1000000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 3))
+               when app_ver >= 10000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 2))
+               when app_ver >= 1000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 2))
+               when app_ver >= 100 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 1))
+               else cast(app_ver as varchar)
+           end as version
           ,language_id
           ,reg_country
           ,project_id
@@ -68,7 +89,7 @@ with adrequest as (
      where dt = '${bf_1_dt}'
        and ad_position_id != '0'
        and event_name = 'ADShow'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
 )
 , adtrigger as (
     select dt
@@ -79,6 +100,13 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,case 
+               when app_ver >= 1000000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 3))
+               when app_ver >= 10000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 2), '.', substring(cast(app_ver as varchar), 4, 2))
+               when app_ver >= 1000 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 2))
+               when app_ver >= 100 then concat(substring(cast(app_ver as varchar), 1, 1), '.', substring(cast(app_ver as varchar), 2, 1), '.', substring(cast(app_ver as varchar), 3, 1))
+               else cast(app_ver as varchar)
+           end as version
           ,language_id
           ,reg_country
           ,project_id
@@ -87,7 +115,7 @@ with adrequest as (
      where dt = '${bf_1_dt}'
        and ad_position_id != '0'
        and event_name = 'ADTrigger'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
 )
 , union_result as (
     select dt
@@ -98,6 +126,7 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,version
           ,language_id
           ,reg_country
           ,project_id
@@ -111,6 +140,7 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,version
           ,language_id
           ,reg_country
           ,project_id
@@ -124,6 +154,7 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,version
           ,language_id
           ,reg_country
           ,project_id
@@ -137,6 +168,7 @@ with adrequest as (
           ,ad_id
           ,core
           ,mt
+          ,version
           ,language_id
           ,reg_country
           ,project_id
@@ -150,6 +182,7 @@ select a1.dt                            as dt                       -- 日期
           ,ifnull(a1.ad_id, '')
           ,ifnull(a1.core, '')
           ,ifnull(a1.mt, '')
+          ,ifnull(a1.version, '')
           ,ifnull(a1.language_id, '')
           ,ifnull(a1.reg_country, '')
                     )
@@ -159,6 +192,7 @@ select a1.dt                            as dt                       -- 日期
       ,a1.ad_id
       ,a1.core
       ,a1.mt
+      ,a1.version
       ,a1.language_id
       ,a1.reg_country
       ,a1.ad_show_type_name
@@ -185,6 +219,7 @@ select a1.dt                            as dt                       -- 日期
    and a1.ad_id = a2.ad_id
    and a1.core = a2.core
    and a1.mt = a2.mt
+   and a1.version = a2.version
    and a1.language_id = a2.language_id
    and a1.reg_country = a2.reg_country
    and a1.project_id = a2.project_id
@@ -195,6 +230,7 @@ select a1.dt                            as dt                       -- 日期
    and a1.ad_id = a3.ad_id
    and a1.core = a3.core
    and a1.mt = a3.mt
+   and a1.version = a3.version
    and a1.language_id = a3.language_id
    and a1.reg_country = a3.reg_country
    and a1.project_id = a3.project_id
@@ -205,6 +241,7 @@ select a1.dt                            as dt                       -- 日期
    and a1.ad_id = a4.ad_id
    and a1.core = a4.core
    and a1.mt = a4.mt
+   and a1.version = a4.version
    and a1.language_id = a4.language_id
    and a1.reg_country = a4.reg_country
    and a1.project_id = a4.project_id
@@ -215,6 +252,7 @@ select a1.dt                            as dt                       -- 日期
    and a1.ad_id = a5.ad_id
    and a1.core = a5.core
    and a1.mt = a5.mt
+   and a1.version = a5.version
    and a1.language_id = a5.language_id
    and a1.reg_country = a5.reg_country
    and a1.project_id = a5.project_id
@@ -225,6 +263,6 @@ select a1.dt                            as dt                       -- 日期
   left join dim.dim_pub_code_mapping_dict    as a7
     on a1.reg_country = a7.cd_val
    and a7.app_plat='pub'
-   and a7.cd_col='lang_cd'
- group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 22
+   and a7.cd_col='ctry_cd'
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 23
 ;
