@@ -1,11 +1,12 @@
 ----------------------------------------------------------------
--- 程序功能： 短剧用户注册信息维度表
+-- 程序功能： 短剧用户注册信息维度表（预废弃，用 dim_user_sv_userinfo_f）
 -- 程序名： P_dim_short_video_user_accountinfo
 -- 目标表： dim.dim_short_video_user_accountinfo
 -- 负责人： qhr
 -- 开发日期： 2025-09-15
 ----------------------------------------------------------------
 
+-- 预废弃，用 dim_user_sv_userinfo_f
 insert into dim.dim_short_video_user_accountinfo
 select date(a.createtime)                                        as dt
       ,a.id                                                      as user_id
