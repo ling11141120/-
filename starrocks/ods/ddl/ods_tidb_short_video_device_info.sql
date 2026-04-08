@@ -1,0 +1,52 @@
+CREATE TABLE ods.ods_tidb_short_video_device_info (
+  id bigint(20) NOT NULL COMMENT "",
+  Appver varchar(50) NULL COMMENT "app版本号",
+  Sign varchar(255) NULL COMMENT "签名",
+  Corever varchar(50) NULL COMMENT "核心版本",
+  Locale varchar(50) NULL COMMENT "区域设置",
+  Userid varchar(255) NULL COMMENT "用户ID",
+  Sid varchar(50) NULL COMMENT "会话ID",
+  Sh int(11) NULL COMMENT "高度",
+  Langid int(11) NULL COMMENT "语言ID",
+  UniqueCdReaderId varchar(50) NULL COMMENT "唯一读卡器ID，UNI索引",
+  Timestamp bigint(20) NULL COMMENT "时间戳",
+  Ver int(11) NULL COMMENT "版本",
+  Sendid varchar(50) NULL COMMENT "发送ID",
+  Device2 varchar(50) NULL COMMENT "设备型号",
+  Sw int(11) NULL COMMENT "宽度",
+  Chl varchar(255) NULL COMMENT "渠道",
+  Syslanguage varchar(50) NULL COMMENT "系统语言",
+  Mt varchar(50) NULL COMMENT "类型",
+  Idfa varchar(255) NULL COMMENT "IDFA",
+  Osver varchar(50) NULL COMMENT "操作系统版本",
+  Build varchar(50) NULL COMMENT "构建版本",
+  Appid varchar(50) NULL COMMENT "应用ID",
+  X varchar(50) NULL COMMENT "X",
+  Utcoffset int(11) NULL COMMENT "UTC偏移量",
+  Guid varchar(255) NULL COMMENT "GUID",
+  Supportutctime int(11) NULL COMMENT "支持UTC时间",
+  Device varchar(50) NULL COMMENT "设备",
+  Androidid varchar(50) NULL COMMENT "Android ID",
+  DeviceToken varchar(255) NULL COMMENT "",
+  SignNotify tinyint(4) NULL DEFAULT "0" COMMENT "是否开启签到推送",
+  AppNotify tinyint(4) NULL DEFAULT "0" COMMENT "是否开启推送",
+  regionId smallint(6) NULL DEFAULT "1" COMMENT "归属区域 id，1：香港，2：北美；",
+  RealTimeActivityNotify int(11) NULL COMMENT "实时活动启用状态：1不支持，2支持未开启，3支持未授权，4支持",
+  sr_createtime datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "",
+  sr_updatetime datetime NULL COMMENT "",
+  countrycode varchar(100) NULL COMMENT "国家代码",
+  playwindow tinyint(4) NULL COMMENT "小窗播放通知权限",
+  apptimesensitivestate tinyint(4) NULL COMMENT "即时通信(实时活动)通知权限：1-开启,0-关闭",
+  devicetokenupdatetime datetime NULL COMMENT "deviceToken 上报时间"
+) ENGINE=OLAP 
+PRIMARY KEY(id)
+COMMENT "短剧设备信息表"
+DISTRIBUTED BY HASH(id) BUCKETS 105 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "Device2",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);
