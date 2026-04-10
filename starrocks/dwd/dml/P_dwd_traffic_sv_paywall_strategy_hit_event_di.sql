@@ -17,7 +17,7 @@ select a.dt                           as dt                  -- 日期分区
        )                              as strategy_node_id    -- 策略节点ID
      , a.Id                           as event_id            -- 事件id
      , cast(a.AccountId as bigint)    as user_id             -- 用户id
-     , a.NodeId                       as node_id             -- 策略ID
+     , a.NodeId                       as node_id             -- 节点ID
      , a.CreateTime                   as event_time          -- 事件时间
      , a.VersionId                    as version_id          -- 版本id
      , now()                          as etl_ime             -- 清洗时间

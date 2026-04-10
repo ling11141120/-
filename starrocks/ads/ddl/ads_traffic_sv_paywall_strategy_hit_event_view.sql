@@ -1,4 +1,4 @@
-create or replace view ads_traffic_sv_paywall_strategy_hit_event_view (
+create or replace view ads.ads_traffic_sv_paywall_strategy_hit_event_view (
      dt                  comment "日期"
     ,strategy_node_id    comment "策略节点ID"
     ,event_id            comment "事件id"
