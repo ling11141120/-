@@ -1,5 +1,5 @@
-drop table if exists ads.ads_user_push_behavior_df_back;
-create table ads.ads_user_push_behavior_df_back (
+drop table if exists ads.ads_user_push_behavior_df;
+create table ads.ads_user_push_behavior_df (
     dt                                 date            not null                     comment "日期"
    ,project_id                         int             not null                     comment "5:海阅,8:海剧"
    ,md5_key                            varchar(32)     not null                     comment "联合唯一键MD5"
