@@ -8,8 +8,22 @@
 ----------------------------------------------------------------
 
 -- DML
-insert into ads.ads_sv_beidou_series_play_trend_hi
+insert into ads.ads_sv_beidou_series_play_trend_hi_v2
 with
+dl_user_set as (
+    select lv.series_id
+         , b.user_id
+    from ads.ads_short_video_video_dl_log_view lv
+    left join dim.dim_short_video_user_accountinfo b
+      on lv.unique_cdreader_id = b.unique_cdreader_id
+    where lv.has_open = 1
+      and lv.create_time >= date_add(cast('${dt}' as datetime), -200)
+      and lv.create_time <= cast('${dt}' as datetime)
+      and lv.series_id is not null
+      and b.user_id is not null
+    group by 1, 2
+),
+
 -- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
 epis_watch_view as (
     select ew.dt
@@ -37,13 +51,17 @@ hourly_play as (
     select ew.dt
          , date_trunc('hour', ew.create_time)  as hour_time
          , ew.core
+         , case when du.user_id is not null then 1 else 0 end as acquisition_source_cd
          , coalesce(s.language, 0)             as language_code
          , ew.series_id
          , count(1)                            as play_count
     from epis_watch_view ew
+    left join dl_user_set du
+      on ew.series_id = du.series_id
+     and ew.user_id = du.user_id
     left join dim.dim_short_video_series_view s
       on ew.series_id = s.series_id
-    group by 1, 2, 3, 4, 5
+    group by 1, 2, 3, 4, 5, 6
 ),
 -- 枚举基础信息
 series_attr as (
@@ -62,6 +80,7 @@ series_attr as (
 select h.dt
      , h.hour_time
      , h.core
+     , h.acquisition_source_cd
      , h.language_code
      , h.series_id
      , dic.cd_val_desc                  as language_name

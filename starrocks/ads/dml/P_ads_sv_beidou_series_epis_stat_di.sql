@@ -10,8 +10,22 @@
 SET cbo_cte_reuse = true;  -- 开启 CTE 复用
 
 -- DML
-insert into ads.ads_sv_beidou_series_epis_stat_di
+insert into ads.ads_sv_beidou_series_epis_stat_di_v2
 with
+dl_user_set as (
+    select lv.series_id
+         , b.user_id
+    from ads.ads_short_video_video_dl_log_view lv
+    left join dim.dim_short_video_user_accountinfo b
+      on lv.unique_cdreader_id = b.unique_cdreader_id
+    where lv.has_open = 1
+      and lv.create_time >= date_add(cast('${dt}' as datetime), -200)
+      and lv.create_time <= cast('${dt}' as datetime)
+      and lv.series_id is not null
+      and b.user_id is not null
+    group by 1, 2
+),
+
 -- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
 epis_watch_view as (
     select ew.dt
@@ -42,11 +56,15 @@ user_epis_watch as (
          , ew.epis_id
          , ew.epis_num
          , ew.core
+         , case when du.user_id is not null then 1 else 0 end as acquisition_source_cd
          , coalesce(s.language, 0)                        as language_code
          , ew.watch_progress * coalesce(ev.duration, 0)   as max_watch_stamp
          , ew.create_time                                 as min_create_time
          , ew.create_time                                 as max_create_time
     from epis_watch_view ew
+    left join dl_user_set du
+      on ew.series_id = du.series_id
+     and ew.user_id = du.user_id
     left join dim.dim_short_video_epis_view ev
       on ew.series_id = ev.series_id and ew.epis_id = ev.epis_id
     left join dim.dim_short_video_series_view s
@@ -59,12 +77,13 @@ epis_time_agg as (
          , user_id
          , series_id
          , core
+         , acquisition_source_cd
          , language_code
          , epis_num
          , min(min_create_time) as min_create_time
          , max(max_create_time) as max_create_time
     from user_epis_watch
-    group by 1, 2, 3, 4, 5, 6
+    group by 1, 2, 3, 4, 5, 6, 7
 ),
 
 -- 本集观看日后任意dt内、24小时内观看下一集的记录(不绑dt，支持跨天通宵续看)
@@ -73,6 +92,7 @@ nxt_watch_tmp as (
          , cur.user_id
          , cur.series_id
          , cur.core
+         , cur.acquisition_source_cd
          , cur.language_code
          , cur.epis_num
          , min(nxt.min_create_time) as next_min_create_time
@@ -81,12 +101,13 @@ nxt_watch_tmp as (
       on cur.user_id = nxt.user_id
      and cur.series_id = nxt.series_id
      and cur.core = nxt.core
+     and cur.acquisition_source_cd = nxt.acquisition_source_cd
      and cur.language_code = nxt.language_code
      and nxt.epis_num = cur.epis_num + 1
     -- 优化续集关联条件
      and nxt.min_create_time >= cur.min_create_time
      and nxt.min_create_time <= hours_add(cur.min_create_time, 24)
-    group by 1, 2, 3, 4, 5, 6
+    group by 1, 2, 3, 4, 5, 6, 7
 ),
 
 -- 用户是否观看了下一集(两集间隔在2小时以内，支持跨天)
@@ -97,6 +118,7 @@ user_next_epis as (
          , a.epis_id
          , a.epis_num
          , a.core
+         , a.acquisition_source_cd
          , a.language_code
          , a.max_watch_stamp
          , e.duration                                        as epis_duration
@@ -110,10 +132,10 @@ user_next_epis as (
       on a.series_id = e.series_id and a.epis_id = e.epis_id
     left join epis_time_agg cur
       on a.dt = cur.dt and a.user_id = cur.user_id and a.series_id = cur.series_id
-     and a.core = cur.core and a.language_code = cur.language_code and a.epis_num = cur.epis_num
+     and a.core = cur.core and a.acquisition_source_cd = cur.acquisition_source_cd and a.language_code = cur.language_code and a.epis_num = cur.epis_num
     left join nxt_watch_tmp n
       on a.dt = n.dt and a.user_id = n.user_id and a.series_id = n.series_id
-     and a.core = n.core and a.language_code = n.language_code and a.epis_num = n.epis_num
+     and a.core = n.core and a.acquisition_source_cd = n.acquisition_source_cd and a.language_code = n.language_code and a.epis_num = n.epis_num
     where a.series_id is not null
       and a.epis_id is not null
 ),
@@ -122,14 +144,14 @@ user_next_epis as (
 epis_stat as (
     select dt
          , core
+         , acquisition_source_cd
          , language_code
          , series_id
          , epis_id
          , max(epis_num)                                                                                        as epis_num
          , max(epis_duration)                                                                                   as epis_duration
-         , bitmap_agg(case when epis_duration > 0 and max_watch_stamp >= epis_duration * 0.95 and has_next_epis = 1
-                              then user_id end)                                                                 as next_epis_user
-         , bitmap_agg(case when epis_duration > 0 and max_watch_stamp >= epis_duration * 0.95 then user_id end) as epis_complete_user
+         , bitmap_agg(case when epis_duration > 0 and has_next_epis = 1 then user_id end)                       as next_epis_user
+         , bitmap_agg(case when epis_duration > 0 then user_id end)                                             as epis_complete_user
          , sum(capped_watch_stamp)                                                                              as epis_total_watch_duration -- 观看进度最大时间的总时长(封顶)
          , bitmap_agg(case when max_watch_stamp >= 0 and max_watch_stamp < 5 then user_id end)                  as exit_0_5s_user
          , bitmap_agg(case when max_watch_stamp >= 5 and max_watch_stamp < 10 then user_id end)                 as exit_5_10s_user
@@ -141,12 +163,13 @@ epis_stat as (
          , bitmap_agg(case when max_watch_stamp >= 60 then user_id end)                                         as exit_60s_plus_user
          , bitmap_agg(user_id)                                                                                  as epis_watch_user
     from user_next_epis
-    group by 1, 2, 3, 4, 5
+    group by 1, 2, 3, 4, 5, 6
 )
 
 -- 最终输出
 select s.dt
      , s.core
+     , s.acquisition_source_cd
      , s.language_code
      , s.series_id
      , s.epis_id

@@ -3,6 +3,7 @@ create table ads.ads_sv_beidou_series_source_stat_di
 (
      dt                    date     not null comment "日期"
     ,core                  int      not null comment "Core"
+    ,acquisition_source_cd int      not null comment "引流来源(1:引流, 0:非引流)"
     ,language_code         int      not null comment "语言编码"
     ,series_id             bigint   not null comment "短剧ID"
     ,source                varchar(255)      comment "来源"
@@ -13,10 +14,10 @@ create table ads.ads_sv_beidou_series_source_stat_di
     ,exposure_num          bigint            comment "曝光量"
     ,etl_time              datetime          comment "数据清洗时间"
 ) engine = OLAP
-    primary key(dt, core, language_code, series_id, source)
+    primary key(dt, core, acquisition_source_cd, language_code, series_id, source)
 comment "北斗短剧来源统计表"
 partition by date_trunc("day", dt)
-DISTRIBUTED BY HASH(dt, core, language_code, series_id) buckets 2
+DISTRIBUTED BY HASH(dt, core, acquisition_source_cd, language_code, series_id) buckets 2
 properties (
     "replication_num" = "3",
     "enable_persistent_index" = "true",
