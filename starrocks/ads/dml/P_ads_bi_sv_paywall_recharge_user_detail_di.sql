@@ -1,4 +1,4 @@
-----------------------------------------------------------------
+﻿----------------------------------------------------------------
 -- 程序功能： 海剧付费墙充值用户明细报表
 -- 程序名： P_ads_bi_sv_paywall_recharge_user_detail_di
 -- 目标表： ads.ads_bi_sv_paywall_recharge_user_detail_di
@@ -7,11 +7,14 @@
 ----------------------------------------------------------------
 
 insert into ads.ads_bi_sv_paywall_recharge_user_detail_di
-with t123 as (
+-- CTE 1: hit_event (基础明细层)
+-- 抽取核心用户的每日付费墙策略命中事件，并关联相应的国家、语言、终端等维度信息作为分析底座
+with hit_event as (
     select evt.dt
-         , evt.strategy_node_id
+         , evt.unnest_node_id   -- 炸裂后的节点id
          , evt.user_id
-         , evt.node_id                                         as strategy_id
+         , evt.node_id_path                                    as strategy_id       -- 完整节点id
+         , evt.map_node_id                                     as map_strategy_id    -- 映射前的节点id FFQ-629-3175
          , evt.version_id
          , dic_lang.cd_val_desc                                as put_language
          , case when cl.level = 1 then 'T1'
@@ -40,9 +43,11 @@ with t123 as (
        and dic_mt.cd_col = 'mt'
      where evt.dt >= '${bf_1_dt}'
        and evt.dt <= '${dt}'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 )
-, t2 as (
+-- CTE 2: pay_succ (充值订单明细)
+-- 获取半屏场景的充值成功订单记录，包含充值金额、渠道、档位特征(如VIP类别)、充值类型等业务字段
+, pay_succ as (
     select a.dt                                        as dt
          , a.create_time                               as create_time
          , a.user_id                                   as user_id
@@ -51,14 +56,16 @@ with t123 as (
          , lpad(a.recharge_amt, 3, '0')                as item_count
          , a.base_amount / 100                         as base_amount
          , a.recharge_src                              as recharge_source
-         , a.strategy_id                               as strategy_id
+         , coalesce(a.pay_wall_strategy_id
+                   ,a.strategy_id
+                   )                                   as strategy_id
          , a.subscribe_status                          as SubscribeStatus
          , a.recharge_type_cd                          as recharge_type_cd
          , a.recharge_type                             as shop_item_type
          , a.vip_type_cd                               as vip_type
          , a.recharge_channel                          as subpay_type
          , seconds_diff(c.FinishTime, a.create_time)   as finish_time
-      from dwd.dwd_trade_pay_succ_recharge_order_hi                as a
+      from dwd.dwd_trade_pay_succ_recharge_order_hi                as a         -- 每小时5分执行
       left join dim.dim_pub_code_mapping_dict                      as dic_mt
         on a.mt = dic_mt.cd_val
        and dic_mt.app_plat = 'pub'
@@ -74,7 +81,9 @@ with t123 as (
        and a.product_id = 6833
        and a.recharge_src = '半屏'
 )
-, t3 as (
+-- CTE 3: rec_expo (普通充值曝光PV)
+-- 从底层埋点提取付费墙“半屏”模块的普通充值曝光次数
+, rec_expo as (
     select dt
          , '半屏'                as recharge_source
          , event_strategy_id    as strategy_id
@@ -89,10 +98,12 @@ with t123 as (
        and (element_id = '200900' or page_id = '200900')
      group by 1, 2, 3, 4, 5, 6
 )
-, t3a as (
+-- CTE 4: ad_expo (广告曝光PV)
+-- 提取埋点中带有主策略ID的“半屏”广告位专属曝光次数
+, ad_expo as (
     select dt
          , '半屏'               as recharge_source
-         , main_strategy_id    as strategy_id
+         , event_strategy_id   as strategy_id
          , login_id            as user_id
          , core
          , os
@@ -101,14 +112,16 @@ with t123 as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and product_id = 6833
-       and main_strategy_id is not null
+       and event_strategy_id is not null
        and (element_id = '200900' or page_id = '200900')
      group by 1, 2, 3, 4, 5, 6
 )
-, t3b as (
+-- CTE 5: ad_rev (广告收益)
+-- 从聚合后的广告收入表里取出各个用户在该策略节点带来的整体广告流水(amt)
+, ad_rev as (
     select dt
-         , '半屏'                                  as recharge_source
-         , cast(main_strategy_id as varchar(200)) as strategy_id
+         , '半屏'                                   as recharge_source
+         , cast(event_strategy_id as varchar(200)) as strategy_id
          , user_id
          , core
          , dic_mt.cd_val_desc                     as enum_name
@@ -121,10 +134,12 @@ with t123 as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and product_id = 6833
-       and main_strategy_id is not null
+       and event_strategy_id is not null
      group by 1, 2, 3, 4, 5, 6
 )
-, t4 as (
+-- CTE 6: order_creat (发起订单)
+-- 提取用户在选定特征节点(element_id)发起创建订单动作的频次和充值VIP类别
+, order_creat as (
     select '半屏'                                      as recharge_source
          , case when cast(real_recharge as float) < 10 then concat('00', real_recharge)
                 when cast(real_recharge as float) < 100 then concat('0', real_recharge)
@@ -148,11 +163,14 @@ with t123 as (
        and (element_id = '200900' or page_id = '200900')
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 )
-, z1 as (
+-- CTE 7: expo_agg (曝光组装宽表)
+-- 以 hit_event 的键分别关联 rec_expo(普通曝光) 和 ad_expo(广告曝光) 聚合并输出各用户的曝光PV与UV
+, expo_agg as (
     select dt
-         , strategy_node_id
+         , unnest_node_id
          , user_id
          , strategy_id
+         , map_strategy_id
          , version_id
          , put_language
          , country_level
@@ -163,115 +181,125 @@ with t123 as (
          , max(exposure_pv)                                       as exposure_pv
          , max(ad_exposure_uv)                                    as ad_exposure_uv
          , max(ad_exposure_pv)                                    as ad_exposure_pv
-      from (select t3.dt
-                 , t123.strategy_node_id
-                 , t123.user_id
-                 , ifnull(t3.strategy_id, '续订(或策略id为空)')     as strategy_id
-                 , t123.version_id
-                 , t123.put_language
-                 , t123.country_level
-                 , ifnull(t3.os, t123.mt)                         as mt
-                 , ifnull(t3.core, t123.core)                     as core
-                 , t3.recharge_source                             as recharge_source
+      from (select rec_expo.dt
+                 , hit_event.unnest_node_id
+                 , hit_event.user_id
+                 , ifnull(rec_expo.strategy_id, '续订(或策略id为空)')     as strategy_id
+                 , hit_event.map_strategy_id
+                 , hit_event.version_id
+                 , hit_event.put_language
+                 , hit_event.country_level
+                 , ifnull(rec_expo.os, hit_event.mt)              as mt
+                 , ifnull(rec_expo.core, hit_event.core)          as core
+                 , rec_expo.recharge_source                       as recharge_source
                  , 1                                              as exposure_uv
-                 , sum(t3.exposure_pv)                            as exposure_pv
+                 , sum(rec_expo.exposure_pv)                      as exposure_pv
                  , 0                                              as ad_exposure_uv
                  , 0                                              as ad_exposure_pv
-              from t123
-              left join t3
-                on t123.user_id = t3.user_id
-               and t123.dt = t3.dt
-               and t123.strategy_id = t3.strategy_id
-             group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+              from hit_event
+              left join rec_expo
+                on hit_event.user_id = rec_expo.user_id
+               and hit_event.dt = rec_expo.dt
+               and hit_event.map_strategy_id = rec_expo.strategy_id
+             group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
             union all
-            select t3a.dt                                         as dt
-                 , t123.strategy_node_id                          as strategy_node_id
-                 , t123.user_id                                   as user_id
-                 , ifnull(t3a.strategy_id, '续订(或策略id为空)')    as strategy_id
-                 , t123.version_id                                as version_id
-                 , t123.put_language                              as put_language
-                 , t123.country_level                             as country_level
-                 , ifnull(t3a.os, t123.mt)                        as mt
-                 , ifnull(t3a.core, t123.core)                    as core
-                 , t3a.recharge_source                            as recharge_source
-                 , 0                                              as exposure_uv
-                 , 0                                              as exposure_pv
-                 , 1                                              as ad_exposure_uv
-                 , sum(t3a.ad_exposure_pv)                        as ad_exposure_pv
-              from t123
-              left join t3a
-                on t123.user_id = t3a.user_id
-               and t123.dt = t3a.dt
-               and t123.strategy_id = t3a.strategy_id
-             group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-           )                                                      as z1a
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+            select ad_expo.dt                                         as dt
+                 , hit_event.unnest_node_id                           as unnest_node_id
+                 , hit_event.user_id                                   as user_id
+                 , ifnull(ad_expo.strategy_id, '续订(或策略id为空)')    as strategy_id
+                 , hit_event.map_strategy_id
+                 , hit_event.version_id                                as version_id
+                 , hit_event.put_language                              as put_language
+                 , hit_event.country_level                             as country_level
+                 , ifnull(ad_expo.os, hit_event.mt)                    as mt
+                 , ifnull(ad_expo.core, hit_event.core)                as core
+                 , ad_expo.recharge_source                             as recharge_source
+                 , 0                                                   as exposure_uv
+                 , 0                                                   as exposure_pv
+                 , 1                                                   as ad_exposure_uv
+                 , sum(ad_expo.ad_exposure_pv)                         as ad_exposure_pv
+              from hit_event
+              left join ad_expo
+                on hit_event.user_id = ad_expo.user_id
+               and hit_event.dt = ad_expo.dt
+               and hit_event.map_strategy_id = ad_expo.strategy_id
+             group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+           )                                                      as expo_union
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 )
-, z2 as (
-    select t2.dt
-         , t123.strategy_node_id
-         , t123.user_id
-         , t123.strategy_id
-         , t123.version_id
-         , t123.put_language
-         , t123.country_level
-         , ifnull(t2.enum_name, t123.mt)                                         as mt
-         , ifnull(t2.corever2, t123.core)                                        as core
-         , t2.recharge_source                                                    as recharge_source
-         , t2.shop_item_type
-         , t2.vip_type
-         , case when ifnull(t2.subpay_type, '-99') in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal') then t2.subpay_type
-                else ifnull(t2.subpay_type, '三方支付')
-            end                                                                  as subpay_type
-         , t2.item_count
-         , 1                                                                     as recharge_un
-         , count(t2.user_id)                                                     as recharge_times
-         , sum(t2.base_amount)                                                   as recharge_amount
-         , sum(case when t2.recharge_type_cd = '0' then t2.base_amount end)      as normal_recharge_amount
-         , sum(case when t2.recharge_type_cd = '840' then t2.base_amount end)    as signin_recharge_amount
-         , sum(case when t2.recharge_type_cd = '810' then t2.base_amount end)    as svip_recharge_amount
-         , sum(case when t2.recharge_type_cd = '860' then t2.base_amount end)    as nsvip_recharge_amount
-         , sum(case when ifnull(t2.subpay_type, '-99') not in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal')
-                    then t2.base_amount
+-- CTE 8: pay_agg (支付交易宽表)
+-- 基于 hit_event 关联 pay_succ，聚合统计策略节点下高度详尽的各维度付费指标（各VIP档位金额细分、三方支付等）
+, pay_agg as (
+    select pay_succ.dt
+         , hit_event.unnest_node_id
+         , hit_event.user_id
+         , hit_event.strategy_id
+         , hit_event.map_strategy_id
+         , hit_event.version_id
+         , hit_event.put_language
+         , hit_event.country_level
+         , ifnull(pay_succ.enum_name, hit_event.mt)                                    as mt
+         , ifnull(pay_succ.corever2, hit_event.core)                                   as core
+         , pay_succ.recharge_source                                                    as recharge_source
+         , pay_succ.shop_item_type
+         , pay_succ.vip_type
+         , case when ifnull(pay_succ.subpay_type, '-99') in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal') then pay_succ.subpay_type
+                else ifnull(pay_succ.subpay_type, '三方支付')
+            end                                                                        as subpay_type
+         , pay_succ.item_count
+         , 1                                                                           as recharge_un
+         , count(pay_succ.user_id)                                                     as recharge_times
+         , sum(pay_succ.base_amount)                                                   as recharge_amount
+         , sum(case when pay_succ.recharge_type_cd = '0' then pay_succ.base_amount end)      as normal_recharge_amount
+         , sum(case when pay_succ.recharge_type_cd = '840' then pay_succ.base_amount end)    as signin_recharge_amount
+         , sum(case when pay_succ.recharge_type_cd = '810' then pay_succ.base_amount end)    as svip_recharge_amount
+         , sum(case when pay_succ.recharge_type_cd = '860' then pay_succ.base_amount end)    as nsvip_recharge_amount
+         , sum(case when ifnull(pay_succ.subpay_type, '-99') not in ('GooglePlay', 'AppStore', 'AppGallery', 'MiGlobal')
+                    then pay_succ.base_amount
                     else 0
                 end)                                                             as third_recharge_amount
-         , count(case when t2.recharge_type_cd = '0'   then t2.user_id end)      as normal_recharge_times
-         , count(case when t2.recharge_type_cd = '840' then t2.user_id end)      as signin_recharge_times
-         , count(case when t2.recharge_type_cd = '810' then t2.user_id end)      as svip_recharge_times
-         , count(case when t2.recharge_type_cd = '860' then t2.user_id end)      as nsvip_recharge_times
-         , sum(case when t2.recharge_type_cd = '0'   then 1 end)                 as normal_recharge_un
-         , sum(case when t2.recharge_type_cd = '840' then 1 end)                 as signin_recharge_un
-         , sum(case when t2.recharge_type_cd = '810' then 1 end)                 as svip_recharge_un
-         , sum(case when t2.recharge_type_cd = '860' then 1 end)                 as nsvip_recharge_un
-         , sum(case when t2.recharge_type_cd <> '0'  then 1 end)                 as recharge_un_subscription
-         , avg(t2.finish_time)                                                   as finish_time
-      from t123
-      join t2
-        on t123.user_id = t2.user_id
-       and t123.dt = t2.dt
-       and t123.strategy_id = t2.strategy_id
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+         , count(case when pay_succ.recharge_type_cd = '0'   then pay_succ.user_id end)      as normal_recharge_times
+         , count(case when pay_succ.recharge_type_cd = '840' then pay_succ.user_id end)      as signin_recharge_times
+         , count(case when pay_succ.recharge_type_cd = '810' then pay_succ.user_id end)      as svip_recharge_times
+         , count(case when pay_succ.recharge_type_cd = '860' then pay_succ.user_id end)      as nsvip_recharge_times
+         , sum(case when pay_succ.recharge_type_cd = '0'   then 1 end)                 as normal_recharge_un
+         , sum(case when pay_succ.recharge_type_cd = '840' then 1 end)                 as signin_recharge_un
+         , sum(case when pay_succ.recharge_type_cd = '810' then 1 end)                 as svip_recharge_un
+         , sum(case when pay_succ.recharge_type_cd = '860' then 1 end)                 as nsvip_recharge_un
+         , sum(case when pay_succ.recharge_type_cd <> '0'  then 1 end)                 as recharge_un_subscription
+         , avg(pay_succ.finish_time)                                                   as finish_time
+      from hit_event
+      join pay_succ
+        on hit_event.user_id = pay_succ.user_id
+       and hit_event.dt = pay_succ.dt
+       and hit_event.map_strategy_id = pay_succ.strategy_id
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 )
-, z3 as (
-    select t3b.dt
-         , t123.strategy_node_id
-         , t123.user_id
-         , t123.strategy_id
-         , t123.version_id
-         , t123.put_language
-         , t123.country_level
-         , ifnull(t3b.enum_name, t123.mt)            as mt
-         , ifnull(t3b.core, t123.core)               as core
-         , t3b.recharge_source
-         , sum(t3b.amt)                              as ad_amt
-      from t123
-      join t3b
-        on t123.user_id = t3b.user_id
-       and t123.dt = t3b.dt
-       and t123.strategy_id = t3b.strategy_id
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+-- CTE 9: ad_rev_agg (收益组装宽表)
+-- 将 hit_event 与 ad_rev 关联，求出单用户维度的累积广告流水总和
+, ad_rev_agg as (
+    select ad_rev.dt
+         , hit_event.unnest_node_id
+         , hit_event.user_id
+         , hit_event.strategy_id
+         , hit_event.map_strategy_id
+         , hit_event.version_id
+         , hit_event.put_language
+         , hit_event.country_level
+         , ifnull(ad_rev.enum_name, hit_event.mt)            as mt
+         , ifnull(ad_rev.core, hit_event.core)               as core
+         , ad_rev.recharge_source
+         , sum(ad_rev.amt)                                   as ad_amt
+      from hit_event
+      join ad_rev
+        on hit_event.user_id = ad_rev.user_id
+       and hit_event.dt = ad_rev.dt
+       and hit_event.map_strategy_id = ad_rev.strategy_id
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 )
-, z4 as (
+-- CTE 10: preload_ecpm (单用户高价值预加载分析)
+-- 使用开窗查询出用户时间线上最近的一条激励视频预加载 eCPM 均值
+, preload_ecpm as (
     select account_id          as user_id
          , value_micros * 1000 as sv_last_preload_ecpm
       from (select account_id
@@ -282,7 +310,9 @@ with t123 as (
            ) t
      where rn = 1
 )
-, z5 as (
+-- CTE 11: recharge_mode (充值偏好额度推算)
+-- 经过双重查询与开窗，计算出用户发生频率最高的充值档位作为该用户的“充值众数/常购金额”
+, recharge_mode as (
     select user_id
          , recharge_amount                                                          as recharge_mode
       from (select user_id
@@ -298,171 +328,190 @@ with t123 as (
         )                                                                           as t2
      where rn = 1
 )
-, z6_1 as (
-    select t4.dt
-         , t123.strategy_node_id
-         , t123.user_id
-         , t123.strategy_id
-         , t123.version_id
-         , t123.put_language
-         , t123.country_level
-         , ifnull(t4.mt, t123.mt)        as mt
-         , ifnull(t4.core, t123.core)    as core
-         , t4.recharge_source            as recharge_source
-         , t4.shop_item_type
-         , t4.item_count
-         , t4.subpay_type
+-- CTE 12: order_creat_agg (创单统计宽表)
+-- 结合 hit_event 和 order_creat 获得在策略节点下的用户的订单创建点击量
+, order_creat_agg as (
+    select order_creat.dt
+         , hit_event.unnest_node_id
+         , hit_event.user_id
+         , hit_event.strategy_id
+         , hit_event.map_strategy_id
+         , hit_event.version_id
+         , hit_event.put_language
+         , hit_event.country_level
+         , ifnull(order_creat.mt, hit_event.mt)        as mt
+         , ifnull(order_creat.core, hit_event.core)    as core
+         , order_creat.recharge_source            as recharge_source
+         , order_creat.shop_item_type
+         , order_creat.item_count
+         , order_creat.subpay_type
          , count(1)                      as create_order_num
-      from t123
-      join t4
-        on t123.user_id = t4.user_id
-       and t123.dt = t4.dt
-       and t123.strategy_id = t4.strategy_id
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+      from hit_event
+      join order_creat
+        on hit_event.user_id = order_creat.user_id
+       and hit_event.dt = order_creat.dt
+       and hit_event.map_strategy_id = order_creat.strategy_id
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
 )
-, z6 as (
-    select coalesce(z1.dt, z2.dt)                                as dt
-         , coalesce(z1.strategy_node_id, z2.strategy_node_id)    as strategy_node_id
-         , coalesce(z1.user_id, z2.user_id)                      as user_id
-         , coalesce(z1.strategy_id, z2.strategy_id)              as strategy_id
-         , coalesce(z1.recharge_source, z2.recharge_source)      as recharge_source
-         , coalesce(z1.put_language, z2.put_language)            as remarks
-         , coalesce(z1.country_level, z2.country_level)          as country_level
-         , coalesce(z1.mt, z2.mt)                                as mt
-         , coalesce(z1.core, z2.core)                            as core
-         , z2.shop_item_type
-         , z2.vip_type
-         , z2.subpay_type
-         , z2.item_count
-         , z2.recharge_un
-         , z2.recharge_times
-         , z2.recharge_amount
-         , z2.normal_recharge_amount
-         , z2.signin_recharge_amount
-         , z2.svip_recharge_amount
-         , z2.nsvip_recharge_amount
-         , z2.normal_recharge_times
-         , z2.signin_recharge_times
-         , z2.svip_recharge_times
-         , z2.nsvip_recharge_times
-         , z2.normal_recharge_un
-         , z2.signin_recharge_un
-         , z2.svip_recharge_un
-         , z2.nsvip_recharge_un
-         , z2.recharge_un_subscription
-         , z2.finish_time
-         , z1.create_order_num
-         , z2.third_recharge_amount
-      from z6_1                                                  as z1
-      full join z2
-        on z1.dt = z2.dt
-       and z1.strategy_node_id = z2.strategy_node_id
-       and z1.user_id = z2.user_id
-       and z1.strategy_id = z2.strategy_id
-       and z1.recharge_source = z2.recharge_source
-       and z1.shop_item_type = z2.shop_item_type
-       and z1.item_count = z2.item_count
-       and z1.subpay_type = z2.subpay_type
+-- CTE 13: trade_agg (交易漏斗合流)
+-- Full Join 完美对齐所有发起创单的人(order_creat_agg)和实际完成付费的人(pay_agg)
+, trade_agg as (
+    select coalesce(ord_agg.dt, p_agg.dt)                                as dt
+         , coalesce(ord_agg.unnest_node_id, p_agg.unnest_node_id)    as unnest_node_id
+         , coalesce(ord_agg.user_id, p_agg.user_id)                      as user_id
+         , coalesce(ord_agg.strategy_id, p_agg.strategy_id)              as strategy_id
+         , coalesce(ord_agg.map_strategy_id, p_agg.map_strategy_id)      as map_strategy_id
+         , coalesce(ord_agg.version_id, p_agg.version_id)                as version_id
+         , coalesce(ord_agg.recharge_source, p_agg.recharge_source)      as recharge_source
+         , coalesce(ord_agg.put_language, p_agg.put_language)            as remarks
+         , coalesce(ord_agg.country_level, p_agg.country_level)          as country_level
+         , coalesce(ord_agg.mt, p_agg.mt)                                as mt
+         , coalesce(ord_agg.core, p_agg.core)                            as core
+         , p_agg.shop_item_type
+         , p_agg.vip_type
+         , p_agg.subpay_type
+         , p_agg.item_count
+         , p_agg.recharge_un
+         , p_agg.recharge_times
+         , p_agg.recharge_amount
+         , p_agg.normal_recharge_amount
+         , p_agg.signin_recharge_amount
+         , p_agg.svip_recharge_amount
+         , p_agg.nsvip_recharge_amount
+         , p_agg.normal_recharge_times
+         , p_agg.signin_recharge_times
+         , p_agg.svip_recharge_times
+         , p_agg.nsvip_recharge_times
+         , p_agg.normal_recharge_un
+         , p_agg.signin_recharge_un
+         , p_agg.svip_recharge_un
+         , p_agg.nsvip_recharge_un
+         , p_agg.recharge_un_subscription
+         , p_agg.finish_time
+         , ord_agg.create_order_num
+         , p_agg.third_recharge_amount
+      from order_creat_agg                                               as ord_agg
+      full join pay_agg                                                  as p_agg
+        on ord_agg.dt = p_agg.dt
+       and ord_agg.unnest_node_id = p_agg.unnest_node_id
+       and ord_agg.user_id = p_agg.user_id
+       and ord_agg.map_strategy_id = p_agg.map_strategy_id
+       and ord_agg.recharge_source = p_agg.recharge_source
+       and ord_agg.shop_item_type = p_agg.shop_item_type
+       and ord_agg.item_count = p_agg.item_count
+       and ord_agg.subpay_type = p_agg.subpay_type
 )
-select fd.dt                                                             as dt                          -- 日期分区
-     , fd.strategy_node_id                                               as strategy_node_id            -- 策略节点ID
-     , fd.user_id                                                        as user_id                     -- 用户id
-     , if(fd.strategy_id = fd.strategy_node_id, fd.strategy_id, null)    as strategy_id                 -- 策略ID
-     , fd.version_id                                                     as version_id                  -- 版本id
-     , fd.recharge_source                                                as recharge_source             -- 充值来源
-     , 6833                                                              as product_id                  -- 产品id
-     , fd.put_language                                                   as put_language                -- 投放语言
-     , fd.country_level                                                  as country_level               -- 国家等级
-     , fd.mt                                                             as mt                          -- 终端
-     , fd.core                                                           as core                        -- core
-     , null                                                              as strategy_name               -- 策略名称
-     , null                                                              as strategy_weight             -- 策略权重
-     , null                                                              as strategy_code               -- 策略代号
-     , z4.sv_last_preload_ecpm                                           as sv_last_preload_ecpm        -- 最近一次激励视频预加载eCPM拆包维度
-     , z5.recharge_mode                                                  as recharge_mode               -- 充值众数
-     , fd.exposure_uv                                                    as exposure_uv                 -- 曝光UV
-     , fd.exposure_pv                                                    as exposure_pv                 -- 曝光PV
-     , fd.ad_exposure_uv                                                 as ad_exposure_uv              -- 广告曝光UV
-     , fd.ad_exposure_pv                                                 as ad_exposure_pv              -- 广告曝光PV
-     , fd.ad_amt                                                         as ad_amt                      -- 广告收益
-     , ifnull(fd.shop_item_type, '0')                                    as shop_item_type              -- 档位类型
-     , ifnull(fd.vip_type, 0)                                            as vip_type                    -- vip类型
-     , ifnull(fd.subpay_type, '三方支付')                                 as subpay_type                 -- 充值类型
-     , ifnull(fd.item_count, '0')                                        as item_count                  -- 充值档位
-     , ifnull(fd.recharge_un, 0)                                         as recharge_un                 -- 充值人数
-     , ifnull(fd.recharge_times, 0)                                      as recharge_times              -- 充值次数
-     , ifnull(fd.recharge_amount, 0)                                     as recharge_amount             -- 充值金额
-     , ifnull(fd.normal_recharge_amount, 0)                              as normal_recharge_amount      -- 充值金额-普通充值
-     , ifnull(fd.signin_recharge_amount, 0)                              as signin_recharge_amount      -- 充值金额-签到卡
-     , ifnull(fd.svip_recharge_amount, 0)                                as svip_recharge_amount        -- 充值金额-SVIP
-     , ifnull(fd.nsvip_recharge_amount, 0)                               as nsvip_recharge_amount       -- 充值金额-NSVI
-     , ifnull(fd.third_recharge_amount, 0)                               as third_recharge_amount       -- 充值金额-三方支付
-     , ifnull(fd.normal_recharge_times, 0)                               as normal_recharge_times       -- 充值次数-普通充值
-     , ifnull(fd.signin_recharge_times, 0)                               as signin_recharge_times       -- 充值次数-签到卡
-     , ifnull(fd.svip_recharge_times, 0)                                 as svip_recharge_times         -- 充值次数-SVIP
-     , ifnull(fd.nsvip_recharge_times, 0)                                as nsvip_recharge_times        -- 充值次数-NSVI
-     , ifnull(fd.normal_recharge_un, 0)                                  as normal_recharge_un          -- 充值人数-普通充值
-     , ifnull(fd.signin_recharge_un, 0)                                  as signin_recharge_un          -- 充值人数-签到卡
-     , ifnull(fd.svip_recharge_un, 0)                                    as svip_recharge_un            -- 充值人数-SVIP
-     , ifnull(fd.nsvip_recharge_un, 0)                                   as nsvip_recharge_un           -- 充值人数-NSVI
-     , ifnull(fd.recharge_un_subscription, 0)                            as recharge_un_subscription    -- 充值人数-订阅
-     , if(ifnull(fd.recharge_amount, 0) > 0, 1, 0)                       as is_recharge                 -- 是否充值
-     , fd.finish_time                                                    as finish_time                 -- 订单完成用时(秒)
-     , fd.create_order_num                                               as create_order_num            -- 创建订单数
-     , now()                                                             as etl_ime                     -- 清洗时间
-  from (select coalesce (z1.dt, z6.dt)                                   as dt
-             , coalesce (z1.strategy_node_id, z6.strategy_node_id)       as strategy_node_id
-             , coalesce (z1.user_id, z6.user_id)                         as user_id
-             , coalesce (z1.strategy_id, z6.strategy_id)                 as strategy_id
-             , coalesce (z1.recharge_source, z6.recharge_source)         as recharge_source
-             , coalesce (z1.put_language, z6.put_language)               as remarks
-             , coalesce (z1.country_level, z6.country_level)             as country_level
-             , coalesce (z1.mt, z6.mt)                                   as mt
-             , coalesce (z1.core, z6.core)                               as corever
-             , coalesce (z1.exposure_uv, 0)                              as exposure_uv
-             , coalesce (z1.exposure_pv, 0)                              as exposure_pv
-             , coalesce (z1.ad_exposure_uv, 0)                           as ad_exposure_uv
-             , coalesce (z1.ad_exposure_pv, 0)                           as ad_exposure_pv
-             , coalesce (z3.ad_amt, 0)                                   as ad_amt
-             , z6.shop_item_type
-             , z6.vip_type
-             , z6.subpay_type
-             , z6.item_count
-             , z6.recharge_un
-             , z6.recharge_times
-             , z6.recharge_amount
-             , z6.normal_recharge_amount
-             , z6.signin_recharge_amount
-             , z6.svip_recharge_amount
-             , z6.nsvip_recharge_amount
-             , z6.normal_recharge_times
-             , z6.signin_recharge_times
-             , z6.svip_recharge_times
-             , z6.nsvip_recharge_times
-             , z6.normal_recharge_un
-             , z6.signin_recharge_un
-             , z6.svip_recharge_un
-             , z6.nsvip_recharge_un
-             , z6.recharge_un_subscription
-             , z6.finish_time
-             , z6.create_order_num
-             , z6.third_recharge_amount
-          from z1
-          full join z6
-            on z1.dt=z6.dt
-           and z1.strategy_node_id = a6.strategy_node_id
-           and z1.user_id=z6.user_id
-          full join z3
-            on z1.dt = z3.dt
-           and z1.strategy_node_id = z3.strategy_node_id
-           and z1.user_id = z3.user_id
-       )                                      as fd
-  left join z4
-    on fd.user_id = z4.user_id
-  left join z5
-    on fd.user_id = z5.user_id
- where fd.dt is not null
-   and fd.rn = 1
+-- ===================== 最终组装与输出层 =====================
+-- 对所有中间加工层(expo_agg曝光, trade_agg买单, ad_rev_agg广告营收)全方位Full Join/Left join
+-- 外挂上用户静态属性(preload_ecpm的eCPM, recharge_mode的偏好额)后，落入目标ADS明细宽表
+select final_data.dt                                                             as dt                          -- 日期分区
+     , md5(concat(ifnull(nullif(cast(final_data.unnest_node_id as varchar), ''), '-99')
+                 ,ifnull(nullif(cast(final_data.user_id as varchar), ''), '-99')
+                 ,ifnull(nullif(cast(final_data.map_strategy_id as varchar), ''), '-99')
+                 )
+          )                                                                      as md5_key                   -- md5唯一键
+     , final_data.unnest_node_id                                                 as unnest_node_id            -- 策略节点ID
+     , final_data.user_id                                                        as user_id                     -- 用户id
+     , final_data.strategy_id                                                    as strategy_id                 -- 策略ID
+     , final_data.map_strategy_id                                                as map_strategy_id        -- 策略映射ID
+     , final_data.version_id                                                     as version_id                  -- 版本id
+     , final_data.recharge_source                                                as recharge_source             -- 充值来源
+     , 6833                                                                      as product_id                  -- 产品id
+     , final_data.put_language                                                   as put_language                -- 投放语言
+     , final_data.country_level                                                  as country_level               -- 国家等级
+     , final_data.mt                                                             as mt                          -- 终端
+     , final_data.core                                                           as core                        -- core
+     , null                                                                      as strategy_name               -- 策略名称
+     , null                                                                      as strategy_weight             -- 策略权重
+     , null                                                                      as strategy_code               -- 策略代号
+     , preload_ecpm.sv_last_preload_ecpm                                         as sv_last_preload_ecpm        -- 最近一次激励视频预加载eCPM拆包维度
+     , recharge_mode.recharge_mode                                               as recharge_mode               -- 充值众数
+     , final_data.exposure_uv                                                    as exposure_uv                 -- 曝光UV
+     , final_data.exposure_pv                                                    as exposure_pv                 -- 曝光PV
+     , final_data.ad_exposure_uv                                                 as ad_exposure_uv              -- 广告曝光UV
+     , final_data.ad_exposure_pv                                                 as ad_exposure_pv              -- 广告曝光PV
+     , final_data.ad_amt                                                         as ad_amt                      -- 广告收益
+     , ifnull(final_data.shop_item_type, '0')                                    as shop_item_type              -- 档位类型
+     , ifnull(final_data.vip_type, 0)                                            as vip_type                    -- vip类型
+     , ifnull(final_data.subpay_type, '三方支付')                                 as subpay_type                 -- 充值类型
+     , ifnull(final_data.item_count, '0')                                        as item_count                  -- 充值档位
+     , ifnull(final_data.recharge_un, 0)                                         as recharge_un                 -- 充值人数
+     , ifnull(final_data.recharge_times, 0)                                      as recharge_times              -- 充值次数
+     , ifnull(final_data.recharge_amount, 0)                                     as recharge_amount             -- 充值金额
+     , ifnull(final_data.normal_recharge_amount, 0)                              as normal_recharge_amount      -- 充值金额-普通充值
+     , ifnull(final_data.signin_recharge_amount, 0)                              as signin_recharge_amount      -- 充值金额-签到卡
+     , ifnull(final_data.svip_recharge_amount, 0)                                as svip_recharge_amount        -- 充值金额-SVIP
+     , ifnull(final_data.nsvip_recharge_amount, 0)                               as nsvip_recharge_amount       -- 充值金额-NSVI
+     , ifnull(final_data.third_recharge_amount, 0)                               as third_recharge_amount       -- 充值金额-三方支付
+     , ifnull(final_data.normal_recharge_times, 0)                               as normal_recharge_times       -- 充值次数-普通充值
+     , ifnull(final_data.signin_recharge_times, 0)                               as signin_recharge_times       -- 充值次数-签到卡
+     , ifnull(final_data.svip_recharge_times, 0)                                 as svip_recharge_times         -- 充值次数-SVIP
+     , ifnull(final_data.nsvip_recharge_times, 0)                                as nsvip_recharge_times        -- 充值次数-NSVI
+     , ifnull(final_data.normal_recharge_un, 0)                                  as normal_recharge_un          -- 充值人数-普通充值
+     , ifnull(final_data.signin_recharge_un, 0)                                  as signin_recharge_un          -- 充值人数-签到卡
+     , ifnull(final_data.svip_recharge_un, 0)                                    as svip_recharge_un            -- 充值人数-SVIP
+     , ifnull(final_data.nsvip_recharge_un, 0)                                   as nsvip_recharge_un           -- 充值人数-NSVI
+     , ifnull(final_data.recharge_un_subscription, 0)                            as recharge_un_subscription    -- 充值人数-订阅
+     , if(ifnull(final_data.recharge_amount, 0) > 0, 1, 0)                       as is_recharge                 -- 是否充值
+     , final_data.finish_time                                                    as finish_time                 -- 订单完成用时(秒)
+     , final_data.create_order_num                                               as create_order_num            -- 创建订单数
+     , now()                                                                     as etl_ime                     -- 清洗时间
+  from (select coalesce (expo_agg.dt, trade_agg.dt)                                     as dt
+             , coalesce (expo_agg.unnest_node_id, trade_agg.unnest_node_id,'-99')       as unnest_node_id
+             , coalesce (expo_agg.user_id, trade_agg.user_id,-99)                       as user_id
+             , coalesce (expo_agg.strategy_id, trade_agg.strategy_id,'-99')             as strategy_id
+             , coalesce (expo_agg.map_strategy_id, trade_agg.map_strategy_id,'-99')     as map_strategy_id
+             , coalesce (expo_agg.version_id, trade_agg.version_id)                     as version_id
+             , coalesce (expo_agg.recharge_source, trade_agg.recharge_source)           as recharge_source
+             , coalesce (expo_agg.put_language, trade_agg.remarks)                      as put_language -- 之前查z6的remarks
+             , coalesce (expo_agg.country_level, trade_agg.country_level)               as country_level
+             , coalesce (expo_agg.mt, trade_agg.mt)                                     as mt
+             , coalesce (expo_agg.core, trade_agg.core)                                 as core
+             , coalesce (expo_agg.exposure_uv, 0)                                       as exposure_uv
+             , coalesce (expo_agg.exposure_pv, 0)                                       as exposure_pv
+             , coalesce (expo_agg.ad_exposure_uv, 0)                                    as ad_exposure_uv
+             , coalesce (expo_agg.ad_exposure_pv, 0)                                    as ad_exposure_pv
+             , coalesce (ad_rev_agg.ad_amt, 0)                                          as ad_amt
+             , trade_agg.shop_item_type
+             , trade_agg.vip_type
+             , trade_agg.subpay_type
+             , trade_agg.item_count
+             , trade_agg.recharge_un
+             , trade_agg.recharge_times
+             , trade_agg.recharge_amount
+             , trade_agg.normal_recharge_amount
+             , trade_agg.signin_recharge_amount
+             , trade_agg.svip_recharge_amount
+             , trade_agg.nsvip_recharge_amount
+             , trade_agg.normal_recharge_times
+             , trade_agg.signin_recharge_times
+             , trade_agg.svip_recharge_times
+             , trade_agg.nsvip_recharge_times
+             , trade_agg.normal_recharge_un
+             , trade_agg.signin_recharge_un
+             , trade_agg.svip_recharge_un
+             , trade_agg.nsvip_recharge_un
+             , trade_agg.recharge_un_subscription
+             , trade_agg.finish_time
+             , trade_agg.create_order_num
+             , trade_agg.third_recharge_amount
+          from expo_agg
+          full join trade_agg
+            on expo_agg.dt=trade_agg.dt
+           and expo_agg.unnest_node_id = trade_agg.unnest_node_id  -- FIXED: 原来是不存在的 a6，已将其修正为对应的别名 trade_agg
+           and expo_agg.map_strategy_id = trade_agg.map_strategy_id
+           and expo_agg.user_id=trade_agg.user_id
+          full join ad_rev_agg
+            on expo_agg.dt = ad_rev_agg.dt
+           and expo_agg.unnest_node_id = ad_rev_agg.unnest_node_id
+           and expo_agg.map_strategy_id = ad_rev_agg.map_strategy_id
+           and expo_agg.user_id = ad_rev_agg.user_id
+       )                                      as final_data
+  left join preload_ecpm
+    on final_data.user_id = preload_ecpm.user_id
+  left join recharge_mode
+    on final_data.user_id = recharge_mode.user_id
+ where final_data.dt is not null
 ;
 
 commit;

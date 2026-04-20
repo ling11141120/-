@@ -1,9 +1,11 @@
 drop table if exists ads.ads_bi_sv_paywall_recharge_user_detail_di;
 create table ads.ads_bi_sv_paywall_recharge_user_detail_di (
      dt                       date           not null                  comment "日期分区"
+    ,md5_key                  varchar(30)    not null                  comment "联合主键"
     ,strategy_node_id         varchar(200)   not null                  comment "策略节点ID"
     ,user_id                  bigint         not null                  comment "用户id"
-    ,strategy_id              varchar(200)                             comment "策略ID"
+    ,strategy_id              varchar(200)   not null                  comment "策略ID"
+    ,map_strategy_id          varchar(200)   not null                  comment "策略映射ID"
     ,version_id               int                                      comment "版本id"
     ,recharge_source          varchar(200)                             comment "充值来源"
     ,product_id               int                                      comment "产品id"
@@ -47,10 +49,10 @@ create table ads.ads_bi_sv_paywall_recharge_user_detail_di (
     ,create_order_num         int                                      comment "创建订单数"
     ,etl_ime                  datetime       default current_timestamp comment "清洗时间"
 )
-primary key(dt, strategy_node_id, user_id)
+primary key(dt, md5_key)
 comment "海剧付费墙充值用户明细报表"
 partition by date_trunc('day', dt)
-distributed by hash(dt, strategy_node_id, user_id)
+distributed by hash(dt, md5_key)
 properties (
     "replication_num" = "3",
     "bloom_filter_columns" = "dt",
