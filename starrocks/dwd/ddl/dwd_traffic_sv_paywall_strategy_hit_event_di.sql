@@ -7,7 +7,7 @@ create table dwd.dwd_traffic_sv_paywall_strategy_hit_event_di (
     ,map_node_id       varchar(200)    not null    comment "映射节点id"
     ,node_id_path      varchar(200)    not null    comment "节点id路径"
     ,user_id           bigint                      comment "用户id"
-    ,corever           int                         comment "版本id"
+    ,core              int                         comment "版本id"
     ,strategy_type     int                         comment "策略类型"
     ,code              int                         comment "业务状态码"
     ,version_id        bigint                      comment "策略id即版本id"
