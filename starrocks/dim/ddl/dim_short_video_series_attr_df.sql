@@ -4,6 +4,7 @@ create table dim.dim_short_video_series_attr_df
     series_id              bigint not null comment "短剧ID"
     ,language_code         int             comment "语言编码"
     ,language_name         varchar(100)    comment "语言名称"
+    ,lang_abbr             varchar(20)     comment "语言缩写"
     ,series_code           varchar(100)    comment "短剧代号"
     ,series_name           varchar(255)    comment "短剧名称"
     ,all_epis              int             comment "短剧总集数"
@@ -36,3 +37,6 @@ properties (
     "replicated_storage" = "true",
     "compression" = "LZ4"
 );
+
+-- 生产表新增字段请使用 alter（不要 drop + create）
+-- alter table dim.dim_short_video_series_attr_df add column lang_abbr varchar(20) comment "语言缩写" after language_name;
