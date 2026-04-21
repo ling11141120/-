@@ -7,7 +7,7 @@
 -- 版本号： v1.0
 ----------------------------------------------------------------
 
-insert into ads.ads_sv_beidou_series_user_type_di_v2
+insert into ads.ads_sv_beidou_series_user_type_di
 with
 dl_user_set as (
     select lv.series_id

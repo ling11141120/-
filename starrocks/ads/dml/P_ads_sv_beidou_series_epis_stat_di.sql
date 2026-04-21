@@ -10,7 +10,7 @@
 SET cbo_cte_reuse = true;  -- 开启 CTE 复用
 
 -- DML
-insert into ads.ads_sv_beidou_series_epis_stat_di_v2
+insert into ads.ads_sv_beidou_series_epis_stat_di
 with
 dl_user_set as (
     select lv.series_id

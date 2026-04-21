@@ -8,7 +8,7 @@
 ----------------------------------------------------------------
 
 -- DML
-insert into ads.ads_sv_beidou_series_play_trend_hi_v2
+insert into ads.ads_sv_beidou_series_play_trend_hi
 with
 dl_user_set as (
     select lv.series_id

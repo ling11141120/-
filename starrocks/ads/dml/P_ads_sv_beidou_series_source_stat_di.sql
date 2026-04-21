@@ -7,7 +7,7 @@
 -- 版本号： v1.0
 ----------------------------------------------------------------
 
-insert into ads.ads_sv_beidou_series_source_stat_di_v2
+insert into ads.ads_sv_beidou_series_source_stat_di
 with yinliu_tmp as (
     select lv.series_id
          , b.user_id

@@ -13,7 +13,7 @@ SET new_planner_optimize_timeout = 3000;
 SET enable_runtime_adaptive_dop = false;
 
 -- DML
-insert into ads.ads_sv_beidou_series_daily_stat_di_v2
+insert into ads.ads_sv_beidou_series_daily_stat_di
 with
 dl_user_set as (
     select lv.series_id
