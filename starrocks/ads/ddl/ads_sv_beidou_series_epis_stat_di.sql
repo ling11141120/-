@@ -4,6 +4,7 @@ create table ads.ads_sv_beidou_series_epis_stat_di
 (
     dt                      date         not null comment "日期"
     ,core                    int          not null comment "Core"
+    ,acquisition_source_cd   int          not null comment "引流来源(1:引流, 0:非引流)"
     ,language_code           int          not null comment "语言编码"
     ,series_id               bigint       not null comment "短剧ID"
     ,epis_id                 bigint       not null comment "单集ID"
@@ -30,10 +31,10 @@ create table ads.ads_sv_beidou_series_epis_stat_di
     ,epis_watch_user         bitmap                comment "本集观看总用户"
     ,etl_time                datetime              comment "数据清洗时间"
 ) engine = OLAP
-    primary key(dt, core, language_code, series_id, epis_id)
+    primary key(dt, core, acquisition_source_cd, language_code, series_id, epis_id)
 comment "北斗短剧-每集观看数据统计表"
 partition by date_trunc("day", dt)
-distributed by hash(dt, core, language_code, series_id, epis_id) buckets 2
+distributed by hash(dt, core, acquisition_source_cd, language_code, series_id, epis_id) buckets 2
 properties (
     "replication_num" = "3",
     "enable_persistent_index" = "true",
