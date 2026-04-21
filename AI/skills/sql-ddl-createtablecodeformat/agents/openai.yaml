@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL DDL CreateTable Format"
+  short_description: "Format and normalize StarRocks CREATE TABLE DDL."
+  default_prompt: "Use $sql-ddl-createtablecodeformat to format and normalize this StarRocks CREATE TABLE statement."
