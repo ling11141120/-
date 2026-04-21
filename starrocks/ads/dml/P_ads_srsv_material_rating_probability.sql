@@ -919,8 +919,8 @@ t1_1 as (
             from ads.ads_material_upload_log_view
             where upload_status=4
               and bm_compelete_time>='2024-01-01'
-              and (    (tgt_type = 2 and source_chl_type = 2)
-                    or (tgt_type = 2 and source_chl_type = 1 and material_full_name not regexp 'h2|h3|H2|H3|1\\.5')
+              and (    -- (tgt_type = 2 and source_chl_type = 2)
+                       (tgt_type = 2 and source_chl_type in (1, 2) and material_full_name not regexp 'h2|h3|H2|H3|1\\.5')
                     or (tgt_type = 1 and material_full_name not regexp 'h1|h2|h3|H1|H2|H3|1\\.5')
                   )
 --               and (tgt_type=2 or (tgt_type=1 and material_full_name NOT REGEXP 'h1|h2|h3|H1|H2|H3|1\\.5'))  -- 上传成功
