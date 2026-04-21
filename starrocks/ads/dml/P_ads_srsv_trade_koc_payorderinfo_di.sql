@@ -16,7 +16,7 @@ with koc_data as (
           ,a4.book_name                                                                                                    as story_name
           ,a1.item_count                                                                                                   as amount
           ,a1.base_amount                                                                                                  as base_amount
-          ,a3.project_type                                                                                                 as project_type    -- 1:海阅 2：海剧
+          ,a1.project_type                                                                                                 as project_type    -- 1:海阅 2：海剧
           ,a3.institution_user_id                                                                                          as institution_user_id
           ,a3.star_user_id                                                                                                 as star_user_id
           ,a1.create_time                                                                                                  as create_time
