@@ -1,3 +1,9 @@
 # 忽略所有 IDEA 配置文件
 .idea/
 *.iml
+
+# 忽略所有 test/tests 目录
+test/
+tests/
+**/test/
+**/tests/
