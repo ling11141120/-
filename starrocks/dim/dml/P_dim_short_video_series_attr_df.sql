@@ -27,11 +27,27 @@ series_base as (
 
 , language_dim as (
   select
-    cd_val
-    , cd_val_desc
-  from dim.dim_pub_code_mapping_dict
-  where app_plat = 'pub'
-    and cd_col = 'lang_cd'
+    l.cd_val
+    , l.cd_val_desc
+    , a.lang_abbr
+  from (
+    select
+      cd_val
+      , cd_val_desc
+    from dim.dim_pub_code_mapping_dict
+    where app_plat = 'pub'
+      and cd_col = 'lang_cd'
+  ) as l
+  left join (
+    select
+      p_cd_val as lang_cd
+      , cd_val as lang_abbr
+    from dim.dim_pub_code_mapping_dict
+    where app_plat = 'pub'
+      and cd_col = 'lang_abbr'
+      and p_cd_col = 'lang_cd'
+  ) as a
+    on l.cd_val = a.lang_cd
 )
 
 , epis_agg as (
@@ -99,6 +115,7 @@ select
   b.series_id
   , b.language_code
   , d.cd_val_desc as language_name
+  , d.lang_abbr
   , b.series_code
   , b.series_name
   , b.all_epis
