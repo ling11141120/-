@@ -22,6 +22,7 @@ with yinliu_tmp as (
 stat_tmp as (
     select dt
          , coalesce(core, 0)              as core
+         , acquisition_source_cd
          , coalesce(language_code, 0)     as language_code
          , shortplay_id                   as series_id
          , source
@@ -29,6 +30,7 @@ stat_tmp as (
          , sum(exposure_num)              as exposure_num
     from (select s.dt
                , s.core
+               , case when t.user_id is not null then 1 else 0 end as acquisition_source_cd
                , coalesce(sv.language, 0) as language_code
                , coalesce(shortplay_id, split(activity_link, '_')[8]) as shortplay_id
                , case
@@ -67,11 +69,12 @@ stat_tmp as (
             and s.login_id = t.user_id
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
-          group by 1, 2, 3, 4, 5
+          group by 1, 2, 3, 4, 5, 6
 
           union all
           select e.dt
                , e.core
+               , case when t.user_id is not null then 1 else 0 end as acquisition_source_cd
                , coalesce(sv.language, 0) as language_code
                , split(activity_link, '_')[8] as shortplay_id -- 解析为 series_id 短剧ID
                , case
@@ -111,15 +114,16 @@ stat_tmp as (
           where dt >= '${bf_1_dt}'
             and dt <= '${dt}'
             and split(activity_link, '_')[8] != 0 -- 解析为 series_id 短剧ID
-          group by 1, 2, 3, 4, 5
+          group by 1, 2, 3, 4, 5, 6
          ) tb
     -- 过滤掉 source 为空的数据
     where source != ''
-    group by 1, 2, 3, 4, 5
+    group by 1, 2, 3, 4, 5, 6
 )
 
 select s.dt
      , s.core
+     , s.acquisition_source_cd
      , s.language_code
      , s.series_id
      , s.source
