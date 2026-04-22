@@ -63,26 +63,12 @@ properties (
 - 数据类型：统一小写，删除 `bigint`、`int`、`tinyint` 的长度；若 `varchar` 长度是 `65533`，则改为 `string` 类型。
 - 可空性：可为空时省略 `null`，不为空时写 `not null`。
 - 默认值：统一小写，保留默认值。
-- 行内注释以 `comment "..."` 形式保留在列行末尾。
+- 行内注释以 `comment "..."` 形式保留在列行末尾；如果原始列定义包含空注释 `comment ""`，也必须保留。
 - 除第一个列定义不需要逗号，其他每个列或约束前都使用前置逗号。
 - 第一个列定义的列名首字符缩进 5 个空格，其他列定义的前置逗号缩进 4 个空格。
 - 数据类型对齐：在缩进基础上，以最长列名为纵向对齐标准，额外空 1 格，使数据类型首字符纵向对齐。
 - 可空性、默认值、生成属性对齐：在数据类型对齐基础上，以最长数据类型为纵向对齐标准，额外空 1 格，使这些片段的首字符纵向对齐。
 - 注释对齐：在可空性、默认值、生成属性对齐基础上，以最长的可空性/默认值/生成属性组合为纵向对齐标准，额外空 1 格，使 `comment` 首字符纵向对齐。
-
-正确示例如下：
-
-```sql
-     dt             date          not null                   comment "日期"
-    ,Id             bigint        not null                   comment "主键ID"
-    ,AccountId      bigint        not null                   comment "账号ID"
-    ,CollectEmail   string                                   comment "收集邮箱"
-    ,sr_createtime  datetime      default current_timestamp  comment "starrocks数据注入时间"
-    ,IsDl           tinyint       not null                   comment "是否DL用户,0-否，1-是"
-    ,dlUpdateTime   datetime                                 comment "DL用户修改时间"
-    ,currencyCode   varchar(60)                              comment "网赚用户首次货币码"
-    ,coin_amt       decimal(38,6)                            comment "coin收入"
-```
 
 ## 表选项
 
@@ -90,6 +76,8 @@ properties (
 
 1. 键/模型子句：单独一行，保留键定义中列的原始顺序。
 2. 表注释：以 `comment "..."` 保存。
-3. 分区子句：如果分区为 `partition by date_trunc(...)`，则保持不变；若是 `partition by range(...)\n(partition p... values [("..."), ("...")), ...)` 形式，则改为 `partition by range(...)\n(partition p... values less than ("...")`。
+3. 分区子句：如果分区为 `partition by date_trunc(...)`，则保持不变；若是 `partition by range(...)...` 形式，删除所有`partition by range(...)`到`distributed by ...`中间所有的内容，在`partition by range(...)...`下一行输入新内容，新内容规则要求如3.1、3.2
+    3.1 若properties中`dynamic_partition.time_unit`的值是`day`，则输入`(patition pyyyyMMdd values less than ("yyyy-MM-dd+1"))`
+    3.2 若properties中`dynamic_partition.time_unit`的值是`month`，则输入`(patition pyyyyMM values less than ("yyyy-(MM+1)-01"))`
 4. 分桶子句：关键字小写，列名保持不变。
 5. `properties` 属性：每个属性缩进 4 个空格；除最后一个属性之外，其他属性后都带后置逗号。

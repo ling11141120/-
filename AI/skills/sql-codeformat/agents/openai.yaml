@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL Code Format"
+  short_description: "Format SQL DDL and INSERT SELECT DML with deterministic project rules."
+  default_prompt: "Use $sql-codeformat to format this SQL file according to the project DDL or DML rules."
