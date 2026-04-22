@@ -26,7 +26,7 @@ select svp.dt                                                          as dt
      , svp.BaseAmount                                                  as base_amount
      , svp.SubPayType                                                  as recharge_channel
      , case when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '201300'    then '商店页'
-            when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '200900'    then '半屏'
+            when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] in('200900','210054','210051')     then '半屏'
             when     split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '200800'
                  and split(get_json_string(svp.CustomData, '$.sendId'), '_')[2] = '0'     then '解锁页VIP'
             when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '203300'    then 'H5'
