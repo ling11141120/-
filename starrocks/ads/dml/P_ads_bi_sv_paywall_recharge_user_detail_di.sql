@@ -95,7 +95,7 @@ with hit_event as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and product_id = 6833
-       and element_id in('200900','210054') 
+       and element_id in('200900','210054','210051')
      group by 1, 2, 3, 4, 5, 6
 )
 -- CTE 4: ad_expo (广告曝光PV)
@@ -113,7 +113,7 @@ with hit_event as (
        and dt <= '${dt}'
        and product_id = 6833
        and event_strategy_id is not null
-       and element_id in('200900','210054') 
+       and element_id in('200900','210054','210051')
      group by 1, 2, 3, 4, 5, 6
 )
 -- CTE 5: ad_rev (广告收益)
@@ -135,7 +135,7 @@ with hit_event as (
        and dt <= '${dt}'
        and product_id = 6833
        and event_strategy_id is not null
-       and event_strategy_id in('200900','210054') 
+       and event_strategy_id in('200900','210054','210051')
      group by 1, 2, 3, 4, 5, 6
 )
 -- CTE 6: order_creat (发起订单)
@@ -161,7 +161,7 @@ with hit_event as (
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
        and app_id = 683001001
-       and element_id in('200900','210054') 
+       and element_id in('200900','210054','210051')
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 )
 -- CTE 7: expo_agg (曝光组装宽表)
