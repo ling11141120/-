@@ -1,7 +1,7 @@
 drop table if exists ads.ads_bi_sv_paywall_recharge_user_detail_di;
 create table ads.ads_bi_sv_paywall_recharge_user_detail_di (
      dt                       date           not null                  comment "日期分区"
-    ,md5_key                  varchar(30)    not null                  comment "联合主键"
+    ,md5_key                  varchar(32)    not null                  comment "联合主键"
     ,strategy_node_id         varchar(200)   not null                  comment "策略节点ID"
     ,user_id                  bigint         not null                  comment "用户id"
     ,strategy_id              varchar(200)   not null                  comment "策略ID"
