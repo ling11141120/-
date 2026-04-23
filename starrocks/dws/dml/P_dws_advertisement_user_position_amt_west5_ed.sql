@@ -107,6 +107,28 @@ with ad_click_count as (
        and app_product_id is null
        and length(ad_src)>=1
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+    union all
+    select dt
+          ,product_id
+          ,user_id
+          ,core
+          ,mt
+          ,app_version                             as appver
+          ,6                                       as ad_show_type
+          ,null                                    as positions
+          ,a1.ad_src                               as ads_src
+          ,null                                    as main_strategy_id
+          ,null                                    as event_strategy_id
+          ,null                                    as programme_id
+          ,if(a1.core=4 and a1.ad_src=7,3,1)       as system_type
+          ,count(1)                                as ad_click_count
+    from dwd.dwd_sensors_cd_video_elmentclick_view    as a1
+    where dt >= date(date_sub('${bf_1_dt}', interval 1 day))
+      and dt <= '${dt}'
+      and date(date_add(event_tm,interval -13 hour)) in ('${bf_1_dt}', '${dt}')
+      and product_id = '6833'
+      and ad_src is not null
+    group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 )
 -- 统计每日H5点击平均收益
 , avg_click_amount as (
