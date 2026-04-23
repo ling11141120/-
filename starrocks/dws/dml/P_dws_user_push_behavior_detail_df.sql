@@ -394,7 +394,7 @@ with send_view as (
                   ,b1.os                       as mt
                   ,2                           as msg_on
               from ads.ads_sensors_video_pushclick_view    as b1
-             where b1.dt = '${bf_1_dt}'
+             where b1.dt between '${bf_10_dt}' and '${bf_1_dt}'
                and project_id = 8
            )    as a1
      where 1 = 1
