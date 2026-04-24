@@ -96,9 +96,10 @@ series_base as (
       when 1 then '人工配音'
       when 2 then 'AI配音'
     end as dubbed_type_name
-  from ods.ods_tidb_series as sv
+  from ods.ods_tidb_short_video_series as sv
   left join ods.ods_tidb_source_series as ssv
     on sv.sourceseriesid = ssv.seriesid
+  where sv.isdelete = 0
 )
 
 , series_type_agg as (
