@@ -26,7 +26,7 @@ select svp.dt                                                          as dt
      , svp.BaseAmount                                                  as base_amount
      , svp.SubPayType                                                  as recharge_channel
      , case when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '201300'    then '商店页'
-            when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '200900'    then '半屏'
+            when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] in('200900','210054','210051')     then '半屏'
             when     split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '200800'
                  and split(get_json_string(svp.CustomData, '$.sendId'), '_')[2] = '0'     then '解锁页VIP'
             when split(get_json_string(svp.CustomData, '$.sendId'), '_')[1] = '203300'    then 'H5'
@@ -74,12 +74,13 @@ select svp.dt                                                          as dt
      , svp.ActualAmount                                                as actual_recharge_amt
      , svp.CoreVer                                                     as core
      , coalesce( svg.vip_type
-                ,case when datediff(svp.card_expire_time, a.create_time) >= 25  and datediff(svp.card_expire_time, a.create_time) <= 35   then 1    -- 月卡
-                      when datediff(svp.card_expire_time, a.create_time) >= 80  and datediff(svp.card_expire_time, a.create_time) <= 100  then 2    -- 季卡
-                      when datediff(svp.card_expire_time, a.create_time) >= 350 and datediff(svp.card_expire_time, a.create_time) <= 380  then 3    -- 年卡
-                      when datediff(svp.card_expire_time, a.create_time) >= 1   and datediff(svp.card_expire_time, a.create_time) <= 9    then 4    -- 周卡
+                ,case when datediff(svp.VipExpireTime, svp.createtime) >= 25  and datediff(svp.VipExpireTime, svp.createtime) <= 35   then 1    -- 月卡
+                      when datediff(svp.VipExpireTime, svp.createtime) >= 80  and datediff(svp.VipExpireTime, svp.createtime) <= 100  then 2    -- 季卡
+                      when datediff(svp.VipExpireTime, svp.createtime) >= 350 and datediff(svp.VipExpireTime, svp.createtime) <= 380  then 3    -- 年卡
+                      when datediff(svp.VipExpireTime, svp.createtime) >= 1   and datediff(svp.VipExpireTime, svp.createtime) <= 9    then 4    -- 周卡
                   end
                )                                            as vip_type_cd
+     , get_json_string(svp.CustomData, '$.nodeIdPath')      as pay_wall_strategy_id
   from ods.ods_tidb_short_video_payorder    as svp
   left join (select ItemId                  as item_id
                   , ShopItemId              as shop_item_id
@@ -98,7 +99,7 @@ select svp.dt                                                          as dt
               ), 'com.changjian.moboshortcj.', -1
           ), 'third.', -1
        ) = svg.item_id
-   and svp.ShopItem = svg.ShopItemId
+   and svp.ShopItem = svg.shop_item_id
  where svp.dt >= '${bf_1_dt}'
    and svp.dt <= '${dt}'
    and svp.TestFlag = 0

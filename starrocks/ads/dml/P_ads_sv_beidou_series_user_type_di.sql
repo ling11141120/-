@@ -9,6 +9,20 @@
 
 insert into ads.ads_sv_beidou_series_user_type_di
 with
+dl_user_set as (
+    select lv.series_id
+         , b.user_id
+    from ads.ads_short_video_video_dl_log_view lv
+    left join dim.dim_short_video_user_accountinfo b
+      on lv.unique_cdreader_id = b.unique_cdreader_id
+    where lv.has_open = 1
+      and lv.create_time >= date_add(cast('${dt}' as datetime), -200)
+      and lv.create_time <= cast('${dt}' as datetime)
+      and lv.series_id is not null
+      and b.user_id is not null
+    group by 1, 2
+),
+
 -- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
 epis_watch_view as (
     select ew.dt
@@ -37,8 +51,12 @@ watch_user as (
          , ew.user_id
          , ew.core
          , ew.series_id
+         , case when du.user_id is not null then 1 else 0 end as acquisition_source_cd
     from epis_watch_view ew
-    group by 1, 2, 3, 4
+    left join dl_user_set du
+      on ew.series_id = du.series_id
+     and ew.user_id = du.user_id
+    group by 1, 2, 3, 4, 5
 ),
 
 -- 关联短剧维表/用户表获取 language_code, country_name(core 来自 watch_user)
@@ -47,6 +65,7 @@ user_with_info as (
          , w.user_id
          , w.series_id
          , w.core
+         , w.acquisition_source_cd
          , coalesce(s.language, 0)              as language_code
          , coalesce(dic.cd_val_desc, 'Unknown') as country -- 国家名称(如:美国)
     from watch_user w
@@ -74,6 +93,7 @@ user_pay_type as (
 user_type_stat as (
     select w.dt
          , w.core
+         , w.acquisition_source_cd
          , w.language_code
          , w.series_id
          , case when p.pay_type is null then '免费用户'
@@ -85,12 +105,13 @@ user_type_stat as (
          , bitmap_agg(w.user_id) as user_count
     from user_with_info w
     left join user_pay_type p on w.user_id = p.user_id
-    group by 1, 2, 3, 4, 5, 6
+    group by 1, 2, 3, 4, 5, 6, 7
 )
 
 -- 最终输出
 select s.dt
      , s.core
+     , s.acquisition_source_cd
      , s.language_code
      , s.series_id
      , s.user_type

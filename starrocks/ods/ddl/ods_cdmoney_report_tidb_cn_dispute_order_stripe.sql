@@ -3,12 +3,12 @@
 -- 来源实例： old_tidb_source
 -- 来源表： cdmoney_report_tidb_cn.dispute_order_stripe
 -- 来源负责： 蔡扶炜
--- 采集工具： 极光—定时批量
 -- 开发人： wx
 -- 开发日期： 2025-09-19
 ----------------------------------------------------------------
+
 drop table if exists ods.ods_cdmoney_report_tidb_cn_dispute_order_stripe;
-create table if not exists ods.ods_cdmoney_report_tidb_cn_dispute_order_stripe (
+create table ods.ods_cdmoney_report_tidb_cn_dispute_order_stripe (
      id                  bigint(20)       not null                  comment "自增ID"
     ,dispute_id          varchar(300)                               comment "争议ID"
     ,pay_channel_id      varchar(300)                               comment "渠道ID"
