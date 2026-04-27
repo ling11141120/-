@@ -17,6 +17,10 @@ select
     a.need_to_send_time,
     a.send_status,
     a.send_success_time,
+    a.token,
+    a.error_message,
+    a.title_id,
+    a.content_id,
     a.create_time,
     a.update_time,
     now() as etl_tm
@@ -36,6 +40,10 @@ from (
            need_to_send_time,
            send_status,
            send_success_time,
+           token,
+           error_message,
+           title_id,
+           content_id,
            create_time,
            update_time
     from dwd.dwd_center_push_position_message_di
@@ -56,6 +64,10 @@ from (
            need_to_send_time,
            send_status,
            send_success_time,
+           token,
+           error_message,
+           title_id,
+           content_id,
            create_time,
            update_time
     from dwd.dwd_center_push_position_message_di
