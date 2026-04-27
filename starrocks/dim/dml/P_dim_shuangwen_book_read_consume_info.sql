@@ -861,7 +861,6 @@ select a1.productid
          union all
         -- 解说漫数据 2026-04-24 新增
         select case b1.Language
-                when 1 then 3366   -- 海外简体（使用英语服务器）
                 when 2 then 3333   -- 繁体
                 when 3 then 3366   -- 英语
                 when 4 then 3388   -- 西语
@@ -881,6 +880,7 @@ select a1.productid
                 when 19 then 3366  -- 海外简体
                 when 21 then 3631  -- 马来西亚语
                 when 22 then 3621  -- 土耳其语
+                when 23 then 3651  -- 波兰语
                 else 0
             end                                              as productid
           ,cast(concat('11100000', cast(b1.SeriesId as string)) as bigint) as bookid
@@ -900,7 +900,6 @@ select a1.productid
             end                                              as channel
           ,b1.IsComplete                                     as isfull
           ,case b1.Language
-                when 1 then 322   -- 海外简体（使用英语服务器）
                 when 2 then 446
                 when 3 then 322
                 when 4 then 375
@@ -920,10 +919,10 @@ select a1.productid
                 when 19 then 491
                 when 21 then 495
                 when 22 then 497
+                when 23 then 501
                 else 0
             end                                              as siteid
           ,case b1.Language
-                when 1 then 322   -- 海外简体（使用英语服务器）
                 when 2 then 446
                 when 3 then 322
                 when 4 then 375
@@ -943,6 +942,7 @@ select a1.productid
                 when 19 then 491
                 when 21 then 495
                 when 22 then 497
+                when 23 then 501
                 else 0
             end                                              as siteid2
           ,null                                              as priceperthousand
