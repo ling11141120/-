@@ -974,4 +974,3 @@ select a1.productid
           and b1.IsDelete = 0
        )                                     as a1
 ;
-
