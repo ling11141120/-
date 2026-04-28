@@ -20,6 +20,8 @@ create or replace view ads.ads_sensors_video_pushclick_view (
    ,lib_version           COMMENT "lib_version"
    ,app_version           COMMENT "app_version"
    ,push_id               COMMENT "pushID"
+   ,push_title_id         COMMENT "推送标题ID"
+   ,push_content_id       COMMENT "推送内容ID"
    ,push_title            COMMENT "推送标题"
    ,content_name          COMMENT "内容名称"
    ,jump_type             COMMENT "跳转类型"
@@ -52,6 +54,8 @@ select dt
       ,lib_version
       ,app_version
       ,push_id
+      ,push_title_id
+      ,push_content_id
       ,push_title
       ,content_name
       ,jump_type
