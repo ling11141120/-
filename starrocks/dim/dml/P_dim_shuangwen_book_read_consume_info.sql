@@ -877,7 +877,9 @@ select a1.productid
                 when 15 then 3541  -- 菲律宾语
                 when 16 then 3561  -- 德语
                 when 17 then 3591  -- 印地语
+                when 18 then 3611  -- 孟加拉语
                 when 19 then 3366  -- 海外简体
+                when 20 then 3621  -- 海外繁体
                 when 21 then 3631  -- 马来西亚语
                 when 22 then 3621  -- 土耳其语
                 when 23 then 3651  -- 波兰语
@@ -916,7 +918,9 @@ select a1.productid
                 when 15 then 445
                 when 16 then 412
                 when 17 then 447
+                when 18 then 448
                 when 19 then 491
+                when 20 then 492
                 when 21 then 495
                 when 22 then 497
                 when 23 then 501
@@ -939,7 +943,9 @@ select a1.productid
                 when 15 then 445
                 when 16 then 412
                 when 17 then 447
+                when 18 then 448
                 when 19 then 491
+                when 20 then 492
                 when 21 then 495
                 when 22 then 497
                 when 23 then 501
