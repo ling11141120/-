@@ -31,14 +31,14 @@ CREATE TABLE ods.ods_tidb_cdmoney_report_tidb_cn_dispute_airwallex (
     ,stage                 VARCHAR(90)                       COMMENT "争议阶段"
     ,final_status          INT          NOT NULL             COMMENT "最终状态"
     ,reason                VARCHAR(1500)                     COMMENT "退款原因"
-    ,detail_resp_data      VARCHAR(196605)                   COMMENT "详情接口响应数据"
+    ,detail_resp_data      STRING                            COMMENT "详情接口响应数据"
     ,insert_time           DATETIME     NOT NULL             COMMENT "添加时间"
     ,due_at                DATETIME     NOT NULL             COMMENT "回复截止时间"
     ,update_time           DATETIME     NOT NULL             COMMENT "更新时间"
     ,handler_status        INT          NOT NULL             COMMENT "处理状态：0 无，2 订单数据缺失"
-    ,challenge_details     VARCHAR(196605)                   COMMENT "证据"
-    ,moneylog_data         VARCHAR(196605)                   COMMENT "用户消费明细 shop_item_id = 800/830/840需提供"
-    ,watchlog_data         VARCHAR(196605)                   COMMENT "观看/阅读记录 shop_item_id=810/850需提供"
+    ,challenge_details     STRING                            COMMENT "证据"
+    ,moneylog_data         STRING                            COMMENT "用户消费明细 shop_item_id = 800/830/840需提供"
+    ,watchlog_data         STRING                            COMMENT "观看/阅读记录 shop_item_id=810/850需提供"
     ,is_order_sync         INT          NOT NULL DEFAULT '0' COMMENT "订单基础数据同步状态 1 已同步 0 待同步 2 同步失败"
     ,is_moneylog_sync      INT          NOT NULL DEFAULT '0' COMMENT "消费明细数据同步状态 1 已同步 0 待同步 shop_item_id = 800/830/840需提供"
     ,is_watchlog_sync      INT          NOT NULL DEFAULT '0' COMMENT "观看/阅读数据同步状态 1 已同步 0 待同步 shop_item_id=810/850需提供"
@@ -53,7 +53,7 @@ CREATE TABLE ods.ods_tidb_cdmoney_report_tidb_cn_dispute_airwallex (
 PRIMARY KEY(dt, id)
 COMMENT "airwallex争议表"
 PARTITION BY date_trunc('day', dt)
-DISTRIBUTED BY HASH(id) BUCKETS 10
+DISTRIBUTED BY HASH(id) BUCKETS 16
 PROPERTIES (
     "replication_num" = "3",
     "in_memory" = "false",
