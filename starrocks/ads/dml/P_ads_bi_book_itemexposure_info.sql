@@ -44,6 +44,7 @@ with expo as (
                                 when right(book_id, 3) = '433' then 12
                                 when right(book_id, 3) = '414' then 11
                                 when right(book_id, 3) = '419' then 9
+                                when right(book_id, 3) = '435' then 13   --越南语
                                 when product_id = 3333         then 2    -- 繁体的书
                                 else current_language                    -- 剩余判断不出来的书归为上报的current_language语言
                             end                             as book_lang_id
@@ -115,6 +116,7 @@ with expo as (
                                 when right(book_id, 3) = '433' then 12
                                 when right(book_id, 3) = '414' then 11
                                 when right(book_id, 3) = '419' then 9
+                                when right(book_id, 3) = '435' then 13   --越南语
                                 when app_product_id = 3333 then 2        -- 繁体的书
                                 else app_lang_id                         -- 剩余判断不出来的书归为上报的current_language语言
                             end                          as book_lang_id
