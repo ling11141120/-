@@ -858,5 +858,125 @@ select a1.productid
               ,null                                              as penname
               ,null                                              as authortype
           from ods.ods_voice_book                               as b1
+         union all
+        -- 解说漫数据 2026-04-24 新增
+        select case b1.Language
+                when 2 then 3333   -- 繁体
+                when 3 then 3366   -- 英语
+                when 4 then 3388   -- 西语
+                when 5 then 3322   -- 葡语
+                when 6 then 3311   -- 法语
+                when 7 then 3371   -- 俄语
+                when 8 then 3571   -- 意大利语
+                when 9 then 3399   -- 日语
+                when 10 then 3581  -- 阿拉伯语
+                when 11 then 3501  -- 印尼
+                when 12 then 3511  -- 泰语
+                when 13 then 3521  -- 越南语
+                when 14 then 3531  -- 韩语
+                when 15 then 3541  -- 菲律宾语
+                when 16 then 3561  -- 德语
+                when 17 then 3591  -- 印地语
+                when 18 then 3611  -- 孟加拉语
+                when 19 then 3366  -- 海外简体
+                when 20 then 3621  -- 海外繁体
+                when 21 then 3631  -- 马来西亚语
+                when 22 then 3621  -- 土耳其语
+                when 23 then 3651  -- 波兰语
+                else 0
+            end                                              as productid
+          ,cast(concat('11100000', cast(b1.SeriesId as string)) as bigint) as bookid
+          ,date(if(b1.CreateTime is null, '1970-01-01 00:00:00', b1.CreateTime)) as yt
+          ,if(b1.SeriesName is not null and b1.SeriesName != '', b1.SeriesName, '-') as bookname
+          ,if(b1.CreateTime is null, '1970-01-01 00:00:00', b1.CreateTime) as createtime
+          ,if(b1.UpdateTime is null, '1970-01-01 00:00:00', b1.UpdateTime) as updatetime
+          ,10                                                as booknature
+          ,case when b1.CooperateType = 1 then 0
+                when b1.CooperateType = 2 then 1
+                when b1.CooperateType = 3 then 2
+                else -1
+            end                                              as signtype
+          ,case when b1.WorkType = 1 then 2
+                when b1.WorkType = 2 then 1
+                else 0
+            end                                              as channel
+          ,b1.IsComplete                                     as isfull
+          ,case b1.Language
+                when 2 then 446
+                when 3 then 322
+                when 4 then 375
+                when 5 then 409
+                when 6 then 410
+                when 7 then 418
+                when 8 then 413
+                when 9 then 419
+                when 10 then 415
+                when 11 then 414
+                when 12 then 433
+                when 13 then 435
+                when 14 then 436
+                when 15 then 445
+                when 16 then 412
+                when 17 then 447
+                when 18 then 448
+                when 19 then 491
+                when 20 then 492
+                when 21 then 495
+                when 22 then 497
+                when 23 then 501
+                else 0
+            end                                              as siteid
+          ,case b1.Language
+                when 2 then 446
+                when 3 then 322
+                when 4 then 375
+                when 5 then 409
+                when 6 then 410
+                when 7 then 418
+                when 8 then 413
+                when 9 then 419
+                when 10 then 415
+                when 11 then 414
+                when 12 then 433
+                when 13 then 435
+                when 14 then 436
+                when 15 then 445
+                when 16 then 412
+                when 17 then 447
+                when 18 then 448
+                when 19 then 491
+                when 20 then 492
+                when 21 then 495
+                when 22 then 497
+                when 23 then 501
+                else 0
+            end                                              as siteid2
+          ,null                                              as priceperthousand
+          ,null                                              as newcid
+          ,null                                              as newcname
+          ,0                                                 as sexy2
+          ,b1.AllEpis                                        as normalchapternum_f
+          ,if(b1.FirstPublicationTime is null or b1.FirstPublicationTime = '', '1970-01-01 00:00:00', b1.FirstPublicationTime) as buildtime
+          ,if(b2.Holder is null or b2.Holder = '', '-', b2.Holder) as blockname
+          ,null                                              as fontlength
+          ,if(b1.SeriesCode is null or b1.SeriesCode = '', '-', b1.SeriesCode) as bookcode
+          ,null                                              as fulltime
+          ,b1.Language                                       as languageid
+          ,null                                              as public_fontlength
+          ,null                                              as authorid
+          ,null                                              as authorname
+          ,b1.UpdateTime                                     as latestupdatetime
+          ,b1.AllEpis                                        as chapternum
+          ,0                                                 as speed_chapter_num
+          ,0                                                 as free_chapter_num
+          ,null                                              as isputdown
+          ,null                                              as putdownlevel
+          ,null                                              as penname
+          ,null                                              as authortype
+        from ods.ods_tidb_short_video_admin_source_series        b1
+            left join ods.ods_tidb_short_video_admin_rights_holder   b2
+        on b1.RightsHolderId = b2.Id
+        where b1.LocalType = 5
+          and b1.IsDelete = 0
        )                                     as a1
 ;
