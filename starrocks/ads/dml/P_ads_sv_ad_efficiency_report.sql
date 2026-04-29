@@ -7,7 +7,7 @@
 -- 版本号： v0.0.0
 ----------------------------------------------------------------
 
-insert into ads.ads_sv_ad_efficiency_report
+insert overwrite ads.ads_sv_ad_efficiency_report partition(p$[yyyyMMdd-1], p$[yyyyMMdd])
 -- 活跃表
 with active as (
     select dt
@@ -22,6 +22,7 @@ with active as (
           ,user_id
       from dws.dws_user_short_video_wide_active_period_ed
      where dt >= '${bf_1_dt}'
+       and dt <= '${dt}'
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 )
 -- 广告曝光数据
@@ -45,6 +46,7 @@ with active as (
                   ,main_strategy_id
               from ads.ads_sensors_cd_video_adpositionexposure_view
              where dt >= '${bf_1_dt}'
+               and dt <= '${dt}'
              union all
             select dt
                   ,product_id
@@ -56,6 +58,7 @@ with active as (
                   ,main_strategy_id
               from ads.ads_sensors_cd_video_adshow_view
              where dt >= '${bf_1_dt}'
+               and dt <= '${dt}'
                and ad_type in(2, 4, 5)
                and ifnull(ad_position_id1, ad_position_id) != 9
            )                                     as a1
@@ -73,6 +76,7 @@ with active as (
           ,count(1)                                           as pv
       from ads.ads_sensors_cd_video_adpositionclick_view      as a1
      where dt >= '${bf_1_dt}'
+       and dt <= '${dt}'
      group by 1, 2, 3, 4, 5, 6, 7
 )
 -- 广告观看完成
@@ -87,6 +91,7 @@ with active as (
           ,count(1)                                           as pv
       from ads.ads_sensors_cd_video_adwatchsuccess_view       as a1
      where dt >= '${bf_1_dt}'
+       and dt <= '${dt}'
      group by 1, 2, 3, 4, 5, 6, 7
 )
 -- 广告解锁     
@@ -105,6 +110,7 @@ with active as (
       left join ods.ods_tidb_video_tidb_tag_center_ads_position_map_da    as a3
         on a2.unlock_type = a3.AdPosition
      where a1.dt >= '${bf_1_dt}'
+       and a1.dt <= '${dt}'
      group by 1, 2, 3, 4, 5, 6, 7
 )
 -- 预估广告收益 神策数据源
@@ -124,6 +130,7 @@ with active as (
        and a2.app_plat = 'pub'
        and a2.cd_col = 'ad_src'
      where a1.dt >= '${bf_1_dt}'
+       and a1.dt <= '${dt}'
        and a1.product_id = 6833
      group by 1, 2, 3, 4, 5, 6, 7
 )
@@ -171,6 +178,7 @@ with active as (
                       from ads.ads_bi_sv_recharge_user_detail_di
                      where product_id = 6833
                        and dt >= '${bf_1_dt}'
+                       and dt <= '${dt}'
                    )         as b1
               left join (select id
                                ,name

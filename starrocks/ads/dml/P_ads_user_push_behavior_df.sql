@@ -33,22 +33,22 @@ select dt                   as dt                   -- 日期
       ,app_notify_msg_on    as app_notify_msg_on    -- 是否开启通知
       ,etl_tm               as etl_tm               -- 处理时间
   from (select dt
-              ,if(product_id=6833,8,5)
+              ,if(product_id=6833,8,5)    as project_id
               ,push_id
               ,user_id
               ,core
               ,mt
               ,push_type
               ,push_name
-              ,max(if(event = '下发', 1, null))
-              ,max(if(event = '送达', 1, null))
-              ,max(if(event = '点击', 1, null))
-              ,max(if(app_notify_msg_on = 1, 1, null))
-              ,now()
-              ,is_act
+              ,max(if(event = '下发', 1, null))            as is_send
+              ,max(if(event = '送达', 1, null))            as is_received
+              ,max(if(event = '点击', 1, null))            as is_click
+              ,max(if(app_notify_msg_on = 1, 1, null))     as app_notify_msg_on
+              ,now()    as etl_tm
+              ,is_act                                     as is_act
           from dws.dws_user_push_behavior_detail_df
          where dt >= '${bf_10_dt}'
-           and dt <= '${bf_1_dt}'
+           and dt<='${bf_1_dt}'
          group by 1, 2, 3, 4, 5, 6, 7, 8, 14
  )    as a1
 ;

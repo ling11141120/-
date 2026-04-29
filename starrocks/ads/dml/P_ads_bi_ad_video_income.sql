@@ -174,6 +174,7 @@ select a1.dt                                                              as dt 
             when a1.ads_name in ('Starmobi_2') then 7
             when a1.ads_name in ('synjoy') then 8
             when a1.ads_name in ('Bees') then 9
+            when a1.ads_name in ('adjoe') then 10
             else a1.ads_name
         end                                                               as tps               -- 标识
       ,now()                                                              as etl_time          -- 数据清洗时间
@@ -250,6 +251,17 @@ select a1.dt                                                              as dt 
                       where dt >= '${bf_4_dt}'
                         and ProjectType = 2
                       group by 1,2
+                      union all
+                     select dt
+                           ,'adjoe'    as ads_name
+                           ,0          as ad_request
+                           ,0          as match_request
+                           ,0          as ad_show_count
+                           ,0          as ad_click_count
+                       from ods.ods_tidb_readernovel_tidb_xx_adjoedata
+                      where dt >= '${bf_4_dt}'
+                        and ProjectType = 2
+                      group by 1,2
                     )    as b1
           left join (select dt
                            ,ads_name
@@ -257,7 +269,7 @@ select a1.dt                                                              as dt 
                        from dws.dws_advertisement_user_position_amt_ed
                       where dt >= '${bf_4_dt}'
                         and product_id <> 6833
-                        and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees')
+                        and ads_name in('H5','MonKing','Starmobi','MobKing','pengpai','Starmobi_2','synjoy','Bees','adjoe')
                       group by 1, 2
                     )    as b2
             on b1.ads_name = b2.ads_name
@@ -266,7 +278,7 @@ select a1.dt                                                              as dt 
     on a1.dt = a2.dt
    and a1.ads_name = a2.ads_name
  where product_id = 6833
-   and a1.ads_name in ('H5', 'MonKing', 'Starmobi', 'MobKing', 'pengpai', 'Starmobi_2','synjoy','Bees')
+   and a1.ads_name in ('H5', 'MonKing', 'Starmobi', 'MobKing', 'pengpai', 'Starmobi_2','synjoy','Bees','adjoe')
    and a1.dt >= '${bf_4_dt}'
  group by 1,2,3,4,5,6,7,8
 ;

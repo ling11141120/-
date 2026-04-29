@@ -20,6 +20,10 @@ select dt                                                               as dt
       ,ScheduleTime                                                     as need_to_send_time
       ,IsSuccess                                                        as send_status
       ,SendTime                                                         as send_success_time
+      ,Token                                                            as token
+      ,ErrorMessage                                                     as error_message
+      ,get_json_string(Body, '$.custom.titleId')                        as title_id
+      ,get_json_string(Body, '$.custom.contentId')                      as content_id
       ,CreateTime                                                       as create_time
       ,CreateTime                                                       as update_time
       ,now()                                                            as etl_time
@@ -31,22 +35,26 @@ select dt                                                               as dt
 union all
 -- 安卓
 select dt
-     ,Id as id
-     ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.pushId') as push_position_id
-     ,date_format(date_sub(CreateTime, interval 13 hour), '%Y%m%d') as generate_day
-     ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.accountId') as account_id
-     ,AppId as app_id
-     ,Body as msg_body
-     ,-28800 as utc_offset
-     ,ScheduleTime as need_to_send_time
-     ,IsSuccess as send_status
-     ,SendTime as send_success_time
-     ,CreateTime as create_time
-     ,CreateTime as update_time
-     ,now() as etl_time
+      ,Id                                                               as id
+      ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.pushId') as push_position_id
+      ,date_format(date_sub(CreateTime, interval 13 hour), '%Y%m%d')    as generate_day
+      ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.accountId') as account_id
+      ,AppId                                                            as app_id
+      ,Body                                                             as msg_body
+      ,-28800                                                           as utc_offset
+      ,ScheduleTime                                                     as need_to_send_time
+      ,IsSuccess                                                        as send_status
+      ,SendTime                                                         as send_success_time
+      ,Token                                                            as token
+      ,ErrorMessage                                                     as error_message
+      ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.titleId') as title_id
+      ,get_json_string(get_json_string(Body, '$.Data.custom'), '$.contentId') as content_id
+      ,CreateTime                                                       as create_time
+      ,CreateTime                                                       as update_time
+      ,now()                                                            as etl_time
   from ods.ods_tidb_unifypush_log_log_pushlog_sv
  where CreateTime>='${bf_1_dt}' 
-   and AppId %2 = 0 
+   and AppId % 2 = 0 
    and IsSuccess = 1 
    and get_json_string(get_json_string(Body, '$.Data.custom'), '$.accountId') is not null
 ;
