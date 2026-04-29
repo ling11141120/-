@@ -1,34 +1,34 @@
-DROP TABLE IF EXISTS ads.ads_srsv_trade_koc_payorderinfo_di;
-CREATE TABLE ads.ads_srsv_trade_koc_payorderinfo_di (
-     ref_order_id        VARCHAR(128)    NOT NULL                  COMMENT "订单号"
-    ,status              INT(11)         NOT NULL                  COMMENT "订单状态 0 正常订单 1 退款订单"
-    ,dt                  DATE            NOT NULL                  COMMENT "日期"
-    ,code                VARCHAR(65533)  NOT NULL                  COMMENT "口令词"
-    ,story_id            BIGINT(20)      NOT NULL                  COMMENT "故事 ID"
-    ,story_name          VARCHAR(65533)                            COMMENT "故事名称"
-    ,amount              DECIMAL(16, 4)                            COMMENT "金额数"
-    ,base_amount         DECIMAL(16, 4)                            COMMENT "分成后金额数"
-    ,project_type        INT(11)                                   COMMENT "项目类型 1=网文|2=短剧"
-    ,institution_user_id VARCHAR(65533)                            COMMENT "机构用户ID"
-    ,star_user_id        VARCHAR(65533)                            COMMENT "达人用户ID"
-    ,create_time         DATETIME                                  COMMENT "创建时间"
-    ,etl_time            DATETIME        DEFAULT CURRENT_TIMESTAMP COMMENT "etl清洗时间"
-    ,core                INT(11)                                   COMMENT "core"
-    ,current_language    INT(11)                                   COMMENT "投放语言"
-    ,user_id             BIGINT(20)                                COMMENT "用户id"
-    ,mt                  INT(11)                                   COMMENT "mt"
-    ,sub_pay_type        VARCHAR(100)                              COMMENT "支付方式"
-    ,shop_item           INT(11)                                   COMMENT "权益类型"
-    ,activation_time     DATETIME                                  COMMENT "激活时间"
-    ,country             VARCHAR(100)                              COMMENT "国家"
-    ,is_anom_ord         INT(11)         DEFAULT "0"               COMMENT "是否异常订单"
-    ,reg_dev_id          STRING                                    COMMENT '注册时设备id'
-    ,reg_ip              STRING                                    COMMENT '注册IP'
+drop table if exists ads.ads_srsv_trade_koc_payorderinfo_di;
+create table ads.ads_srsv_trade_koc_payorderinfo_di (
+     ref_order_id        varchar(128)   not null                  comment "订单号"
+    ,status              int            not null                  comment "订单状态 0 正常订单 1 退款订单"
+    ,dt                  date           not null                  comment "日期"
+    ,code                string         not null                  comment "口令词"
+    ,story_id            bigint         not null                  comment "故事 ID"
+    ,story_name          string                                   comment "故事名称"
+    ,amount              decimal(16, 4)                           comment "金额数"
+    ,base_amount         decimal(16, 4)                           comment "分成后金额数"
+    ,project_type        int                                      comment "项目类型 1=网文|2=短剧"
+    ,institution_user_id string                                   comment "机构用户ID"
+    ,star_user_id        string                                   comment "达人用户ID"
+    ,create_time         datetime                                 comment "创建时间"
+    ,etl_time            datetime       default current_timestamp comment "etl清洗时间"
+    ,core                int                                      comment "core"
+    ,current_language    int                                      comment "投放语言"
+    ,user_id             bigint                                   comment "用户id"
+    ,mt                  int                                      comment "mt"
+    ,sub_pay_type        varchar(100)                             comment "支付方式"
+    ,shop_item           int                                      comment "权益类型"
+    ,activation_time     datetime                                 comment "激活时间"
+    ,country             varchar(100)                             comment "国家"
+    ,is_anom_ord         int            default "0"               comment "是否异常订单"
+    ,reg_dev_id          string                                   comment "注册时设备id"
+    ,reg_ip              string                                   comment "注册IP"
 )
-PRIMARY KEY(ref_order_id, status)
-COMMENT "KOC订单信息"
-DISTRIBUTED BY HASH(status, ref_order_id) BUCKETS 3
-PROPERTIES (
+primary key(ref_order_id, status)
+comment "KOC订单信息"
+distributed by hash(status, ref_order_id) buckets 3
+properties (
     "replication_num" = "3",
     "in_memory" = "false",
     "enable_persistent_index" = "false",
