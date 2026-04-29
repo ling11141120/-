@@ -15,6 +15,7 @@ create table dwd.dwd_advertisement_user_position_amt_p_di (
     ,main_strategy_id  string                                   comment "主策略id"
     ,event_strategy_id string                                   comment "策略id"
     ,programme_id      varchar(1000)                            comment "频道方案ID"
+    ,book_id           bigint(20)                               comment "书籍/短剧id"
     ,ad_position_amt   decimal(38, 9)                           comment "广告收益"
     ,etl_tm            datetime       default current_timestamp comment "清洗时间"
     ,index index_productid (product_id) using bitmap comment 'index_productid'

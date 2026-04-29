@@ -1,3 +1,9 @@
+-- =====================================================
+-- 问题2修复：周报充值逻辑（修正沙箱关联+新增退款过滤）
+-- 修改人：陈末
+-- 修改日期：2026-01-06
+-- =====================================================
+
 -- ----------------------------海阅的周报 20240925 新增的reg_country-----------------
 -- ----------------------------海阅的周报 20241214 新增的非引流指标-----------------
 insert into ads.ads_bi_video_growth_operations_weekly
@@ -24,18 +30,13 @@ with recharge_mode as (
                       from dwd.dwd_trade_video_cn_payorder_view
                       where dt <= '${bf_1_dt}' and Test_Flag = 0 and coo_order_status=1
                       group by 1, 2, 3
-					  union all
-					 select 6833 as product_id,a.account_id as user_id,b.price as itemcount,count(1) as num, max(a.create_time) as create_time
-						from ods.`ods_tidb_short_video_tt_vip_subscription_payorder` a  -- 海剧tt订阅订单
-						left join ods.`ods_tidb_short_video_tt_vip_subscribe_tiers_info` b on a.tier_id = b.tier_id
-						where date(a.create_time)='${bf_1_dt}'
-						and a.trade_order_status=2
-						group by 1, 2, 3
-					union all
-					select 6833 as product_id,a.account_id as user_id,round(a.coin*0.00966958/100,2) as itemcount,count(1) as num, max(a.create_time) as create_time
-						from ods.`ods_tidb_short_video_tt_consume`  a  -- 海剧tt消耗订单
-						where date(a.create_time)='${bf_1_dt}'
-						group by 1, 2, 3
+
+                      union all
+                     -- TT换币充值订单（tt_payorder）
+                     select product_id, user_id, monthly_recharge_amt, count(1) as num, max(create_time) as create_time
+                     from dwd.dwd_sv_tt_payorder_info
+                     where is_refund = 0 and is_sandbox = 0 and settle_dt <= '${dt}' and user_id >= 0
+                     group by 1, 2, 3
                   ) a
          ) b
     where rk = 1
@@ -98,17 +99,11 @@ from (
          select dt, product_id, user_id, charge_money_rmb as charge_money,charge_itemcount*7 as recharge_item_amt  -- 上游表落表时除了7的
 			 from dws.dws_trade_viedo_cn_payorder_ed
 			 where dt = '${bf_1_dt}' and self_type in(1)
+
 		 union all
-		 select date(a.create_time) as dt,6833 as product_id,a.account_id as user_id, round(b.price*if(c.mt=4,0.9,0.7) ,2) as charge_money,b.price as recharge_item_amt
-			from ods.`ods_tidb_short_video_tt_vip_subscription_payorder` a  -- 海剧tt订阅订单
-			left join ods.`ods_tidb_short_video_tt_vip_subscribe_tiers_info` b on a.tier_id = b.tier_id
-			left join dim.dim_short_video_user_accountinfo c on c.user_id = a.account_id
-			where date(a.create_time)='${bf_1_dt}'
-			and a.trade_order_status=2
-		union all
-		select date(a.create_time) as dt,6833 as product_id,a.account_id as user_id,round(a.coin*0.00966958/100,2) as recharge_item_amt,round(a.coin*0.00966958/100,2) as recharge_item_amt
-			from ods.`ods_tidb_short_video_tt_consume`  a  -- 海剧tt消耗订单
-			where date(a.create_time)='${bf_1_dt}'
+		 select settle_dt, product_id, user_id, monthly_net_amt, monthly_recharge_amt
+         from dwd.dwd_sv_tt_payorder_info
+         where is_refund = 0 and is_sandbox = 0 and settle_dt = '${bf_1_dt}'
      )t1
 group by 1,2,3
 ),
@@ -140,11 +135,23 @@ consume as (
 		left join dim.dim_short_video_epis_view b on a.epis_id = b.epis_id
 		where dt = '${bf_1_dt}'
 
-		-- 新增
-		union all
-		select 6833 as product_id,a.account_id as user_id,null as epis_id,0 as types,round(a.coin*0.00966958,2) as consume_amt,a.series_id as book_id
-			from ods.`ods_tidb_short_video_tt_consume` a
-			where date(a.create_time)='${bf_1_dt}'
+	union all
+	-- TT消耗订单（tt_consume）
+    select 6833 as product_id, a.account_id as user_id,null as epis_id,0 as types,
+           cast(a.coin as decimal(10, 2))*(1-0.00966958) as consume_amt,  -- 扣除手续费后的消耗金额
+           a.series_id as book_id
+    from ods.ods_tidb_short_video_tt_consume a
+    left join (
+       select
+           get_json_string(content, '$.trade_order_id') as trade_order_id,
+           max(if(get_json_string(content, '$.is_sandbox'), 1, 0)) as is_sandbox
+       from ods.ods_tidb_short_video_tt_vip_subscribe_event_log
+       where date(create_time) >= '${bf_3_dt}' and date(create_time) <= '${dt}'
+           and get_json_string(content, '$.trade_order_id') is not null
+       group by 1
+    ) b on a.trade_order_id = b.trade_order_id
+    where date(a.create_time)='${bf_1_dt}'
+      and ifnull(b.is_sandbox, 0) = 0  -- 剔除沙盒数据
 	) a
 	left join  dim.dim_short_video_user_accountinfo  b on a.product_id = b.product_id and a.user_id=b.user_id
 	left join channel_book d on a.product_id =d.product_id  and a.book_id =d.last_bookid  and a.user_id =d.user_id and b.mt=d.mt  and b.corever=d.corever   and b.current_language2=d.lang2

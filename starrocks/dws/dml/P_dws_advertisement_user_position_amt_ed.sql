@@ -265,29 +265,49 @@ with ad_click_count as (
               from dim.dim_user_account_info_view
            )    as a1
 )
-select a1.dt                                       as dt                   -- 事件时间
-      ,a1.product_id                               as product_id           -- 产品id
-      ,a1.user_id                                  as user_id              -- 用户id
-      ,a1.core                                     as corever              -- core
-      ,a1.mt                                       as mt                   -- 终端
-      ,case when a1.product_id = 6833 and a1.positions = 12 then 'Starmobi-H5'
-            when a1.product_id <> 6833 and a1.positions = 59 then 'Starmobi-H5'
-            else a2.currentlanguage2
-        end                                        as current_language2    -- 投放语言
-      ,a1.appver                                   as appver               -- 版本号
-      ,a1.ad_show_type                             as ad_show_type         -- 广告类型
-      ,a1.positions                                as positions            -- 广告位置
-      ,a1.ads_name                                 as ads_name             -- 广告来源-广告平台,adomob,topon,max
-      ,a1.ads_source                               as ads_source           -- admob广告源,可通过这个反推是哪家具体的广告
-      ,a1.main_strategy_id                         as main_strategy_id     -- 主策略id
-      ,a1.event_strategy_id                        as event_strategy_id    -- 策略id
-      ,a1.programme_id                             as programme_id         -- 频道方案ID
-      ,a1.book_id                                  as book_id              -- 书籍id/剧id
-      ,max(case when rk_asc=1 then amount end)     as fst_amt              -- 首次广告收益
-      ,max(case when rk_desc=1 then amount end)    as lst_amt              -- 末次广告收益
-      ,count(1)                                    as cnt                  -- 次数
-      ,sum(amount)                                 as amt                  -- 广告收益
-      ,now()                                       as etl_tm               -- 清洗时间
+select a1.dt                                                 as dt                   -- 事件时间
+      ,md5(concat_ws('_'
+           ,ifnull(cast(a1.product_id as varchar), '')
+           ,ifnull(cast(a1.user_id as varchar), '')
+           ,ifnull(cast(a1.core as varchar), '')
+           ,ifnull(cast(a1.mt as varchar), '')
+           ,ifnull(nullif(cast(case when a1.product_id = 6833 and a1.positions = 12 then 'Starmobi-H5'
+                                    when a1.product_id <> 6833 and a1.positions = 59 then 'Starmobi-H5'
+                                    else a2.currentlanguage2
+                                end as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.appver as varchar), ''), '')
+           ,ifnull(cast(a1.ad_show_type as varchar), '')
+           ,ifnull(cast(a1.positions as varchar), '')
+           ,ifnull(nullif(cast(a1.ads_name as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.ads_source as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.main_strategy_id as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.event_strategy_id as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.programme_id as varchar), ''), '')
+           ,ifnull(cast(a1.book_id as varchar), '')
+                    )
+          )                                                  as md5_key              -- md5唯一键
+      ,a1.product_id                                         as product_id           -- 产品id
+      ,a1.user_id                                            as user_id              -- 用户id
+      ,a1.core                                               as corever              -- core
+      ,a1.mt                                                 as mt                   -- 终端
+      ,nullif(cast(case when a1.product_id = 6833 and a1.positions = 12 then 'Starmobi-H5'
+                        when a1.product_id <> 6833 and a1.positions = 59 then 'Starmobi-H5'
+                        else a2.currentlanguage2
+                    end as varchar), '')                     as current_language2    -- 投放语言
+      ,nullif(cast(a1.appver as varchar), '')                as appver               -- 版本号
+      ,a1.ad_show_type                                       as ad_show_type         -- 广告类型
+      ,a1.positions                                          as positions            -- 广告位置
+      ,nullif(cast(a1.ads_name as varchar), '')              as ads_name             -- 广告来源-广告平台,adomob,topon,max
+      ,nullif(cast(a1.ads_source as varchar), '')            as ads_source           -- admob广告源,可通过这个反推是哪家具体的广告
+      ,nullif(cast(a1.main_strategy_id as varchar), '')      as main_strategy_id     -- 主策略id
+      ,nullif(cast(a1.event_strategy_id as varchar), '')     as event_strategy_id    -- 策略id
+      ,nullif(cast(a1.programme_id as varchar), '')          as programme_id         -- 频道方案ID
+      ,a1.book_id                                            as book_id              -- 书籍id/剧id
+      ,max(case when rk_asc=1 then amount end)               as fst_amt              -- 首次广告收益
+      ,max(case when rk_desc=1 then amount end)              as lst_amt              -- 末次广告收益
+      ,count(1)                                              as cnt                  -- 次数
+      ,sum(amount)                                           as amt                  -- 广告收益
+      ,'${cur_etl_tm}'                                       as etl_tm               -- 清洗时间
   from (select b1.dt
               ,b1.product_id
               ,b1.user_id
@@ -310,13 +330,13 @@ select a1.dt                                       as dt                   -- �
                                               ,b1.user_id
                                               ,b1.corever
                                               ,b1.mt
-                                              ,b1.appver
+                                              ,nullif(cast(b1.appver as varchar), '')
                                               ,b1.ad_show_type
                                               ,b1.position_id
-                                              ,b1.ads_name
-                                              ,b1.main_strategy_id
-                                              ,b1.event_strategy_id
-                                              ,b1.programme_id
+                                              ,nullif(cast(b1.ads_name as varchar), '')
+                                              ,nullif(cast(b1.main_strategy_id as varchar), '')
+                                              ,nullif(cast(b1.event_strategy_id as varchar), '')
+                                              ,nullif(cast(b1.programme_id as varchar), '')
                                               ,b1.book_id
                                               ,b1.create_tm
                                               ,b1.ad_unit
@@ -328,13 +348,13 @@ select a1.dt                                       as dt                   -- �
                                               ,b1.user_id
                                               ,b1.corever
                                               ,b1.mt
-                                              ,b1.appver
+                                              ,nullif(cast(b1.appver as varchar), '')
                                               ,b1.ad_show_type
                                               ,b1.position_id
-                                              ,b1.ads_name
-                                              ,b1.main_strategy_id
-                                              ,b1.event_strategy_id
-                                              ,b1.programme_id
+                                              ,nullif(cast(b1.ads_name as varchar), '')
+                                              ,nullif(cast(b1.main_strategy_id as varchar), '')
+                                              ,nullif(cast(b1.event_strategy_id as varchar), '')
+                                              ,nullif(cast(b1.programme_id as varchar), '')
                                               ,b1.book_id
                                               ,b1.create_tm
                                               ,b1.ad_unit
@@ -351,9 +371,29 @@ select a1.dt                                       as dt                   -- �
   left join user_info_tmp    as a2
     on a1.product_id = a2.product_id
    and a1.user_id = a2.user_id
- group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
  union all
 select a1.dt                                              as dt                   -- 事件时间
+      ,md5(concat_ws('_'
+           ,ifnull(cast(a1.product_id as varchar), '')
+           ,ifnull(cast(a1.user_id as varchar), '')
+           ,ifnull(cast(a1.core as varchar), '')
+           ,ifnull(cast(case when lower(a1.mt)='ios' then 1
+                             when lower(a1.mt)='android' then 4
+                             else a1.mt
+                         end as varchar), '')
+           ,ifnull(nullif(cast(a4.currentlanguage2 as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.appver as varchar), ''), '')
+           ,ifnull(cast(a1.ad_show_type as varchar), '')
+           ,ifnull(cast(a1.positions as varchar), '')
+           ,ifnull(nullif(cast(a3.ads_name as varchar), ''), '')
+           ,''
+           ,ifnull(nullif(cast(a1.main_strategy_id as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.event_strategy_id as varchar), ''), '')
+           ,ifnull(nullif(cast(a1.programme_id as varchar), ''), '')
+           ,ifnull(cast(a1.book_id as varchar), '')
+                    )
+          )                                               as md5_key              -- md5唯一键
       ,a1.product_id                                      as product_id           -- 产品id
       ,a1.user_id                                         as user_id              -- 用户id
       ,a1.core                                            as core                 -- core
@@ -361,21 +401,21 @@ select a1.dt                                              as dt                 
             when lower(a1.mt)='android' then 4
             else a1.mt
         end                                               as mt                   -- 终端
-      ,a4.currentlanguage2                                as current_language2    -- 投放语言
-      ,a1.appver                                          as appver               -- 版本号
+      ,nullif(cast(a4.currentlanguage2 as varchar), '')   as current_language2    -- 投放语言
+      ,nullif(cast(a1.appver as varchar), '')             as appver               -- 版本号
       ,a1.ad_show_type                                    as ad_show_type         -- 广告类型
       ,a1.positions                                       as positions            -- 广告位置
-      ,a3.ads_name                                        as ads_name             -- 广告来源-广告平台,adomob,topon,max
+      ,nullif(cast(a3.ads_name as varchar), '')           as ads_name             -- 广告来源-广告平台,adomob,topon,max
       ,null                                               as ads_source           -- 广告来源
-      ,a1.main_strategy_id                                as main_strategy_id     -- 主策略id
-      ,a1.event_strategy_id                               as event_strategy_id    -- 策略id
-      ,a1.programme_id                                    as programme_id         -- 频道方案ID
+      ,nullif(cast(a1.main_strategy_id as varchar), '')   as main_strategy_id     -- 主策略id
+      ,nullif(cast(a1.event_strategy_id as varchar), '')  as event_strategy_id    -- 策略id
+      ,nullif(cast(a1.programme_id as varchar), '')       as programme_id         -- 频道方案ID
       ,a1.book_id                                         as book_id              -- 书籍id/剧id
       ,null                                               as fst_amt              -- 首次广告收益
       ,null                                               as lst_amt              -- 末次广告收益
       ,sum(a1.ad_click_count)                             as cnt                  -- 次数
       ,sum(a1.ad_click_count)*max(a3.ad_avg_click_amt)    as amt                  -- 广告收益
-      ,now()                                              as etl_tm               -- 清洗时间
+      ,'${cur_etl_tm}'                                    as etl_tm               -- 清洗时间
   from ad_click_count                        as a1
   left join dim.dim_pub_code_mapping_dict    as a2
     on a1.ads_src=a2.cd_val
@@ -388,5 +428,5 @@ select a1.dt                                              as dt                 
   left join user_info_tmp                    as a4
     on a1.product_id = a4.product_id
    and a1.user_id = a4.user_id
- group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+ group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 ;

@@ -7,8 +7,6 @@
 -- 版本号： v0.1.0
 ----------------------------------------------------------------
 
-delete from dwd.dwd_advertisement_user_position_amt_p_di where dt>= '${bf_1_dt}' and dt<='${dt}';
-
 -- 阅读 & 圣经
 insert into dwd.dwd_advertisement_user_position_amt_p_di
 with tmp_data as (
@@ -30,6 +28,7 @@ with tmp_data as (
           ,trim(get_json_string(parse_json(s0), "$.main_strategy_id"))                   as main_strategy_id
           ,trim(get_json_string(parse_json(s0), "$.ad_strategy_id"))                     as event_strategy_id
           ,trim(get_json_string(parse_json(s0), "$.programme_id"))                       as programme_id
+          ,trim(get_json_string(parse_json(s0), "$.book_id"))                            as book_id
       from ods_log.ods_readerlog_xx_log_commonactionlog
      where dt >= '${bf_1_dt}'
        and dt <= '${dt}'
@@ -53,6 +52,7 @@ with tmp_data as (
           ,trim(get_json_string(parse_json(ECPMInfo), '$.main_strategy_id'))             as main_strategy_id
           ,trim(get_json_string(parse_json(ECPMInfo), '$.event_strategy_id'))            as event_strategy_id
           ,trim(get_json_string(parse_json(ECPMInfo), '$.programme_id'))                 as programme_id
+          ,trim(get_json_string(parse_json(ECPMInfo), '$.book_id'))                      as book_id
       from ods.ods_tidb_hallow_log_log_advertlog
     where ECPMValueType = 1
       and date(CreateTime) >= '${bf_1_dt}'
@@ -73,6 +73,7 @@ with tmp_data as (
           ,a.main_strategy_id                             as main_strategy_id
           ,a.event_strategy_id                            as event_strategy_id
           ,a.programme_id                                 as programme_id
+          ,a.book_id
           ,sum(case when a.core = 4 then case when platform='Admob' or platform is null or platform='' then a.valueMicros/1000000.0
                                               else a.valueMicros
                                           end
@@ -91,35 +92,35 @@ with tmp_data as (
                   ,ad_unit
                   ,position_id
                   ,platform
-                  ,case precisionType when 2 then valueMicros/1000.0
-                                      else valueMicros
-                    end                                   as valueMicros
+                  ,valueMicros    as valueMicros
                   ,platform_source
                   ,main_strategy_id
                   ,event_strategy_id
                   ,programme_id
+                  ,book_id
               from tmp_data
            )                                              as a
      where a.valueMicros > 0
-     group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+     group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 )
-select a.dt                   as dt
-      ,a.create_time          as create_time
-      ,a.product_id           as product_id
-      ,a.user_id              as user_id
-      ,a.core                 as corever
-      ,a.mt                   as mt
-      ,a.appver               as appver
-      ,a.ad_unit              as ad_unit
-      ,a.positions            as position_id
-      ,a.ads_name             as ads_name
-      ,a.platform_source      as ads_source
-      ,a.ad_show_type         as ad_show_type
-      ,a.main_strategy_id     as main_strategy_id
-      ,a.event_strategy_id    as event_strategy_id
-      ,a.programme_id         as programme_id
-      ,a.amount               as ad_position_amt
-      ,now()                  as etl_tm
+select a.dt                    as dt
+      ,a.create_time           as create_time
+      ,a.product_id            as product_id
+      ,a.user_id               as user_id
+      ,a.core                  as corever
+      ,a.mt                    as mt
+      ,a.appver                as appver
+      ,a.ad_unit               as ad_unit
+      ,a.positions             as position_id
+      ,a.ads_name              as ads_name
+      ,a.platform_source       as ads_source
+      ,a.ad_show_type          as ad_show_type
+      ,a.main_strategy_id      as main_strategy_id
+      ,a.event_strategy_id     as event_strategy_id
+      ,a.programme_id          as programme_id
+      ,ifnull(a.book_id, 0)    as book_id
+      ,a.amount                as ad_position_amt
+      ,now()                   as etl_tm
   from (
         -- 旧版本数据没有 position_id 关联取最小位置的广告数据
         select amt.dt
@@ -138,6 +139,7 @@ select a.dt                   as dt
               ,amt.main_strategy_id
               ,amt.event_strategy_id
               ,amt.programme_id
+              ,amt.book_id
           from amt
           left join (select product_id
                            ,unit_adid
@@ -170,6 +172,7 @@ select a.dt                   as dt
               ,amt.main_strategy_id
               ,amt.event_strategy_id
               ,amt.programme_id
+              ,amt.book_id
           from amt
           left join (select product_id
                            ,unit_adid
@@ -199,7 +202,7 @@ with us as (
           ,create_tm                          as create_tm
           ,6833                               as product_id
           ,user_id                            as user_id
-          ,IFNULL(core,1)                     as core 
+          ,IFNULL(core,1)                     as core
           ,mt                                 as mt
           ,app_ver                            as app_ver
           ,ad_unit                            as ad_unit
@@ -208,14 +211,13 @@ with us as (
           ,MediationAdapterClassName          as ads_source
           ,mainstrategyid                     as main_strategy_id
           ,eventstrategyid                    as event_strategy_id
+          ,series_id
           ,sum(case when adsPlatform=2 then value_micros
                     when adsPlatform=1 and core in(2,4) and mt = 1 then value_micros
                     else value_micros/1000000.0
                 end
               )                               as amount
-    from (select case PrecisionType when 2 then ValueMicros / 1000.0
-                                    else ValueMicros
-                  end                         as value_micros
+    from (select ValueMicros                  as value_micros
                 ,AccountId                    as user_id
                 ,core                         as core
                 ,createtime                   as create_tm
@@ -227,13 +229,14 @@ with us as (
                 ,mt                           as mt
                 ,mainstrategyid               as mainstrategyid
                 ,eventstrategyid              as eventstrategyid
+                ,seriesId                     as series_id
             from ods.ods_tidb_short_video_admob_paid_event
            where createtime >= '${bf_1_dt}'
              and date(createtime)<='${dt}'
              and AdUnitId !='ca-app-pub-1669209234634531/6952416968'    -- 这个是测试数据
          ) res
    where value_micros >0
-   group by 1,2,3,4,5,6,7,8,9,10,11,12,13
+   group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14
 )
 , p as (
     -- 本身自带position的 关联配置表获取广告类型 ads_type,优先取广告状态开启的
@@ -252,7 +255,8 @@ with us as (
           ,us.ads_source                          as ads_source
           ,us.main_strategy_id                    as main_strategy_id
           ,us.event_strategy_id                   as event_strategy_id
-      from us 
+          ,series_id
+      from us
       left join (
                  -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
                  select unit_adid, position_id, ads_type
@@ -261,7 +265,7 @@ with us as (
                 ) b
         on us.ad_unit = b.unit_adid
      where us.position > 0
-) 
+)
 , n as (
     select us.dt                   as dt
           ,us.product_id           as product_id
@@ -278,15 +282,16 @@ with us as (
           ,us.ads_source           as ads_source
           ,us.main_strategy_id     as main_strategy_id
           ,us.event_strategy_id    as event_strategy_id
+          ,series_id
       from us
       left join (
                  -- 将广告单元id进行排序
                  select unit_adid
                        ,position_id
                        ,ads_type
-                   from dim.dim_short_video_ads_unit_adid_view 
+                   from dim.dim_short_video_ads_unit_adid_view
                 qualify row_number() over(partition by unit_adid order by if(status in (0,2),2,status)) = 1    -- 按广告单元id进行开窗排序，优先取状态为开启的进行匹配（status in (0,2) 为关闭状态）
-                ) b 
+                ) b
         on us.ad_unit = b.unit_adid
      where (us.position < 0 or us.position is null)
 )
@@ -305,8 +310,9 @@ select dt                          as dt
       ,main_strategy_id            as main_strategy_id
       ,event_strategy_id           as event_strategy_id
       ,null                        as programme_id
+      ,series_id
       ,amount                      as ad_position_amt
-      ,now()                       as etl_tm 
+      ,now()                       as etl_tm
   from p
  union all
 select dt                          as dt
@@ -324,7 +330,8 @@ select dt                          as dt
       ,main_strategy_id            as main_strategy_id
       ,event_strategy_id           as event_strategy_id
       ,null                        as programme_id
+      ,series_id
       ,amount                      as ad_position_amt
-      ,now()                       as etl_tm 
+      ,now()                       as etl_tm
   from n
 ;
