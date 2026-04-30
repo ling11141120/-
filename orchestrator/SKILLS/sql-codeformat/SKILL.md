@@ -46,7 +46,7 @@ python orchestrator/SKILLS/sql-codeformat/scripts/format_starrocks_create_table.
 - 保留列顺序、数据类型、注释、键定义、分区、分桶、桶数和属性值。
 - 删除反引号和 StarRocks `engine` 子句。
 - 根据文件名前三个字符推导库名，并将表名规范为 `db_name.file_stem`。
-- 在 `create table` 前添加 `drop table if exists db_name.file_stem;`。
+- 将 `create table` 改写成 `create table if not exists`。
 - 将引号外的 SQL 关键字和数据类型转为小写。
 - 对齐列名、类型、属性和注释。
 - 按 StarRocks 顺序保留表级子句：键/模型、表注释、分区、分桶、属性。
