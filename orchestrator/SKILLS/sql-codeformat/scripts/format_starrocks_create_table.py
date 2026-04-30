@@ -13,7 +13,7 @@ from pathlib import Path
 
 KEYWORDS = (
     "create table",
-    "drop table if exists",
+    "create table if not exists",
     "primary key",
     "duplicate key",
     "aggregate key",
@@ -468,8 +468,7 @@ def format_create_table(sql: str, path: Path, args: argparse.Namespace) -> str:
             ]
         )
 
-    lines.append(f"drop table if exists {qualified};")
-    lines.append(f"create table {qualified} (")
+    lines.append(f"create table if not exists {qualified} (")
     lines.extend(format_columns(split_top_level(column_body)))
     lines.append(")")
     lines.extend(format_table_clauses(remainder, args))
