@@ -16,6 +16,7 @@ create table dws.dws_user_short_video_wide_active_ed (
     ,is_has_email           smallint(6)              comment "是否拥有邮箱信息（使用任一种三方账号登录、或设置密码的用户）"
     ,popularize_series_code varchar(100)             comment "推广剧编号"
     ,etl_time               datetime                 comment "数据清洗时间"
+    ,max_active_time        datetime                 comment "最大活跃时间"
     ,index index_product_id(product_id) using BITMAP comment 'index_product_id'
     ,index country_level(country_level) using BITMAP comment 'index_country_level'
 )
