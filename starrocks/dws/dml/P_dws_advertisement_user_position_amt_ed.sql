@@ -31,6 +31,7 @@ with ad_click_count as (
        and element_id = '100772'
        and type in ('121', '123')
        and ad_src is not null
+       and app_product_id is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
      union all
     select a1.dt
@@ -307,7 +308,7 @@ select a1.dt                                                 as dt              
       ,max(case when rk_desc=1 then amount end)              as lst_amt              -- 末次广告收益
       ,count(1)                                              as cnt                  -- 次数
       ,sum(amount)                                           as amt                  -- 广告收益
-      ,'${cur_etl_tm}'                                       as etl_tm               -- 清洗时间
+      ,now()                                                 as etl_tm               -- 清洗时间
   from (select b1.dt
               ,b1.product_id
               ,b1.user_id
@@ -415,7 +416,7 @@ select a1.dt                                              as dt                 
       ,null                                               as lst_amt              -- 末次广告收益
       ,sum(a1.ad_click_count)                             as cnt                  -- 次数
       ,sum(a1.ad_click_count)*max(a3.ad_avg_click_amt)    as amt                  -- 广告收益
-      ,'${cur_etl_tm}'                                    as etl_tm               -- 清洗时间
+      ,now()                                              as etl_tm               -- 清洗时间
   from ad_click_count                        as a1
   left join dim.dim_pub_code_mapping_dict    as a2
     on a1.ads_src=a2.cd_val

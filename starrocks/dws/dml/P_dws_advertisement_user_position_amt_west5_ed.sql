@@ -33,6 +33,7 @@ with ad_click_count as (
        and element_id = '100772'
        and type in('121', '123')
        and ad_src is not null
+       and a1.app_product_id is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
      union all
     select date(date_add(event_tm,interval -13 hour))   as dt
