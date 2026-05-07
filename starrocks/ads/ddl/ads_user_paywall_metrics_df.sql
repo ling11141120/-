@@ -10,6 +10,7 @@ create table ads.ads_user_paywall_metrics_df (
     ,max_watch_epis_cnt          bigint                                   comment "前3d单剧最大观看集数"
     ,max_active_time             datetime                                 comment "最大活跃时间"
     ,etl_time                    datetime    default current_timestamp    comment "清洗时间"
+    ,recharge_amt                decimal(18, 2)                           comment "前3d充值金额"
 )
 primary key(dt, user_id)
 comment "付费墙用户行为指标"
