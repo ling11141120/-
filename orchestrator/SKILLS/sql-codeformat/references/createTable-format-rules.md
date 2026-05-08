@@ -2,7 +2,7 @@
 
 ## 语句结构
 
-若数据库是 `ods`，语句结构如下：
+若数据库是 `ods`或`ods_log`，语句结构如下：
 
 ```sql
 ----------------------------------------------------------------
@@ -14,7 +14,6 @@
 -- 开发日期：当前日期
 ----------------------------------------------------------------
 
-drop table if exists ods.table_name;
 create table ods.table_name (
      col1_name     col1_data_type [not null] comment "col1_comment"
     ,col2_name     col2_data_type [not null] comment "col2_comment"
@@ -33,10 +32,9 @@ properties (
 ;
 ```
 
-若数据库不是 `ods`，语句结构如下：
+若数据库不是 `ods`或`ods_log`，语句结构如下：
 
 ```sql
-drop table if exists db_name.table_name;
 create table db_name.table_name (
      col1_name     col1_data_type [not null] comment "col1_comment"
     ,col2_name     col2_data_type [not null] comment "col2_comment"

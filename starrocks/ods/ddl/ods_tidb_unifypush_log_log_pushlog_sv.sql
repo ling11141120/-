@@ -2,41 +2,39 @@
 -- 目标表： ods.ods_tidb_unifypush_log_log_pushlog_sv
 -- 来源实例： old_tidb_source
 -- 来源表： unifypush_log.log_pushlog_sv
--- 来源负责： 
--- 采集工具： SeaTunnel
+-- 来源负责： 串总
 -- 开发人： qhr
 -- 创建日期： 2025-09-23
 ----------------------------------------------------------------
 
-DROP TABLE IF EXISTS ods.ods_tidb_unifypush_log_log_pushlog_sv;
-CREATE TABLE ods.ods_tidb_unifypush_log_log_pushlog_sv (
-     dt            DATE          NOT NULL                  COMMENT "日期"
-    ,Id            BIGINT(20)    NOT NULL                  COMMENT "自增Id"
-    ,CreateTime    DATETIME      NOT NULL                  COMMENT "入库时间"
-    ,AppId         INT(11)                                 COMMENT "app_id"
-    ,BatchId       BIGINT(20)                              COMMENT "batch_id"
-    ,AccountId     BIGINT(20)                              COMMENT "账号Id"
-    ,DeviceId      BIGINT(20)                              COMMENT "设备Id"
-    ,Token         VARCHAR(1000)                           COMMENT "推送的Token"
-    ,ScheduleTime  DATETIME                                COMMENT "预期发送时间"
-    ,SendTime      DATETIME                                COMMENT "实际发送时间"
-    ,SendCount     INT(11)                                 COMMENT "发送次数"
-    ,FinishTime    DATETIME                                COMMENT "发送完成时间"
-    ,IsSuccess     INT(11)                                 COMMENT "是否成功"
-    ,ErrorMessage  VARCHAR(1000)                           COMMENT "失败消息"
-    ,Body          STRING                                  COMMENT "Push的内容"
-    ,CustomData    STRING                                  COMMENT "额外自定义数据"
-    ,PushData      STRING                                  COMMENT "PushData"
-    ,PushRequest   STRING                                  COMMENT "PushRequest"
-    ,sr_createtime DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间"
-    ,sr_updatetime DATETIME      DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+create table if not exists ods.ods_tidb_unifypush_log_log_pushlog_sv (
+     dt            date          not null                  comment "日期"
+    ,Id            bigint        not null                  comment "自增Id"
+    ,CreateTime    datetime      not null                  comment "入库时间"
+    ,AppId         int                                     comment "app_id"
+    ,BatchId       bigint                                  comment "batch_id"
+    ,AccountId     bigint                                  comment "账号Id"
+    ,DeviceId      bigint                                  comment "设备Id"
+    ,Token         varchar(1000)                           comment "推送的Token"
+    ,ScheduleTime  datetime                                comment "预期发送时间"
+    ,SendTime      datetime                                comment "实际发送时间"
+    ,SendCount     int                                     comment "发送次数"
+    ,FinishTime    datetime                                comment "发送完成时间"
+    ,IsSuccess     int                                     comment "是否成功"
+    ,ErrorMessage  varchar(1000)                           comment "失败消息"
+    ,Body          string                                  comment "Push的内容"
+    ,CustomData    string                                  comment "额外自定义数据"
+    ,PushData      string                                  comment "PushData"
+    ,PushRequest   string                                  comment "PushRequest"
+    ,sr_createtime datetime      default current_timestamp comment "starrocks数据注入时间"
+    ,sr_updatetime datetime      default current_timestamp comment "starrocks数据更新时间"
 )
-PRIMARY KEY(`dt`, `Id`, `CreateTime`)
-COMMENT "海剧-push资源位需要推送的消息表(来源为串总)"
-PARTITION BY RANGE(dt)
-(PARTITION p20251015 VALUES LESS THAN ("2025-10-16"))
-DISTRIBUTED BY HASH(dt, Id, CreateTime) BUCKETS 5
-PROPERTIES (
+primary key(dt, Id, CreateTime)
+comment "海剧-push资源位需要推送的消息表"
+partition by range(dt)
+(partition p20251015 values less than ("2025-10-16"))
+distributed by hash(dt, Id, CreateTime) buckets 5
+properties (
     "replication_num" = "3",
     "bloom_filter_columns" = "dt, AccountId, DeviceId, CreateTime, BatchId, Id",
     "dynamic_partition.enable" = "true",
@@ -51,4 +49,5 @@ PROPERTIES (
     "enable_persistent_index" = "true",
     "replicated_storage" = "true",
     "compression" = "LZ4"
-);
+)
+;
