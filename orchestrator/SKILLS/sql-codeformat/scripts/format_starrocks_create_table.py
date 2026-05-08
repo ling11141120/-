@@ -431,6 +431,7 @@ def format_create_table(sql: str, path: Path, args: argparse.Namespace) -> str:
     column_body = sql[open_idx + 1 : close_idx]
     remainder = sql[close_idx + 1 : stmt_end].strip()
 
+    layer_name = path.parent.parent.name.lower()
     db_name = path.name[:3].lower()
     table_name = path.stem
     qualified = f"{db_name}.{table_name}"
@@ -440,7 +441,7 @@ def format_create_table(sql: str, path: Path, args: argparse.Namespace) -> str:
         lines.append(before.strip())
         lines.append("")
 
-    if db_name == "ods":
+    if layer_name in ("ods", "ods_log"):
         missing = [
             name
             for name, value in (
