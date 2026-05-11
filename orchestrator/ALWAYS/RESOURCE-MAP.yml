@@ -1,0 +1,97 @@
+# ============================================================
+# 资源索引 — 数仓项目架构、基础设施、开发规范
+# ============================================================
+#
+# 此文件描述 kunlun-dolphinscheduler 数仓项目的全貌。
+# 它是仓库级的只读配置，Agent 在每次会话启动时加载，
+# 开发过程中不允许修改此文件。
+#
+# 业务域和关键表的发现由 Agent 在运行时动态扫描完成，
+# 不在此文件中静态维护。
+
+# ==================== 仓库信息 ====================
+repo:
+  name: kunlun-dolphinscheduler
+  desc: 海外阅读 / 海外短剧 / 圣经业务数据仓库项目（StarRocks）
+  lang: SQL
+  main_branch: master
+  dev_branch: master
+  # 一个需求一个分支，从 master 拉出，完成后 MR 合入 master
+  naming_branch: "dev+{owner}+{jira}+{desc}"
+
+# ==================== 数仓分层架构 ====================
+data_layers:
+  ods:
+    path: starrocks/ods/
+    desc: 操作数据层 — 原始业务数据接入（DDL + DML）
+  ods_log:
+    path: starrocks/ods_log/
+    desc: 日志数据层 — 埋点/传感器日志接入
+  dwd:
+    path: starrocks/dwd/
+    desc: 数据明细层 — 清洗、标准化、脱敏（DDL + DML）
+  dwm:
+    path: starrocks/dwm/
+    desc: 数据中间层 — 轻度汇总（DDL + DML）
+  dws:
+    path: starrocks/dws/
+    desc: 数据服务层 — 主题宽表（DDL + DML）
+  dim:
+    path: starrocks/dim/
+    desc: 维度层 — 维度表（DDL + DML）
+  ads:
+    path: starrocks/ads/
+    desc: 应用数据层 — 面向业务的统计表
+    sub_dirs:
+      ddl: starrocks/ads/ddl/  # 表定义：{table_name}.sql
+      dml: starrocks/ads/dml/  # 数据加载：P_{table_name}.sql
+  alg:
+    path: starrocks/alg/
+    desc: 算法层
+  test:
+    path: starrocks/test/
+    desc: 测试脚本
+
+# ==================== SQL 文件命名规范 ====================
+naming_conventions:
+  ddl: "{table_name}.sql"
+  dml: "P_{table_name}.sql"
+  table: "{layer}_{business}_{subject}_{granularity}_{period}"
+  # layer: ods / dwd / dwm / dws / dim / ads
+  # 周期后缀: di=日, hi=小时, df=全量快照, ed=增量
+
+# ==================== 基础设施 ====================
+infrastructure:
+  database:
+    type: StarRocks
+    desc: OLAP 分析型数据库
+    features:
+      - Bitmap 数据类型（用户去重统计）
+      - 分区表（按日期 date_trunc 分区）
+      - 哈希分布（distributed by hash）
+      - CTE 复用（SET cbo_cte_reuse = true）
+      - 主键模型（Primary Key）
+
+  scheduler:
+    type: DolphinScheduler
+    desc: 数据调度平台，管理 ETL 任务依赖和执行
+    params:
+      - "${dt}"       # 当前处理日期
+      - "${bf_1_dt}"  # 前 1 天
+      - "${bf_4_dt}"  # 前 4 天（回刷窗口）
+
+  ci_cd:
+    type: GitLab CI
+    desc: 自动验证 + 合并 + 触发 DolphinScheduler
+
+# ==================== 编码规范 ====================
+code_conventions:
+  encoding: UTF-8 无 BOM
+  line_ending: CRLF
+  language: 简体中文（注释用中文说明业务含义）
+  sql_style:
+    keywords: 小写（select、from、left join、group by）
+    indent: 4 空格
+    comma: 前置逗号
+    group_by: 位置数字（group by 1, 2, 3）
+    cte: 优先于子查询

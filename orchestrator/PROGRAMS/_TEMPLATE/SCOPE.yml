@@ -1,0 +1,25 @@
+# ============================================================
+# 写入范围控制 — P-YYYY-NNN
+# ============================================================
+#
+# write: Agent 可以修改的文件/目录
+# forbidden: 绝对不能写入的文件
+#
+# 原则：只允许写入当前 Program 涉及的分层路径。
+# Agent 只修改 write 范围内的文件，超出范围时询问用户。
+
+write:
+  # DDL 文件
+  ddl:
+    - starrocks/{layer}/ddl/{table_name}.sql
+
+  # DML 文件
+  dml:
+    - starrocks/{layer}/dml/P_{table_name}.sql
+
+forbidden:
+  - orchestrator/ALWAYS/RESOURCE-MAP.yml.md   # 仓库级只读配置
+  - orchestrator/ALWAYS/CORE.md            # 核心工作协议
+  - orchestrator/ALWAYS/DEV-FLOW.md         # 开发流程规范
+  - .env
+  - .gitlab-ci.yml
