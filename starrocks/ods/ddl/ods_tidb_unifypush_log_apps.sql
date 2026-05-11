@@ -13,7 +13,7 @@ create table if not exists ods.ods_tidb_unifypush_log_apps (
     ,AppRemark        varchar(765)                           comment "说明"
     ,MT               int                                    comment "平台"
     ,PackageName      varchar(765)                           comment "包名"
-    ,CreateTime       datetime(3)                            comment "创建时间"
+    ,CreateTime       datetime                               comment "创建时间"
     ,IsInvalid        tinyint                                comment "是否有效"
     ,AppKey           varchar(765)                           comment "请求签名Key"
     ,AppSecret        varchar(765)                           comment "请求签名密钥"
