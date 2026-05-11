@@ -36,15 +36,15 @@ kunlun-dolphinscheduler/
 │   │   ├── BOOT.md                    # 启动加载顺序
 │   │   ├── CORE.md                    # 工作协议（含 Plan 确认流程）
 │   │   ├── DEV-FLOW.md                # 数仓开发流程
-│   │   ├── RESOURCE-MAP.md            # 资源索引（仓库级只读）
+│   │   ├── RESOURCE-MAP.yml            # 资源索引（仓库级只读）
 │   │   ├── SUB-AGENT.md               # Sub-Agent 规范（按需使用，不作为默认流程）
 │   │   └── PLAN-TEMPLATE.md           # Plan 方案模板
 │   │
 │   ├── PROGRAMS/                      # 开发任务
 │   │   └── P-YYYY-NNN-name/           # 每个 Program 一个目录
 │   │       ├── PROGRAM.md             # 任务定义
-│   │       ├── STATUS.md              # 状态跟踪
-│   │       ├── SCOPE.md               # 写入范围
+│   │       ├── STATUS.yml              # 状态跟踪
+│   │       ├── SCOPE.yml               # 写入范围
 │   │       └── workspace/             # 工作文档（PLAN.md / CHECKPOINT / HANDOFF）
 │   │
 │   └── SKILLS/                        # 可复用技能
@@ -88,15 +88,15 @@ Agent:
   3. 是否需要回刷历史？
 
 用户确认后 →
-  Agent 生成 PLAN.md，写入 PROGRAM.md / SCOPE.md / STATUS.md
+  Agent 生成 PLAN.md，写入 PROGRAM.md / SCOPE.yml / STATUS.yml
   用户确认文件内容后开始编码
 ```
 
 # 状态来源
 
 - **Programs 列表**: 扫描 `orchestrator/PROGRAMS/` 目录
-- **Program 状态**: 读取各 Program 下的 `STATUS.md`
-- **仓库信息**: 读取 `orchestrator/ALWAYS/RESOURCE-MAP.md`
+- **Program 状态**: 读取各 Program 下的 `STATUS.yml`
+- **仓库信息**: 读取 `orchestrator/ALWAYS/RESOURCE-MAP.yml`
 - **业务域和关键表**: Agent 运行时动态扫描 `starrocks/` 目录发现
 
 不要在此文件维护状态副本，直接从源文件读取。

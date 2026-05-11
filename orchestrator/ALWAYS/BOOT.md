@@ -2,10 +2,10 @@
 
 ## 首次启动
 
-如果 `RESOURCE-MAP.md` 内容为空（全部注释）：
+如果 `RESOURCE-MAP.yml` 内容为空（全部注释）：
 
 1. 询问用户项目基本情况：仓库地址、技术栈、基础设施、部署方式
-2. 根据用户描述生成 `RESOURCE-MAP.md`
+2. 根据用户描述生成 `RESOURCE-MAP.yml`
 3. 继续正常启动流程
 
 ## 正常启动
@@ -16,10 +16,10 @@
 
 1. `orchestrator/ALWAYS/CORE.md` — 核心工作协议
 2. `orchestrator/ALWAYS/DEV-FLOW.md` — 开发流程规范
-3. `orchestrator/ALWAYS/RESOURCE-MAP.md` — 资源索引
+3. `orchestrator/ALWAYS/RESOURCE-MAP.yml` — 资源索引
 4. `orchestrator/PROGRAMS/{program_id}/PROGRAM.md` — 任务定义
-5. `orchestrator/PROGRAMS/{program_id}/STATUS.md` — 当前状态
-6. `orchestrator/PROGRAMS/{program_id}/SCOPE.md` — 写入范围
+5. `orchestrator/PROGRAMS/{program_id}/STATUS.yml` — 当前状态
+6. `orchestrator/PROGRAMS/{program_id}/SCOPE.yml` — 写入范围
 
 ### 加载完成后输出
 
@@ -44,4 +44,4 @@ Program: {名称}
 cp -r orchestrator/PROGRAMS/_TEMPLATE orchestrator/PROGRAMS/P-YYYY-NNN-<name>
 ```
 
-然后进入 **Plan 模式**（详见 `DEV-FLOW.md` 方案设计章节），与用户对话确定开发细节后，再编辑 PROGRAM.md 和 SCOPE.md。
+然后进入 **Plan 模式**（详见 `DEV-FLOW.md` 方案设计章节），与用户对话确定开发细节后，再编辑 PROGRAM.md 和 SCOPE.yml。
