@@ -1,22 +1,27 @@
+----------------------------------------------------------------
+-- 程序功能： tag推送活动归因数据，从DWD层取清洗后数据
+-- 程序名： P_ads_bi_tag_push_result_info
+-- 目标表： ads.ads_bi_tag_push_result_info
+-- 负责人： qhr
+-- 开发日期：2026-05-11
+----------------------------------------------------------------
+
 insert into ads.ads_bi_tag_push_result_info
 
 with tmp_a AS (
     select
-        date(update_time) as dt,
+        dt,
         product_id ,
-        message_id ,
+        err_msg_id as message_id ,
         user_id ,
         task_type ,
         batch_id ,
-        split_part(token,':',1) as token  ,
-        state
-from dwd.dwd_market_log_pushmessagelog_view
-where update_time >='${bf_10_dt}'
-  and update_time<'${dt}'  -- and batch_id=8970010
-  and state>-1
--- and  product_id=3371
-  and  task_type =4
---  and batch_id in (9090012,9090013,9120019,9090018,9120014)
+        split_part(token,':',1) as token
+from dwd.dwd_market_sr_push_msg_log_di
+where dt >= '${bf_10_dt}'
+  and dt < '${dt}'
+  and is_success = 1
+  and task_type = 4
 ),
 
 tmp_c AS (
@@ -35,7 +40,7 @@ select a.dt,
        a.product_id,
         a.batch_id as push_id,
 -- count(distinct a.user_id) 下发,
-       count(distinct (CASE WHEN a.state =3  THEN a.user_id ELSE null END)) as actual_push_unt, -- 实际推送
+       count(distinct a.user_id) as actual_push_unt, -- 实际推送（tmp_a 已过滤 is_success=1）
 -- count(distinct if(c.message_id is not null and c.event_type='MESSAGE_ACCEPTED',a.user_id,null))  有效下发,
        count(distinct (CASE WHEN c.message_id is not null and c.event_type='MESSAGE_DELIVERED' THEN a.user_id ELSE null END)) as   send_unt -- 送达人数
 from tmp_a a
