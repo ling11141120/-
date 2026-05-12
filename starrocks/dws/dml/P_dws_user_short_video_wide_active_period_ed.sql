@@ -2,7 +2,7 @@
 -- 程序功能： 用户域登录观看充值消耗汇总活跃表
 -- 程序名： P_dws_user_short_video_wide_active_period_ed
 -- 目标表： dws.dws_user_short_video_wide_active_period_ed
--- 负责人： qhr
+-- 负责人： qhr/xjc
 -- 开发日期： 2026-02-24
 ----------------------------------------------------------------
 
@@ -132,7 +132,7 @@ select a.dt
      , a.is_acc_login
      , a.is_has_email
      , a.popularize_series_code
-     , now()        as etl_time
+     , '${cur_etl_tm}'        as etl_time
   from active                                    a
   left join dim.dim_short_video_user_accountinfo b
     on a.product_id = b.product_id
@@ -156,7 +156,7 @@ select a.dt                        as dt
      , a.is_acc_login              as is_acc_login
      , a.is_has_email              as is_has_email
      , a.popularize_series_code    as popularize_series_code
-     , now()                       as etl_time
+     , '${cur_etl_tm}'                       as etl_time
   from rmt_user_type                             as a
   left join dim.dim_short_video_user_accountinfo as b
     on a.product_id = b.product_id
@@ -288,7 +288,7 @@ select a.dt
      , a.is_acc_login
      , a.is_has_email
      , a.popularize_series_code
-     , now()        as etl_time
+     , '${cur_etl_tm}'                       as etl_time
   from active                                    a
   left join dim.dim_short_video_user_accountinfo b
     on a.product_id = b.product_id
@@ -312,7 +312,7 @@ select a.dt                        as dt
      , a.is_acc_login              as is_acc_login
      , a.is_has_email              as is_has_email
      , a.popularize_series_code    as popularize_series_code
-     , now()                       as etl_time
+     , '${cur_etl_tm}'                       as etl_time
   from rmt_user_type                             as a
   left join dim.dim_short_video_user_accountinfo as b
     on a.product_id = b.product_id

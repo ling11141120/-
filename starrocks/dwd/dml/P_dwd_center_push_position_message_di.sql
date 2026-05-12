@@ -11,9 +11,11 @@ insert into dwd.dwd_center_push_position_message_di
 -- IOS
 select dt                                                               as dt
       ,Id                                                               as id
-      ,get_json_string(Body, '$.custom.pushId')                         as push_position_id
+      ,coalesce(get_json_string(Body, '$.custom.pushId')
+               ,get_json_string(Body, '$.aps.attributes.pushId'))        as push_position_id
       ,date_format(date_sub(CreateTime, interval 13 hour), '%Y%m%d')    as generate_day
-      ,get_json_string(Body, '$.custom.accountId')                      as account_id
+      ,coalesce(get_json_string(Body, '$.custom.accountId')
+               ,AccountId)                             as account_id
       ,AppId                                                            as app_id
       ,Body                                                             as msg_body
       ,-28800                                                           as utc_offset
@@ -31,7 +33,8 @@ select dt                                                               as dt
  where CreateTime>='${bf_1_dt}'
    and AppId % 2 = 1
    and IsSuccess = 1
-   and get_json_string(Body, '$.custom.accountId') is not null
+   and coalesce(get_json_string(Body, '$.custom.accountId')
+               ,AccountId) is not null
 union all
 -- 安卓
 select dt
