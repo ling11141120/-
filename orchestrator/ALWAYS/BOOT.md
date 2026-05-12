@@ -30,6 +30,10 @@ Program: {名称}
 下一步: {具体行动}
 ```
 
+### 辅助规范（按需加载）
+
+- `orchestrator/ALWAYS/CHANGELOG-SPEC.md` — AI 赋能效率占比 CHANGELOG 规范（涉及 CHANGELOG 编辑/合并时加载）
+
 ### 特殊情况
 
 - 如果 Program 目录不存在，询问用户是否创建（从 `_TEMPLATE` 复制）
