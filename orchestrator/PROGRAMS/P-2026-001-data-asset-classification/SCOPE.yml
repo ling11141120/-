@@ -4,9 +4,8 @@
 # 只读全仓库以进行血缘追溯，输出仅写入 workspace/
 
 read:
-  - starrocks/          # 全仓库可读，用于血缘追溯
+  - Application/         # FineBI/FineReport 等应用 SQL，血缘链路起点
+  - starrocks/           # 数仓各层 SQL，血缘追溯
 
 write:
-  - orchestrator/PROGRAMS/P-2026-001-data-asset-classification/workspace/
-
-forbidden: []            # 无禁止写入路径（无代码变更风险）
+  - orchestrator/PROGRAMS/P-2026-001-data-asset-classification/wo
