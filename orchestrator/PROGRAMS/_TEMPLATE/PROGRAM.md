@@ -58,3 +58,4 @@
 - [ ] DML 符合规范，字段来源正确
 - [ ] 数据验证 SQL 通过（量级 / 枚举值 / 指标对比）
 - [ ] 代码已提交，MR 已创建
+- [ ] CHANGELOG.md 已更新（详见 `orchestrator/ALWAYS/CHANGELOG-SPEC.md`）
