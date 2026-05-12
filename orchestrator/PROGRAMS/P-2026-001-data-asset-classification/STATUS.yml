@@ -1,0 +1,18 @@
+# P-2026-001 状态
+
+program: P-2026-001-data-asset-classification
+name: 数据资产等级划分
+status: plan_confirmed
+phase: 等待用户指定数据应用/查询
+created: 2026-05-12
+
+tasks:
+  - id: T1
+    name: Plan 确认
+    status: done
+  - id: T2
+    name: 等待用户指定分析对象
+    status: pending
+    desc: 用户按表名/字段名指定数据应用或查询，附带重要性等级和应用场景
+
+outputs: []

@@ -1,0 +1,12 @@
+# P-2026-001 写入范围
+
+# 此 Program 为分析评估型，不修改 starrocks/ 下任何 SQL 文件
+# 只读全仓库以进行血缘追溯，输出仅写入 workspace/
+
+read:
+  - starrocks/          # 全仓库可读，用于血缘追溯
+
+write:
+  - orchestrator/PROGRAMS/P-2026-001-data-asset-classification/workspace/
+
+forbidden: []            # 无禁止写入路径（无代码变更风险）
