@@ -7,3 +7,8 @@ test/
 tests/
 **/test/
 **/tests/
+
+# 忽略 orchestrator/PROGRAMS 下除 _TEMPLATE 外的所有内容
+orchestrator/PROGRAMS/*
+!orchestrator/PROGRAMS/_TEMPLATE/
+!orchestrator/PROGRAMS/_TEMPLATE/**
