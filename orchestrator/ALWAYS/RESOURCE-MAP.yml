@@ -39,6 +39,10 @@ data_layers:
   dim:
     path: starrocks/dim/
     desc: 维度层 — 维度表（DDL + DML）
+    domains:
+      rule:
+        desc: 规则域 — 数仓通用规则定义，不可删除
+        convention: dim_rule_{主题}_{粒度}
   ads:
     path: starrocks/ads/
     desc: 应用数据层 — 面向业务的统计表
