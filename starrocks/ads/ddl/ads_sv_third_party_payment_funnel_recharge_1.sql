@@ -1,0 +1,60 @@
+CREATE TABLE `ads_sv_third_party_payment_funnel_recharge_1` (
+  `dt` date NOT NULL COMMENT "日期分区",
+  `user_id` bigint(20) NOT NULL COMMENT "用户id",
+  `period_type` varchar(50) NULL COMMENT "周期类型",
+  `user_type` varchar(200) NULL COMMENT "用户类型",
+  `language2` varchar(50) NULL COMMENT "语言id",
+  `core` int(11) NULL COMMENT "core",
+  `mt` varchar(50) NULL COMMENT "终端",
+  `recharge_source` varchar(200) NOT NULL COMMENT "充值来源",
+  `strategy_id` varchar(200) NOT NULL COMMENT "策略ID",
+  `shop_item_type` varchar(200) NULL COMMENT "档位类型",
+  `zfqd` varchar(200) NULL COMMENT "支付渠道",
+  `if_third` int(11) NULL COMMENT "",
+  `subscribe_status` int(11) NULL COMMENT "",
+  `time_duration` int(11) NULL COMMENT "",
+  `base_amount` decimal(12, 2) NULL COMMENT "",
+  `etl_ime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "清洗时间"
+) ENGINE=OLAP 
+DUPLICATE KEY(`dt`)
+COMMENT "海剧三方支付漏斗报表-充值成功"
+PARTITION BY RANGE(`dt`)
+(PARTITION p202412 VALUES [("2024-12-01"), ("2025-01-01")),
+PARTITION p202501 VALUES [("2025-01-01"), ("2025-02-01")),
+PARTITION p202502 VALUES [("2025-02-01"), ("2025-03-01")),
+PARTITION p202503 VALUES [("2025-03-01"), ("2025-04-01")),
+PARTITION p202504 VALUES [("2025-04-01"), ("2025-05-01")),
+PARTITION p202505 VALUES [("2025-05-01"), ("2025-06-01")),
+PARTITION p202506 VALUES [("2025-06-01"), ("2025-07-01")),
+PARTITION p202507 VALUES [("2025-07-01"), ("2025-08-01")),
+PARTITION p202508 VALUES [("2025-08-01"), ("2025-09-01")),
+PARTITION p202509 VALUES [("2025-09-01"), ("2025-10-01")),
+PARTITION p202510 VALUES [("2025-10-01"), ("2025-11-01")),
+PARTITION p202511 VALUES [("2025-11-01"), ("2025-12-01")),
+PARTITION p202512 VALUES [("2025-12-01"), ("2026-01-01")),
+PARTITION p202601 VALUES [("2026-01-01"), ("2026-02-01")),
+PARTITION p202602 VALUES [("2026-02-01"), ("2026-03-01")),
+PARTITION p202603 VALUES [("2026-03-01"), ("2026-04-01")),
+PARTITION p202604 VALUES [("2026-04-01"), ("2026-05-01")),
+PARTITION p202605 VALUES [("2026-05-01"), ("2026-06-01")),
+PARTITION p202606 VALUES [("2026-06-01"), ("2026-07-01")),
+PARTITION p202607 VALUES [("2026-07-01"), ("2026-08-01")),
+PARTITION p202608 VALUES [("2026-08-01"), ("2026-09-01")))
+DISTRIBUTED BY HASH(`dt`, `period_type`, `user_id`) BUCKETS 5 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "dt",
+"dynamic_partition.enable" = "true",
+"dynamic_partition.time_unit" = "month",
+"dynamic_partition.time_zone" = "Asia/Shanghai",
+"dynamic_partition.start" = "-2147483648",
+"dynamic_partition.end" = "3",
+"dynamic_partition.prefix" = "p",
+"dynamic_partition.buckets" = "1",
+"dynamic_partition.history_partition_num" = "0",
+"dynamic_partition.start_day_of_month" = "1",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

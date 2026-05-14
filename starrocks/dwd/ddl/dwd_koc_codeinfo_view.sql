@@ -1,0 +1,4 @@
+CREATE VIEW `dwd_koc_codeinfo_view` (`Id`, `KocCode`, `ProjectType`, `DataId`, `InstitutionId`, `StarId`, `CodeSort`, `CreateTime`, `Creator`, `CreatorUid`, `sr_createtime`, `sr_updatetime`) AS SELECT `ods`.`ods_tidb_koc_codeinfo`.`Id`, `ods`.`ods_tidb_koc_codeinfo`.`KocCode`, `ods`.`ods_tidb_koc_codeinfo`.`ProjectType`, `ods`.`ods_tidb_koc_codeinfo`.`DataId`, `ods`.`ods_tidb_koc_codeinfo`.`InstitutionId`, `ods`.`ods_tidb_koc_codeinfo`.`StarId`, `ods`.`ods_tidb_koc_codeinfo`.`CodeSort`, `ods`.`ods_tidb_koc_codeinfo`.`CreateTime`, `ods`.`ods_tidb_koc_codeinfo`.`Creator`, `ods`.`ods_tidb_koc_codeinfo`.`CreatorUid`, `ods`.`ods_tidb_koc_codeinfo`.`sr_createtime`, `ods`.`ods_tidb_koc_codeinfo`.`sr_updatetime`
+FROM `ods`.`ods_tidb_koc_codeinfo`;
+utf8
+utf8_general_ci

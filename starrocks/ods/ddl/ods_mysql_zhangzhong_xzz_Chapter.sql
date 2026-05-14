@@ -1,0 +1,50 @@
+CREATE TABLE `ods_mysql_zhangzhong_xzz_Chapter` (
+  `ChapterId` bigint(20) NOT NULL COMMENT "章节Id",
+  `BookId` int(11) NULL COMMENT "",
+  `ChapterName` varchar(65533) NULL COMMENT "",
+  `ChapterContent` varchar(1048576) NULL COMMENT "",
+  `PublishTime` datetime NULL COMMENT "发布时间，如果时间未到，表示定时在这个时间发布",
+  `Status` int(11) NULL COMMENT "状态 0:草稿 1:提交等待审核 2:已发布",
+  `IsReject` tinyint(4) NULL COMMENT "是否审核驳回",
+  `RejectReason` varchar(65533) NULL COMMENT "驳回原因",
+  `IsVip` tinyint(4) NULL COMMENT "是否需要付费",
+  `FontLength` int(11) NULL COMMENT "字数",
+  `SequenceNum` int(11) NULL COMMENT "章节序号",
+  `AuthorComment` varchar(65533) NULL COMMENT "作者的话",
+  `DelStatus` int(11) NULL DEFAULT "0" COMMENT "",
+  `IsSuccess` int(11) NULL DEFAULT "0" COMMENT "",
+  `ModifyType` int(11) NULL DEFAULT "0" COMMENT "",
+  `AudityType` int(11) NULL DEFAULT "0" COMMENT "",
+  `LockType` int(11) NULL DEFAULT "0" COMMENT "",
+  `LockTime` datetime NULL COMMENT "",
+  `RepeatId` bigint(20) NULL DEFAULT "0" COMMENT "",
+  `RepeatType` int(11) NULL DEFAULT "0" COMMENT "",
+  `RepeatName` varchar(65533) NULL COMMENT "",
+  `Repeat` varchar(65533) NULL COMMENT "",
+  `RepeatCover` varchar(65533) NULL COMMENT "",
+  `RepeatBatch` int(11) NULL DEFAULT "0" COMMENT "",
+  `RepeatTime` datetime NULL COMMENT "",
+  `CheckContentStatus` double NULL DEFAULT "0" COMMENT "",
+  `IsTiming` int(11) NULL DEFAULT "0" COMMENT "",
+  `VolumeNumber` int(11) NULL DEFAULT "0" COMMENT "",
+  `CreateTime` datetime NULL COMMENT "",
+  `UpdateTime` datetime NULL COMMENT "",
+  `FirstFontLength` int(11) NULL COMMENT "",
+  `RejectStatus` int(11) NULL COMMENT "",
+  `EditStatus` int(11) NULL DEFAULT "1" COMMENT "编辑状态 0不可编辑 1可编辑 2编辑拒绝",
+  `EditorUpdateTime` datetime NULL COMMENT "编辑修改时间",
+  `UpdateCount` int(11) NULL DEFAULT "0" COMMENT "更新次数",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`ChapterId`)
+COMMENT "新掌中-PUGC的P系列（尾号449）书籍章节信息"
+DISTRIBUTED BY HASH(`ChapterId`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "BookId",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

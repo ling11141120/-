@@ -1,0 +1,51 @@
+CREATE TABLE `ads_book_read_consume_inte` (
+  `site_id` bigint(20) NOT NULL COMMENT "语言id",
+  `book_id` bigint(20) NOT NULL COMMENT "书籍id",
+  `begin_time` datetime NOT NULL COMMENT "开始时间",
+  `types` smallint(6) NOT NULL COMMENT "消耗类型(1阅币，2礼券，5阅币+礼券)",
+  `read_cnt` bigint(20) NULL COMMENT "阅读人数(对应日期前，90日内首次阅读该书的用户数合计)",
+  `D0_consume_amount` bigint(20) NULL COMMENT "D0消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D1_consume_amount` bigint(20) NULL COMMENT "D1消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D2_consume_amount` bigint(20) NULL COMMENT "D2消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D3_consume_amount` bigint(20) NULL COMMENT "D3消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D4_consume_amount` bigint(20) NULL COMMENT "D4消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D5_consume_amount` bigint(20) NULL COMMENT "D5消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D6_consume_amount` bigint(20) NULL COMMENT "D6消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D7_consume_amount` bigint(20) NULL COMMENT "D7消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D8_consume_amount` bigint(20) NULL COMMENT "D8消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D9_consume_amount` bigint(20) NULL COMMENT "D9消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D10_consume_amount` bigint(20) NULL COMMENT "D10消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D11_consume_amount` bigint(20) NULL COMMENT "D11消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D12_consume_amount` bigint(20) NULL COMMENT "D12消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D13_consume_amount` bigint(20) NULL COMMENT "D13消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D14_consume_amount` bigint(20) NULL COMMENT "D14消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D15_consume_amount` bigint(20) NULL COMMENT "D15消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D16_consume_amount` bigint(20) NULL COMMENT "D16消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D17_consume_amount` bigint(20) NULL COMMENT "D17消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D18_consume_amount` bigint(20) NULL COMMENT "D18消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D19_consume_amount` bigint(20) NULL COMMENT "D19消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D20_consume_amount` bigint(20) NULL COMMENT "D20消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D21_consume_amount` bigint(20) NULL COMMENT "D21消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D22_consume_amount` bigint(20) NULL COMMENT "D22消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D23_consume_amount` bigint(20) NULL COMMENT "D23消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D24_consume_amount` bigint(20) NULL COMMENT "D24消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D25_consume_amount` bigint(20) NULL COMMENT "D25消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D26_consume_amount` bigint(20) NULL COMMENT "D26消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D27_consume_amount` bigint(20) NULL COMMENT "D27消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D28_consume_amount` bigint(20) NULL COMMENT "D28消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D29_consume_amount` bigint(20) NULL COMMENT "D29消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `D30_consume_amount` bigint(20) NULL COMMENT "D30消耗金额(对应日期的阅读用户中，消费的金额合计)",
+  `etl_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "etl清洗时间",
+  INDEX index_site_id (`site_id`) USING BITMAP COMMENT 'index_site_id'
+) ENGINE=OLAP 
+PRIMARY KEY(`site_id`, `book_id`, `begin_time`, `types`)
+COMMENT "推荐书籍的阅读和消耗指标表"
+DISTRIBUTED BY HASH(`site_id`, `book_id`) BUCKETS 5 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "begin_time, book_id",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

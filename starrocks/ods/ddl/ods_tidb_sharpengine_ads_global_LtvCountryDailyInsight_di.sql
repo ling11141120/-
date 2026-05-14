@@ -1,0 +1,51 @@
+CREATE TABLE `ods_tidb_sharpengine_ads_global_LtvCountryDailyInsight_di` (
+  `date_start` varchar(65533) NOT NULL COMMENT "投放开始时间",
+  `Id` bigint(20) NOT NULL COMMENT "自增id",
+  `AdId` varchar(65533) NULL COMMENT "广告id",
+  `AdStatus` varchar(65533) NULL COMMENT "广告状态",
+  `date_stop` varchar(65533) NULL COMMENT "投放结束时间",
+  `AdName` varchar(65533) NULL COMMENT "广告名",
+  `Spend` decimal(10, 2) NULL COMMENT "花费金额",
+  `PutData` varchar(65533) NULL COMMENT "投放数据",
+  `Installs` int(11) NULL COMMENT "facebook注册数",
+  `Clicks` int(11) NULL COMMENT "点击数",
+  `LinkClick` int(11) NULL COMMENT "",
+  `Impressions` int(11) NULL COMMENT "展示数",
+  `Cpc` varchar(65533) NULL COMMENT "Cpc",
+  `Cpm` varchar(65533) NULL COMMENT "Cpm",
+  `Cpp` varchar(65533) NULL COMMENT "Cpp",
+  `Ctr` varchar(65533) NULL COMMENT "Ctr",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `Mt` int(11) NULL COMMENT "平台",
+  `Core` int(11) NULL COMMENT "core",
+  `ProductId` int(11) NULL COMMENT "产品id",
+  `Roas` decimal(10, 2) NULL COMMENT "roas",
+  `AdSetId` varchar(65533) NULL COMMENT "广告组",
+  `AdCampId` varchar(65533) NULL COMMENT "广告系列",
+  `Country` varchar(65533) NULL COMMENT "国家",
+  `Amount` decimal(10, 2) NULL COMMENT "金额,废弃没什么用",
+  `SourceChl` varchar(65533) NULL COMMENT "渠道值",
+  `Chl2` varchar(65533) NULL COMMENT "初始渠道Id",
+  `CreateUser` varchar(65533) NULL COMMENT "",
+  `CreateType` int(11) NULL COMMENT "",
+  `CreateNum` int(11) NULL COMMENT "",
+  `RowVersion` bigint(20) NULL COMMENT "",
+  `CurrentLanguage2` int(11) NULL COMMENT "注册语言",
+  `IsRemarketing` int(11) NULL COMMENT "",
+  `Account` varchar(65533) NULL COMMENT "广告所属账号",
+  `Conversion` int(11) NULL COMMENT "offsite转换数",
+  `Registration` int(11) NULL COMMENT "去重注册数",
+  `sr_createtime` datetime NULL COMMENT "sr入库时间",
+  `sr_updatetime` datetime NULL COMMENT "sr更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`date_start`, `Id`)
+COMMENT "海外阅读、海外短剧，国家维度广告其他渠道投放记录表(est西五区时间)"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "AdSetId, Country",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

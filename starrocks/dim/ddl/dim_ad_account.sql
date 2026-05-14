@@ -1,0 +1,53 @@
+CREATE TABLE `dim_ad_account` (
+  `id` int(11) NOT NULL COMMENT "主键id",
+  `types` smallint(6) NOT NULL COMMENT "渠道：1：fb；2:tiktok 3:第三方 4：谷歌",
+  `account` varchar(65533) NULL COMMENT "Tiktok投放账户ID",
+  `secret` varchar(65533) NULL COMMENT "Tiktok API Secret",
+  `page_id` varchar(65533) NULL COMMENT "页面",
+  `app_id` varchar(65533) NULL COMMENT "",
+  `app_url` varchar(65533) NULL COMMENT "Facebook AppUrl",
+  `create_time` datetime NULL COMMENT "创建时间",
+  `product_id` int(11) NULL COMMENT "产品id",
+  `product_name` varchar(65533) NULL COMMENT "产品 账号名",
+  `mt` int(11) NULL COMMENT "设备",
+  `token` varchar(65533) NULL COMMENT "Tiktok API Token",
+  `insid` varchar(65533) NULL COMMENT "Tiktok InsId",
+  `status` int(11) NULL COMMENT "0-禁用 1-启用",
+  `autofillad` int(11) NULL COMMENT "自动填充 0 否 1 是",
+  `update_status` int(11) NULL COMMENT "更新状态",
+  `chl` varchar(65533) NULL COMMENT "渠道",
+  `core` int(11) NULL COMMENT "core",
+  `fb_ad_rule_id` int(11) NULL COMMENT "自动关闭规则Id",
+  `ad_auto_active` int(11) NULL COMMENT "",
+  `status_change_time` datetime NULL COMMENT "状态更新时间",
+  `fb_account_type` int(11) NULL COMMENT "1表示再营销 0正常新增投放",
+  `rowversion` bigint(20) NULL COMMENT "同步数据用的",
+  `spend_cap` bigint(20) NULL COMMENT "额度金额",
+  `amount_spent` bigint(20) NULL COMMENT "已经花费的金额",
+  `put_product_id` int(11) NULL COMMENT "投放语言ID",
+  `current_language2` int(11) NULL COMMENT "投放语言",
+  `account_ad_type` int(11) NULL COMMENT "账号广告类型",
+  `exchange_rate` double NULL COMMENT "汇率",
+  `time_zone` int(11) NULL COMMENT "时区",
+  `account_change_to_remarketing_time` datetime NULL COMMENT "设置为再营销账户的时间",
+  `last_insight_info` varchar(65533) NULL COMMENT "最后一次抓取dailyinsight的信息",
+  `is_product_put_account` int(11) NULL COMMENT "是否书籍目录投放账号",
+  `last_put_time` datetime NULL COMMENT "最新的投放数据的时间",
+  `fb_ad_network_type` int(11) NULL COMMENT "fb投放类型，1app 2web",
+  `third_pay_data_set_id` varchar(65533) NULL COMMENT "第三方充值上传的fb中的datasetid",
+  `timezone_offset` int(11) NULL COMMENT "",
+  `source_chl` varchar(65533) NULL COMMENT "渠道值",
+  `ad_platform_id` int(11) NULL COMMENT "广告渠道 0-苹果 1-抖音 2-快手",
+  `account_tz` int(11) NULL COMMENT "账号时区 -13=GMT-5默认时区|-20=GMT-12英西时区|-18=GMT-10葡语时区|-7=GMT+1亚洲时区",
+  `etl_time` datetime NULL COMMENT ""
+) ENGINE=OLAP 
+PRIMARY KEY(`id`, `types`)
+COMMENT "投放账号维度汇总表"
+DISTRIBUTED BY HASH(`id`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

@@ -1,0 +1,52 @@
+CREATE TABLE `ods_tidb_sr_sharpengine_pay_sync_pay_order_for_dc_di` (
+  `Id` bigint(20) NOT NULL COMMENT "id",
+  `Account` varchar(512) NULL COMMENT "用户账号",
+  `UserId` bigint(20) NOT NULL COMMENT "用户id",
+  `AccountCreateTime` datetime NULL COMMENT "注册时间",
+  `InstallDate` datetime NULL COMMENT "激活时间",
+  `OrderSerialId` varchar(128) NULL COMMENT "订单号",
+  `Amount` int(11) NULL COMMENT "充值金额",
+  `BaseAmount` int(11) NULL COMMENT "充值实收",
+  `RateAmount` int(11) NULL COMMENT "支付手续费",
+  `PaySubName` varchar(512) NULL COMMENT "支付渠道",
+  `PayName` varchar(512) NULL COMMENT "支付方式",
+  `Country` varchar(512) NULL COMMENT "订单国家",
+  `OrderCreateTime` datetime NULL COMMENT "下单时间",
+  `PaySource` varchar(128) NULL COMMENT "充值来源",
+  `PaySourceName` varchar(500) NULL COMMENT "充值来源(剧名等信息)",
+  `AppId` varchar(512) NULL COMMENT "应用",
+  `OsType` varchar(512) NULL COMMENT "系统",
+  `Dc` bigint(20) NULL COMMENT "所属机构",
+  `DcAccount` bigint(20) NULL COMMENT "投放账号",
+  `MediaType` varchar(512) NULL COMMENT "广告平台fb/tt",
+  `AdCampName` varchar(512) NULL COMMENT "广告系列名称",
+  `AdSetName` varchar(512) NULL COMMENT "广告组",
+  `AdName` varchar(512) NULL COMMENT "广告名称",
+  `FirstOpenRes` varchar(512) NULL COMMENT "投放内容",
+  `AdId` varchar(512) NULL COMMENT "广告Id",
+  `FirstOpenResId` varchar(50) NULL COMMENT "",
+  `PayChanelId` int(11) NULL COMMENT "支付Id",
+  `Lp` varchar(500) NULL COMMENT "落地页",
+  `DeepLink` varchar(512) NULL COMMENT "deeplink",
+  `AdSetId` varchar(512) NULL COMMENT "广告组id",
+  `AdCampId` varchar(512) NULL COMMENT "广告系列id",
+  `ShopItemId` int(11) NULL COMMENT "ShopItemId0是金币非0是VIP",
+  `CdCode` varchar(512) NULL COMMENT "推广代码",
+  `DataInsertTime` datetime NULL COMMENT "",
+  `CooExtStatus` int(11) NULL COMMENT "-1为退款",
+  `OrderId` varchar(512) NULL COMMENT "客户端上报给af的订单号作为关联使用",
+  `NotifyAdStatus` int(11) NULL COMMENT "回传广告平台状态：1已回传，3超出回传时间限制，-1000策略扣回传，-1回传失败",
+  `Core` int(11) NULL COMMENT "Core",
+  INDEX index_OrderCreateTime (`OrderCreateTime`) USING BITMAP COMMENT 'OrderCreateTime'
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "分销订单表"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "OrderCreateTime",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

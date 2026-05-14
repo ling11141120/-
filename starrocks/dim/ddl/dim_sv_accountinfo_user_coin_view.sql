@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_accountinfo_user_coin_view` (`id` COMMENT "充值币主键id", `account_id` COMMENT "所属账户id", `value` COMMENT "钱币数量", `create_time` COMMENT "创建时间", `update_time` COMMENT "更新时间", `region_id` COMMENT "归属区域 id，1：香港，2：北美；", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "充值币表" AS SELECT `ods`.`ods_tidb_sv_short_video_coin_di`.`id`, `ods`.`ods_tidb_sv_short_video_coin_di`.`AccountId`, `ods`.`ods_tidb_sv_short_video_coin_di`.`Value`, `ods`.`ods_tidb_sv_short_video_coin_di`.`CreateTime`, `ods`.`ods_tidb_sv_short_video_coin_di`.`UpdateTime`, `ods`.`ods_tidb_sv_short_video_coin_di`.`regionId`, `ods`.`ods_tidb_sv_short_video_coin_di`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_coin_di`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_coin_di`;
+utf8
+utf8_general_ci

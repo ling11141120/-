@@ -1,0 +1,5 @@
+CREATE VIEW `dim_short_video_series_type_view` (`id` COMMENT "主键", `name` COMMENT "分类名称", `name_key` COMMENT "分类名称Key", `status` COMMENT "状态 0禁用 1启用", `create_user` COMMENT "创建者", `update_user` COMMENT "修改者", `create_time` COMMENT "创建时间", `update_time` COMMENT "更新时间", `sr_updatetime` COMMENT "ods同步时间", `sr_createtime` COMMENT "starrocks数据注入时间")
+COMMENT "海外短剧分类视图" AS SELECT `ods`.`ods_tidb_short_video_series_type`.`Id`, `ods`.`ods_tidb_short_video_series_type`.`Name`, `ods`.`ods_tidb_short_video_series_type`.`NameKey` AS `name_key`, `ods`.`ods_tidb_short_video_series_type`.`Status`, `ods`.`ods_tidb_short_video_series_type`.`CreateUser` AS `create_user`, `ods`.`ods_tidb_short_video_series_type`.`UpdateUser` AS `update_user`, `ods`.`ods_tidb_short_video_series_type`.`CreateTime` AS `create_time`, `ods`.`ods_tidb_short_video_series_type`.`UpdateTime` AS `update_time`, `ods`.`ods_tidb_short_video_series_type`.`sr_updatetime`, `ods`.`ods_tidb_short_video_series_type`.`sr_createtime`
+FROM `ods`.`ods_tidb_short_video_series_type`;
+utf8
+utf8_general_ci

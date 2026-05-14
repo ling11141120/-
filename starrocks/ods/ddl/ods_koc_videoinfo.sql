@@ -1,0 +1,50 @@
+CREATE TABLE `ods_koc_videoinfo` (
+  `Id` bigint(20) NOT NULL COMMENT "主键ID",
+  `SeriesId` bigint(20) NULL COMMENT "短剧ID",
+  `Language` int(11) NULL COMMENT "语言",
+  `SeriesName` varchar(2000) NULL COMMENT "",
+  `CoverUrl` varchar(512) NULL COMMENT "封面",
+  `CreateTime` datetime NULL COMMENT "创建时间",
+  `UpdateTime` datetime NULL COMMENT "修改时间",
+  `PublishStatus` int(11) NOT NULL COMMENT "上架状态(1上架 2下架)",
+  `PublishedAt` datetime NULL COMMENT "上架时间",
+  `UnPublishedAt` datetime NULL COMMENT "下架时间",
+  `LastEpis` int(11) NULL COMMENT "更新至第几集",
+  `AllEpis` int(11) NULL COMMENT "总集数",
+  `PayEpisFrom` int(11) NULL COMMENT "收费起始集数",
+  `IsDelete` int(11) NULL COMMENT "是否删除",
+  `Ending` int(11) NULL COMMENT "完结状态（1连载中 2已完结）",
+  `SeriesLevel` int(11) NULL COMMENT "等级 1.S 2.A 3.B 4.C",
+  `OperateLevel` int(11) NULL COMMENT "运营等级 1.S 2.A 3.B 4.C",
+  `WorkType` int(11) NULL COMMENT "作品类型 1.男频 2.女频 3.双番",
+  `SeriesCode` varchar(1000) NULL COMMENT "代号",
+  `SeriesTypes` varchar(2000) NULL COMMENT "分类标签 英文逗号分隔",
+  `LocalType` int(11) NULL COMMENT "类型 1外文剧 2 中文剧",
+  `SynchCreateTime` datetime NULL COMMENT "创建时间",
+  `SynchUpdateTime` datetime NULL COMMENT "更新时间",
+  `Description` varchar(1048576) NULL COMMENT "短剧简介",
+  `IsHide` int(11) NOT NULL COMMENT "是否隐藏 0=不隐藏|1=隐藏",
+  `SeriesTypesEn` varchar(5000) NULL COMMENT "分类标签英语 英文逗号分隔",
+  `BaiduLink` varchar(65533) NULL COMMENT "百度网盘链接",
+  `BaiduLinkCode` varchar(2000) NULL COMMENT "百度网盘提取码",
+  `BaiduLinkExpire` datetime NULL COMMENT "百度网盘过期时间",
+  `IsMainPush` int(11) NOT NULL COMMENT "是否推荐 0否 1是",
+  `MainPushTime` varchar(1000) NULL COMMENT "推荐时间 yyyy-MM-dd",
+  `PushRemark` varchar(65533) NULL COMMENT "主推备注",
+  `PushReason` varchar(65533) NULL COMMENT "主推原因",
+  `PushGrade` varchar(1000) NULL COMMENT "主推评级",
+  `IsScheduledPublish` int(11) NULL COMMENT "是否定时上架 0否  1是",
+  `ScheduledPublishTime` datetime NULL COMMENT "定时上架时间",
+  `sr_createtime` datetime NULL COMMENT "同步时间",
+  `sr_updatetime` datetime NULL COMMENT "更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "koc短剧信息"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

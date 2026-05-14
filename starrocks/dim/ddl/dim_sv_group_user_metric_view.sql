@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_group_user_metric_view` (`id` COMMENT "唯一ID", `project` COMMENT "应用/项目名称", `account` COMMENT "用户账号", `user_metric_json` COMMENT "用户指标JSON", `create_time` COMMENT "创建时间", `update_time` COMMENT "修改时间", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "用户指标表" AS SELECT `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`id`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`project`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`account`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`user_metric_json`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`create_time`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`update_time`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_group_user_user_metric_di`;
+utf8
+utf8_general_ci

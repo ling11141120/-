@@ -1,0 +1,5 @@
+CREATE VIEW `dim_aitag_book_view` (`bookId` COMMENT "书籍Id，主键", `status` COMMENT "任务状态,-1待处理 0处理中 1已完成 2失败 3超出预算 4 超出绝对预算失败 5 章节失败率超限", `cost` COMMENT "预算", `tags` COMMENT "标签", `updateTime` COMMENT "执行完成时间", `costLimit` COMMENT "预算限制", `realCost` COMMENT "实际消费", `siteId` COMMENT "站点Id，书籍Id末3位", `totalCost` COMMENT "累计消费")
+COMMENT "书籍标签tag表" AS SELECT `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`bookId`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`status`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`cost`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`tags`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`updateTime`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`costLimit`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`realCost`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`siteId`, `ods`.`ods_tidb_sharpengine_bi_aitag_book`.`totalCost`
+FROM `ods`.`ods_tidb_sharpengine_bi_aitag_book`;
+utf8
+utf8_general_ci

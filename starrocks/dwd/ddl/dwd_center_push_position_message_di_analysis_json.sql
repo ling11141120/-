@@ -1,0 +1,60 @@
+CREATE TABLE `dwd_center_push_position_message_di_analysis_json` (
+  `dt` date NOT NULL COMMENT "分区日期",
+  `id` bigint(20) NOT NULL COMMENT "主键id",
+  `push_position_id` bigint(20) NULL COMMENT "push资源位id。center_push_position表id",
+  `generate_day` varchar(255) NULL COMMENT "记录生成日期（西五区），格式：yyyyMMdd,20240724",
+  `account_id` bigint(20) NULL COMMENT "用户id。如果是多个用户信息组合一起发送，则填充0，表示该条推送发送发送给多个用户",
+  `push_type` varchar(20000) NULL COMMENT "发送的消息体 $.custom.pushType",
+  `group_id` varchar(20000) NULL COMMENT "发送的消息体 $.custom.groupId",
+  `push_jump_page` varchar(20000) NULL COMMENT "发送的消息体 $.custom.pushJumpPage",
+  `title` varchar(20000) NULL COMMENT "发送的消息体 $.custom.title",
+  `act` varchar(2000) NULL COMMENT "发送的消息体 $.custom.act.activityLink",
+  `utc_offset` int(11) NULL COMMENT "UTC偏移量,用户所在时区相对于0时区的秒级偏移量",
+  `need_to_send_time` datetime NULL COMMENT "消息应该发送的时间。保存的时任意时区用户应该推送的时间转化为东八区时间保存",
+  `send_status` int(11) NULL COMMENT "消息发送状态：1-已经发送，2-未发送，3-消息往Kafka发送失败，4-重复发送（对于资源位的用户消息已经发送过），5-频控发送失败",
+  `send_success_time` datetime NULL COMMENT "消息成功发送时间。东八区时间",
+  `create_time` datetime NULL COMMENT "创建时间",
+  `update_time` datetime NULL COMMENT "更新时间",
+  `etl_tm` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "清洗时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`dt`, `id`)
+COMMENT "push资源位需要推送的消息表-json解析后"
+PARTITION BY RANGE(`dt`)
+(PARTITION p202412 VALUES [("2024-12-01"), ("2025-01-01")),
+PARTITION p202501 VALUES [("2025-01-01"), ("2025-02-01")),
+PARTITION p202502 VALUES [("2025-02-01"), ("2025-03-01")),
+PARTITION p202503 VALUES [("2025-03-01"), ("2025-04-01")),
+PARTITION p202504 VALUES [("2025-04-01"), ("2025-05-01")),
+PARTITION p202505 VALUES [("2025-05-01"), ("2025-06-01")),
+PARTITION p202506 VALUES [("2025-06-01"), ("2025-07-01")),
+PARTITION p202507 VALUES [("2025-07-01"), ("2025-08-01")),
+PARTITION p202508 VALUES [("2025-08-01"), ("2025-09-01")),
+PARTITION p202509 VALUES [("2025-09-01"), ("2025-10-01")),
+PARTITION p202510 VALUES [("2025-10-01"), ("2025-11-01")),
+PARTITION p202511 VALUES [("2025-11-01"), ("2025-12-01")),
+PARTITION p202512 VALUES [("2025-12-01"), ("2026-01-01")),
+PARTITION p202601 VALUES [("2026-01-01"), ("2026-02-01")),
+PARTITION p202602 VALUES [("2026-02-01"), ("2026-03-01")),
+PARTITION p202603 VALUES [("2026-03-01"), ("2026-04-01")),
+PARTITION p202604 VALUES [("2026-04-01"), ("2026-05-01")),
+PARTITION p202605 VALUES [("2026-05-01"), ("2026-06-01")),
+PARTITION p202606 VALUES [("2026-06-01"), ("2026-07-01")),
+PARTITION p202607 VALUES [("2026-07-01"), ("2026-08-01")),
+PARTITION p202608 VALUES [("2026-08-01"), ("2026-09-01")))
+DISTRIBUTED BY HASH(`dt`, `id`) BUCKETS 20 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "dt, id",
+"dynamic_partition.enable" = "true",
+"dynamic_partition.time_unit" = "MONTH",
+"dynamic_partition.time_zone" = "Asia/Shanghai",
+"dynamic_partition.start" = "-120",
+"dynamic_partition.end" = "3",
+"dynamic_partition.prefix" = "p",
+"dynamic_partition.history_partition_num" = "0",
+"dynamic_partition.start_day_of_month" = "1",
+"in_memory" = "false",
+"enable_persistent_index" = "false",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

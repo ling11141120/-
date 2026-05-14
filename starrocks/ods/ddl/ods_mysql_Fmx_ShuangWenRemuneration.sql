@@ -1,0 +1,45 @@
+CREATE TABLE `ods_mysql_Fmx_ShuangWenRemuneration` (
+  `Id` bigint(20) NOT NULL COMMENT "",
+  `AuthorId` bigint(20) NULL COMMENT "",
+  `Account` varchar(150) NULL COMMENT "",
+  `book_id` bigint(20) NOT NULL COMMENT "",
+  `book_name` varchar(300) NOT NULL COMMENT "",
+  `Length` bigint(20) NULL COMMENT "",
+  `AccountName` varchar(300) NULL COMMENT "",
+  `AccountInfo` varchar(600) NULL COMMENT "",
+  `static_date` int(11) NOT NULL COMMENT "",
+  `BuyOut` decimal(18, 2) NULL COMMENT "",
+  `BuyOutAdd` decimal(18, 2) NULL COMMENT "",
+  `Agreement` decimal(18, 2) NULL COMMENT "",
+  `AllShift` decimal(18, 2) NULL COMMENT "",
+  `SaleMoney` decimal(18, 2) NULL COMMENT "",
+  `AndSaleMoney` decimal(18, 2) NULL COMMENT "",
+  `AndPlayTour` decimal(18, 2) NULL COMMENT "",
+  `PlayTour` decimal(18, 2) NULL COMMENT "",
+  `UrgeUpdate` decimal(18, 2) NULL COMMENT "",
+  `MonthlyTicket` decimal(18, 2) NULL COMMENT "",
+  `CanPayStatus` int(11) NOT NULL COMMENT "",
+  `RealPay` decimal(18, 2) NULL COMMENT "",
+  `Tax` decimal(18, 2) NULL COMMENT "",
+  `Status` int(11) NOT NULL COMMENT "",
+  `Remark` varchar(600) NULL COMMENT "",
+  `ThirdSale` decimal(18, 2) NULL COMMENT "",
+  `OldPay` decimal(18, 2) NULL COMMENT "",
+  `OtherMoney` decimal(18, 2) NULL COMMENT "",
+  `PresentCash` decimal(18, 2) NULL COMMENT "",
+  `Present` decimal(18, 2) NULL COMMENT "",
+  `RowVersion` bigint(20) NULL COMMENT "",
+  `FmxSiteSale` decimal(18, 2) NULL COMMENT "",
+  `IsAutoWriting` tinyint(4) NULL DEFAULT "0" COMMENT "",
+  `sr_updatetime` datetime NULL COMMENT "ods同步时间",
+  `sr_createtime` datetime NULL COMMENT "starrocks数据注入时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

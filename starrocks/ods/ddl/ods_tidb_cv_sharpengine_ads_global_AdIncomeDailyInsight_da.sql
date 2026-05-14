@@ -1,0 +1,50 @@
+CREATE TABLE `ods_tidb_cv_sharpengine_ads_global_AdIncomeDailyInsight_da` (
+  `Id` bigint(20) NOT NULL COMMENT "主键",
+  `date_start` varchar(65533) NOT NULL COMMENT "开始时间",
+  `AdId` varchar(65533) NULL COMMENT "广告id",
+  `AdStatus` varchar(65533) NULL COMMENT "广告状态",
+  `date_stop` varchar(65533) NULL COMMENT "结束时间",
+  `AdName` varchar(65533) NULL COMMENT "广告名字",
+  `Spend` decimal(10, 2) NULL COMMENT "花费",
+  `PutData` varchar(65533) NULL COMMENT "",
+  `Installs` int(11) NULL COMMENT "安装数",
+  `Clicks` int(11) NULL COMMENT "点击数",
+  `Impressions` int(11) NULL COMMENT "展示数",
+  `Cpc` varchar(65533) NULL COMMENT "Cpc",
+  `Cpm` varchar(65533) NULL COMMENT "Cpm",
+  `Cpp` varchar(65533) NULL COMMENT "Cpp",
+  `Ctr` varchar(65533) NULL COMMENT "Ctr",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `Mt` int(11) NULL COMMENT "设备",
+  `Core` int(11) NULL COMMENT "core",
+  `ProductId` int(11) NULL COMMENT "产品id",
+  `Roas` decimal(10, 2) NULL COMMENT "",
+  `AdSetId` varchar(65533) NULL COMMENT "广告组id",
+  `AdCampId` varchar(65533) NULL COMMENT "",
+  `Amount` decimal(10, 2) NOT NULL DEFAULT "0" COMMENT "",
+  `SourceChl` varchar(65533) NULL COMMENT "渠道",
+  `Chl2` varchar(65533) NULL COMMENT "渠道",
+  `CreateUser` varchar(65533) NULL COMMENT "创建者",
+  `CreateType` int(11) NULL COMMENT "创建类型",
+  `CreateNum` int(11) NULL COMMENT "创建数量",
+  `RowVersion` bigint(20) NULL COMMENT "版本",
+  `CurrentLanguage2` int(11) NULL COMMENT "注册语言",
+  `IsRemarketing` int(11) NULL COMMENT "是否在营销",
+  `Account` varchar(65533) NULL COMMENT "广告所属账号",
+  `LinkClick` int(11) NULL COMMENT "",
+  `Conversion` int(11) NULL COMMENT "offsite转换数",
+  `Registration` int(11) NULL COMMENT "去重注册数",
+  `sr_createtime` datetime NULL COMMENT "sr入库时间",
+  `sr_updatetime` datetime NULL COMMENT "sr更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`, `date_start`)
+COMMENT "广告收入表"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "date_start",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

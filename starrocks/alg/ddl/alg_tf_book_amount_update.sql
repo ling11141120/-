@@ -1,0 +1,34 @@
+CREATE TABLE `alg_tf_book_amount_update` (
+  `dt` date NOT NULL COMMENT "",
+  `mt` int(11) NULL COMMENT "",
+  `book_id` bigint(20) NULL COMMENT "",
+  `ad_num` bigint(20) NOT NULL COMMENT "",
+  `dev_num` bigint(20) NULL COMMENT "",
+  `reg_num` bigint(20) NULL COMMENT "",
+  `cost_amount` bigint(20) NULL COMMENT "",
+  `day0_amount` bigint(20) NULL COMMENT "",
+  `day1_amount` bigint(20) NULL COMMENT "",
+  `day2_amount` bigint(20) NULL COMMENT "",
+  `day3_amount` bigint(20) NULL COMMENT "",
+  `day4_amount` bigint(20) NULL COMMENT "",
+  `day5_amount` bigint(20) NULL COMMENT "",
+  `day6_amount` bigint(20) NULL COMMENT "",
+  `day7_amount` bigint(20) NULL COMMENT "",
+  `day15_amount` bigint(20) NULL COMMENT "",
+  `day30_amount` bigint(20) NULL COMMENT "",
+  `day40_amount` bigint(20) NULL COMMENT "",
+  `day50_amount` bigint(20) NULL COMMENT "",
+  `day60_amount` bigint(20) NULL COMMENT "",
+  `day70_amount` bigint(20) NULL COMMENT "",
+  `day80_amount` bigint(20) NULL COMMENT "",
+  `day90_amount` bigint(20) NULL COMMENT ""
+) ENGINE=OLAP 
+DUPLICATE KEY(`dt`, `mt`, `book_id`)
+DISTRIBUTED BY HASH(`dt`) BUCKETS 12 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

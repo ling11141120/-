@@ -1,0 +1,48 @@
+CREATE TABLE `ods_tidb_readernovel_tidb_tag_center_book_pricing` (
+  `Id` int(11) NOT NULL COMMENT "",
+  `Name` varchar(300) NOT NULL COMMENT "名称",
+  `Price` decimal(30, 2) NOT NULL COMMENT "千字价",
+  `Sort` int(11) NOT NULL COMMENT "权重",
+  `IsFixedPrice` tinyint(4) NOT NULL COMMENT "一口价",
+  `Coefficient` decimal(4, 2) NOT NULL COMMENT "系数",
+  `Status` tinyint(4) NOT NULL COMMENT "状态",
+  `Channels` varchar(30) NULL COMMENT "频道（逗号分割）",
+  `CIds` varchar(300) NULL COMMENT "分类（逗号分割）",
+  `Scores` varchar(60) NULL COMMENT "评级（逗号分割）",
+  `SignType` int(11) NOT NULL COMMENT "签约类型",
+  `FullType` int(11) NOT NULL COMMENT "是否完本",
+  `MinFontCount` int(11) NOT NULL COMMENT "最小字数",
+  `MaxFontCount` int(11) NOT NULL COMMENT "最大字数",
+  `MinChapterCount` int(11) NOT NULL COMMENT "最小章节数",
+  `MaxChapterCount` int(11) NOT NULL COMMENT "最大章节数",
+  `IsDelete` tinyint(4) NOT NULL COMMENT "是否删除",
+  `CreateTime` datetime NOT NULL COMMENT "创建时间",
+  `UpdateTime` datetime NOT NULL COMMENT "修改时间",
+  `LangId` int(11) NOT NULL COMMENT "语言",
+  `IsUpdate` tinyint(4) NOT NULL COMMENT "是否更新",
+  `AuditStatus` tinyint(4) NOT NULL DEFAULT "0" COMMENT "",
+  `BookNatures` varchar(60) NULL COMMENT "书籍来源",
+  `T1Price` decimal(10, 2) NOT NULL DEFAULT "0" COMMENT "T1价格",
+  `T2Price` decimal(10, 2) NOT NULL DEFAULT "0" COMMENT "T2价格",
+  `T1IsFixedPrice` tinyint(4) NOT NULL DEFAULT "0" COMMENT "T1一口价",
+  `T2IsFixedPrice` tinyint(4) NOT NULL DEFAULT "0" COMMENT "T2一口价",
+  `T1Coefficient` decimal(4, 2) NOT NULL DEFAULT "0" COMMENT "T1折扣",
+  `T2Coefficient` decimal(4, 2) NOT NULL DEFAULT "0" COMMENT "T2折扣",
+  `IsLevel` tinyint(4) NOT NULL DEFAULT "2" COMMENT "是否区分国家等级",
+  `GroupIds` varchar(300) NULL COMMENT "Tag人群包",
+  `ExcludeGroupIds` varchar(300) NULL COMMENT "Tag剔除人群包",
+  `JGroupIds` varchar(300) NULL COMMENT "极光人群包",
+  `ExcludeJGroupIds` varchar(300) NULL COMMENT "极光剔除人群包",
+  `BookIds` varchar(3000) NULL COMMENT "指定书籍",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT ""
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

@@ -1,0 +1,3 @@
+CREATE VIEW `ads_read_90_first_all_read_mid2_view` (`dt` COMMENT "统计日期,书的阅读日期", `site_id` COMMENT "语言id", `book_id` COMMENT "书籍id", `user_id` COMMENT "用户id", `is_source` COMMENT "是否引流", `etl_time` COMMENT "处理时间")
+COMMENT "书籍的90日内首次阅读用户表" AS SELECT `dws`.`dws_read_90_first_all_read_mid2`.`dt`, if(`dws`.`dws_read_90_first_all_read_mid2`.`site_id` IN (775, 885), 777, `dws`.`dws_read_90_first_all_read_mid2`.`site_id`) AS `site_id`, `dws`.`dws_read_90_first_all_read_mid2`.`book_id`, `dws`.`dws_read_90_first_all_read_mid2`.`user_id`, `dws`.`dws_read_90_first_all_read_mid2`.`is_source`, `dws`.`dws_read_90_first_all_read_mid2`.`etl_time`
+FROM `dws`.`dws_read_90_first_all_read_mid2`;

@@ -1,0 +1,46 @@
+CREATE TABLE `ods_tidb_shuangwen_xx_chapter` (
+  `ProductId` smallint(6) NOT NULL COMMENT "产品id",
+  `ChapterId` bigint(20) NOT NULL COMMENT "章节id",
+  `BookId` int(11) NOT NULL COMMENT "bookid",
+  `ChapterName` varchar(65533) NULL COMMENT "章节名称",
+  `ChapterContent` varchar(65533) NULL COMMENT "章节内容",
+  `PublishTime` datetime NULL COMMENT "发布时间，如果时间未到，表示定时在这个时间发布",
+  `Status` int(11) NULL COMMENT "状态 0:草稿 1:提交等待审核 2:已发布",
+  `IsReject` int(11) NULL COMMENT "是否审核驳回",
+  `RejectReason` varchar(65533) NULL COMMENT "驳回原因",
+  `IsVip` int(11) NULL COMMENT "是否需要付费",
+  `FontLength` int(11) NULL COMMENT "字数",
+  `SequenceNum` int(11) NULL COMMENT "章节序号",
+  `AuthorComment` varchar(65533) NULL COMMENT "作者的话",
+  `DelStatus` int(11) NULL COMMENT "删除状态",
+  `IsSuccess` int(11) NULL COMMENT "成功状态",
+  `ModifyType` int(11) NULL COMMENT "修改类型",
+  `AudityType` int(11) NULL COMMENT "音频类型",
+  `LockType` int(11) NULL COMMENT "锁状态",
+  `LockTime` datetime NULL COMMENT "锁时间",
+  `Translator` varchar(65533) NULL COMMENT "译员",
+  `Editor` varchar(65533) NULL COMMENT "主编",
+  `IsTiming` int(11) NULL COMMENT "是否发布",
+  `RecommendBookName` varchar(65533) NULL COMMENT "推荐书名",
+  `RecommendAuthorName` varchar(65533) NULL COMMENT "推荐作者名",
+  `ObjChapterId` bigint(20) NULL COMMENT "对应翻译章节",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `RowVersion` bigint(20) NULL COMMENT "版本号",
+  `CheckTips` varchar(65533) NULL COMMENT "敏感词提示",
+  `CheckLevel` int(11) NULL COMMENT "敏感等级",
+  `CheckTime` datetime NULL COMMENT "敏感词检查时间",
+  `row_create_time` datetime NULL COMMENT "数据创建时间",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "sr数据创建时间",
+  `sr_updatetime` datetime NULL COMMENT "sr数据更新时间",
+  INDEX index_ToLanguage (`ProductId`) USING BITMAP COMMENT '目标语言索引'
+) ENGINE=OLAP 
+PRIMARY KEY(`ProductId`, `ChapterId`)
+DISTRIBUTED BY HASH(`ProductId`, `ChapterId`) BUCKETS 6 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "BookId, ChapterId",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

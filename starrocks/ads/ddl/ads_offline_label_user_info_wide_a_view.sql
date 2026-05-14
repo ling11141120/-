@@ -1,0 +1,3 @@
+CREATE VIEW `ads_offline_label_user_info_wide_a_view` (`dt`, `product_id`, `user_id`, `mt` COMMENT "平台 0未知 1iphone 4安卓 9书城", `corever` COMMENT "core", `current_language2` COMMENT "注册时语言", `first_book` COMMENT "首次引流书籍", `last_book` COMMENT "最新引流书籍")
+COMMENT "用户首次书籍" AS SELECT `ads`.`ads_user_info_wide_a`.`dt`, `ads`.`ads_user_info_wide_a`.`product_id`, `ads`.`ads_user_info_wide_a`.`user_id`, `ads`.`ads_user_info_wide_a`.`mt`, `ads`.`ads_user_info_wide_a`.`corever`, `ads`.`ads_user_info_wide_a`.`current_language2`, `ads`.`ads_user_info_wide_a`.`first_book_id`, `ads`.`ads_user_info_wide_a`.`last_book_id`
+FROM `ads`.`ads_user_info_wide_a`;

@@ -1,0 +1,7 @@
+CREATE VIEW `ads_sr_tag_user_book_csum_p_a_view` (`dt` COMMENT "日期", `product_id` COMMENT "产品id", `user_id` COMMENT "用户id", `money_gift_book_id` COMMENT "阅币礼券消耗对应的书", `money_book_id` COMMENT "阅币消耗对应的书", `etl_tm` COMMENT "清洗时间") AS SELECT `b`.`dt`, `b`.`product_id`, `b`.`user_id`, array_remove(`b`.`money_gift_book_id`, NULL) AS `money_gift_book_id`, array_remove(`b`.`money_book_id`, NULL) AS `money_book_id`, `b`.`etl_tm`
+FROM (SELECT `v`.`dt`, `v`.`product_id`, `v`.`user_id`, `v`.`etl_tm`, array_agg(CASE WHEN (`v`.`csum_tp` = 1) THEN `v`.`book_id` END) AS `money_gift_book_id`, array_agg(CASE WHEN (`v`.`csum_tp` = 2) THEN `v`.`book_id` END) AS `money_book_id`
+FROM (SELECT `ads`.`ads_tag_user_book_csum_p_a`.`dt`, `ads`.`ads_tag_user_book_csum_p_a`.`product_id`, `ads`.`ads_tag_user_book_csum_p_a`.`user_id`, `ads`.`ads_tag_user_book_csum_p_a`.`book_id`, `ads`.`ads_tag_user_book_csum_p_a`.`csum_tp`, `ads`.`ads_tag_user_book_csum_p_a`.`etl_tm`, rank() OVER (PARTITION BY `ads`.`ads_tag_user_book_csum_p_a`.`product_id`, `ads`.`ads_tag_user_book_csum_p_a`.`user_id`, `ads`.`ads_tag_user_book_csum_p_a`.`csum_tp` ORDER BY `ads`.`ads_tag_user_book_csum_p_a`.`csum_amt` DESC ) AS `rank_desc`
+FROM `ads`.`ads_tag_user_book_csum_p_a`
+WHERE `ads`.`ads_tag_user_book_csum_p_a`.`dt` = (curdate())) `v`
+WHERE `v`.`rank_desc` = 1
+GROUP BY 1, 2, 3, 4) `b`;

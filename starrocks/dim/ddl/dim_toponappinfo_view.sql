@@ -1,0 +1,5 @@
+CREATE VIEW `dim_toponappinfo_view` (`id` COMMENT "主键id", `app_id` COMMENT "应用程序", `product_id` COMMENT "语言", `mt` COMMENT "终端类型 1 ios 4 安卓", `core` COMMENT "core", `app_name` COMMENT "app名称", `package_name` COMMENT "包名", `sr_createtime` COMMENT "starrocks数据注入时间", `sr_updatetime` COMMENT "starrocks数据更新时间")
+COMMENT "阅读app内广告相关：topon广告聚合平台app 信息表" AS SELECT `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`appid` AS `app_id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`productid` AS `product_id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`mt`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`core`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`appname` AS `app_name`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`packagename` AS `package_name`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`sr_createtime`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sharpengine_ads_global_TopOnAppInfo`;
+utf8
+utf8_general_ci
