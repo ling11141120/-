@@ -1,3 +1,7 @@
+-------------------------------------------------
+-- 应用报表：海阅-用户维度报表/海阅订阅续订报表
+-------------------------------------------------
+
 select t1.dt,
        cast(t1.dt as STRING)                                                      as `日`,
        concat(if(dayofweek(t1.dt) = 2, t1.dt, cast(previous_day(t1.dt, 'Monday') as STRING)), '(', weekofyear(t1.dt),
