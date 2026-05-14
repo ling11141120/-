@@ -1,0 +1,50 @@
+CREATE TABLE `ods_ads_tidb_sharpengine_ads_global_AdsCreationPlanItem` (
+  `Id` bigint(20) NOT NULL COMMENT "Id",
+  `PlanId` varchar(500) NULL COMMENT "方案Id",
+  `PlanItemId` varchar(500) NULL COMMENT "配置项Id",
+  `PlanItemSort` int(11) NULL COMMENT "排序",
+  `ProjectCode` int(11) NULL COMMENT "项目 1海阅|2海剧",
+  `TemplateId` bigint(20) NULL COMMENT "模板Id",
+  `CreativeType` int(11) NULL COMMENT "广告框架",
+  `CreativeTotalCount` int(11) NULL COMMENT "素材总数量",
+  `CreativeSingleCount` int(11) NULL COMMENT "单广告组最大素材数量",
+  `IsSplit` int(11) NULL COMMENT "根据卖点拆分 0 不拆分 1 拆分",
+  `AdBudget` decimal(10, 3) NULL COMMENT "广告预算",
+  `DelFlag` int(11) NULL COMMENT "是否删除 1 已删除",
+  `CreateTime` datetime NULL COMMENT "创建时间",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `CreateByUid` varchar(500) NULL COMMENT "创建人",
+  `CreateBy` varchar(500) NULL COMMENT "创建人",
+  `UpdateByUid` varchar(500) NULL COMMENT "更新人",
+  `UpdateBy` varchar(500) NULL COMMENT "更新人",
+  `PlanKind` int(11) NULL COMMENT "方案类型 1 一阶 2 二阶扩量",
+  `SourceChl` varchar(500) NULL COMMENT "媒体",
+  `InitAdSetCount` int(11) NULL COMMENT "初始广告组条数",
+  `CopyAdSetCount` int(11) NULL COMMENT "复制优质广告组单日条数",
+  `RunningAdSetLimit` int(11) NULL COMMENT "广告组单日在跑数量上限",
+  `CreatableAdSetLimit` int(11) NULL COMMENT "广告组单日创编数量上限",
+  `OldCreativeCount` int(11) NULL COMMENT "旧素材数量",
+  `CreatableAdsPerCreative` int(11) NULL COMMENT "同素材单日单模板可创编广告条数",
+  `RunningAdSetLimitPerCreative` int(11) NULL COMMENT "同素材单日在跑广告上限",
+  `CreatableAdSetLimitPerCreative` int(11) NULL COMMENT "同素材单日创编广告上限",
+  `MinimumAdSetCount` int(11) NULL COMMENT "保底广告组条数",
+  `NewVideoCreativeCount` int(11) NULL COMMENT "新素材视频条数",
+  `NewSpCreativeCount` int(11) NULL COMMENT "新素材专用素材条数",
+  `OldVideoCreativeCount` int(11) NULL COMMENT "老素材视频条数",
+  `PlanItemPriority` int(11) NULL DEFAULT "0" COMMENT "本方案选用模板时的优先级顺序，如优先级相同，则随机取",
+  `TemplateLives` int(11) NULL COMMENT "模板轮数",
+  `AccountId` varchar(500) NULL COMMENT "账号Id",
+  `SubNewCreativeCount` int(11) NULL COMMENT "次新素材数量",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "创编广告 方案 模板"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

@@ -1,0 +1,3 @@
+CREATE VIEW `ads_tidb_short_video_repel_group_view` (`Id` COMMENT "唯一ID", `Language` COMMENT "语言", `Remark` COMMENT "备注信息", `IsDelete` COMMENT "是否删除，0：正常；1：删除。", `CreateTime` COMMENT "创建时间", `UpdateTime` COMMENT "修改时间")
+COMMENT "短剧集互斥组 author：232618" AS SELECT `ods`.`ods_tidb_short_video_repel_group`.`Id`, `ods`.`ods_tidb_short_video_repel_group`.`Language`, `ods`.`ods_tidb_short_video_repel_group`.`Remark`, `ods`.`ods_tidb_short_video_repel_group`.`IsDelete`, `ods`.`ods_tidb_short_video_repel_group`.`CreateTime`, `ods`.`ods_tidb_short_video_repel_group`.`UpdateTime`
+FROM `ods`.`ods_tidb_short_video_repel_group`;

@@ -1,0 +1,2 @@
+CREATE VIEW `ads_report_user_device_view` (`product_id` COMMENT "产品id", `device` COMMENT "设备型号", `sys_releasever` COMMENT "手机系统版本号", `mt`, `corever`, `last_login_time` COMMENT "最近一次登录时间", `user_id` COMMENT "用户id") AS (SELECT `dim`.`a`.`product_id`, `dim`.`b`.`device`, `dim`.`b`.`sys_releasever`, `dim`.`a`.`mt`, `dim`.`a`.`corever`, `dim`.`a`.`last_login_time`, `dim`.`a`.`id` AS `user_id`
+FROM `dim`.`dim_user_account_info_view` AS `a` INNER JOIN `dim`.`dim_user_userdata_view` AS `b` ON (`dim`.`a`.`id` = `dim`.`b`.`id`) AND (`dim`.`a`.`product_id` = `dim`.`b`.`product_id`));

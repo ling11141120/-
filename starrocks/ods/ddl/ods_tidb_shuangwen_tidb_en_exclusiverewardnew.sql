@@ -1,0 +1,53 @@
+CREATE TABLE `ods_tidb_shuangwen_tidb_en_exclusiverewardnew` (
+  `Id` bigint(20) NOT NULL COMMENT "",
+  `Language` int(11) NULL COMMENT "",
+  `BookId` int(11) NULL COMMENT "",
+  `AuthorId` bigint(20) NULL COMMENT "",
+  `RefUserId` varchar(200) NULL COMMENT "",
+  `RewardType` int(11) NULL COMMENT "",
+  `RemunerationType` int(11) NULL COMMENT "",
+  `ContractRewardType` int(11) NULL COMMENT "",
+  `SignType` int(11) NULL COMMENT "",
+  `AdjustReason` varchar(2000) NULL COMMENT "",
+  `MoneySale` decimal(18, 2) NULL COMMENT "",
+  `RewardSale` decimal(18, 2) NULL COMMENT "",
+  `OtherSale` decimal(18, 2) NULL COMMENT "",
+  `BookSalle` decimal(18, 2) NULL COMMENT "",
+  `RemunerationMoney` decimal(18, 2) NULL COMMENT "",
+  `CreateTime` datetime NULL COMMENT "",
+  `StaticDate` datetime NULL COMMENT "",
+  `RemunerationStatus` int(11) NULL COMMENT "",
+  `EditorRemunerationReason` varchar(2000) NULL COMMENT "",
+  `ManagerRemunerationReason` varchar(2000) NULL COMMENT "",
+  `IsApplyWithDrawals` int(11) NULL COMMENT "",
+  `WithDrawalsStatus` int(11) NULL COMMENT "",
+  `EditorWithDrawalsReason` varchar(2000) NULL COMMENT "",
+  `ManagerWithDrawalsReason` varchar(2000) NULL COMMENT "",
+  `FinanceWithDrawalsReason` varchar(2000) NULL COMMENT "",
+  `PayMonth` datetime NULL COMMENT "",
+  `SiteId` int(11) NULL COMMENT "",
+  `BookName` varchar(1000) NULL COMMENT "",
+  `EditorId` bigint(20) NULL COMMENT "",
+  `EditorName` varchar(300) NULL COMMENT "",
+  `AuthorEditorId` bigint(20) NULL COMMENT "",
+  `AuthorEditorName` varchar(300) NULL COMMENT "",
+  `BusinessId` varchar(200) NULL COMMENT "",
+  `DailyTime` datetime NULL COMMENT "",
+  `AuthorSaleRate` varchar(2000) NULL COMMENT "",
+  `IsBanWithdrawl` int(11) NULL COMMENT "是否禁止提现",
+  `RelateBookId` int(11) NULL COMMENT "第三方渠道原书籍id",
+  `IsBanSend` int(11) NULL COMMENT "是否禁止发放 0否 1是",
+  `VipIncome` decimal(18, 2) NULL COMMENT "vip收入",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "爆款内容-原创稿酬支付"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

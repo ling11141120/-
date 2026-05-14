@@ -1,0 +1,4 @@
+CREATE VIEW `dim_koc_starinfo_view` (`Id`, `InstitutionId`, `StarName`, `UserId`, `StarStatus`, `StarRemark`, `CreateTime`, `Creator`, `CreatorUid`, `UpdateTime`, `Updater`, `UpdaterUid`, `sr_createtime`, `sr_updatetime`) AS SELECT `ods`.`ods_tidb_koc_starinfo`.`Id`, `ods`.`ods_tidb_koc_starinfo`.`InstitutionId`, `ods`.`ods_tidb_koc_starinfo`.`StarName`, `ods`.`ods_tidb_koc_starinfo`.`UserId`, `ods`.`ods_tidb_koc_starinfo`.`StarStatus`, `ods`.`ods_tidb_koc_starinfo`.`StarRemark`, `ods`.`ods_tidb_koc_starinfo`.`CreateTime`, `ods`.`ods_tidb_koc_starinfo`.`Creator`, `ods`.`ods_tidb_koc_starinfo`.`CreatorUid`, `ods`.`ods_tidb_koc_starinfo`.`UpdateTime`, `ods`.`ods_tidb_koc_starinfo`.`Updater`, `ods`.`ods_tidb_koc_starinfo`.`UpdaterUid`, `ods`.`ods_tidb_koc_starinfo`.`sr_createtime`, `ods`.`ods_tidb_koc_starinfo`.`sr_updatetime`
+FROM `ods`.`ods_tidb_koc_starinfo`;
+utf8
+utf8_general_ci

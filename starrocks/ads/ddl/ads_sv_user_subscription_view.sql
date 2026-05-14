@@ -1,0 +1,3 @@
+CREATE VIEW `ads_sv_user_subscription_view` (`user_id` COMMENT "用户id", `shop_item_type` COMMENT "项目类型", `create_time` COMMENT "订阅时间", `vip_expire_time` COMMENT "订阅过期时间") AS SELECT `dwd`.`dwd_trade_short_video_payorder`.`user_id`, CASE WHEN (`dwd`.`dwd_trade_short_video_payorder`.`shop_item` IN (810)) THEN 'VIP' WHEN (`dwd`.`dwd_trade_short_video_payorder`.`shop_item` IN (840)) THEN '签到卡' END AS `shop_item_type`, `dwd`.`dwd_trade_short_video_payorder`.`create_time`, `dwd`.`dwd_trade_short_video_payorder`.`vip_expire_time`
+FROM `dwd`.`dwd_trade_short_video_payorder`
+WHERE `dwd`.`dwd_trade_short_video_payorder`.`shop_item` IN (810, 840);

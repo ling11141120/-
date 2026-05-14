@@ -1,0 +1,3 @@
+CREATE VIEW `ads_tidb_short_video_repel_config_view` (`Id` COMMENT "唯一ID", `RgId` COMMENT "互斥组ID", `SeriesId` COMMENT "短剧集ID", `SortNum` COMMENT "排序")
+COMMENT "互斥配置 author：232618" AS SELECT `ods`.`ods_tidb_short_video_repel_config`.`Id`, `ods`.`ods_tidb_short_video_repel_config`.`RgId`, `ods`.`ods_tidb_short_video_repel_config`.`SeriesId`, `ods`.`ods_tidb_short_video_repel_config`.`SortNum`
+FROM `ods`.`ods_tidb_short_video_repel_config`;

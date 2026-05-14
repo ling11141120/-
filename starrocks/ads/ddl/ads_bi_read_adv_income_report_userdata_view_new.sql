@@ -1,0 +1,9 @@
+CREATE VIEW `ads_bi_read_adv_income_report_userdata_view_new` (`dt` COMMENT "日期", `product_id` COMMENT "产品id", `mt` COMMENT "平台", `core` COMMENT "包体", `dau` COMMENT "日活用户数", `dnu` COMMENT "新增用户数", `deu` COMMENT "每天展示过广告的独立用户数", `deu_user` COMMENT "每天展示过广告的独立用户数", `income` COMMENT "收入")
+COMMENT "阅读广告收益报表-用户数据" AS SELECT `a`.`dt`, `a`.`product_id`, `a`.`mt`, `a`.`core`, `a`.`dau`, `a`.`dnu`, `b`.`deu`, `b`.`deu_user`, `c`.`income`
+FROM (SELECT `ads`.`ads_report_user_dau_ed`.`dt`, `ads`.`ads_report_user_dau_ed`.`product_id`, `ads`.`ads_report_user_dau_ed`.`mt`, `ads`.`ads_report_user_dau_ed`.`corever` AS `core`, count(DISTINCT `ads`.`ads_report_user_dau_ed`.`user_id`) AS `dau`, count(DISTINCT if(`ads`.`ads_report_user_dau_ed`.`user_types` = 0, `ads`.`ads_report_user_dau_ed`.`user_id`, NULL)) AS `dnu`
+FROM `ads`.`ads_report_user_dau_ed`
+GROUP BY 1, 2, 3, 4) `a` LEFT OUTER JOIN (SELECT `dws`.`dws_advertisement_user_position_amt_ed`.`dt`, `dws`.`dws_advertisement_user_position_amt_ed`.`product_id`, `dws`.`dws_advertisement_user_position_amt_ed`.`mt`, `dws`.`dws_advertisement_user_position_amt_ed`.`core`, count(DISTINCT `dws`.`dws_advertisement_user_position_amt_ed`.`user_id`) AS `deu`, ``.bitmap_agg(`dws`.`dws_advertisement_user_position_amt_ed`.`user_id`) AS `deu_user`
+FROM `dws`.`dws_advertisement_user_position_amt_ed`
+GROUP BY 1, 2, 3, 4) `b` ON (((`a`.`dt` = `b`.`dt`) AND (`a`.`product_id` = `b`.`product_id`)) AND (`a`.`mt` = `b`.`mt`)) AND (`a`.`core` = `b`.`core`) LEFT OUTER JOIN (SELECT `ads`.`ads_user_charge_1d`.`dt`, `ads`.`ads_user_charge_1d`.`product_id`, `ads`.`ads_user_charge_1d`.`mt`, `ads`.`ads_user_charge_1d`.`corever` AS `core`, round(sum(`ads`.`ads_user_charge_1d`.`charge_money`), 2) AS `income`
+FROM `ads`.`ads_user_charge_1d`
+GROUP BY 1, 2, 3, 4) `c` ON (((`a`.`dt` = `c`.`dt`) AND (`a`.`product_id` = `c`.`product_id`)) AND (`a`.`mt` = `c`.`mt`)) AND (`a`.`core` = `c`.`core`);

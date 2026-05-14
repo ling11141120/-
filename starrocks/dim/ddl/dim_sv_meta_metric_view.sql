@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_meta_metric_view` (`id` COMMENT "主键id", `project` COMMENT "项目", `name` COMMENT "名称", `data_type` COMMENT "数据类型", `default_value` COMMENT "默认值", `description` COMMENT "描述", `metric_type` COMMENT "指标类型：0其他1单日累计2历史累计", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "真实字段元数据表" AS SELECT `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`id`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`project`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`name`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`data_type`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`default_value`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`description`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`metric_type`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_group_user_meta_metric_da`;
+utf8
+utf8_general_ci

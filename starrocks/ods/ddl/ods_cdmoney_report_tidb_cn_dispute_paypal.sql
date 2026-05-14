@@ -1,0 +1,53 @@
+CREATE TABLE `ods_cdmoney_report_tidb_cn_dispute_paypal` (
+  `id` bigint(20) NOT NULL COMMENT "自增ID",
+  `pay_channel_id` varchar(300) NULL COMMENT "渠道ID",
+  `dispute_id` varchar(300) NULL COMMENT "争议ID",
+  `reason` varchar(300) NULL COMMENT "争议原因",
+  `status` varchar(300) NULL COMMENT "争议状态",
+  `dispute_amount` decimal(11, 2) NULL COMMENT "争议金额",
+  `dispute_currency_code` varchar(300) NULL COMMENT "争议金额单位",
+  `dispute_outcome_amount` decimal(11, 2) NULL COMMENT "争议结果金额",
+  `dispute_outcome_currency_code` varchar(300) NULL COMMENT "争议结果金额单位",
+  `dispute_life_cycle_stage` varchar(300) NULL COMMENT "争议阶段",
+  `dispute_channel` varchar(300) NULL COMMENT "争议渠道",
+  `dispute_outcome_code` varchar(300) NULL COMMENT "争议结果",
+  `dispute_outcome_reason` varchar(1500) NULL COMMENT "结果原因",
+  `links` varchar(65533) NULL COMMENT "链接地址",
+  `seller_response_due_date` datetime NULL COMMENT "回复截止时间",
+  `detail_resp_data` varchar(1048576) NULL COMMENT "详情接口响应数据",
+  `accept_resp_data` varchar(1048576) NULL COMMENT "接受索赔接口响应数据",
+  `appeal_resp_data` varchar(1048576) NULL COMMENT "申诉争议接口响应数据",
+  `reply_resp_data` varchar(1048576) NULL COMMENT "回复接口响应数据",
+  `evidence_resp_data` varchar(1048576) NULL COMMENT "提供证据接口响应数据",
+  `insert_time` datetime NULL COMMENT "添加时间",
+  `update_time` datetime NULL COMMENT "更新时间",
+  `is_exec` int(11) NULL COMMENT "当前节点是否已执行,流转到下个节点重置为0",
+  `evidences` varchar(65533) NULL COMMENT "证据",
+  `messages` varchar(65533) NULL COMMENT "消息",
+  `final_status` int(11) NULL COMMENT "最终状态",
+  `adjudication_amount` decimal(11, 2) NULL COMMENT "退款金额",
+  `dispute_fee` decimal(11, 2) NULL COMMENT "争议费用",
+  `final_amount` decimal(11, 2) NULL COMMENT "结算金额",
+  `auto_send_message_count` int(11) NULL COMMENT "自动回复消息次数",
+  `auto_send_evidence_count` int(11) NULL COMMENT "自动提交证据次数",
+  `send_overtime_warn_count` int(11) NULL COMMENT "超时预警推送次数",
+  `send_multiple_reply_warn_count` int(11) NULL COMMENT "买家多次回复消息预警推送次数",
+  `is_reply` int(11) NULL COMMENT "是否有回复消息",
+  `buyer_message_count` int(11) NULL COMMENT "买家消息数量",
+  `buyer_evidence_count` int(11) NULL COMMENT "买家证据数量",
+  `seller_message_count` int(11) NULL COMMENT "卖家消息数量",
+  `seller_evidence_count` int(11) NULL COMMENT "卖家证据数量",
+  `handler_status` int(11) NULL COMMENT "处理状态：0 待处理，1 买家多次回复，2 订单数据缺失，3 自动回复失败，4 自动回复成功，5-人工回复成功",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "sr入库时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`id`)
+COMMENT "paypal争议表"
+DISTRIBUTED BY HASH(`id`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

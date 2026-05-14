@@ -1,0 +1,60 @@
+CREATE TABLE `ads_srsv_ads_koc_ad_amount_data` (
+  `dt` datetime NOT NULL COMMENT "统计日期",
+  `product_id` int(11) NOT NULL COMMENT "产品id",
+  `ad_id` varchar(755) NOT NULL COMMENT "koc的广告ID",
+  `project_tp` int(11) NOT NULL COMMENT "1：海阅 2：海剧",
+  `book_id` bigint(20) NULL COMMENT "书籍id",
+  `mt` int(11) NOT NULL COMMENT "终端",
+  `core` int(11) NOT NULL COMMENT "Core",
+  `source_chl` varchar(65533) NULL COMMENT "媒体,写死koc",
+  `chl` varchar(755) NOT NULL COMMENT "渠道",
+  `current_language` int(11) NULL COMMENT "投放语言",
+  `koc_code` varchar(65533) NULL COMMENT "口令,来源于koc_text",
+  `ad_amount` decimal(16, 4) NULL COMMENT "充值金额",
+  `etl_tm` datetime NULL COMMENT "清洗时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`dt`, `product_id`, `ad_id`)
+COMMENT "海阅海剧，koc广告收益结果"
+PARTITION BY RANGE(`dt`)
+(PARTITION p202409 VALUES [("2024-09-01 00:00:00"), ("2024-10-01 00:00:00")),
+PARTITION p202410 VALUES [("2024-10-01 00:00:00"), ("2024-11-01 00:00:00")),
+PARTITION p202411 VALUES [("2024-11-01 00:00:00"), ("2024-12-01 00:00:00")),
+PARTITION p202412 VALUES [("2024-12-01 00:00:00"), ("2025-01-01 00:00:00")),
+PARTITION p202501 VALUES [("2025-01-01 00:00:00"), ("2025-02-01 00:00:00")),
+PARTITION p202502 VALUES [("2025-02-01 00:00:00"), ("2025-03-01 00:00:00")),
+PARTITION p202503 VALUES [("2025-03-01 00:00:00"), ("2025-04-01 00:00:00")),
+PARTITION p202504 VALUES [("2025-04-01 00:00:00"), ("2025-05-01 00:00:00")),
+PARTITION p202505 VALUES [("2025-05-01 00:00:00"), ("2025-06-01 00:00:00")),
+PARTITION p202506 VALUES [("2025-06-01 00:00:00"), ("2025-07-01 00:00:00")),
+PARTITION p202507 VALUES [("2025-07-01 00:00:00"), ("2025-08-01 00:00:00")),
+PARTITION p202508 VALUES [("2025-08-01 00:00:00"), ("2025-09-01 00:00:00")),
+PARTITION p202509 VALUES [("2025-09-01 00:00:00"), ("2025-10-01 00:00:00")),
+PARTITION p202510 VALUES [("2025-10-01 00:00:00"), ("2025-11-01 00:00:00")),
+PARTITION p202511 VALUES [("2025-11-01 00:00:00"), ("2025-12-01 00:00:00")),
+PARTITION p202512 VALUES [("2025-12-01 00:00:00"), ("2026-01-01 00:00:00")),
+PARTITION p202601 VALUES [("2026-01-01 00:00:00"), ("2026-02-01 00:00:00")),
+PARTITION p202602 VALUES [("2026-02-01 00:00:00"), ("2026-03-01 00:00:00")),
+PARTITION p202603 VALUES [("2026-03-01 00:00:00"), ("2026-04-01 00:00:00")),
+PARTITION p202604 VALUES [("2026-04-01 00:00:00"), ("2026-05-01 00:00:00")),
+PARTITION p202605 VALUES [("2026-05-01 00:00:00"), ("2026-06-01 00:00:00")),
+PARTITION p202606 VALUES [("2026-06-01 00:00:00"), ("2026-07-01 00:00:00")),
+PARTITION p202607 VALUES [("2026-07-01 00:00:00"), ("2026-08-01 00:00:00")),
+PARTITION p202608 VALUES [("2026-08-01 00:00:00"), ("2026-09-01 00:00:00")))
+DISTRIBUTED BY HASH(`dt`, `product_id`, `ad_id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"dynamic_partition.enable" = "true",
+"dynamic_partition.time_unit" = "month",
+"dynamic_partition.time_zone" = "Asia/Shanghai",
+"dynamic_partition.start" = "-2147483648",
+"dynamic_partition.end" = "3",
+"dynamic_partition.prefix" = "p",
+"dynamic_partition.buckets" = "1",
+"dynamic_partition.history_partition_num" = "0",
+"dynamic_partition.start_day_of_month" = "1",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"storage_medium" = "SSD",
+"compression" = "ZSTD"
+);

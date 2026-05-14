@@ -1,0 +1,5 @@
+CREATE VIEW `dim_translate_book_price_info_view` (`id` COMMENT "主键", `price` COMMENT "单价", `book_type` COMMENT "书籍类型", `site_id` COMMENT "语言", `enable_time` COMMENT "启用日期", `create_time` COMMENT "创建时间", `create_user` COMMENT "创建人", `del_status` COMMENT "是否删除", `sr_createtime` COMMENT "starrocks数据注入时间", `sr_updatetime` COMMENT "starrocks数据更新时间")
+COMMENT "翻译书籍千字价配置视图" AS SELECT `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`Id`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`Price`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`BookType`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`ToLanguage` AS `site_id`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`EnableTime`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`CreateTime`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`CreateUser`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`DelStatus`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`sr_createtime`, `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`.`sr_updatetime`
+FROM `ods`.`ods_tidb_shuangwen_en_viscpriceconfig`;
+utf8
+utf8_general_ci

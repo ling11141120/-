@@ -1,0 +1,5 @@
+CREATE VIEW `dwd_user_short_video_group_user_log_view` (`dt` COMMENT "日期，根据create_time转换", `id` COMMENT "主键id", `group_id` COMMENT "人群包 id", `account` COMMENT "账号", `create_time` COMMENT "创建时间", `type` COMMENT "数据类别(1 入包 、2 出包)", `system_type` COMMENT "项目类别(1 阅读项目 、2 短剧项目)")
+COMMENT "人群包出入包记录视图" AS SELECT `ods`.`ods_tidb_short_video_group_user_group_user_log`.`dt`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`id`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`group_id`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`account`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`create_time`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`type`, `ods`.`ods_tidb_short_video_group_user_group_user_log`.`system_type`
+FROM `ods`.`ods_tidb_short_video_group_user_group_user_log`;
+utf8
+utf8_general_ci

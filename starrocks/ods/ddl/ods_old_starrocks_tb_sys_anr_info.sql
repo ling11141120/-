@@ -1,0 +1,52 @@
+CREATE TABLE `ods_old_starrocks_tb_sys_anr_info` (
+  `id` bigint(20) NOT NULL COMMENT "主键id",
+  `collect_time` datetime NOT NULL COMMENT "采集时间",
+  `model` varchar(255) NOT NULL COMMENT "三星-dsdd，机型(对应安卓Build.MODEL)",
+  `device_id` varchar(100) NOT NULL COMMENT "设备id（对应安卓androidid）",
+  `session_id` varchar(50) NOT NULL COMMENT "周期性标识",
+  `manufacturer` varchar(255) NULL COMMENT "厂商",
+  `device1` varchar(255) NOT NULL COMMENT "机型",
+  `access` varchar(255) NULL COMMENT "wifi 网络类型",
+  `battery` varchar(50) NULL COMMENT "设备电量例如82.0,传浮点型,保留4位小数",
+  `locale` varchar(100) NULL COMMENT "系统语言",
+  `screen_height` varchar(50) NULL COMMENT "屏幕高度",
+  `screen_width` varchar(50) NULL COMMENT "屏幕宽度",
+  `os_version` varchar(50) NULL COMMENT "系统版本",
+  `utc_offset` varchar(50) NULL COMMENT "utc时区偏移量",
+  `cpu_type` varchar(50) NULL COMMENT "cpu型号",
+  `total_mem` varchar(100) NULL COMMENT "内存",
+  `corever` varchar(50) NULL COMMENT "1、2、3、4|服务端拼接成core1,core2等",
+  `name` varchar(255) NULL COMMENT "app名称 例如书城等",
+  `version` varchar(50) NULL COMMENT "app大版本号",
+  `version_code` varchar(50) NULL COMMENT "小版本号",
+  `npth_name` varchar(255) NULL COMMENT "目前简写为sdk名称，需要与服务端保持一致，1、matrix 2、umeng3",
+  `npth_version` varchar(50) NULL COMMENT "sdk版本例如3.0.0-rc.0（START类型时不上报）",
+  `channel` varchar(100) NULL COMMENT "下载渠道",
+  `process_name` varchar(255) NULL COMMENT "进程名",
+  `pkg_name` varchar(255) NULL COMMENT "com.changdu.ereader3.en",
+  `language` varchar(50) NULL COMMENT "界面语言",
+  `app_id` varchar(50) NULL COMMENT "包体id，用来计算包体语言",
+  `is_background` varchar(2) NULL COMMENT "是否后台0不是，1是传字符串",
+  `user_id` varchar(50) NULL COMMENT "用户id",
+  `mt` varchar(2) NULL COMMENT "1ios|4安卓，传字符串",
+  `p_id` varchar(64) NULL COMMENT "进程id",
+  `duration` bigint(20) NULL COMMENT "运行时长",
+  `init_time` bigint(20) NULL COMMENT "sdk启动时间",
+  `is_foreground` varchar(10) NULL COMMENT "是否前台 0-false，1-true",
+  `record_time` bigint(20) NULL COMMENT "日志保存时间",
+  `sdk_ver` varchar(64) NULL COMMENT "sdk版本	",
+  `ip` varchar(64) NULL COMMENT "",
+  `country` varchar(64) NULL COMMENT "",
+  `city` varchar(64) NULL COMMENT "",
+  `region` varchar(64) NULL COMMENT ""
+) ENGINE=OLAP 
+PRIMARY KEY(`id`)
+COMMENT "日志总数表"
+DISTRIBUTED BY HASH(`id`) BUCKETS 2 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "false",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

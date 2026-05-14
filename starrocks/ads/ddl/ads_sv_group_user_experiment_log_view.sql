@@ -1,0 +1,2 @@
+CREATE VIEW `ads_sv_group_user_experiment_log_view` (`user_id`, `create_time`, `experiment_id`, `scene_id`, `sr_createtime`, `sr_updatetime`) AS SELECT `dwd`.`dwd_sv_group_user_experiment_log`.`user_id`, `dwd`.`dwd_sv_group_user_experiment_log`.`create_time`, `dwd`.`dwd_sv_group_user_experiment_log`.`experiment_id`, `dwd`.`dwd_sv_group_user_experiment_log`.`scene_id`, `dwd`.`dwd_sv_group_user_experiment_log`.`sr_createtime`, `dwd`.`dwd_sv_group_user_experiment_log`.`sr_updatetime`
+FROM `dwd`.`dwd_sv_group_user_experiment_log`;

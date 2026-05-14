@@ -1,0 +1,5 @@
+CREATE VIEW `dim_project_product` (`Id` COMMENT "主键ID", `project_code` COMMENT "项目编码 1=海外阅读|2=海外短剧", `product_id` COMMENT "语言", `create_time` COMMENT "创建时间", `update_time` COMMENT "更新时间", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "项目语言" AS SELECT `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`Id`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`ProjectCode`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`ProductId`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`CreateTime`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`UpdateTime`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`sr_createtime`, `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sharpengine_ads_global_ProjectProduct_da`;
+utf8
+utf8_general_ci

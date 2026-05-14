@@ -1,0 +1,51 @@
+CREATE TABLE `ods_tidb_sharpengine_ads_global_LtvDailyInsightByHour` (
+  `Id` bigint(20) NOT NULL COMMENT "自增id",
+  `AdId` varchar(50) NULL COMMENT "广告id",
+  `AdStatus` varchar(50) NULL COMMENT "广告状态",
+  `date_start` varchar(50) NULL COMMENT "投放开始时间",
+  `date_stop` varchar(50) NULL COMMENT "投放结束时间",
+  `AdName` varchar(500) NULL COMMENT "广告名",
+  `Spend` decimal(10, 2) NULL COMMENT "花费金额",
+  `PutData` varchar(65533) NULL COMMENT "投放数据",
+  `Installs` int(11) NULL COMMENT "安装数",
+  `Clicks` int(11) NULL COMMENT "点击数",
+  `Impressions` int(11) NULL COMMENT "展示数",
+  `Cpc` varchar(50) NULL COMMENT "Cpc",
+  `Cpm` varchar(50) NULL COMMENT "Cpm",
+  `Cpp` varchar(50) NULL COMMENT "Cpp",
+  `Ctr` varchar(50) NULL COMMENT "ctr",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `Mt` int(11) NULL COMMENT "平台",
+  `Core` int(11) NULL COMMENT "corever",
+  `ProductId` int(11) NULL COMMENT "产品id",
+  `Roas` decimal(10, 2) NULL COMMENT "Roas",
+  `AdSetId` varchar(128) NULL COMMENT "广告组",
+  `AdCampId` varchar(128) NULL COMMENT "广告系列",
+  `Country` varchar(50) NULL COMMENT "国家",
+  `Amount` decimal(10, 2) NULL COMMENT "金额,废弃",
+  `SourceChl` varchar(50) NULL COMMENT "媒体渠道值",
+  `Chl2` varchar(128) NULL COMMENT "渠道值",
+  `CreateUser` varchar(20) NULL COMMENT "创建者",
+  `CreateType` int(11) NOT NULL COMMENT "创建类型",
+  `CreateNum` int(11) NOT NULL COMMENT "创建数量",
+  `RowVersion` bigint(20) NULL COMMENT "没什么用",
+  `CurrentLanguage2` int(11) NULL COMMENT "投放语言",
+  `IsRemarketing` int(11) NULL DEFAULT "0" COMMENT "是否再营销",
+  `Account` varchar(100) NULL COMMENT "广告所属账号",
+  `LinkClick` int(11) NULL COMMENT "链接点击数",
+  `Conversion` int(11) NULL DEFAULT "0" COMMENT "offsite转换数",
+  `Registration` int(11) NULL DEFAULT "0" COMMENT "去重注册数",
+  `TempState` int(11) NULL COMMENT "临时状态",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "海外阅读、海外短剧其他渠道的投放数据小时表(est西五区时间)"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 20 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

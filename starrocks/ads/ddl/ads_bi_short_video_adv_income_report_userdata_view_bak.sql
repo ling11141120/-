@@ -1,0 +1,12 @@
+CREATE VIEW `ads_bi_short_video_adv_income_report_userdata_view_bak` (`dt` COMMENT "日期", `product_id` COMMENT "产品id", `mt` COMMENT "平台", `core` COMMENT "包体", `dau` COMMENT "日活用户数", `dnu` COMMENT "新增用户数", `deu` COMMENT "每天展示过广告的独立用户数（来源预估收益的表）", `motiv_deu` COMMENT "激励视频活跃（广告类型为激励视频时的广告展现用户数", `income` COMMENT "充值收入") AS SELECT `a`.`dt`, `a`.`product_id`, `a`.`mt`, `a`.`corever`, `a`.`dau`, `a`.`dnu`, `b`.`deu`, `b`.`motiv_deu`, `c`.`income`
+FROM (SELECT `dws`.`a`.`dt`, `dws`.`a`.`product_id`, `dws`.`a`.`mt`, if((`dws`.`a`.`corever` IS NULL) OR (`dws`.`a`.`corever` = 0), 1, `dws`.`a`.`corever`) AS `corever`, count(DISTINCT `dws`.`a`.`user_id`) AS `dau`, count(DISTINCT CASE WHEN (`dws`.`a`.`dt` = (date(`dws`.`a`.`reg_time`))) THEN `dws`.`a`.`user_id` END) AS `dnu`
+FROM `dws`.`dws_user_short_video_wide_active_ed` AS `a`
+WHERE `dws`.`a`.`product_id` = 6833
+GROUP BY 1, 2, 3, 4) `a` LEFT OUTER JOIN (SELECT `a`.`dt`, `a`.`product_id`, `a`.`mt`, `a`.`core`, count(DISTINCT `a`.`user_id`) AS `deu`, count(DISTINCT if(`dim`.`b`.`ad_show_type` = 1, `a`.`user_id`, NULL)) AS `motiv_deu`
+FROM (SELECT `dws`.`dws_advertisement_user_position_amt_ed`.`dt`, `dws`.`dws_advertisement_user_position_amt_ed`.`product_id`, `dws`.`dws_advertisement_user_position_amt_ed`.`mt`, `dws`.`dws_advertisement_user_position_amt_ed`.`core`, `dws`.`dws_advertisement_user_position_amt_ed`.`user_id`, `dws`.`dws_advertisement_user_position_amt_ed`.`positions`
+FROM `dws`.`dws_advertisement_user_position_amt_ed`
+WHERE `dws`.`dws_advertisement_user_position_amt_ed`.`product_id` = 6833) `a` LEFT OUTER JOIN `dim`.`dim_sv_ads_position_view` AS `b` ON `a`.`positions` = `dim`.`b`.`ad_position`
+GROUP BY `a`.`dt`, `a`.`product_id`, `a`.`mt`, `a`.`core`) `b` ON (((`a`.`dt` = `b`.`dt`) AND (`a`.`product_id` = `b`.`product_id`)) AND (`a`.`mt` = `b`.`mt`)) AND (`a`.`corever` = `b`.`core`) LEFT OUTER JOIN (SELECT `dws`.`dws_trade_short_video_user_payorder_ed`.`dt`, `dws`.`dws_trade_short_video_user_payorder_ed`.`product_id`, `dws`.`dws_trade_short_video_user_payorder_ed`.`mt`, `dws`.`dws_trade_short_video_user_payorder_ed`.`corever`, round(sum(`dws`.`dws_trade_short_video_user_payorder_ed`.`sum_base_amount` / 100), 2) AS `income`
+FROM `dws`.`dws_trade_short_video_user_payorder_ed`
+WHERE `dws`.`dws_trade_short_video_user_payorder_ed`.`product_id` = 6833
+GROUP BY 1, 2, 3, 4) `c` ON (((`a`.`dt` = `c`.`dt`) AND (`a`.`product_id` = `c`.`product_id`)) AND (`a`.`mt` = `c`.`mt`)) AND (`a`.`corever` = `c`.`corever`);

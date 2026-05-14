@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sr_object_book_cn_summary_view` (`id` COMMENT "主键Id", `cn_bookid` COMMENT "中文书籍id", `to_bookid` COMMENT "目标书籍id", `to_langid` COMMENT "目标语言id", `from_bookid` COMMENT "来源书籍id", `from_langid` COMMENT "来源语言id", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "中文翻译书籍映射表" AS SELECT `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`Id`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`cn_bookid`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`to_bookid`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`to_langid`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`from_bookid`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`from_langid`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`sr_createtime`, `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sr_shuangwen_tidb_fr_objectbookcnsummary`;
+utf8
+utf8_general_ci
