@@ -1,0 +1,50 @@
+CREATE TABLE `ods_tidb_sr_cdcreator_tidb_cn_cp_story` (
+  `id` bigint(20) NOT NULL COMMENT "自增ID",
+  `story_id` varchar(65533) NULL COMMENT "故事id(短剧ID/小说ID)",
+  `story_name` varchar(65533) NULL COMMENT "故事名称",
+  `story_type` int(11) NULL COMMENT "故事类型(1-国剧,2-海剧,3-国阅,4-海阅)",
+  `is_source` int(11) NULL DEFAULT "0" COMMENT "是否源剧(代号和初始代号一致则为源剧)1 是, 0 否",
+  `story_code` varchar(65533) NULL COMMENT "代号",
+  `story_code_source` varchar(200) NULL COMMENT "初始代号",
+  `story_code_series` varchar(200) NULL COMMENT "代号系列",
+  `story_code_first_number` varchar(200) NULL COMMENT "提取代号第一次出现的连续数字",
+  `contract_no` varchar(65533) NULL COMMENT "合同编号",
+  `cp_userinfo_uuid` varchar(65533) NULL COMMENT "关联版权方用户表,cp_userinfo.uuid",
+  `product_type` int(11) NULL COMMENT "产品类型(1-短剧,2-阅读)",
+  `product_id` int(11) NULL COMMENT "产品id(国剧-6883,国阅-6773,海剧-6833,海阅-按各语言)",
+  `status` int(11) NULL COMMENT "状态(1-上架,0-软下架,-1-强制下架)",
+  `sexy` int(11) NULL COMMENT "涉黄等级(上架默认0)",
+  `coop_type` int(11) NULL COMMENT "合作模式(1-买断、2-分成、3-保底分成)",
+  `coop_rate` int(11) NULL COMMENT "分成比例,计算时需转成百分比除以100",
+  `divide_type` int(11) NULL DEFAULT "0" COMMENT "分成收入统计方式（0-观看币）",
+  `guarantee_fee` bigint(20) NULL COMMENT "保底金(元)",
+  `coop_begin_time` datetime NULL COMMENT "分成开始时间",
+  `coop_end_time` datetime NULL COMMENT "分成结束时间",
+  `cost_rate` int(11) NULL COMMENT "成本系数,计算时需转成百分比除以100",
+  `lang_cfgs` varchar(65533) NULL COMMENT "结算语种,不同语言逗号分隔",
+  `language` int(11) NULL COMMENT "语言",
+  `is_union` int(11) NULL COMMENT "是否在关联组(0-否,1-是)",
+  `is_bind` int(11) NULL COMMENT "是否绑定映射(0-否,1-是)",
+  `source_authorid` bigint(20) NULL COMMENT "来源作者Id",
+  `source_language` int(11) NULL COMMENT "来源语言",
+  `settle_status` int(11) NULL COMMENT "结算状态(0-未结算,1-已结算)",
+  `add_user` varchar(65533) NULL COMMENT "添加人",
+  `add_time` datetime NULL COMMENT "添加时间",
+  `update_user` varchar(65533) NULL COMMENT "更新人",
+  `update_time` datetime NULL COMMENT "更新时间",
+  `last_sync_time` datetime NULL COMMENT "数据同步时间",
+  `sync_uuid` varchar(65533) NULL COMMENT "同步数据uuid",
+  `sr_createtime` datetime NULL COMMENT "sr入库时间",
+  `sr_updatetime` datetime NULL COMMENT "sr更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`id`)
+COMMENT "故事表(短剧、小说)"
+DISTRIBUTED BY HASH(`id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "add_time",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

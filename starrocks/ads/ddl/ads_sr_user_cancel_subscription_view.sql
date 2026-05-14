@@ -1,0 +1,3 @@
+CREATE VIEW `ads_sr_user_cancel_subscription_view` (`product_id` COMMENT "项目id", `user_id` COMMENT "用户id", `shop_item_type` COMMENT "项目类型", `cancel_time` COMMENT "取消时间") AS SELECT `dwd`.`dwd_pay_order_notify`.`product_id`, `dwd`.`dwd_pay_order_notify`.`user_id`, CASE WHEN (`dwd`.`dwd_pay_order_notify`.`shop_item_id` IN (850)) THEN 'VIP' WHEN (`dwd`.`dwd_pay_order_notify`.`shop_item_id` IN (810)) THEN 'SVIP' WHEN (`dwd`.`dwd_pay_order_notify`.`shop_item_id` IN (830, 840, 800)) THEN '签到卡' END AS `shop_item_type`, `dwd`.`dwd_pay_order_notify`.`cancel_time`
+FROM `dwd`.`dwd_pay_order_notify`
+WHERE ((`dwd`.`dwd_pay_order_notify`.`product_id` != 6833) AND (`dwd`.`dwd_pay_order_notify`.`user_id` > 0)) AND (`dwd`.`dwd_pay_order_notify`.`notify_type` = 3);

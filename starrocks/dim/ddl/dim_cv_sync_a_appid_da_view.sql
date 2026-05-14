@@ -1,0 +1,5 @@
+CREATE VIEW `dim_cv_sync_a_appid_da_view` (`Id` COMMENT "主键ID", `_id` COMMENT "原表_id", `appid` COMMENT "应用程序id", `appname` COMMENT "应用程序名", `appsecret` COMMENT "应用密钥", `type` COMMENT "类型", `create_time` COMMENT "添加时间", `sync_update_time` COMMENT "数据更新时间戳", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "国剧应用程序表" AS SELECT `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`Id`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`_id`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`appid`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`appname`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`appsecret`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`type`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`create_time`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`sync_update_time`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`sr_createtime`, `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_cv_cdvideo_tidb_xcx_sync_a_appid_da`;
+utf8
+utf8_general_ci

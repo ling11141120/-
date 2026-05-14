@@ -1,0 +1,2 @@
+CREATE VIEW `ads_sv_push_bd_offline_group_sync_view` (`id`, `group_id` COMMENT "人群包id", `count` COMMENT "人数", `create_time`, `update_time`) AS SELECT `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`.`id`, `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`.`group_id`, `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`.`count`, `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`.`create_time`, `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`.`update_time`
+FROM `ods`.`ods_tidb_short_video_push_bd_offline_group_sync`;

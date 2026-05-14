@@ -1,0 +1,4 @@
+CREATE VIEW `ads_tidb_short_read_center_activity_position_view` (`action_type`, `center_activity_id`, `center_activity_name`, `sort`) AS SELECT `ods`.`a`.`ActionType` AS `action_type`, `ods`.`c`.`id` AS `center_activity_id`, `ods`.`c`.`Name` AS `center_activity_name`, min(`ods`.`a`.`Sort`) AS `sort`
+FROM `ods`.`ods_tidb_readernovel_tidb_tag_center_activity_position` AS `a` LEFT OUTER JOIN `ods`.`ods_tidb_readernovel_tidb_tag_center_position_info` AS `b` ON `ods`.`a`.`Id` = `ods`.`b`.`PositionId` LEFT OUTER JOIN `ods`.`ods_tidb_readernovel_tidb_tag_center_activity` AS `c` ON `ods`.`b`.`ParentId` = `ods`.`c`.`MainId`
+WHERE `ods`.`c`.`Id` IS NOT NULL
+GROUP BY `ods`.`a`.`ActionType`, `ods`.`c`.`id`, `ods`.`c`.`Name`;

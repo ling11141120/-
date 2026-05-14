@@ -1,0 +1,5 @@
+CREATE VIEW `dim_toponplacementinfo_view` (`id` COMMENT "主键id", `app_id` COMMENT "应用程序id", `placement_id` COMMENT "广告位id", `name` COMMENT "广告位名称", `ad_format` COMMENT "广告样式", `sr_createtime` COMMENT "starrocks数据注入时间", `sr_updatetime` COMMENT "starrocks数据更新时间")
+COMMENT "阅读app内广告相关：TopOn广告聚合平台广告位 信息表" AS SELECT `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`appid` AS `app_id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`placementid` AS `placement_id`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`name`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`adformat` AS `ad_format`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`sr_createtime`, `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sharpengine_ads_global_TopOnPlacementInfo`;
+utf8
+utf8_general_ci

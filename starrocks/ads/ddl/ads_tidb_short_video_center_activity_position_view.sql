@@ -1,0 +1,4 @@
+CREATE VIEW `ads_tidb_short_video_center_activity_position_view` (`action_type`, `center_activity_id`, `strategy_code`, `center_activity_name`, `sort`) AS SELECT `ods`.`a`.`ActionType` AS `action_type`, `ods`.`c`.`id` AS `center_activity_id`, `ods`.`c`.`StrategyCode` AS `strategy_code`, `ods`.`c`.`Name` AS `center_activity_name`, min(`ods`.`a`.`Sort`) AS `sort`
+FROM `ods`.`ods_tidb_short_video_center_activity_position` AS `a` LEFT OUTER JOIN `ods`.`ods_tidb_short_video_center_position_info` AS `b` ON `ods`.`a`.`ActivityId` = `ods`.`b`.`ParentId` LEFT OUTER JOIN `ods`.`ods_tidb_short_video_center_activity` AS `c` ON `ods`.`b`.`ActionId` = `ods`.`c`.`Id`
+WHERE `ods`.`c`.`IsRemove` = 0
+GROUP BY `ods`.`a`.`ActionType`, `ods`.`c`.`id`, `ods`.`c`.`StrategyCode`, `ods`.`c`.`Name`;

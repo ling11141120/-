@@ -1,0 +1,51 @@
+CREATE TABLE `ods_tidb_sharpengine_ads_global_LtvDailyInsight` (
+  `Id` bigint(20) NOT NULL COMMENT "",
+  `AdId` varchar(50) NULL COMMENT "",
+  `AdStatus` varchar(50) NULL COMMENT "",
+  `date_start` varchar(50) NULL COMMENT "",
+  `date_stop` varchar(50) NULL COMMENT "",
+  `AdName` varchar(500) NULL COMMENT "",
+  `Spend` decimal(10, 2) NULL COMMENT "",
+  `PutData` varchar(65533) NULL COMMENT "",
+  `Installs` int(11) NULL COMMENT "",
+  `Clicks` int(11) NULL COMMENT "",
+  `Impressions` int(11) NULL COMMENT "",
+  `Cpc` varchar(50) NULL COMMENT "",
+  `Cpm` varchar(50) NULL COMMENT "",
+  `Cpp` varchar(50) NULL COMMENT "",
+  `Ctr` varchar(50) NULL COMMENT "",
+  `UpdateTime` datetime NULL COMMENT "",
+  `Mt` int(11) NULL COMMENT "",
+  `Core` int(11) NULL COMMENT "",
+  `ProductId` int(11) NULL COMMENT "",
+  `Roas` decimal(10, 2) NULL COMMENT "",
+  `AdSetId` varchar(128) NULL COMMENT "",
+  `AdCampId` varchar(128) NULL COMMENT "",
+  `Country` varchar(50) NULL COMMENT "",
+  `Amount` decimal(10, 2) NULL COMMENT "",
+  `SourceChl` varchar(50) NULL COMMENT "",
+  `Chl2` varchar(128) NULL COMMENT "",
+  `CreateUser` varchar(20) NULL COMMENT "",
+  `CreateType` int(11) NULL COMMENT "",
+  `CreateNum` int(11) NULL COMMENT "",
+  `RowVersion` bigint(20) NULL COMMENT "",
+  `CurrentLanguage2` int(11) NULL COMMENT "",
+  `IsRemarketing` int(11) NULL COMMENT "",
+  `Account` varchar(100) NULL COMMENT "",
+  `LinkClick` int(11) NULL COMMENT "",
+  `Conversion` int(11) NULL COMMENT "",
+  `Registration` int(11) NULL COMMENT "",
+  `ConvertSpend` decimal(10, 2) NULL COMMENT "广告投放花费（西五区）",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "OLAP"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 20 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

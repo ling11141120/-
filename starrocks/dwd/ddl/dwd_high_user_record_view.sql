@@ -1,0 +1,7 @@
+CREATE VIEW `dwd_high_user_record_view` (`dt` COMMENT "分区", `product_id` COMMENT "产品id", `id` COMMENT "自增id", `user_id` COMMENT "用户id", `book_id` COMMENT "书籍id", `message` COMMENT "high设置信息", `chapter_index` COMMENT "章节序号", `chapter_id` COMMENT "章节id", `create_time` COMMENT "创建时间")
+COMMENT "high点测试：用户标记章节日志表" AS (SELECT `a`.`dt`, `a`.`product_id`, `a`.`id`, `a`.`user_id`, `a`.`book_id`, `a`.`message`, `a`.`chapter_index`, `a`.`chapter_id`, `a`.`create_time`
+FROM (SELECT `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`dt`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`product_id`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`id`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`UserId` AS `user_id`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`bookid` AS `book_id`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`message`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`chapterindex` AS `chapter_index`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`chapterid` AS `chapter_id`, `ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`createtime` AS `create_time`, min(`ods`.`ods_tidb_readernovel_mysql_highuserrecord`.`id`) AS `min(id)`
+FROM `ods`.`ods_tidb_readernovel_mysql_highuserrecord`
+GROUP BY 1, 2, 3, 4, 5, 6, 7, 8, 9) `a`);
+utf8
+utf8_general_ci

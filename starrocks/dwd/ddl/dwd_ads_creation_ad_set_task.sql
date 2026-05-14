@@ -1,0 +1,51 @@
+CREATE TABLE `dwd_ads_creation_ad_set_task` (
+  `id` bigint(20) NOT NULL COMMENT " Id",
+  `template_id` bigint(20) NULL COMMENT "模板Id",
+  `campaign_task_id` varchar(1024) NULL COMMENT "创建系列任务Id",
+  `book_id` varchar(65533) NULL COMMENT "BookId",
+  `creative_id` varchar(65533) NULL COMMENT "CreativeId",
+  `pinned_creative_id` varchar(65533) NULL COMMENT "PinnedCreativeId",
+  `image_id` varchar(65533) NULL COMMENT "ImageId",
+  `pinned_image_id` varchar(65533) NULL COMMENT "PinnedImageId",
+  `object_content_text` varchar(1048576) NULL COMMENT "ObjectContent_text",
+  `short_text` varchar(65533) NULL COMMENT "ShortText",
+  `landing_page` varchar(65533) NULL COMMENT "LandingPage",
+  `ad_camp_id` varchar(65533) NULL COMMENT "AdCampId",
+  `creative_count` varchar(65533) NULL COMMENT "CreativeCount",
+  `creative_open_count` varchar(65533) NULL COMMENT "CreativeOpenCount",
+  `is_pinned_first` varchar(65533) NULL COMMENT "IsPinnedFirst",
+  `ad_set_count` varchar(65533) NULL COMMENT "AdSetCount",
+  `object_content_template_id` varchar(65533) NULL COMMENT "object_content_template_id",
+  `task_id` varchar(65533) NULL COMMENT "TaskId",
+  `object_content_marketing_plan_last_task_id` varchar(65533) NULL COMMENT "object_content_MarketingPlanLastTaskId",
+  `arrange` varchar(65533) NULL COMMENT "Arrange",
+  `ads_creation_ad_set` varchar(65533) NULL COMMENT "AdsCreationAdSet",
+  `deep_link` varchar(65533) NULL COMMENT "DeepLink",
+  `object_content` varchar(1048576) NULL COMMENT "广告组信息",
+  `status` int(11) NULL COMMENT "状态0待执行1成功2失败",
+  `create_time` datetime NULL COMMENT "创建时间",
+  `update_time` datetime NULL COMMENT "更新时间",
+  `response_content` varchar(65533) NULL COMMENT "响应内容",
+  `create_by` varchar(1024) NULL COMMENT "创建人",
+  `create_by_uid` varchar(1024) NULL COMMENT "创建人",
+  `marketing_plan_last_task_id` bigint(20) NULL COMMENT "内容任务最终任务ID",
+  `creation_type` int(11) NULL COMMENT "创编方式0手动1自动",
+  `plan_id` varchar(1024) NULL COMMENT "方案Id",
+  `plan_item_id` varchar(1024) NULL COMMENT "方案配置项Id",
+  `plan_task_id` varchar(1024) NULL COMMENT "任务Id",
+  `default_account_id` varchar(1024) NULL COMMENT "默认账号",
+  `default_page_id` varchar(1024) NULL COMMENT "默认主页",
+  `default_insta_id` varchar(1024) NULL COMMENT "默认IG账号",
+  `sync` int(11) NULL COMMENT "是否同步",
+  `etl_tm` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "清洗时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`id`)
+COMMENT "创编广告 广告组"
+DISTRIBUTED BY HASH(`id`) BUCKETS 15 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

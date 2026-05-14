@@ -1,0 +1,58 @@
+CREATE TABLE `ads_sv_beidou_series_daily_stat_di_bak` (
+  `dt` date NOT NULL COMMENT "日期",
+  `core` int(11) NOT NULL COMMENT "Core",
+  `language_code` int(11) NOT NULL COMMENT "语言编码",
+  `series_id` bigint(20) NOT NULL COMMENT "短剧ID",
+  `language_name` varchar(100) NULL COMMENT "语言名称",
+  `series_code` varchar(100) NULL COMMENT "短剧代号",
+  `series_name` varchar(255) NULL COMMENT "短剧名称",
+  `all_epis` int(11) NULL COMMENT "短剧集数",
+  `cover_url` varchar(512) NULL COMMENT "短剧封面",
+  `series_level` int(11) NULL COMMENT "短剧等级(1.S 2.A 3.B 4.C)",
+  `series_level_name` varchar(100) NULL COMMENT "短剧等级名称",
+  `series_type_labels` varchar(1000) NULL COMMENT "分类标签集合(按标签名称升序用逗号拼接)",
+  `work_type` int(11) NULL COMMENT "作品类型(1.男频 2.女频 3.双番)",
+  `work_type_name` varchar(100) NULL COMMENT "作品类型名称",
+  `local_type` int(11) NULL COMMENT "类型 (1.本土剧 2.译制剧 4.动态漫)",
+  `local_type_name` varchar(100) NULL COMMENT "类型名称",
+  `local_sub_type` int(11) NULL COMMENT "短剧子类型(0.默认 1.本土剧-AI短剧)",
+  `local_sub_type_name` varchar(100) NULL COMMENT "短剧子类型名称",
+  `audio_type` int(11) NULL COMMENT "音轨类型(1.原声剧 2.配音剧)",
+  `audio_type_name` varchar(100) NULL COMMENT "音轨类型名称",
+  `dubbed_type` int(11) NULL COMMENT "配音类型(1.人工配音 2.AI配音)",
+  `dubbed_type_name` varchar(100) NULL COMMENT "配音类型名称",
+  `publish_time` datetime NULL COMMENT "发布时间",
+  `series_duration` bigint(20) NULL COMMENT "短剧总时长(秒)",
+  `first_pay_epis_num` int(11) NULL COMMENT "第几集开始收费",
+  `click_num` bigint(20) NULL COMMENT "短剧点击量",
+  `exposure_num` bigint(20) NULL COMMENT "短剧曝光量",
+  `first_epis_complete_user` bitmap NULL COMMENT "首集完播观众数(进度>=95%)",
+  `first_epis_total_user` bitmap NULL COMMENT "首集总观众数",
+  `loss_10s_user` bitmap NULL COMMENT "<=10s流失用户数",
+  `exit_5s_user` bitmap NULL COMMENT "<=5s跳出用户数",
+  `complete_10s_user` bitmap NULL COMMENT "观看>=10秒用户数",
+  `complete_10min_user` bitmap NULL COMMENT "观看>=10分钟用户数",
+  `complete_30min_user` bitmap NULL COMMENT "观看>=30分钟用户数",
+  `complete_60min_user` bitmap NULL COMMENT "观看>=60分钟用户数",
+  `complete_series_user` bitmap NULL COMMENT "整剧完播用户数(最后一集进度>=95%)",
+  `total_play_epis_count` bigint(20) NULL COMMENT "总的播放集数",
+  `total_play_duration` bigint(20) NULL COMMENT "总播放时长(秒)",
+  `play_user` bitmap NULL COMMENT "播放总用户数",
+  `play_count` bigint(20) NULL COMMENT "播放量",
+  `series_unlock_user` bitmap NULL COMMENT "本部剧解锁用户数",
+  `series_charge_user` bitmap NULL COMMENT "本剧直充用户数",
+  `total_unlock_epis_cnt` bitmap NULL COMMENT "解锁总集数",
+  `etl_time` datetime NULL COMMENT "数据清洗时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`dt`, `core`, `language_code`, `series_id`)
+COMMENT "北斗短剧-每日短剧信息统计表"
+PARTITION BY date_trunc('day', dt)
+DISTRIBUTED BY HASH(`core`, `language_code`, `series_id`) BUCKETS 8 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "publish_time, series_id",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

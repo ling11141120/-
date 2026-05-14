@@ -1,0 +1,5 @@
+CREATE VIEW `dwd_sv_user_consume_info_view` (`dt`, `create_time`, `account_id`, `epis_id`, `consume_type`, `consume_value`) AS SELECT `ods`.`ods_tidb_short_video_bill`.`dt`, `ods`.`ods_tidb_short_video_bill`.`CreateTime` AS `create_time`, `ods`.`ods_tidb_short_video_bill`.`AccountId` AS `account_id`, `ods`.`ods_tidb_short_video_bill`.`EpisId` AS `epis_id`, 0 AS `consume_type`, `ods`.`ods_tidb_short_video_bill`.`PreCoin` - `ods`.`ods_tidb_short_video_bill`.`Coin` AS `consume_value`
+FROM `ods`.`ods_tidb_short_video_bill`
+WHERE ((((`ods`.`ods_tidb_short_video_bill`.`dt` >= '2024-12-01') AND (`ods`.`ods_tidb_short_video_bill`.`ConsumeType` IS NOT NULL)) AND (`ods`.`ods_tidb_short_video_bill`.`ConsumeType` != '')) AND ((`ods`.`ods_tidb_short_video_bill`.`PreCoin` - `ods`.`ods_tidb_short_video_bill`.`Coin`) > 0)) AND (`ods`.`ods_tidb_short_video_bill`.`ConsumeType` NOT IN (8, 9));
+utf8
+utf8_general_ci

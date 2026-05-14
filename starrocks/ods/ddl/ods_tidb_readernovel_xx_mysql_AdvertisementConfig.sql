@@ -1,0 +1,48 @@
+CREATE TABLE `ods_tidb_readernovel_xx_mysql_AdvertisementConfig` (
+  `productid` int(11) NOT NULL COMMENT "",
+  `AutoID` int(11) NOT NULL COMMENT "",
+  `AdvTitle` varchar(65533) NULL COMMENT "",
+  `AdvUrl` varchar(65533) NULL COMMENT "",
+  `AdvImg_src1` varchar(65533) NULL COMMENT "",
+  `AdvImg_src2` varchar(65533) NULL COMMENT "",
+  `AdvImg_src3` varchar(65533) NULL COMMENT "",
+  `AdvImg_src4` varchar(65533) NULL COMMENT "",
+  `AdvImg_src5` varchar(65533) NULL COMMENT "",
+  `AdvImg_src6` varchar(65533) NULL COMMENT "",
+  `AdvImg_src7` varchar(65533) NULL COMMENT "",
+  `AdvImg_src8` varchar(65533) NULL COMMENT "",
+  `AdvStartTime` datetime NULL COMMENT "",
+  `AdvEndTime` datetime NULL COMMENT "",
+  `Status` int(11) NULL COMMENT "",
+  `Platform` varchar(300) NULL COMMENT "",
+  `CreateTime` datetime NULL COMMENT "",
+  `Duration` int(11) NULL COMMENT "",
+  `Chl` varchar(755) NULL COMMENT "",
+  `ProdId` varchar(755) NULL COMMENT "",
+  `IsFllScreen` int(11) NULL COMMENT "",
+  `BanChl` varchar(1500) NULL COMMENT "",
+  `BanProdId` varchar(1500) NULL COMMENT "",
+  `IsHide` int(11) NULL COMMENT "",
+  `AppId` varchar(1612) NULL COMMENT "",
+  `MinVer` int(11) NULL DEFAULT "0" COMMENT "",
+  `MaxVer` int(11) NULL DEFAULT "0" COMMENT "",
+  `ShowUserType` int(11) NULL COMMENT "",
+  `Sort` int(11) NULL COMMENT "",
+  `IsFilterExposure` tinyint(4) NULL COMMENT "",
+  `Filters` varchar(65533) NULL COMMENT "",
+  `IsDelete` int(11) NULL DEFAULT "0" COMMENT "",
+  `row_update_time` datetime NULL COMMENT "",
+  `SyncLanguage` varchar(600) NULL COMMENT "",
+  `Language` int(11) NULL COMMENT "",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "",
+  `sr_updatetime` datetime NULL COMMENT ""
+) ENGINE=OLAP 
+PRIMARY KEY(`productid`, `AutoID`)
+DISTRIBUTED BY HASH(`AutoID`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

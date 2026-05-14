@@ -1,0 +1,45 @@
+CREATE TABLE `alg_book_feature` (
+  `dt` varchar(1048576) NULL COMMENT "",
+  `book_id` bigint(20) NULL COMMENT "",
+  `channel` int(11) NULL COMMENT "",
+  `new_cid` int(11) NULL COMMENT "",
+  `read_uv_1d` bigint(20) NULL COMMENT "",
+  `csum_uv_1d` bigint(20) NULL COMMENT "",
+  `start_read_chpts_1d` bigint(20) NULL COMMENT "",
+  `end_read_chpts_1d` bigint(20) NULL COMMENT "",
+  `csum_num_1d` bigint(20) NULL COMMENT "",
+  `csum_total_1d` bigint(20) NULL COMMENT "",
+  `read_uv_3d` bigint(20) NULL COMMENT "",
+  `csum_uv_3d` bigint(20) NULL COMMENT "",
+  `start_read_chpts_3d` bigint(20) NULL COMMENT "",
+  `end_read_chpts_3d` bigint(20) NULL COMMENT "",
+  `csum_num_3d` bigint(20) NULL COMMENT "",
+  `csum_total_3d` bigint(20) NULL COMMENT "",
+  `read_uv_7d` bigint(20) NULL COMMENT "",
+  `csum_uv_7d` bigint(20) NULL COMMENT "",
+  `start_read_chpts_7d` bigint(20) NULL COMMENT "",
+  `end_read_chpts_7d` bigint(20) NULL COMMENT "",
+  `csum_num_7d` bigint(20) NULL COMMENT "",
+  `csum_total_7d` bigint(20) NULL COMMENT "",
+  `read_uv_30d` bigint(20) NULL COMMENT "",
+  `csum_uv_30d` bigint(20) NULL COMMENT "",
+  `start_read_chpts_30d` bigint(20) NULL COMMENT "",
+  `end_read_chpts_30d` bigint(20) NULL COMMENT "",
+  `csum_num_30d` bigint(20) NULL COMMENT "",
+  `csum_total_30d` bigint(20) NULL COMMENT "",
+  `read_uv` bigint(20) NULL COMMENT "",
+  `csum_uv` bigint(20) NULL COMMENT "",
+  `start_read_chpts` bigint(20) NULL COMMENT "",
+  `end_read_chpts` bigint(20) NULL COMMENT "",
+  `csum_num` bigint(20) NULL COMMENT "",
+  `csum_total` bigint(20) NULL COMMENT ""
+) ENGINE=OLAP 
+DUPLICATE KEY(`dt`)
+DISTRIBUTED BY HASH(`dt`) BUCKETS 16 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

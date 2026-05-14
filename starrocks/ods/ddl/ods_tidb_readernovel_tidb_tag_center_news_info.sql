@@ -1,0 +1,20 @@
+CREATE TABLE `ods_tidb_readernovel_tidb_tag_center_news_info` (
+  `Id` int(11) NOT NULL COMMENT "Id",
+  `NewsId` int(11) NOT NULL COMMENT "私信Id",
+  `ParentId` int(11) NOT NULL COMMENT "父级Id",
+  `ActionId` int(11) NOT NULL COMMENT "策略Id",
+  `CreateTime` datetime NOT NULL COMMENT "创建时间",
+  `ActionName` varchar(128) NOT NULL COMMENT "策略名称",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "push管理与策略关联表"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 1 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

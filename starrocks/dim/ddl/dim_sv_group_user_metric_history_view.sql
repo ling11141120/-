@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_group_user_metric_history_view` (`id` COMMENT "唯一ID", `account` COMMENT "用户账号", `project` COMMENT "应用/项目名称", `user_metric_json` COMMENT "用户指标JSON", `create_date` COMMENT "创建时间", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "每一天根据离线数据计算出来的历史指标" AS SELECT `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`id`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`account`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`project`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`user_metric_json`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`create_date`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_group_user_user_metric_history_da`;
+utf8
+utf8_general_ci

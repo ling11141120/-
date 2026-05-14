@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_group_user_statistics_view` (`id` COMMENT "主键id", `group_id` COMMENT "分组id", `count` COMMENT "规模", `create_time` COMMENT "创建时间", `update_time` COMMENT "更新时间", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "人群包规模统计" AS SELECT `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`id`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`group_id`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`count`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`create_time`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`update_time`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_group_user_group_user_statistics_da`;
+utf8
+utf8_general_ci

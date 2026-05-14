@@ -1,0 +1,5 @@
+CREATE VIEW `dwd_sv_trade_package_sale_log_di_view` (`id` COMMENT "主键", `template_id` COMMENT "打包售卖模板ID", `account_id` COMMENT "用户ID", `order_id` COMMENT "订单ID", `series_list` COMMENT "打包购买的剧，剧id,分割", `create_time` COMMENT "创建时间", `update_time` COMMENT "更新时间", `order_type` COMMENT "订单类型：1购买2退订", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "打包售卖购买记录" AS SELECT `ods`.`ods_tidb_sv_short_video_package_sale_log`.`id`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`templateId`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`accountId`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`orderId`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`seriesList`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`createTime`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`updateTime`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`orderType`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_package_sale_log`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_package_sale_log`;
+utf8
+utf8_general_ci

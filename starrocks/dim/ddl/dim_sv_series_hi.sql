@@ -1,0 +1,50 @@
+CREATE TABLE `dim_sv_series_hi` (
+  `series_id` bigint(20) NOT NULL COMMENT "剧id",
+  `language` int(11) NULL COMMENT "语言",
+  `series_name` varchar(65533) NULL COMMENT "短剧名",
+  `description` varchar(65533) NULL COMMENT "短剧简介",
+  `cover_url` varchar(65533) NULL COMMENT "封面",
+  `create_time` datetime NULL COMMENT "创建时间",
+  `update_time` datetime NULL COMMENT "修改时间",
+  `create_user` varchar(65533) NULL COMMENT "上传人",
+  `publish_status` int(11) NULL COMMENT "上架状态(1上架 2下架)",
+  `published_at` datetime NULL COMMENT "上架时间",
+  `un_published_at` datetime NULL COMMENT "下架时间",
+  `last_epis` int(11) NULL COMMENT "更新至第几集",
+  `all_epis` int(11) NULL COMMENT "总集数",
+  `pay_epis_from` int(11) NULL COMMENT "收费起始集数",
+  `is_delete` tinyint(4) NULL COMMENT "是否删除",
+  `producer` varchar(65533) NULL COMMENT "出品方（暂时没啥用）",
+  `recommend` varchar(65533) NULL COMMENT "推荐文案",
+  `source_series_id` bigint(20) NULL COMMENT "源语言短剧",
+  `price` int(11) NULL COMMENT "单集价格（分）",
+  `ending` int(11) NULL COMMENT "完结状态（1连载中 2已完结）",
+  `series_name_key` varchar(65533) NULL COMMENT "剧名key",
+  `description_key` varchar(65533) NULL COMMENT "短剧简介转换key",
+  `recommend_key` varchar(65533) NULL COMMENT "推荐文案转换key",
+  `source_series_name` varchar(65533) NULL COMMENT "源剧剧名",
+  `source_series_language` int(11) NULL COMMENT "源剧语言",
+  `source_series_code` varchar(65533) NULL COMMENT "源剧代码",
+  `source_cooperate_type` int(11) NULL COMMENT "源剧合作方式(1买断、2分成、3保底分成)",
+  `source_rights_holder_id` bigint(20) NULL COMMENT "源剧版权方Id",
+  `source_lang_ids` varchar(65533) NULL COMMENT "源剧结算语言id,逗号分隔",
+  `source_coef` decimal(18, 2) NULL COMMENT "源剧分成系数",
+  `series_type_ids` array<bigint(20)> NULL COMMENT "剧分类id",
+  `series_type_name` array<varchar(65533)> NULL COMMENT "剧分类名称",
+  `source_rights_holder_name` varchar(65533) NULL COMMENT "源剧版权方名",
+  `source_rights_holder_type` int(11) NULL COMMENT "源剧版权方类型(1引入 2自研)",
+  `source_rights_holder_coef` decimal(18, 2) NULL COMMENT "源剧版权方分成系数",
+  `source_rights_holder_lang_ids` varchar(65533) NULL COMMENT "源剧版权方结算语言,逗号分隔",
+  `etl_time` datetime NULL COMMENT "etl清洗时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`series_id`)
+COMMENT "短剧剧信息维表"
+DISTRIBUTED BY HASH(`series_id`) BUCKETS 5 
+PROPERTIES (
+"replication_num" = "3",
+"bloom_filter_columns" = "create_time",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

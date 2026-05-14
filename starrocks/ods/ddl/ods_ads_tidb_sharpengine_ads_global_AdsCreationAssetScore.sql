@@ -1,0 +1,53 @@
+CREATE TABLE `ods_ads_tidb_sharpengine_ads_global_AdsCreationAssetScore` (
+  `Id` bigint(20) NOT NULL COMMENT "主键ID",
+  `Dt` varchar(500) NULL COMMENT "日期",
+  `ProjectCode` int(11) NULL COMMENT "项目类型 1=海外阅读|2=海外短剧",
+  `SourceChlType` int(11) NULL COMMENT "媒体类型 1=fb|2=tt|3=uac",
+  `CodeId` varchar(500) NULL COMMENT "书籍或短剧ID",
+  `AssetGuid` varchar(1000) NULL COMMENT "素材唯一标识",
+  `NewOldType` int(11) NULL COMMENT "素材新旧类型 1=老素材|2=次新素材|3=新素材",
+  `AssetLevel` int(11) NULL COMMENT "素材评级类型，1=日花费大于50的评级样本，2=不满足日花费大于50  但累计花费大于150的评级样本，3=累计小于等于50，99=无评级",
+  `IsOldAsset` int(11) NULL COMMENT "是否旧素材",
+  `AssetType` varchar(1000) NULL COMMENT "素材类型",
+  `MaterialType` varchar(1000) NULL COMMENT "素材文件类型",
+  `IsMai` int(11) NULL COMMENT "是否MAI广告 0=否|1=是",
+  `BmCompeleteTime` datetime NULL COMMENT "BM上传结束时间",
+  `Cost` decimal(16, 4) NULL COMMENT "截止当前累计花费",
+  `Amount` decimal(16, 4) NULL COMMENT "截止当前累计收入",
+  `RegNum` int(11) NULL COMMENT "注册人数",
+  `Impressions` bigint(20) NULL COMMENT "展示数",
+  `ReachAdNum` int(11) NULL COMMENT "达标广告总数",
+  `AdNum` int(11) NULL COMMENT "广告总数",
+  `Ir` decimal(10, 4) NULL COMMENT "Ir",
+  `StdIr` decimal(10, 4) NULL COMMENT "Ir标准",
+  `IrReachRate` decimal(10, 4) NULL COMMENT "Ir达标率",
+  `AiaRate` decimal(10, 4) NULL COMMENT "平均收入达成率",
+  `AraRate` decimal(10, 4) NULL COMMENT "聚合收入达成率",
+  `ReachRate` decimal(10, 4) NULL COMMENT "达标率",
+  `AssetScore` decimal(10, 4) NULL COMMENT "素材评分",
+  `Odds` decimal(10, 4) NULL COMMENT "素材使用概率",
+  `CostStd` decimal(16, 4) NULL COMMENT "截止当前累计花费标准",
+  `CostWeight` decimal(10, 4) NULL COMMENT "花费权重",
+  `IrReachRateStd` decimal(10, 4) NULL COMMENT "Ir达标率标准",
+  `IrReachRateWeight` decimal(10, 4) NULL COMMENT "Ir达标率权重",
+  `AiaRateStd` decimal(10, 4) NULL COMMENT "平均收入达成率标准",
+  `AiaRateWeight` decimal(10, 4) NULL COMMENT "平均收入达成率权重",
+  `AraRateStd` decimal(10, 4) NULL COMMENT "聚合收入达成率标准",
+  `AraRateWeight` decimal(10, 4) NULL COMMENT "聚合收入达成率权重",
+  `ReachRateStd` decimal(10, 4) NULL COMMENT "达标率标准",
+  `ReachRateWeight` decimal(10, 4) NULL COMMENT "达标率权重",
+  `CreateTime` datetime NULL COMMENT "创建时间",
+  `UpdateTime` datetime NULL COMMENT "更新时间",
+  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
+  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间"
+) ENGINE=OLAP 
+PRIMARY KEY(`Id`)
+COMMENT "广告创编素材评分表"
+DISTRIBUTED BY HASH(`Id`) BUCKETS 3 
+PROPERTIES (
+"replication_num" = "3",
+"in_memory" = "false",
+"enable_persistent_index" = "true",
+"replicated_storage" = "true",
+"compression" = "LZ4"
+);

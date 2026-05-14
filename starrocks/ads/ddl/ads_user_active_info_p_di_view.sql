@@ -1,0 +1,4 @@
+CREATE VIEW `ads_user_active_info_p_di_view` (`dt` COMMENT "日期", `product_id` COMMENT "产品id", `corever` COMMENT "core", `current_language` COMMENT "当前语言", `device_id` COMMENT "设备id", `etl_tm` COMMENT "清洗时间") AS SELECT `a`.`dt`, `a`.`product_id`, `a`.`corever`, `a`.`current_language`, `b`.`unique_cdreader_id` AS `device_id`, now() AS `etl_tm`
+FROM (SELECT `dws`.`dws_user_wide_active_ed`.`dt`, `dws`.`dws_user_wide_active_ed`.`product_id`, `dws`.`dws_user_wide_active_ed`.`corever`, `dws`.`dws_user_wide_active_ed`.`current_language`, `dws`.`dws_user_wide_active_ed`.`user_id`
+FROM `dws`.`dws_user_wide_active_ed`) `a` INNER JOIN (SELECT `dim`.`dim_user_account_info_view`.`product_id`, `dim`.`dim_user_account_info_view`.`id`, `dim`.`dim_user_account_info_view`.`unique_cdreader_id`
+FROM `dim`.`dim_user_account_info_view`) `b` ON (`a`.`user_id` = `b`.`id`) AND (`a`.`product_id` = `b`.`product_id`);

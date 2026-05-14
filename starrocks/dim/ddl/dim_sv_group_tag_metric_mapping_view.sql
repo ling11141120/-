@@ -1,0 +1,5 @@
+CREATE VIEW `dim_sv_group_tag_metric_mapping_view` (`tag_id` COMMENT "标签id", `system_type` COMMENT "项目类别(1 阅读项目 、2 短剧项目)", `tag_name_en` COMMENT "标签英文名", `metric_name_en` COMMENT "指标英文名", `mapping_type` COMMENT "映射类型（1一致、2映射字段、3映射天数差、4映射小时差）", `is_delete` COMMENT "是否删除", `sr_createtime` COMMENT "sr入库时间", `sr_updatetime` COMMENT "sr更新时间")
+COMMENT "人群包标签-指标关系映射表" AS SELECT `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`tag_id`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`system_type`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`tag_name_en`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`metric_name_en`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`mapping_type`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`is_delete`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`sr_createtime`, `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`.`sr_updatetime`
+FROM `ods`.`ods_tidb_sv_short_video_group_user_group_tag_metric_mapping_da`;
+utf8
+utf8_general_ci
