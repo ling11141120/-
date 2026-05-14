@@ -1,14 +1,23 @@
+----------------------------------------------------------------
+-- 程序功能： 交易域-支付成功充值订单
+-- 程序名： P_dwd_trade_short_video_payorder
+-- 目标表： dwd.dwd_trade_short_video_payorder
+-- 开发人： xjc
+-- 开发日期： 2026-05-14
+----------------------------------------------------------------
+
 insert into dwd.dwd_trade_short_video_payorder
-  with ref_ord as (select Id
-                        , ClassType
-                        , get_json_string(Args, '$.OrderId') as orderid
-                        , ScheduleTime
-                        , Status
-                        , ExecCount
-                        , ExecTime
-                     from ods.ods_short_video_commandtask
-                    where ScheduleTime >= '${bf_1_dt}'
-                   )
+with ref_ord as (
+    select Id
+          ,ClassType
+          ,get_json_string(Args, '$.OrderId')    as orderid
+          ,ScheduleTime
+          ,Status
+          ,ExecCount
+          ,ExecTime
+      from ods.ods_short_video_commandtask
+     where ScheduleTime >= '${bf_1_dt}'
+)
 select dt
      , product_id
      , id
@@ -47,6 +56,7 @@ select dt
      , CustomData
      , ScheduleTime
      , etl_tm
+     , ActualAmount
   from (select dt
              , 6833  as product_id
              , id
@@ -85,6 +95,7 @@ select dt
              , CustomData
              , null  as ScheduleTime
              , now() as etl_tm
+             , ActualAmount
           from ods.ods_tidb_short_video_payorder
          where dt >= '${bf_1_dt}'
          union all
@@ -122,12 +133,13 @@ select dt
              , b.SubPayType
              , b.GiftMoney
              , b.OrderInitTime
-             , b.
-            CooOrderExtInfo
+             , b.CooOrderExtInfo
              , b.CustomData
              , ScheduleTime
              , NOW()              as etl_tm
-          from ods.ods_tidb_short_video_payorder b
+             , ActualAmount * -1
+          from ods.ods_tidb_short_video_payorder    as b
           join ref_ord
-          on b.orderid = ref_ord.orderid
-        ) a;
+            on b.orderid = ref_ord.orderid
+) a
+;

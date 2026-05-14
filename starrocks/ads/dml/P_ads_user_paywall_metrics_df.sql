@@ -87,7 +87,7 @@ with active_user as (
 , recharge_amt_agg as (
     select a1.dt
           ,a1.user_id
-          ,round(sum(a2.base_amount) / 100.0, 2)    as recharge_amt
+          ,round(sum(a2.actual_amount), 2)    as recharge_amt
       from active_user as a1
       left join dwd.dwd_trade_short_video_payorder as a2
         on a2.user_id = a1.user_id
