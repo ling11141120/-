@@ -1,0 +1,4 @@
+interface:
+  display_name: "DW Generate DAG"
+  short_description: "从 StarRocks DML 生成 DolphinScheduler DAG JSON"
+  default_prompt: "Use $dw-generate-dag to generate DolphinScheduler DAG JSON from StarRocks DML SQL files."
