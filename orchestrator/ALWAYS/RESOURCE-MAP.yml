@@ -99,3 +99,9 @@ code_conventions:
     comma: 前置逗号
     group_by: 位置数字（group by 1, 2, 3）
     cte: 优先于子查询
+# ==================== 分析资源 ====================
+analysis_resources:
+  shared_knowledge:
+    path: SHARED/knowledge/
+    desc: 分析规则、标准定义、评估框架（分析类 Program 按需加载）
+    note: 分析类 Program 可以从这个目录读取规则文件作为评判标准

@@ -200,14 +200,14 @@ git push origin HEAD
 
 格式：`<type>(<scope>): <description>`
 
-| Type | 说明 |
-|------|------|
-| `feat` | 新增表/字段/指标 |
-| `fix` | 修复数据口径/逻辑 Bug |
-| `refactor` | 重构 SQL（不改口径） |
-| `perf` | 性能优化（分桶/索引/分区） |
-| `docs` | 文档/注释 |
-| `chore` | 杂项（验证脚本等） |
+| Type       | 说明             |
+|------------|----------------|
+| `feat`     | 新增表/字段/指标      |
+| `fix`      | 修复数据口径/逻辑 Bug  |
+| `refactor` | 重构 SQL（不改口径）   |
+| `perf`     | 性能优化（分桶/索引/分区） |
+| `docs`     | 文档/注释          |
+| `chore`    | 杂项（验证脚本等）      |
 
 Scope 使用数仓层级：`ods`、`dwd`、`dws`、`dim`、`ads`
 
@@ -217,3 +217,30 @@ Scope 使用数仓层级：`ods`、`dwd`、`dws`、`dim`、`ads`
 - `feat(ads): {表名} 新增 {字段名} 字段`
 - `fix(ads): 修复 {字段} 重复计数`
 - `refactor(ads): {字段} 口径切换为 {新来源}`
+
+---
+
+## 分析类 Commit 规范扩展
+
+分析类 Program 使用以下额外的 type 和 scope：
+
+| Type | 说明 |
+|------|------|
+| `analysis` | 分析报告/结论产出 |
+| `feat` | 新增分析规则/标准到 SHARED/knowledge |
+| `refactor` | 调整分析框架/规则 |
+| `docs` | 文档/注释 |
+| `chore` | 杂项（脚本、数据文件等） |
+
+Scope 使用分析领域：`asset`（资产定级）、`lineage`（血缘）、`quality`（质量）、`caliber`（口径审计）、`architecture`（架构）、`cost`（成本）、`topic`（专题分析）
+
+示例：
+
+- `analysis(asset): 完成 ads 层数据资产定级`
+- `analysis(lineage): 梳理 retention_rate 字段端到端血缘`
+- `feat(quality): 新增空值率质量检查规则`
+- `chore(asset): 添加元数据采集脚本`
+
+分析类分支命名示例：
+- `dev+haoran+ANALYSIS-001+data-asset-grading`
+- `dev+haoran+ANALYSIS-002+ads-lineage-audit`

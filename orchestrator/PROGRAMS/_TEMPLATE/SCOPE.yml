@@ -7,8 +7,12 @@
 #
 # 原则：只允许写入当前 Program 涉及的分层路径。
 # Agent 只修改 write 范围内的文件，超出范围时询问用户。
+#
+# 开发类 Program：write 以 starrocks/ 下的 DDL/DML 路径为主
+# 分析类 Program：write 以 workspace/、scripts/ 为主，默认禁止写 starrocks/
 
 write:
+  # ==================== 开发类 ====================
   # DDL 文件
   ddl:
     - starrocks/{layer}/ddl/{table_name}.sql
@@ -16,6 +20,21 @@ write:
   # DML 文件
   dml:
     - starrocks/{layer}/dml/P_{table_name}.sql
+
+  # ==================== 分析类 ====================
+  # （开发类 Program 可删除以下 section）
+
+  # Program 工作目录（始终可写）
+  workspace: []
+
+  # 辅助脚本（Program 专属）
+  scripts: []
+
+  # 仓库文档/配置（分析结论需落盘时填写）
+  documentation: []
+
+  # 代码仓库（默认禁止，分析类如需补充 SQL 必须显式列出）
+  starrocks: []
 
 forbidden:
   - orchestrator/ALWAYS/RESOURCE-MAP.yml.md   # 仓库级只读配置
