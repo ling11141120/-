@@ -4,11 +4,14 @@
 
 program: P-YYYY-NNN
 name: {任务标题}
-phase: planning              # planning / in-progress / review / done
+type: development            # development（开发类）| analysis（分析类）
+subtype: none                # 开发类填 none；分析类填 batch / deep-dive / ad-hoc
+phase: planning              # 开发类: planning / in-progress / review / done
+                             # 分析类: planning / data-collection / analysis / synthesis / review / done
 status: not-started          # not-started / active / blocked / deployed
 last_updated: {yyyy-mm-dd}
 
-# ==================== 任务列表 ====================
+# ==================== 任务列表 — 开发类 ====================
 tasks:
   - id: t1
     name: {任务描述}
@@ -24,9 +27,59 @@ tasks:
     blockers:
     next_action:
 
+# ==================== 任务列表 — 分析类 ====================
+# （开发类 Program 可删除以下，替换为分析类 task 预设）
+#
+# tasks:
+#   - id: t1
+#     name: 数据采集（元数据/表结构/运行时指标）
+#     status: pending
+#     checkpoint:
+#     blockers:
+#     next_action:
+#
+#   - id: t2
+#     name: 小样验证（少量对象试跑，确认分析框架）
+#     status: pending
+#     checkpoint:
+#     blockers:
+#     next_action:
+#
+#   - id: t3
+#     name: 批量分析执行
+#     status: pending
+#     checkpoint:
+#     blockers:
+#     next_action:
+#
+#   - id: t4
+#     name: 结果汇总（生成分析报告 + 结构化输出）
+#     status: pending
+#     checkpoint:
+#     blockers:
+#     next_action:
+#
+#   - id: t5
+#     name: 验证 & 用户确认
+#     status: pending
+#     checkpoint:
+#     blockers:
+#     next_action:
+
 # ==================== 产物清单 ====================
 artifacts:
   plan: workspace/PLAN.md
+  # 开发类：
   ddl: []
   dml: []
   validation: []
+  # 分析类：
+  data: []
+  analysis: []
+  output: []
+
+# ==================== 分析进度统计（分析类） ====================
+# progress:
+#   total_objects: 0
+#   analyzed: 0
+#   exceptions: 0
