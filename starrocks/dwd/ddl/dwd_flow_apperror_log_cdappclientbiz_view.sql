@@ -1,5 +1,86 @@
-CREATE VIEW `dwd_flow_apperror_log_cdappclientbiz_view` (`dt` COMMENT "日期", `track_id` COMMENT "track_id", `rid` COMMENT "rid", `project` COMMENT "project", `event_tm` COMMENT "时间", `type` COMMENT "type", `distinct_id` COMMENT "distinct_id", `event` COMMENT "事件", `login_id` COMMENT "login_id", `biz_type` COMMENT "错误类型", `biz_ads_type` COMMENT "错误广告类型", `biz_msg` COMMENT "内容", `biz_error_msg` COMMENT "报错内容", `biz_error_code` COMMENT "报错code", `biz_url` COMMENT "bizUrl", `biz_error_message` COMMENT "bizErrorMessage", `is_first_day` COMMENT "是否首次", `os` COMMENT "os系统", `lib` COMMENT "系统", `lib_version` COMMENT "系统版本", `model` COMMENT "设备型号", `brand` COMMENT "设备品牌", `app_version` COMMENT "app版本", `app_id` COMMENT "appid", `app_name` COMMENT "app名称", `appcorever` COMMENT "core", `app_lang_id` COMMENT "app语言", `app_product_x` COMMENT "appproductx", `app_channel` COMMENT "渠道", `appchannel` COMMENT "渠道", `device_lang` COMMENT "设备语言", `appid` COMMENT "appid", `app_core_ver` COMMENT "core", `app_product_id` COMMENT "app_product_id", `referrer_title` COMMENT "页面", `device_id` COMMENT "设备id", `biz_book_id` COMMENT "书籍id", `biz_book_id2` COMMENT "书籍id,来自bizbookID", `biz_chapter_id` COMMENT "章节id", `etl_tm` COMMENT "清洗时间")
-COMMENT "event=CdAppClientBiz  客户端上报" AS SELECT `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`dt`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`track_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`rid`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`project`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`event_tm`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`type`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`distinct_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`event`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`login_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizType`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizAdsType`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizMsg`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizErrorMsg`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizErrorCode`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizUrl`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizErrorMessage`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`is_first_day`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`os`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`lib`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`lib_version`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`model`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`brand`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_version`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_name`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`appCoreVer`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`appLangId`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`appProductX`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_channel`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`appChannel`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`deviceLang`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`appId`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_core_ver`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`app_product_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`referrer_title`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`device_id`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizBookId`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizBookId2`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`bizChapterId`, `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`.`etl_tm`
-FROM `ods_log`.`ods_kafka_apperror_log_cdappclientbiz`;
-utf8
-utf8_general_ci
+create or replace view dwd.dwd_flow_apperror_log_cdappclientbiz_view (
+      dt                comment "日期"
+    , track_id          comment "track_id"
+    , rid               comment "rid"
+    , project           comment "project"
+    , event_tm          comment "时间"
+    , type              comment "type"
+    , distinct_id       comment "distinct_id"
+    , event             comment "事件"
+    , login_id          comment "login_id"
+    , biz_type          comment "错误类型"
+    , biz_ads_type      comment "错误广告类型"
+    , biz_msg           comment "内容"
+    , biz_error_msg     comment "报错内容"
+    , biz_error_code    comment "报错code"
+    , biz_url           comment "bizUrl"
+    , biz_error_message comment "bizErrorMessage"
+    , is_first_day      comment "是否首次"
+    , os                comment "os系统"
+    , lib               comment "系统"
+    , lib_version       comment "系统版本"
+    , model             comment "设备型号"
+    , brand             comment "设备品牌"
+    , app_version       comment "app版本"
+    , app_id            comment "appid"
+    , app_name          comment "app名称"
+    , appcorever        comment "core"
+    , app_lang_id       comment "app语言"
+    , app_product_x     comment "appproductx"
+    , app_channel       comment "渠道"
+    , appchannel        comment "渠道"
+    , device_lang       comment "设备语言"
+    , appid             comment "appid"
+    , app_core_ver      comment "core"
+    , app_product_id    comment "app_product_id"
+    , referrer_title    comment "页面"
+    , device_id         comment "设备id"
+    , biz_book_id       comment "书籍id"
+    , biz_book_id2      comment "书籍id,来自bizbookID"
+    , biz_chapter_id    comment "章节id"
+    , etl_tm            comment "清洗时间"
+)
+comment "event=CdAppClientBiz  客户端上报"
+as
+select dt              as dt
+     , track_id        as track_id
+     , rid             as rid
+     , project         as project
+     , event_tm        as event_tm
+     , type            as type
+     , distinct_id     as distinct_id
+     , event           as event
+     , login_id        as login_id
+     , bizType         as biz_type
+     , bizAdsType      as biz_ads_type
+     , bizMsg          as biz_msg
+     , bizErrorMsg     as biz_error_msg
+     , bizErrorCode    as biz_error_code
+     , bizUrl          as biz_url
+     , bizErrorMessage as biz_error_message
+     , is_first_day    as is_first_day
+     , os              as os
+     , lib             as lib
+     , lib_version     as lib_version
+     , model           as model
+     , brand           as brand
+     , app_version     as app_version
+     , app_id          as app_id
+     , app_name        as app_name
+     , appCoreVer      as appcorever
+     , appLangId       as app_lang_id
+     , appProductX     as app_product_x
+     , app_channel     as app_channel
+     , appChannel      as appchannel
+     , deviceLang      as device_lang
+     , appId           as appid
+     , app_core_ver    as app_core_ver
+     , app_product_id  as app_product_id
+     , referrer_title  as referrer_title
+     , device_id       as device_id
+     , bizBookId       as biz_book_id
+     , bizBookId2      as biz_book_id2
+     , bizChapterId    as biz_chapter_id
+     , etl_tm          as etl_tm
+  from ods_log.ods_kafka_apperror_log_cdappclientbiz
+;
