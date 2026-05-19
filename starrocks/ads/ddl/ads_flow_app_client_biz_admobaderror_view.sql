@@ -1,3 +1,28 @@
-CREATE VIEW `ads_flow_app_client_biz_admobaderror_view` (`dt` COMMENT "日期", `app_id` COMMENT "app_id", `corever` COMMENT "core", `mt` COMMENT "设备", `product_id` COMMENT "产品id", `app_ver` COMMENT "应用版本", `biz_type` COMMENT "报错类型", `biz_ads_type` COMMENT "报错类型", `biz_msg` COMMENT "报错内容", `cnt` COMMENT "数量", `etl_tm` COMMENT "清洗时间")
-COMMENT "客户端上报错误 admobaderror" AS SELECT `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`dt`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`app_id`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`corever`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`mt`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`product_id`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`app_ver`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`biz_type`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`biz_ads_type`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`biz_msg`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`cnt`, `dws`.`dws_flow_app_client_biz_admobaderror_ed`.`etl_tm`
-FROM `dws`.`dws_flow_app_client_biz_admobaderror_ed`;
+create or replace view ads.ads_flow_app_client_biz_admobaderror_view (
+     dt              comment "日期"
+    ,app_id          comment "app_id"
+    ,corever         comment "core"
+    ,mt              comment "设备"
+    ,product_id      comment "产品id"
+    ,app_ver         comment "应用版本"
+    ,biz_type        comment "报错类型"
+    ,biz_ads_type    comment "报错类型"
+    ,biz_msg         comment "报错内容"
+    ,cnt             comment "数量"
+    ,etl_tm          comment "清洗时间"
+)
+comment "客户端上报错误 admobaderror"
+as
+select dt
+     , app_id
+     , corever
+     , mt
+     , product_id
+     , app_ver
+     , biz_type
+     , biz_ads_type
+     , biz_msg
+     , cnt
+     , etl_tm
+  from dws.dws_flow_app_client_biz_admobaderror_ed
+;
