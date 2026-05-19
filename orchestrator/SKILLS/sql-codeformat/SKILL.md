@@ -66,17 +66,24 @@ python orchestrator/SKILLS/sql-codeformat/scripts/format_starrocks_create_table.
 在仓库根目录执行：
 
 ```bash
-python orchestrator/SKILLS/sql-codeformat/scripts/format_starrocks_insert_select.py path/to/file.sql --write
+python orchestrator/SKILLS/sql-codeformat/scripts/format_starrocks_insert_select.py path/to/file.sql --write --function "程序功能描述" --owner "负责人"
 ```
 
-使用 `--check` 校验文件是否已经符合格式要求，且不写入变更。不传 `--write` 和 `--check` 时，将格式化后的 SQL 输出到 stdout。
+- 若目标文件已有文件头（含 `-- 程序功能` 注释块），格式化时保留不变；否则自动生成文件头，此时 `--function` 和 `--owner` 为必填参数。
+- 使用 `--check` 校验文件是否已经符合格式要求，且不写入变更。不传 `--write` 和 `--check` 时，将格式化后的 SQL 输出到 stdout。
 
 检查 DML 格式化细节时，加载 [references/dml-format-rules.md](references/dml-format-rules.md)。
 
 格式化器采用保守策略：
 
 - 不修改 SQL 语义、不改字段顺序、不改别名、不重写表达式、不补目标字段列表。
-- 不删除反引号。
-- 不修改字符串字面量、注释、`${...}` 调度变量。
+- 不修改字符串字面量、SQL 注释、`${...}` 调度变量。
+- 删除不含中文的别名/列名/表名的反引号，含中文时保留。
+- 所有 SQL 关键字、函数名、类型关键字统一小写，`inner join` 缩写为 `join`。
+- `select` 列表前置逗号缩进，同段 `as` 垂直对齐；`case when` 多行格式化。
+- `from`/`join` 与子查询缩进对齐，`on`/`and` 条件对齐。
+- `where`/`group by`/`order by`/`having` 关键字与对应 `select` 对齐。
+- `union all` 顶格，前后各一空行。
+- 比较运算符两侧加空格，函数调用参数内逗号不额外加空格。
 - 支持一个文件多段 `insert`，逐段格式化，不合并、不拆分语句。
-- 仅做确定性、低风险的大小写、尾部分号、空行、缩进和常见子句对齐处理；脚本无法可靠判断的复杂 SQL 保留原结构，必要时手动按规则补齐。
+- 脚本无法可靠判断的复杂 SQL 保留原结构，必要时手动按规则补齐。
