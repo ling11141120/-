@@ -5,7 +5,7 @@
 > 格式规范详见 `orchestrator/ALWAYS/CHANGELOG-SPEC.md`。
 
 ---
-## dev+qhr+RTM-20262+productid语言rule映射 | 负责人: qhr | 周期: 2026-05-13 ~ 进行中
+## dev+qhr+RTM-20262+productid语言rule映射 | 负责人: qhr | 周期: 2026-05-13 ~ 2026-05-13
 
 ### 2026-05-13
 - [人工] 向服务端确认productid与language等信息的映射关系，编辑Excel文件
@@ -42,3 +42,13 @@
 - [AI] 实现 ${...} 内部换行展平（restore 阶段将 \n 替换为空格）
 - [AI] 修复 _insert_implicit_as_in_expr 中 has_as 检测的 off-by-one 错误
 
+
+---
+## dev+qhr+三方曝光及充值监控分析 | 负责人: qhr | 周期: 2026-05-20 ~ 2026-05-20
+
+### 2026-05-20
+- [AI] 扫描海剧三方支付漏斗链路报表 V4，创建 Program P-20260520，提取曝光+充值核心 CTE，精简为 T+1 分析 SQL（维度：用户类型 D0/非D0、core、mt；指标：三方曝光UV、曝光UV、三方充值UV、三方充值金额、原生充值金额）
+- [AI] 按反馈切换维度方案：策略体系（recharge_source/strategy_id/策略代号&名称） → 用户体系（user_type/core/mt），同步更新 PLAN.md
+- [AI] 基于海阅三方支付漏斗链路报表 V3 脚本内部三表（dws_user_wide_active_period_ed / ads_bi_sr_third_payment_exposure_pv_di / ads_trade_user_payorder_view）重构海阅 T+1 分析 SQL，独立 CTE 防 fan-out，新增 period_type=''ctt'' 过滤
+- [人工] 在 StarRocks 执行两条 SQL 验证，确认字段口径和输出结果满足要求
+- [AI] 更新 PROGRAM.md / SCOPE.yml / STATUS.yml / PLAN.md 配套文档
