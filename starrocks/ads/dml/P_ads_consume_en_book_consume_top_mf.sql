@@ -73,7 +73,7 @@ with tag as (
       join novel_book                                                  as a3
         on a1.book_id = a3.BookID
        and a1.product_id = a3.productid
-      left join ods_tidb_readernovel_tidb_en_novel_bookcategory_new    as a4
+      left join ods.ods_tidb_readernovel_tidb_en_novel_bookcategory_new    as a4
         on a3.NewCID = a4.CID
        and a4.productid=3366
        and a3.productid = a4.productid

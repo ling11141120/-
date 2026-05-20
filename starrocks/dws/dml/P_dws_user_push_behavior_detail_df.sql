@@ -403,7 +403,10 @@ with send_view as (
     select a1.event
           ,a1.dt
           ,a1.id
-          ,a1.push_type
+          ,case
+               when a1.push_type is null and a4.p_type = 2 then 'live通知'
+               else a1.push_type
+           end                                as push_type
           ,a1.push_id
           ,if(a1.event='点击'
              ,case when a1.push_id='101' and a1.push_type='1' then '本地PUSH-定时签到'
@@ -455,7 +458,7 @@ with send_view as (
         on a1.user_id = a2.user_id
        and a1.dt = a2.dt
        and a2.period_type = 'ctt'
-      left join ads.ads_tidb_short_video_center_push_position_view    as a4
+      left join dwd.dwd_sv_center_push_position_view                  as a4
         on a1.push_id = a4.id
       left join dim.dim_short_video_user_accountinfo_zip              as a5
         on a1.user_id = a5.user_id
