@@ -30,4 +30,15 @@
 - [人工] 审核验证结果，确认 3 处差异为 correct_format 自身不一致，脚本行为符合统一规则
 - [AI] 更新项目级 sql-codeformat SKILL.md，含 --function/--owner 参数说明和完整格式化规则列表
 - [AI] 同步更新系统级 sql-codeformat skill（Cowork save_skill）
+- [AI] 新增 format_finebi.py 格式化脚本（554 行），复用 DML 格式化器核心模块（tokenizer/normalizer/parser/formatter），新增 FineBIBodyParser 修复 parse_ctes 逗号检测和 parse_conditions where 关键字终止，实现 CTE 注释提取与标准化（---xxx → -- xxx）、隐式别名 as 自动补全、between...and 条件合并、FineBI 文件头生成
+- [AI] 执行单文件验证（raw/original.sql 对比 raw/correct-format.sql），核心格式一致（文件头、6 个 CTE 全部识别、注释标准化、缩进、别名 as、between 合并）
+- [AI] 执行批量验证，Application/FineBI/海剧/ 下 4 个不同复杂度文件（广告基建策略、海剧用户留存、模板&剧维度基建上限、收入）均通过
+- [AI] 更新 SKILL.md 添加 FineBI 格式化器章节（触发条件、命令行参数、格式化规则）
+
+
+### 2026-05-20
+- [AI] 重构 format_finebi.py 架??新增预提取-占位-格式化-回填流水线（extract_finebi_vars / extract_cast_exprs / restore_finebi_vars / restore_cast_exprs）??决 ${...} 模板表达式和 cast(... as ...) 破坏 SQL 解析的核心问题
+- [AI] 实现单引号别名 -> 反引号转换（s ''别名'' -> s `别名`，支持显式 s 写法和隐式别名写法）
+- [AI] 实现 ${...} 内部换行展平（restore 阶段将 \n 替换为空格）
+- [AI] 修复 _insert_implicit_as_in_expr 中 has_as 检测的 off-by-one 错误
 
