@@ -8,35 +8,29 @@
 -- 开发日期：2026-05-21
 ----------------------------------------------------------------
 
-drop table if exists ods.ods_tidb_readerlog_en_log_pwaseriesIdlog;
-create table ods.ods_tidb_readerlog_en_log_pwaseriesIdlog (
-     dt                   date          not null                    comment "分区"
-    ,id                   bigint        not null                    comment "日志Id"
-    ,user_id              bigint        null                        comment "用户Id"
-    ,series_id            bigint        null                        comment "剧Id"
-    ,create_time          datetime      null                        comment "创建时间"
-    ,app_id               int           null                        comment "appid"
-    ,unique_cd_reader_id  varchar(765)  null                        comment "设备Id"
-    ,video_user_id        bigint        null                        comment "海剧的用户id"
-    ,mt                   int           null                        comment "mt"
-    ,sr_createtime        datetime      default current_timestamp   comment "starrocks入库时间"
-    ,sr_updatetime        datetime      default current_timestamp   comment "starrocks数据更新时间"
+create table if not exists ods.ods_tidb_readerlog_en_log_pwaseriesIdlog (
+     dt                   date          not null                   comment "分区"
+    ,id                   bigint        not null                   comment "日志Id"
+    ,user_id              bigint                                   comment "用户Id"
+    ,series_id            bigint                                   comment "剧Id"
+    ,create_time          datetime                                 comment "创建时间"
+    ,app_id               int                                      comment "appid"
+    ,unique_cd_reader_id  varchar(765)                             comment "设备Id"
+    ,video_user_id        bigint                                   comment "海剧的用户id"
+    ,mt                   int                                      comment "mt"
+    ,sr_createtime        datetime      default current_timestamp  comment "StarRocks数据注入时间"
+    ,sr_updatetime        datetime      default current_timestamp  comment "Starrocks数据更新时间"
 )
-primary key(dt,id)
+primary key(dt, id)
 comment "pwa剧Id日志"
-partition by date_trunc("day", dt)
-distributed by HASH(id) BUCKETS 5
+partition by date_trunc('day', dt)
+distributed by hash(dt,id)
 properties (
-     "replication_num" = "3"
-    ,"dynamic_partition.enable" = "true"
-    ,"dynamic_partition.time_unit" = "DAY"
-    ,"dynamic_partition.time_zone" = "Asia/Shanghai"
-    ,"dynamic_partition.start" = "-365"
-    ,"dynamic_partition.end" = "3"
-    ,"dynamic_partition.prefix" = "p"
-    ,"dynamic_partition.buckets" = "5"
-    ,"in_memory" = "false"
-    ,"enable_persistent_index" = "false"
-    ,"replicated_storage" = "true"
-    ,"compression" = "LZ4"
-);
+    "replication_num" = "3",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4",
+    "partition_live_number" = "365"
+)
+;
