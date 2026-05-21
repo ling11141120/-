@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
--- 目标表： ods.ods_tidb_readerlog_en_pwa_series_id_di
+-- 目标表： ods.ods_tidb_readerlog_en_log_pwaseriesIdlog
 -- 来源实例： old_tidb_source
 -- 来源表： readerlog_en.Log_PWASeriesIdLog
 -- 来源负责：
@@ -8,8 +8,8 @@
 -- 开发日期：2026-05-21
 ----------------------------------------------------------------
 
-drop table if exists ods.ods_tidb_readerlog_en_pwa_series_id_di;
-create table ods.ods_tidb_readerlog_en_pwa_series_id_di (
+drop table if exists ods.ods_tidb_readerlog_en_log_pwaseriesIdlog;
+create table ods.ods_tidb_readerlog_en_log_pwaseriesIdlog (
      dt                   date          not null                    comment "分区"
     ,id                   bigint        not null                    comment "日志Id"
     ,user_id              bigint        null                        comment "用户Id"
@@ -25,7 +25,7 @@ create table ods.ods_tidb_readerlog_en_pwa_series_id_di (
 primary key(dt,id)
 comment "pwa剧Id日志"
 partition by date_trunc("day", dt)
-distributed by HASH(`id`) BUCKETS 5
+distributed by HASH(id) BUCKETS 5
 properties (
      "replication_num" = "3"
     ,"dynamic_partition.enable" = "true"
