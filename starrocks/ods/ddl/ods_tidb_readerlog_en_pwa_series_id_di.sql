@@ -24,7 +24,7 @@ create table ods.ods_tidb_readerlog_en_pwa_series_id_di (
 )
 primary key(dt,id)
 comment "pwa剧Id日志"
-partition by date_trunc("day", `dt`)
+partition by date_trunc("day", dt)
 distributed by HASH(`id`) BUCKETS 5
 properties (
      "replication_num" = "3"
