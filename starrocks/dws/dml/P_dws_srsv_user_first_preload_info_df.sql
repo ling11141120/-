@@ -45,11 +45,11 @@ select product_id
 
 union all
 
-select product_id
-     , user_id
-     , ad_type
+select product_id       as product_id
+     , user_id          as user_id
+     , ad_type          as ad_type
      , max(ecpm)        as lst_preload_ecpm
-     , fst_preload_time
+     , fst_preload_time as fst_preload_time
      , now()            as etl_time
   from (select product_id
              , user_id

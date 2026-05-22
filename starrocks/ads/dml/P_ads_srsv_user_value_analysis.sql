@@ -130,7 +130,7 @@ select a.dt
                  on a.product_id = b.product_id
                 and a.id = b.user_id
 
-union all
+ union all
 
 select a.product_id
                   , a.user_id
@@ -161,9 +161,9 @@ select a.product_id
               where dt >= date_sub('${bf_1_dt}', interval 7 day)
               group by dt, ProductId, UserId
 
-union all
+              union all
 
-select dt
+             select dt
                   , ProductId
                   , UserId
                   , group_concat(distinct CrowdId) as group_id_list
