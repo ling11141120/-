@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_trade_user_recharge_tier_agg_di
+-- workflow_version : 1
+-- create_user      : qhr
+-- task_name        : P_dwd_trade_user_recharge_tier_agg_di
+-- task_version     : 1
+-- update_time      : 2026-02-03 18:44:11
+-- sql_path         : \starrocks\tbl_dwd_trade_user_recharge_tier_agg_di\P_dwd_trade_user_recharge_tier_agg_di
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 交易域-用户充值档位聚合
 -- 程序名： P_dwd_trade_user_recharge_tier_agg_di
 -- 目标表： dwd.dwd_trade_user_recharge_tier_agg_di

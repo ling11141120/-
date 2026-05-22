@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_trade_user_type_pay_ltv_est_mid
+-- workflow_version : 15
+-- create_user      : chenmo
+-- task_name        : ads_trade_user_type_pay_ltv_est_mid
+-- task_version     : 15
+-- update_time      : 2025-05-10 17:55:18
+-- sql_path         : \starrocks\tbl_ads_trade_user_type_pay_ltv_est_mid\ads_trade_user_type_pay_ltv_est_mid
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_trade_user_type_pay_ltv_est_mid
 with tmp as (
     -- 0-30天
@@ -247,4 +258,7 @@ from (
 ) a
 -- 处理不超过end_day的逻辑
 join new b on a.dt = b.dt and a.product_id = b.product_id and a.user_id = b.user_id and a.pay_days < datediff(b.end_day, b.dt)
-where a.pay_days <= datediff('${dt}', b.dt); -- 过滤时间还没到的pay_days
+where a.pay_days <= datediff('${dt}', b.dt);
+
+-- SQL语句
+-- 过滤时间还没到的pay_days;

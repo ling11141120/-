@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_third_party_payment_payorder_info
+-- workflow_version : 9
+-- create_user      : chenmo
+-- task_name        : ads_sr_third_party_payment_payorder_info
+-- task_version     : 5
+-- update_time      : 2025-12-15 13:51:22
+-- sql_path         : \starrocks\tbl_ads_sr_third_party_payment_payorder_info\ads_sr_third_party_payment_payorder_info
+----------------------------------------------------------------
+-- SQL语句
 -- =====================================================================================
 -- 表2-主SQL: 插入订单表数据
 -- 说明: 曝光取最近4天数据，解决跨天曝光问题（如23:59曝光，次日0:02下单）
@@ -163,6 +174,17 @@ left join third_payment_for_zffs c1
 left join third_payment_for_zffs c2
     on a.last_subpay_type = c2.PaymentId;
 
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_third_party_payment_payorder_info
+-- workflow_version : 9
+-- create_user      : chenmo
+-- task_name        : 回填sql1_ads_sr_third_party_payment_payorder_info
+-- task_version     : 4
+-- update_time      : 2025-12-15 14:03:43
+-- sql_path         : \starrocks\tbl_ads_sr_third_party_payment_payorder_info\回填sql1_ads_sr_third_party_payment_payorder_info
+----------------------------------------------------------------
+-- SQL语句
 -- =====================================================================================
 -- 表2-回填SQL1: 回填历史next_zffs_list为null的数据
 -- 场景: 用户可能隔了好几天才有新订单，需要回填历史上next_zffs_list为null的记录
@@ -200,6 +222,17 @@ where a.dt >= date_sub('${bf_1_dt}', interval 4 day)
   and a.dt < '${bf_1_dt}'
   and a.next_zffs_list is null;
 
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_third_party_payment_payorder_info
+-- workflow_version : 9
+-- create_user      : chenmo
+-- task_name        : 回填sql2_ads_sr_third_party_payment_payorder_info
+-- task_version     : 4
+-- update_time      : 2025-12-15 14:03:43
+-- sql_path         : \starrocks\tbl_ads_sr_third_party_payment_payorder_info\回填sql2_ads_sr_third_party_payment_payorder_info
+----------------------------------------------------------------
+-- SQL语句
 -- =====================================================================================
 -- 表2-回填SQL2: 回填当天第一条订单的last_zffs
 -- 场景: 当天第一条订单的last_zffs为null，需要用历史最后一条订单的zffs来回填

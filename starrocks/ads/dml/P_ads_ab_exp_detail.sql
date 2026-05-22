@@ -1,8 +1,19 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_ab_exp_detail_v2
+-- workflow_version : 20
+-- create_user      : hufengju
+-- task_name        : P_ads_ab_exp_detail
+-- task_version     : 1
+-- update_time      : 2026-03-10 14:22:34
+-- sql_path         : \starrocks\tbl_ads_ab_exp_detail_v2\P_ads_ab_exp_detail
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： AB实验明细表
 -- 程序名： P_ads_ab_exp_detail
 -- 目标表： ads.ads_ab_exp_detail
--- 负责人： 
+-- 负责人：
 -- 开发日期： 2026-03-09
 ----------------------------------------------------------------
 

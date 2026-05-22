@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_srsv_new_user_active_info_di
+-- workflow_version : 13
+-- create_user      : hufengju
+-- task_name        : ads_bi_srsv_new_user_active_info_di
+-- task_version     : 12
+-- update_time      : 2024-11-29 14:56:35
+-- sql_path         : \starrocks\tbl_ads_bi_srsv_new_user_active_info_di\ads_bi_srsv_new_user_active_info_di
+----------------------------------------------------------------
+-- SQL语句
 --=========日常调度===============
 insert into ads.`ads_bi_srsv_new_user_active_info_di`
 -- 用户第一次安装时的bookID

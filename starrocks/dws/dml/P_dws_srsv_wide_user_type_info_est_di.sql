@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_srsv_wide_user_type_info_est_di
+-- workflow_version : 6
+-- create_user      : hufengju
+-- task_name        : dws_srsv_wide_user_type_info_est_di
+-- task_version     : 5
+-- update_time      : 2025-06-13 15:43:05
+-- sql_path         : \starrocks\tbl_dws_srsv_wide_user_type_info_est_di\dws_srsv_wide_user_type_info_est_di
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_srsv_wide_user_type_info_est_di where dt>='${bf_1_dt}' and dt<'${dt}';
+
+-- SQL语句
 -- -------------新用户按天的----------------------------
 insert into dws.dws_srsv_wide_user_type_info_est_di
 select
@@ -46,8 +60,7 @@ on a.productid=d.product_id and a.id=d.user_id
 
  where date_add(a.createtime,interval -13 hour) >='${bf_1_dt}' and date_add(a.createtime,interval -13 hour)<'${dt}' and a.productid  not in (3521,3531,6883) ;
 
-
-
+-- SQL语句
 -- -------------活跃用户按天的----------------------------
 insert into dws.dws_srsv_wide_user_type_info_est_di
 select
@@ -89,8 +102,7 @@ from
     on a.product_id =e.productid and a.user_id =e.id
 ;
 
-
-
+-- SQL语句
 -- -------------rmt 用户按天的----------------------------
 insert into dws.dws_srsv_wide_user_type_info_est_di
 select

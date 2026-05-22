@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_trade_user_type_ltv_mid
+-- workflow_version : 14
+-- create_user      : linq
+-- task_name        : ads_trade_user_type_ltv_mid
+-- task_version     : 12
+-- update_time      : 2026-01-26 15:50:33
+-- sql_path         : \starrocks\tbl_ads_trade_user_type_ltv_mid\ads_trade_user_type_ltv_mid
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_trade_user_type_ltv_mid
 WITH pay_detail AS (
     SELECT dt,
@@ -177,4 +188,7 @@ from(
                     group by 1,2,3,4,5,6,7,8,9,10,11
           )c,unnest(arr) tmp2
     )d inner join acc on d.dt=acc.dt and d.product_id=acc.product_id and d.user_id=acc.user_id and d.pay_days<datediff(acc.end_day,acc.dt) -- 处理不超过end_day的逻辑,新用户的不存在end_day
-where pay_days<=datediff('${dt}',acc.dt);-- 过滤时间还没到的pay_days
+where pay_days<=datediff('${dt}',acc.dt);
+
+-- SQL语句
+-- 过滤时间还没到的pay_days;

@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : sch_ads_report_first_page
+-- workflow_version : 21
+-- create_user      : xixg
+-- task_name        : ads_report_first_page_data35
+-- task_version     : 7
+-- update_time      : 2025-06-23 18:03:51
+-- sql_path         : \starrocks\sch_ads_report_first_page\ads_report_first_page_data35
+----------------------------------------------------------------
+-- 前置SQL语句
+TRUNCATE TABLE ads.ads_report_first_page_data35;
+
+-- SQL语句
 INSERT INTO ads.ads_report_first_page_data35
 select a.dt as create_date ,sum(a.DAU) DAU,sum(a.new_num) 新增用户数,sum(b.charge_num) 充值人数,sum(b.charge_money) 充值金额,sum(b.fisrt_charge_num) 首充用户数, NOW()
 from
@@ -84,7 +98,6 @@ from
                  where
                      dt>=date_sub(curdate(),interval 30 day) and self_type = 0
                  group by 1
-
 
              ) y group by 1
     ) b

@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_cost_income_read_stat
+-- workflow_version : 2
+-- create_user      : zhengtt
+-- task_name        : ads_report_cost_income_read_stat
+-- task_version     : 2
+-- update_time      : 2024-11-14 18:26:47
+-- sql_path         : \starrocks\tbl_ads_report_cost_income_read_stat\ads_report_cost_income_read_stat
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_report_cost_income_read_stat  where product_id = 0 and dt = '${dt}';
+
+-- SQL语句
 insert into ads.ads_report_cost_income_read_stat
 select 	a.dt,a.product_id,a.book_id,a.book_name,a.origin_book_name as from_book_name,
         a.object_book_name as to_book_name,a.object_book_type,a.is_cost_rate,a.promotion_status,d.publish_length as publish_length,

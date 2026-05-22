@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_subscribe_user_daily_snapshot
+-- workflow_version : 6
+-- create_user      : qhr
+-- task_name        : P_dws_subscribe_user_daily_snapshot
+-- task_version     : 3
+-- update_time      : 2026-02-07 16:27:11
+-- sql_path         : \starrocks\tbl_dws_subscribe_user_daily_snapshot\P_dws_subscribe_user_daily_snapshot
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 订阅域-用户快照表
 -- 程序名： P_dws_subscribe_user_daily_snapshot
 -- 目标表： dws.dws_subscribe_user_daily_snapshot
@@ -6,8 +17,8 @@
 -- 开发日期： 2026-01-27
 ----------------------------------------------------------------
 
--- 签到卡
 insert into dws.dws_subscribe_user_daily_snapshot
+-- 签到卡
 select '${bf_1_dt}'                                   as dt
      , coalesce(susc.product_id, uds.product_id)      as product_id
      , coalesce(susc.user_id, uds.user_id)            as user_id
@@ -22,12 +33,11 @@ select '${bf_1_dt}'                                   as dt
     on uds.product_id = susc.product_id
    and uds.user_id = susc.user_id
    and uds.sub_type = 1
+   and uds.dt = '${bf_2_dt}'
  where susc.dt >= '${bf_1_dt}'
    and susc.dt < '${dt}'
-;
-
+ union all
 -- vip
-insert into dws.dws_subscribe_user_daily_snapshot
 select '${bf_1_dt}'                                                               as dt
      , product_id
      , user_id
@@ -40,10 +50,8 @@ select '${bf_1_dt}'                                                             
   from dim.dim_short_video_user_accountinfo -- 海剧用户信息
  where expire_time <> 0
    and expire_time is not null
-;
-
+ union all
 -- svip
-insert into dws.dws_subscribe_user_daily_snapshot
 select '${bf_1_dt}'    as dt
      , product_id
      , user_id

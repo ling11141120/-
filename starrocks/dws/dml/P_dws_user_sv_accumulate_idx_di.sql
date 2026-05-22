@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_sv_accumulate_idx_di
+-- workflow_version : 5
+-- create_user      : qhr
+-- task_name        : P_dws_user_sv_accumulate_idx_di
+-- task_version     : 4
+-- update_time      : 2026-02-05 14:18:12
+-- sql_path         : \starrocks\tbl_dws_user_sv_accumulate_idx_di\P_dws_user_sv_accumulate_idx_di
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 用户域-海剧用户累计指标表
 -- 程序名： P_dws_user_sv_accumulate_idx_di
 -- 目标表： dws.dws_user_sv_accumulate_idx_di
@@ -23,6 +34,7 @@ select user_id
  group by 1
 ;
 
+-- SQL语句
 -- 消耗
 insert into dws.dws_user_sv_accumulate_idx_di (
      user_id                 -- 用户id
@@ -48,6 +60,7 @@ select account_id                                        as user_id
  group by 1
 ;
 
+-- SQL语句
 -- 观看
 insert into dws.dws_user_sv_accumulate_idx_di (
      user_id            -- 用户id
@@ -69,6 +82,7 @@ select account_id                                                   as user_id
  group by 1
 ;
 
+-- SQL语句
 -- 点赞
 insert into dws.dws_user_sv_accumulate_idx_di (
      user_id          -- 用户id
@@ -89,6 +103,7 @@ select sval.user_id                                                     as user_
  group by 1
 ;
 
+-- SQL语句
 -- 充值订阅
 insert into dws.dws_user_sv_accumulate_idx_di (
      user_id                       -- 用户id
@@ -130,6 +145,7 @@ select user_id
  group by 1
 ;
 
+-- SQL语句
 -- 用户支付拓展
 insert into dws.dws_user_sv_accumulate_idx_di (
      user_id                  -- 用户id

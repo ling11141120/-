@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_book_read_consume_info_ed
+-- workflow_version : 27
+-- create_user      : yanxh
+-- task_name        : dws_user_book_read_consume_info_ed
+-- task_version     : 2
+-- update_time      : 2025-06-17 15:58:47
+-- sql_path         : \starrocks\tbl_dws_user_book_read_consume_info_ed\dws_user_book_read_consume_info_ed
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_user_book_read_consume_info_ed
 with tmp_1 AS (
     select user_id, book_id, product_id
@@ -44,4 +55,4 @@ select
     now() as etl_time
 from tmp_3 x1
          left join tmp_2 x2
-             on x1.user_id=x2.user_id and x1.book_id=x2.book_id and x1.product_id=x2.product_id
+             on x1.user_id=x2.user_id and x1.book_id=x2.book_id and x1.product_id=x2.product_id;

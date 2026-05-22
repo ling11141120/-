@@ -1,5 +1,17 @@
-delete from dwm.dwm_consume_user_consume_mild_ed  where dt>='${bf_1_dt}';
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwm_consume_user_consume_mild_ed
+-- workflow_version : 15
+-- create_user      : linq
+-- task_name        : dwm_consume_user_consume_mild_ed
+-- task_version     : 15
+-- update_time      : 2026-01-07 17:38:42
+-- sql_path         : \starrocks\tbl_dwm_consume_user_consume_mild_ed\dwm_consume_user_consume_mild_ed
+----------------------------------------------------------------
+-- SQL语句
+delete from dwm.dwm_consume_user_consume_mild_ed  where dt ='${bf_1_dt}';
 
+-- SQL语句
 insert into dwm.dwm_consume_user_consume_mild_ed
 with t1 as (
     select dt, product_id, types, user_id,

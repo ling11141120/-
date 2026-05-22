@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_wide_active_ed
+-- workflow_version : 23
+-- create_user      : linq
+-- task_name        : P_dws_user_wide_active_ed
+-- task_version     : 22
+-- update_time      : 2026-02-14 16:55:17
+-- sql_path         : \starrocks\tbl_dws_user_wide_active_ed\P_dws_user_wide_active_ed
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 阅读线-用户域登录阅读充值消耗事件汇总活跃表
 -- 程序名： P_dws_user_wide_active_ed
 -- 目标表： dws.dws_user_wide_active_ed
@@ -122,6 +133,7 @@ select b.dt
    and b.UserId = d.user_id
 ;
 
+-- SQL语句
 -- 当天
 insert into dws.dws_user_wide_active_ed
 with lang_mapping as (

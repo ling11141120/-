@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_template_target_data
+-- workflow_version : 76
+-- create_user      : chenmo
+-- task_name        : ads_srsv_bi_ad_optimizer_template_target_data_pre
+-- task_version     : 28
+-- update_time      : 2025-11-04 13:54:25
+-- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_template_target_data\ads_srsv_bi_ad_optimizer_template_target_data_pre
+----------------------------------------------------------------
+-- SQL语句
 --  底表1：预处理
 insert into  ads.ads_srsv_bi_ad_optimizer_template_target_data_pre
 
@@ -73,7 +84,6 @@ insert into  ads.ads_srsv_bi_ad_optimizer_template_target_data_pre
         ) e on a.product_id=e.product_id and a.ad_set_id=e.ad_set_id
         group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
     )
-
 
     -- 语言，代号，创编模板
     , z2 as (
@@ -271,7 +281,6 @@ insert into  ads.ads_srsv_bi_ad_optimizer_template_target_data_pre
         ) xx
         group by 1,2,3,4,5,6,7,8,9,10,11,12,13
     )
-
 
     -- 新广告组，基建评估指标 ,首个优化师，历史花费最大优化师
     -- 增加阶段， 代号，书籍语言，近2天B级书过滤

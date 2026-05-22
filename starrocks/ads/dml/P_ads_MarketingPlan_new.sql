@@ -1,137 +1,91 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : ads_MarketingPlan_new
+-- workflow_version : 1
+-- create_user      : xixg
+-- task_name        : ads_MarketingPlan_new
+-- task_version     : 1
+-- update_time      : 2025-07-22 17:30:54
+-- sql_path         : \starrocks\ads_MarketingPlan_new\ads_MarketingPlan_new
+----------------------------------------------------------------
+-- SQL语句
 INSERT INTO ads.ads_MarketingPlan_new
-with tmp_product as (
-    select distinct ProductId
-      from ods.ods_tidb_sharpengine_ads_global_ProjectProduct_da
-     where ProjectCode = 1
+with tmp_product AS (
+    select
+        distinct ProductId
+    from  ods.ods_tidb_sharpengine_ads_global_ProjectProduct_da
+    where  ProjectCode = 1
+),
+
+tmp_30_day_spend AS (
+    select
+        b.BookId AS book_id,
+        sum(CostAmount) AS 30_day_spend
+    from  ods.ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer a
+left join ods.ods_tidb_sharpengine_ads_global_adext b
+    on b.AdId = a.AdId
+    and b.ProductId = a.ProductId
+where a.CreateTime >= date_sub('${bf_1_dt}',30)
+      and a.CreateTime <= '${bf_1_dt}'
+  and a.ProductId in (select ProductId from tmp_product)
+      and ifnull(b.BookId, '')!= ''
+group by b.BookId
+),
+
+tmp_360_day_spend AS (
+select
+    b.BookId AS book_id,
+    sum(CostAmount) AS 360_day_spend
+from  ods.ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer a
+left join ods.ods_tidb_sharpengine_ads_global_adext b
+on b.AdId = a.AdId
+    and b.ProductId = a.ProductId
+where a.CreateTime >= date_sub('${bf_1_dt}',360)
+  and a.CreateTime <= '${bf_1_dt}'
+  and a.ProductId in (select ProductId from tmp_product)
+  and ifnull(b.BookId, '')!= ''
+group by b.BookId
 )
-,tmp_bf_1_dt_spend as (
-    select b.BookId      as book_id
-          ,sum(Spend)    as bf_1_dt_spend
-      from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight    as a
-      left join ods.ods_tidb_sharpengine_ads_global_adext          as b
-        on b.AdId = a.AdId
-       and b.ProductId = a.ProductId
-     where a.date_start = '${bf_1_dt}'
-       and a.ProductId in (select ProductId from tmp_product)
-       and ifnull(b.BookId, '') != ''
-     group by b.BookId
-)
-,tmp_7_day_spend as (
-    select b.BookId      as book_id
-          ,sum(Spend)    as 7_day_spend
-      from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight    as a
-      left join ods.ods_tidb_sharpengine_ads_global_adext          as b
-        on b.AdId = a.AdId
-       and b.ProductId = a.ProductId
-     where a.date_start >= date_sub('${bf_1_dt}', 7)
-       and a.date_start <= '${bf_1_dt}'
-       and a.ProductId in (select ProductId from tmp_product)
-       and ifnull(b.BookId, '') != ''
-     group by b.BookId
-)
-,tmp_30_day_spend as (
-    select b.BookId      as book_id
-          ,sum(Spend)    as 30_day_spend
-      from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight    as a
-      left join ods.ods_tidb_sharpengine_ads_global_adext          as b
-        on b.AdId = a.AdId
-       and b.ProductId = a.ProductId
-     where a.date_start >= date_sub('${bf_1_dt}', 30)
-       and a.date_start <= '${bf_1_dt}'
-       and a.ProductId in (select ProductId from tmp_product)
-       and ifnull(b.BookId, '') != ''
-     group by b.BookId
-)
-,tmp_360_day_spend as (
-    select b.BookId      as book_id
-          ,sum(Spend)    as 360_day_spend
-      from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight    as a
-      left join ods.ods_tidb_sharpengine_ads_global_adext          as b
-        on b.AdId = a.AdId
-       and b.ProductId = a.ProductId
-     where a.date_start >= date_sub('${bf_1_dt}', 360)
-       and a.date_start <= '${bf_1_dt}'
-       and a.ProductId in (select ProductId from tmp_product)
-       and ifnull(b.BookId, '') != ''
-     group by b.BookId
-)
--- 广告计划的第3个阶段的时间
-,tmp_3_codestage as (
-    select a.CodeId       as book_id
-          ,a.BeginDate    as begin_date
-          ,a.EndDate      as end_date
-      from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan    as a
-     where ProjectCode = 1
-       and IsDel = 0
-       and CodeStage = 3
-       and SourceChl = 'fb'
-)
-,tmp_stage3_spend as (
-    select b.BookId as book_id
-          ,sum(case when a.date_start >= c.begin_date and a.date_start < c.end_date then a.Spend
-                    else 0
-                end
-              )     as stage3_spend
-      from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight    as a
-      left join ods.ods_tidb_sharpengine_ads_global_adext          as b
-        on b.AdId = a.AdId
-       and b.ProductId = a.ProductId
-      left join tmp_3_codestage                                    as c
-        on b.BookId = c.book_id
-     where a.ProductId in (select ProductId from tmp_product)
-       and ifnull(b.BookId, '') != ''
-     group by b.BookId
-)
-select '${bf_1_dt}'
-      ,a.id
-      ,a.CodeId
-      ,a.Code
-      ,regexp_extract(a.Code, '^[A-Za-z]+', 0)
-      ,case when a.CurrentLanguage = 1  then '英文'
-            when a.CurrentLanguage = 2  then '中文'
-            when a.CurrentLanguage = 3  then '韩文'
-            when a.CurrentLanguage = 4  then '日文'
-            when a.CurrentLanguage = 5  then '法文'
-            when a.CurrentLanguage = 6  then '德文'
-            when a.CurrentLanguage = 7  then '俄文'
-            when a.CurrentLanguage = 8  then '阿拉伯文'
-            when a.CurrentLanguage = 9  then '中文'
-            when a.CurrentLanguage = 10 then '葡萄牙文'
-            when a.CurrentLanguage = 11 then '印尼文'
-            when a.CurrentLanguage = 12 then '土耳其文'
-            when a.CurrentLanguage = 13 then '俄文'
-            when a.CurrentLanguage = 14 then '中文'
-            when a.CurrentLanguage = 15 then '越南文'
-            when a.CurrentLanguage = 16 then '泰文'
-            else ''
-        end              as current_language
-      ,a.SourceChl
-      ,a.TestStatus
-      ,a.CodeLv
-      ,a.CodeStage
-      ,a.PlanRound
-      ,a.BeginDate
-      ,a.EndDate
-      ,e.bf_1_dt_spend
-      ,d.7_day_spend
-      ,b.30_day_spend
-      ,c.360_day_spend
-      ,f.begin_date      as stage3_date
-      ,g.stage3_spend    as stage3_spend
-      ,now()
-  from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan    as a
-  left join tmp_30_day_spend                                   as b
-    on a.CodeId = b.book_id
-  left join tmp_360_day_spend                                  as c
-    on a.CodeId = c.book_id
-  left join tmp_7_day_spend                                    as d
-    on a.CodeId = d.book_id
-  left join tmp_bf_1_dt_spend                                  as e
-    on a.CodeId = e.book_id
-  left join tmp_3_codestage                                    as f
-    on a.CodeId = f.book_id
-  left join tmp_stage3_spend                                   as g
-    on a.CodeId = g.book_id
- where ProjectCode = 1
-   and IsDel = 0
-;
+
+SELECT
+       '${bf_1_dt}',
+       a.id,
+       a.CodeId,
+       a.Code,
+       regexp_extract(a.Code, '^[A-Za-z]+', 0),
+       CASE
+           WHEN a.CurrentLanguage = 1 THEN '简体'
+           WHEN a.CurrentLanguage = 2 THEN '繁体'
+           WHEN a.CurrentLanguage = 3 THEN '英语'
+           WHEN a.CurrentLanguage = 4 THEN '西语'
+           WHEN a.CurrentLanguage = 5 THEN '葡语'
+           WHEN a.CurrentLanguage = 6 THEN '法语'
+           WHEN a.CurrentLanguage = 7 THEN '俄语'
+           WHEN a.CurrentLanguage = 8 THEN '意大利语'
+           WHEN a.CurrentLanguage = 9 THEN '日语'
+           WHEN a.CurrentLanguage = 10 THEN '阿拉伯语'
+           WHEN a.CurrentLanguage = 11 THEN '印尼语'
+           WHEN a.CurrentLanguage = 12 THEN '泰语'
+           WHEN a.CurrentLanguage = 13 THEN '越南语'
+           WHEN a.CurrentLanguage = 14 THEN '韩语'
+           WHEN a.CurrentLanguage = 15 THEN '菲律宾语'
+           WHEN a.CurrentLanguage = 16 THEN '德语'
+           ELSE  ''
+           END AS current_language,
+       a.SourceChl,
+       a.TestStatus,
+       a.CodeLv,
+       a.CodeStage,
+       a.PlanRound,
+       a.BeginDate,
+       a.EndDate,
+       b.30_day_spend,
+       c.360_day_spend,
+       NOW()
+FROM ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan a
+LEFT JOIN tmp_30_day_spend b
+  ON a.CodeId = b.book_id
+LEFT JOIN tmp_360_day_spend c
+          ON a.CodeId = c.book_id
+WHERE a.ProjectCode = 1
+  AND a.IsDel = 0;

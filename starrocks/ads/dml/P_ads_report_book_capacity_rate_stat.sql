@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_book_capacity_rate_stat
+-- workflow_version : 11
+-- create_user      : zhengtt
+-- task_name        : ads_report_book_capacity_rate_stat
+-- task_version     : 11
+-- update_time      : 2026-04-07 20:17:34
+-- sql_path         : \starrocks\tbl_ads_report_book_capacity_rate_stat\ads_report_book_capacity_rate_stat
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_report_book_capacity_rate_stat
 with rem1  as(
     select 	'${bf_1_dt}' as dt,book_id,role_type,sum(font_length) as font_length_total,
@@ -198,4 +209,4 @@ from
                      from ads.ads_report_cost_income
                      where dt = '${dt}'
                  )a
-    )j on a.book_id = j.book_id
+    )j on a.book_id = j.book_id;

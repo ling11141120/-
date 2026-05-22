@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_user_active_recharge_retentiom_stat_a
+-- workflow_version : 7
+-- create_user      : zhengtt
+-- task_name        : ads_bi_user_active_recharge_retentiom_stat_a
+-- task_version     : 6
+-- update_time      : 2024-10-16 16:03:08
+-- sql_path         : \starrocks\tbl_ads_bi_user_active_recharge_retentiom_stat_a\ads_bi_user_active_recharge_retentiom_stat_a
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_bi_user_active_recharge_retentiom_stat_a
 with tmp as (   select t.stat_period as dt,t.product_id as product_id,t.user_id as user_id,
                        if(p.user_id is not null,1,2) as user_type

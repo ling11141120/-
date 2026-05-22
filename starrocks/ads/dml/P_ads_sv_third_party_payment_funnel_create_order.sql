@@ -1,4 +1,18 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_third_party_payment_funnel
+-- workflow_version : 35
+-- create_user      : chenmo
+-- task_name        : ads_sv_third_party_payment_funnel_create_order
+-- task_version     : 3
+-- update_time      : 2025-11-06 11:42:06
+-- sql_path         : \starrocks\tbl_ads_sv_third_party_payment_funnel\ads_sv_third_party_payment_funnel_create_order
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_sv_third_party_payment_funnel_create_order where dt >= '${bf_1_dt}' and dt <= '${dt}';
+
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海剧三方支付漏斗报表-创建订单
 -- 程序名： P_ads_sv_third_party_payment_funnel_create_order.sql
 -- 目标表： ads.ads_sv_third_party_payment_funnel_create_order
@@ -55,10 +69,14 @@ createorder as (
               when os='Android' then 'Android'
               else '其他'
           end as mt
-        ,case when app_id = 683001001 then '1'
-              when app_id = 683002001 then '2'
-              when app_id = 683003001 then '3'
-          end              as core
+        ,case
+            when app_id = 683001001 then '1'
+            when app_id = 683002001 then '2'
+            when app_id = 683003001 then '3'
+            when app_id = 683004001 then '4'
+            when app_id is null and app_core_ver=4 then '4'
+            when app_core_ver=15 then '15'
+        end as core
         ,dt
         ,if(zffs in ('AppStore', 'GooglePlay', 'Android', 'IOS', '苹果支付', '谷歌支付'), 0, 1) if_third
     from ads.ads_sensors_cd_video_ordercreateaction_view

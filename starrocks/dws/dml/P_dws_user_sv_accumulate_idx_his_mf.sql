@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_sv_accumulate_idx_his_mf
+-- workflow_version : 3
+-- create_user      : qhr
+-- task_name        : P_dws_user_sv_accumulate_idx_his_mf
+-- task_version     : 3
+-- update_time      : 2026-02-05 14:18:50
+-- sql_path         : \starrocks\tbl_dws_user_sv_accumulate_idx_his_mf\P_dws_user_sv_accumulate_idx_his_mf
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 用户域-海剧用户累计指标历史-按月全量
 -- 程序名： P_dws_user_sv_accumulate_idx_his_mf
 -- 目标表： dws.dws_user_sv_accumulate_idx_his_mf

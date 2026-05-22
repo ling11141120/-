@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_trade_user_shopitem_charge_ed
+-- workflow_version : 29
+-- create_user      : yanxh
+-- task_name        : dws_trade_user_shopitem_charge_ed
+-- task_version     : 18
+-- update_time      : 2026-04-10 10:21:07
+-- sql_path         : \starrocks\tbl_dws_trade_user_shopitem_charge_ed\dws_trade_user_shopitem_charge_ed
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_trade_user_shopitem_charge_ed  where dt ='${bf_1_dt}';
+
+-- SQL语句
 insert into dws.dws_trade_user_shopitem_charge_ed
 select a.dt,a.productid,b.corever,b.current_language,b.current_language2,b.appver,b.mt,b.ver,b.reg_country,
        a.userid,b.create_time as regtime,a.ShopItem,a.packageid,a.SubpayType,

@@ -1,65 +1,515 @@
 ----------------------------------------------------------------
--- 程序功能： 海阅海剧充值表（带国家）
--- 程序名： P_dwd_srsv_trade_hk_sync_payorder_di_daily
--- 目标表： dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
--- 负责人： qhr
--- 开发日期： 2026-01-07
+-- project_name     : starrocks
+-- workflow_name    : 审计测试-总
+-- workflow_version : 36
+-- create_user      : chenmo
+-- task_name        : SDK充值明细
+-- task_version     : 1
+-- update_time      : 2026-02-16 11:47:07
+-- sql_path         : \starrocks\审计测试-总\SDK充值明细
 ----------------------------------------------------------------
+-- 前置SQL语句
+truncate table dwd.dwd_srsv_trade_hk_sync_payorder_di_daily;
 
+-- SQL语句
+-- 1、数据重刷
 insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
-select ifnull(tar.dt, ori.dt)                              as dt
-     , ori.id
-     , ori.order_serial_id
-     , ori.order_id
-     , ori.coo_order_id
-     , ori.pay_chanel_id
-     , ori.account
-     , ori.user_id
-     , ori.server_id
-     , ori.user_i_p_address
-     , ori.create_time
-     , ifnull(tar.coo_notify_time, ori.coo_notify_time)    as order_time
-     , ori.finish_time
-     , ori.amount
-     , ori.give_amount
-     , ori.bank_amount
-     , ori.order_status
-     , ori.coo_order_status
-     , ori.shop_item
-     , ori.product_id
-     , ori.pay_type
-     , ori.bank_id
-     , ori.ext1
-     , ori.ext2
-     , ori.ext3
-     , ori.ext4
-     , ori.ext5
-     , ori.os_type
-     , ori.shop_item_id
-     , ori.coupon_id
-     , ori.package_id
-     , ori.phone
-     , ori.has_notify_times
-     , ori.pay_config_id
-     , ori.core
-     , ori.base_amount
-     , ori.unique_guid
-     , ori.test_flag
-     , ori.coo_ext_status
-     , ori.coo_ext_info
-     , ori.bill_info
-     , ori.row_update_timestamp
-     , ori.sub_pay_type
-     , ori.auto_renew_times
-     , ori.subscribe_status
-     , ori.app_ver
-     , ori.country
-     , ori.sr_createtime
-     , ori.sr_updatetime
-     , ori.province
-  from dwd.dwd_srsv_trade_hk_sync_payorder_di               as ori
-  left join dwd.dwd_srsv_trade_hk_sync_payorder_di_daily    as tar
-    on ori.order_serial_id = tar.order_serial_id
- where ori.dt >= '${bf_1_dt}'
-   and ori.dt <= '${dt}'
-   and ori.product_id != '8211';
+select
+    ifnull(b.dt, a.dt) as dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    ifnull(b.coo_notify_time, a.coo_notify_time) as order_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from (
+    select
+        *
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di
+) a
+left join dwd.dwd_srsv_trade_hk_sync_payorder_di_daily b
+on a.order_serial_id = b.order_serial_id
+where a.product_id not in('8211', '2311');
+
+-- SQL语句
+-- 2、修正订单时间
+insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+select
+    b.dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    b.order_time as coo_notify_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily a
+left join (
+    select * from ads.ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                  union all
+    select * from ads.ads_sr_finance_book_recharge_consume_info where report_type = 1
+) b
+on a.order_serial_id = b.order_id
+where order_serial_id in(
+    select
+        a.order_serial_id
+    from (
+        select
+            *
+        from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    ) a
+    right join (
+        select * from ads.ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                      union all
+        select * from ads.ads_sr_finance_book_recharge_consume_info where report_type = 1
+    ) b
+    on a.order_serial_id = b.order_id
+    where a.coo_notify_time != b.order_time or a.dt != b.dt
+);
+
+-- SQL语句
+-- 3、删除因订单时间改变导致dt改变主键失效的订单
+select
+    order_serial_id, count(1)
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+group by order_serial_id
+having count(1) > 1;
+
+-- SQL语句
+delete from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily where (dt, order_serial_id) in(
+    select
+        min(dt) as dt,
+        order_serial_id
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    group by order_serial_id
+    having count(1) > 1
+);
+
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : 审计测试-总_改
+-- workflow_version : 11
+-- create_user      : xiejc
+-- task_name        : SDK充值明细
+-- task_version     : 1
+-- update_time      : 2026-03-31 14:40:14
+-- sql_path         : \starrocks\审计测试-总_改\SDK充值明细
+----------------------------------------------------------------
+-- 前置SQL语句
+truncate table dwd.dwd_srsv_trade_hk_sync_payorder_di_daily;
+
+-- SQL语句
+-- 1、数据重刷
+insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+select
+    ifnull(b.dt, a.dt) as dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    ifnull(b.coo_notify_time, a.coo_notify_time) as order_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from (
+    select
+        *
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di
+) a
+left join dwd.dwd_srsv_trade_hk_sync_payorder_di_daily b
+on a.order_serial_id = b.order_serial_id
+where a.product_id not in('8211', '2311');
+
+-- SQL语句
+-- 2、修正订单时间
+insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+select
+    b.dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    b.order_time as coo_notify_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily a
+left join (
+    select * from ads.ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                  union all
+    select * from ads.ads_sr_finance_book_recharge_consume_info where report_type = 1
+) b
+on a.order_serial_id = b.order_id
+where order_serial_id in(
+    select
+        a.order_serial_id
+    from (
+        select
+            *
+        from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    ) a
+    right join (
+        select * from ads.ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                      union all
+        select * from ads.ads_sr_finance_book_recharge_consume_info where report_type = 1
+    ) b
+    on a.order_serial_id = b.order_id
+    where a.coo_notify_time != b.order_time or a.dt != b.dt
+);
+
+-- SQL语句
+-- 3、删除因订单时间改变导致dt改变主键失效的订单
+select
+    order_serial_id, count(1)
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+group by order_serial_id
+having count(1) > 1;
+
+-- SQL语句
+delete from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily where (dt, order_serial_id) in(
+    select
+        min(dt) as dt,
+        order_serial_id
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    group by order_serial_id
+    having count(1) > 1
+);
+
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : 审计测试-总_改_补数
+-- workflow_version : 20
+-- create_user      : xiejc
+-- task_name        : SDK充值明细
+-- task_version     : 5
+-- update_time      : 2026-05-07 18:01:08
+-- sql_path         : \starrocks\审计测试-总_改_补数\SDK充值明细
+----------------------------------------------------------------
+-- 前置SQL语句
+truncate table dwd.dwd_srsv_trade_hk_sync_payorder_di_daily;
+
+-- SQL语句
+-- 1、数据重刷
+insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+select
+    ifnull(b.dt, a.dt) as dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    ifnull(b.coo_notify_time, a.coo_notify_time) as order_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from (
+    select
+        *
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di
+) a
+left join dwd.dwd_srsv_trade_hk_sync_payorder_di_daily b
+on a.order_serial_id = b.order_serial_id
+where a.product_id not in('8211', '2311');
+
+-- SQL语句
+-- 2、修正订单时间
+insert into dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+select
+    b.dt,
+    a.id,
+    a.order_serial_id,
+    a.order_id,
+    a.coo_order_id,
+    a.pay_chanel_id,
+    a.account,
+    a.user_id,
+    a.server_id,
+    a.user_i_p_address,
+    a.create_time,
+    b.order_time as coo_notify_time,
+    a.finish_time,
+    a.amount,
+    a.give_amount,
+    a.bank_amount,
+    a.order_status,
+    a.coo_order_status,
+    a.shop_item,
+    a.product_id,
+    a.pay_type,
+    a.bank_id,
+    a.ext1,
+    a.ext2,
+    a.ext3,
+    a.ext4,
+    a.ext5,
+    a.os_type,
+    a.shop_item_id,
+    a.coupon_id,
+    a.package_id,
+    a.phone,
+    a.has_notify_times,
+    a.pay_config_id,
+    a.core,
+    a.base_amount,
+    a.unique_guid,
+    a.test_flag,
+    a.coo_ext_status,
+    a.coo_ext_info,
+    a.bill_info,
+    a.row_update_timestamp,
+    a.sub_pay_type,
+    a.auto_renew_times,
+    a.subscribe_status,
+    a.app_ver,
+    a.country,
+    a.sr_createtime,
+    a.sr_updatetime,
+    a.province
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily a
+left join (
+    select * from tmp.tmp_xjc_ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                  union all
+    select * from tmp.tmp_xjc_ads_sr_finance_book_recharge_consume_info where report_type = 1
+) b
+on a.order_serial_id = b.order_id
+where order_serial_id in(
+    select
+        a.order_serial_id
+    from (
+        select
+            *
+        from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    ) a
+    right join (
+        select * from tmp.tmp_xjc_ads_sv_finance_series_recharge_consume_info where report_type = 1
+                                                                      union all
+        select * from tmp.tmp_xjc_ads_sr_finance_book_recharge_consume_info where report_type = 1
+    ) b
+    on a.order_serial_id = b.order_id
+    where a.coo_notify_time != b.order_time or a.dt != b.dt
+);
+
+-- SQL语句
+-- 3、删除因订单时间改变导致dt改变主键失效的订单
+select
+    order_serial_id, count(1)
+from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+group by order_serial_id
+having count(1) > 1;
+
+-- SQL语句
+delete from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily where (dt, order_serial_id) in(
+    select
+        min(dt) as dt,
+        order_serial_id
+    from dwd.dwd_srsv_trade_hk_sync_payorder_di_daily
+    group by order_serial_id
+    having count(1) > 1
+);

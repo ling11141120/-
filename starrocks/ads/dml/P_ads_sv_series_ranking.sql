@@ -1,11 +1,17 @@
 ----------------------------------------------------------------
--- 程序功能：短剧-消费、热播、新剧榜
--- 程序名： P_ads_sv_series_ranking
--- 目标表： ads.ads_sv_series_ranking
--- 负责人： qhr
--- 开发日期：2026-03-04
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_series_ranking
+-- workflow_version : 10
+-- create_user      : chenmo
+-- task_name        : ads_sv_series_ranking
+-- task_version     : 7
+-- update_time      : 2026-05-21 21:19:34
+-- sql_path         : \starrocks\tbl_ads_sv_series_ranking\ads_sv_series_ranking
 ----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_sv_series_ranking where dt = '${dt}';
 
+-- SQL语句
 -- 总榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -59,6 +65,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 一日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -116,6 +123,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 三日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -173,6 +181,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 七日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -230,6 +239,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 十五日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -287,6 +297,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 三十日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -344,6 +355,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 六十日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -401,6 +413,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 九十日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -458,6 +471,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 一百八十日榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt
@@ -515,6 +529,7 @@ select '${dt}'                                    as dt
  where d.series_id is not null
 ;
 
+-- SQL语句
 -- 一年榜
 insert into ads.ads_sv_series_ranking
 select '${dt}'                                    as dt

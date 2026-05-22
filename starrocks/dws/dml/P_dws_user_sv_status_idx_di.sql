@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_sv_status_idx_di
+-- workflow_version : 10
+-- create_user      : qhr
+-- task_name        : P_dws_user_sv_status_idx_di
+-- task_version     : 10
+-- update_time      : 2026-02-03 18:48:28
+-- sql_path         : \starrocks\tbl_dws_user_sv_status_idx_di\P_dws_user_sv_status_idx_di
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 用户域-海剧用户状态指标表
 -- 程序名： P_dws_user_sv_status_idx_di
 -- 目标表： dws.dws_user_sv_status_idx_di
@@ -38,6 +49,7 @@ select ultm.user_id
     on ultm.user_id = svacc.user_id
 ;
 
+-- SQL语句
 -- 消费
 insert into dws.dws_user_sv_status_idx_di (
      user_id                 -- 用户id
@@ -82,6 +94,7 @@ select cbp.account_id                                                           
  group by 1
 ;
 
+-- SQL语句
 -- 观看
 insert into dws.dws_user_sv_status_idx_di (
      user_id                 -- 用户id
@@ -109,6 +122,7 @@ select sveh.account_id                                                          
  group by 1
 ;
 
+-- SQL语句
 -- 充值订阅
 insert into dws.dws_user_sv_status_idx_di (
      user_id                 -- 用户id
@@ -194,6 +208,7 @@ select coalesce(calc.user_id, ori.user_id)                            as user_id
     on calc.user_id = ori.user_id
 ;
 
+-- SQL语句
 -- 点赞
 insert into dws.dws_user_sv_status_idx_di (
      user_id                 -- 用户id
@@ -210,6 +225,7 @@ select user_id
  group by 1
 ;
 
+-- SQL语句
 -- 安装激活
 insert into dws.dws_user_sv_status_idx_di (
      user_id                 -- 用户id
@@ -248,6 +264,7 @@ select calc.user_id
     on calc.user_id = ori.user_id
 ;
 
+-- SQL语句
 -- 用户支付扩展
 insert into dws.dws_user_sv_status_idx_di(
      user_id                       -- 用户id
@@ -276,6 +293,7 @@ select id                                  as user_id
   from ods.ods_tidb_short_video_account_pay_extend
 ;
 
+-- SQL语句
 -- 广告预加载
 insert into dws.dws_user_sv_status_idx_di (
      user_id                      -- 用户id
@@ -313,6 +331,7 @@ select coalesce(curra.user_id, ori.user_id)                                     
     on curra.user_id = ori.user_id
 ;
 
+-- SQL语句
 -- 广告展示位收益
 insert into dws.dws_user_sv_status_idx_di (
      user_id                     -- 用户id
