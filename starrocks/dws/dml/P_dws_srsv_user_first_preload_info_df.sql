@@ -29,7 +29,7 @@ select product_id
                              , user_id
                              , s0
                              , create_time
-                          from ads.ads_user_commonactionlog_view
+                          from ods_log.ods_readerlog_xx_log_commonactionlog
                          where Action = 'FirstPreloadEvent'
                            and dt >= '${bf_1_dt}'
                        ) b
@@ -66,7 +66,7 @@ select product_id
                              , ad_type
                              , value_micros
                              , create_time
-                          from ads.ads_sv_advertise_ad_preload_revenue_di_view
+                          from ods.ods_tidb_sv_short_video_log_ad_preload_revenue_di
                          where create_time >= '${bf_1_dt}'
                        ) b
                   inner join (select product_id
