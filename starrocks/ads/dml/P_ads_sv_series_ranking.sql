@@ -571,5 +571,3 @@ select '${dt}'                                    as dt
     on coalesce(a.series_id, b.series_id, c.series_id, e.series_id) = d.series_id
  where d.series_id is not null
 ;
-
-
