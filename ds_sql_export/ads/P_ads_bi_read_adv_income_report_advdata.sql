@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_read_adv_income_report_advdata
+-- workflow_version : 35
+-- create_user      : yanxh
+-- task_name        : delete
+-- task_version     : 1
+-- update_time      : 2025-11-19 15:32:46
+-- sql_path         : \starrocks\tbl_ads_bi_read_adv_income_report_advdata\delete
+----------------------------------------------------------------
+-- SQL语句
+delete  from  ads.ads_bi_read_adv_income_report_advdata where dt>=  '${bf_4_dt}';

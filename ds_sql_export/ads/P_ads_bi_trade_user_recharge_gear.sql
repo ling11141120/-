@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_trade_user_recharge_gear
+-- workflow_version : 43
+-- create_user      : linq
+-- task_name        : del_node
+-- task_version     : 1
+-- update_time      : 2026-03-09 14:46:07
+-- sql_path         : \starrocks\tbl_ads_bi_trade_user_recharge_gear\del_node
+----------------------------------------------------------------
+-- SQL语句
+delete from ads.ads_bi_trade_user_recharge_gear where dt ='${bf_1_dt}';
