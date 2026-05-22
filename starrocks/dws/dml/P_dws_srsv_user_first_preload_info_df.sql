@@ -25,10 +25,10 @@ select product_id
                      , get_json_string(b.s0, '$.valueMicros') * 1000 as ecpm
                      , get_json_string(b.s0, '$.adFormat')           as ad_format
                      , b.create_time
-                  from (select product_id
-                             , user_id
+                  from (select productid                      as product_id
+                             , UserId                         as user_id
                              , s0
-                             , create_time
+                             , CreateTime                     as create_time
                           from ods_log.ods_readerlog_xx_log_commonactionlog
                          where Action = 'FirstPreloadEvent'
                            and dt >= '${bf_1_dt}'
@@ -62,12 +62,12 @@ select product_id       as product_id
                      , b.value_micros * 1000                                                    as ecpm
                      , b.create_time
                      , min(b.create_time) over(partition by a.product_id, a.user_id, b.ad_type) as min_create_time
-                  from (select account_id
-                             , ad_type
-                             , value_micros
-                             , create_time
+                  from (select AccountId              as account_id
+                             , adType                 as ad_type
+                             , ValueMicros            as value_micros
+                             , CreateTime             as create_time
                           from ods.ods_tidb_sv_short_video_log_ad_preload_revenue_di
-                         where create_time >= '${bf_1_dt}'
+                         where CreateTime >= '${bf_1_dt}'
                        ) b
                   inner join (select product_id
                                    , user_id
