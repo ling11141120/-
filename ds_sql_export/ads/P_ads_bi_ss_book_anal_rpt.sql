@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_ss_book_anal_rpt
+-- workflow_version : 17
+-- create_user      : wangxi
+-- task_name        : del_ads_bi_ss_book_anal_rpt.sql
+-- task_version     : 1
+-- update_time      : 2025-10-23 15:39:16
+-- sql_path         : \starrocks\tbl_ads_bi_ss_book_anal_rpt\del_ads_bi_ss_book_anal_rpt.sql
+----------------------------------------------------------------
+-- SQL语句
+delete from ads.ads_bi_ss_book_anal_rpt where dt >= '${bf_1_dt}' and dt <= '${dt}';

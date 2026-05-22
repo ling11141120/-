@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_srsv_wide_user_type_info_di_v3
+-- workflow_version : 14
+-- create_user      : chenmo
+-- task_name        : tbl_dws_srsv_wide_user_type_info_di
+-- task_version     : 6
+-- update_time      : 2025-12-23 13:37:32
+-- sql_path         : \starrocks\tbl_dws_srsv_wide_user_type_info_di_v3\tbl_dws_srsv_wide_user_type_info_di
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_srsv_wide_user_type_info_di_v3 where dt>='${bf_1_dt}' and dt<'${dt}';

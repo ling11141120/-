@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_user_read_book_info
+-- workflow_version : 7
+-- create_user      : yanxh
+-- task_name        : delete from ads.ads_bi_user_read_book_info where dt = '${bf_1_dt}';
+-- task_version     : 1
+-- update_time      : 2025-09-18 14:15:41
+-- sql_path         : \starrocks\tbl_ads_bi_user_read_book_info\delete from ads.ads_bi_user_read_book_info where dt = '${bf_1_dt}';
+----------------------------------------------------------------
+-- SQL语句
+delete from ads.ads_bi_user_read_book_info where dt = '${bf_1_dt}';

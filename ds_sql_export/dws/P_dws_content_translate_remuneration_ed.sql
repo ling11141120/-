@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_content_translate_remuneration_ed
+-- workflow_version : 11
+-- create_user      : zhengtt
+-- task_name        : del
+-- task_version     : 1
+-- update_time      : 2025-10-13 18:44:24
+-- sql_path         : \starrocks\tbl_dws_content_translate_remuneration_ed\del
+----------------------------------------------------------------
+-- SQL语句
+delete from dws.dws_content_translate_remuneration_ed where dt >= date_sub('${bf_1_dt}',INTERVAL 60 DAY) and dt <= '${bf_1_dt}' and cost_types  = 1;
