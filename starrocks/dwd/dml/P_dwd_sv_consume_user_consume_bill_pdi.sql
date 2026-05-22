@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_sv_consume_user_consume_bill_pdi
+-- workflow_version : 8
+-- create_user      : linq
+-- task_name        : dwd_sv_consume_user_consume_bill_pdi
+-- task_version     : 6
+-- update_time      : 2024-12-26 20:06:59
+-- sql_path         : \starrocks\tbl_dwd_sv_consume_user_consume_bill_pdi\dwd_sv_consume_user_consume_bill_pdi
+----------------------------------------------------------------
+-- SQL语句
 insert into dwd.dwd_sv_consume_user_consume_bill_pdi
 with test_user as (
     select
@@ -71,3 +82,6 @@ from(
     where t.user_id is null
 )t1
 left join dim.dim_short_video_epis_view c on t1.epis_id=c.epis_id;
+
+-- 后置SQL语句
+delete from dwd.dwd_sv_consume_user_consume_bill_pdi where dt>=date_sub('${dt}',interval 1 day ) and etl_time <date_sub(now(),interval 6 minute);

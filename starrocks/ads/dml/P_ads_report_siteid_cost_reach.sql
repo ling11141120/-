@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_siteid_cost_reach
+-- workflow_version : 3
+-- create_user      : zhengtt
+-- task_name        : ads_report_siteid_cost_reach
+-- task_version     : 3
+-- update_time      : 2026-05-21 16:40:40
+-- sql_path         : \starrocks\tbl_ads_report_siteid_cost_reach\ads_report_siteid_cost_reach
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_report_siteid_cost_reach
 select '${dt}'                                     as dt
      , a.siteid

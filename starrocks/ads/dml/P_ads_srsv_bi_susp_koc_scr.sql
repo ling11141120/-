@@ -1,16 +1,27 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_bi_susp_koc_scr
+-- workflow_version : 4
+-- create_user      : qhr
+-- task_name        : 新P_ads_srsv_bi_susp_koc_scr
+-- task_version     : 1
+-- update_time      : 2026-05-12 11:37:03
+-- sql_path         : \starrocks\tbl_ads_srsv_bi_susp_koc_scr\新P_ads_srsv_bi_susp_koc_scr
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 嫌疑达人分值表
 -- 程序名： P_ads_srsv_bi_susp_koc_scr
 -- 目标表： ads.ads_srsv_bi_susp_koc_scr
 -- 负责人： wx/qhr
 -- 开发日期： 2025-10-31
--- 版本号： v1.0.0
+-- 版本号： v1.1.0
 ----------------------------------------------------------------
 insert into ads.ads_srsv_bi_susp_koc_scr
 select a1.dt                              as dt                  -- 日期
       ,a1.usr_id                          as usr_id              -- 用户id
       ,a1.prj_type_cd                     as prj_type_cd         -- 项目类型
-      ,coalesce(a5.cd_col_desc, '-99')    as prj_type_name       -- 项目类型名称
+      ,coalesce(a5.cd_val_desc, '-99')    as prj_type_name       -- 项目类型名称
       ,case when a1.prj_type_cd = 2 then a2.ttl_view_num
             else a3.ttl_view_num
         end                               as ttl_view_num        -- 总观看数量
@@ -19,6 +30,17 @@ select a1.dt                              as dt                  -- 日期
         end                               as ttl_view_min        -- 总观看分钟数
       ,a1.pay_type                        as pay_mth             -- 支付方式
       ,a4.is_sub                          as tp_prd              -- 充值产品
+      ,coalesce(a6.ad_show_cnt, 0)        as ad_show_cnt         -- 广告展示次数
+      ,case when coalesce(a6.ad_show_cnt, 0) > 0
+            then a6.ad_rev_amt / a6.ad_show_cnt
+            else 0
+        end                               as avg_rev_per_ad      -- 单广告平均收入
+      ,case when coalesce(a6.ad_show_cnt, 0) > 0
+            then (case when a1.prj_type_cd = 2 then a2.ttl_view_min
+                       else a3.ttl_view_min
+                  end) * 60 / a6.ad_show_cnt
+            else 0
+        end                               as watch_sec_per_ad    -- 单广告看剧时长
   from (select b2.dt
               ,b1.user_id                                                                      as usr_id
               ,b1.prj_type_cd                                                                  as prj_type_cd
@@ -129,6 +151,19 @@ select a1.dt                              as dt                  -- 日期
     on a1.prj_type_cd = a5.cd_val
    and a5.cd_col = 'biz_type_cd'
    and a5.app_plat = 'pub'
+  left join (select b8.dt
+                   ,b8.user_id                          as usr_id
+                   ,sum(b8.cnt)                         as ad_show_cnt
+                   ,sum(b8.amt)                         as ad_rev_amt
+               from dws.dws_advertisement_user_position_amt_ed    as b8
+              where b8.dt >= date_sub('${bf_1_dt}', interval 1 month)
+                and b8.dt <= '${bf_1_dt}'
+                and b8.user_id is not null
+                and b8.ad_show_type = 3
+              group by 1, 2
+            )                                                                       as a6
+    on a1.dt = a6.dt
+   and a1.usr_id = a6.usr_id
  where a2.ttl_view_num is not null
     or a3.ttl_view_num is not null
 ;

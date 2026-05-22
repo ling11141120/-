@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_interaction_short_video_user_like_a
+-- workflow_version : 2
+-- create_user      : linq
+-- task_name        : dws_interaction_short_video_user_like_a
+-- task_version     : 1
+-- update_time      : 2024-01-25 15:08:56
+-- sql_path         : \starrocks\tbl_dws_interaction_short_video_user_like_a\dws_interaction_short_video_user_like_a
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_interaction_short_video_user_like_a where dt='${bf_1_dt}';
+
+-- SQL语句
 insert into dws.dws_interaction_short_video_user_like_a
 select '${bf_1_dt}' as dt,
        6833 as product_id,

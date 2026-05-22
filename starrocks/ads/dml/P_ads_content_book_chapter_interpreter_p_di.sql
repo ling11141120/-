@@ -1,53 +1,59 @@
 ----------------------------------------------------------------
--- 程序功能：内容域--书籍章节译员-稿酬表
--- 程序名： P_ads_content_book_chapter_interpreter_p_di
--- 目标表： ads.ads_content_book_chapter_interpreter_p_di
--- 负责人： xjc
--- 开发日期：2025-09-24
--- 版本号： v0.0.0 
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_content_book_chapter_interpreter_p_di
+-- workflow_version : 12
+-- create_user      : xixg
+-- task_name        : ads_content_book_chapter_interpreter_p_di
+-- task_version     : 12
+-- update_time      : 2024-09-02 11:20:54
+-- sql_path         : \starrocks\tbl_ads_content_book_chapter_interpreter_p_di\ads_content_book_chapter_interpreter_p_di
 ----------------------------------------------------------------
+-- SQL语句
+INSERT INTO ads.ads_content_book_chapter_interpreter_p_di
 
-insert into ads.ads_content_book_chapter_interpreter_p_di
-with tmp_book_remuneration_detail as (
-    select a.productid
-          ,a.AuthorId
-          ,a.bookId
-          ,a.ChapterId
-          ,a.ToLanguage
-          ,a.FontLength
-          ,a.CreateTime
-          ,a.RoleType
-          ,row_number() over(partition by productid, AuthorId, bookId, ChapterId order by CreateTime desc)    as row_num
-      from ods.ods_edit_book_RemunerationDetail                                                               as a
-     where date(a.CreateTime) = '${bf_1_dt}'
-       and a.RoleType in (1, 2, 3)
+WITH tmp_book_remuneration_detail AS (
+    SELECT
+         a.productid,
+         a.AuthorId,
+         a.bookId,
+         a.ChapterId,
+         a.ToLanguage,
+         a.FontLength,
+         a.CreateTime,
+         a.RoleType,
+         ROW_NUMBER() OVER (partition by productid,AuthorId,bookId,ChapterId order by CreateTime DESC) row_num
+   FROM ods.ods_edit_book_RemunerationDetail a
+    WHERE date(a.CreateTime) = '${bf_1_dt}'
+    AND a.RoleType in (1,2,3)
 )
-select date(a.CreateTime)                             as dt
-      ,a.AuthorId                                     as author_id
-      ,a.bookId                                       as book_id
-      ,a.ChapterId                                    as chapter_id
-      ,a.ToLanguage                                   as site_id
-      ,c.ObjectBookType                               as project_type
-      ,b.PenName                                      as author_name
-      ,a.RoleType                                     as role_type
-      ,c.BookCode                                     as book_code
-      ,c.BookName                                     as book_name
-      ,d.ChapterName                                  as chapter_name
-      ,a.FontLength                                   as font_length
-      ,a.CreateTime                                   as create_time
-      ,now()
-  from tmp_book_remuneration_detail                   as a
-  left join ods.ods_tidb_shuangwen_xx_objectauthor    as b
-    on a.productid = b.productid
-   and a.AuthorId = b.AccountId
-   and a.ToLanguage = b.ToLanguage
-  left join ods.ods_tidb_shuangwen_en_objectbook      as c
-    on a.productid = c.productid
-   and a.bookId = c.SwBookId
-   and a.ToLanguage = c.ToLanguage
-   and c.Status = 1
-  left join ods.ods_tidb_shuangwen_xx_objectchapter   as d
-    on a.productid = d.productid
-   and c.id = d.ObjectBookId
-   and a.ChapterId = d.Id
- where a.row_num = 1
+
+SELECT
+        date(a.CreateTime) AS dt,
+        a.AuthorId AS author_id,
+        a.bookId AS book_id,
+        a.ChapterId AS chapter_id,
+        a.ToLanguage AS site_id,
+        c.ObjectBookType AS project_type,
+        b.PenName AS author_name,
+        a.RoleType AS role_type,
+        c.BookCode AS book_code,
+        c.BookName AS book_name,
+        d.ChapterName AS chapter_name,
+        a.FontLength AS font_length,
+        a.CreateTime AS create_time,
+        NOW()
+FROM tmp_book_remuneration_detail a
+    LEFT JOIN ods.ods_tidb_shuangwen_xx_objectauthor b
+        ON  a.productid = b.productid
+        AND a.AuthorId = b.AccountId
+        AND a.ToLanguage = b.ToLanguage
+    LEFT JOIN ods.ods_tidb_shuangwen_en_objectbook c
+        ON  a.productid = c.productid
+        AND a.bookId = c.SwBookId
+        AND a.ToLanguage = c.ToLanguage
+        AND c.Status = 1
+    LEFT JOIN ods.ods_tidb_shuangwen_xx_objectchapter d
+        ON  a.productid = d.productid
+        AND c.id = d.ObjectBookId
+        AND a.ChapterId = d.Id
+WHERE a.row_num = 1;

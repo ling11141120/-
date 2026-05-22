@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_separate_chapter_book_final_stat
+-- workflow_version : 6
+-- create_user      : xixg
+-- task_name        : ads_report_separate_chapter_book_final_stat
+-- task_version     : 6
+-- update_time      : 2024-05-12 23:28:40
+-- sql_path         : \starrocks\tbl_ads_report_separate_chapter_book_final_stat\ads_report_separate_chapter_book_final_stat
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_report_separate_chapter_book_final_stat
 -- 先处理所有的子书（非根书）相关统计信息
 select 	a.dt,
@@ -88,4 +99,4 @@ left join  (
             ) c
 on b.book_id = c.root_book_id
 where b.dt = '${dt}'
-and b.if_root_book = 1
+and b.if_root_book = 1;

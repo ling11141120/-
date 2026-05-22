@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dim_sv_series_hi
+-- workflow_version : 3
+-- create_user      : linq
+-- task_name        : tbl_dim_sv_series_hi
+-- task_version     : 3
+-- update_time      : 2024-11-29 14:05:06
+-- sql_path         : \starrocks\tbl_dim_sv_series_hi\tbl_dim_sv_series_hi
+----------------------------------------------------------------
+-- SQL语句
 insert overwrite dim.dim_sv_series_hi
 select -- 剧
        a.SeriesId as series_id,a.Language as language,a.SeriesName as series_name,a.Description as description,

@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_short_video_watch_consume_leave_stat_v2
+-- workflow_version : 27
+-- create_user      : zhengtt
+-- task_name        : ads_bi_short_video_watch_consume_leave_stat_v2
+-- task_version     : 18
+-- update_time      : 2025-09-23 17:49:52
+-- sql_path         : \starrocks\tbl_ads_bi_short_video_watch_consume_leave_stat_v2\ads_bi_short_video_watch_consume_leave_stat_v2
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_bi_short_video_watch_consume_leave_stat_v2 where dt >= '${bf_31_dt}' and dt <= '${dt}';
+
+-- SQL语句
 insert into ads.ads_bi_short_video_watch_consume_leave_stat_v2
 select
     dt,

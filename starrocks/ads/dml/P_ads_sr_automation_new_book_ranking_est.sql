@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_automation_new_book_ranking_est
+-- workflow_version : 12
+-- create_user      : chenmo
+-- task_name        : ads_sr_automation_new_book_ranking_est
+-- task_version     : 8
+-- update_time      : 2026-03-23 17:13:39
+-- sql_path         : \starrocks\tbl_ads_sr_automation_new_book_ranking_est\ads_sr_automation_new_book_ranking_est
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_sr_automation_new_book_ranking_est
 select '${bf_1_dt}'                 as dt
      , a.BookId

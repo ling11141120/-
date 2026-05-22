@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_ad_user_adshow_h
+-- workflow_version : 2
+-- create_user      : qhr
+-- task_name        : P_ads_ad_user_adshow_h
+-- task_version     : 2
+-- update_time      : 2025-12-10 16:27:54
+-- sql_path         : \starrocks\tbl_ads_ad_user_adshow_h\P_ads_ad_user_adshow_h
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 广告域-用户广告展示-小时增量
 -- 程序名： P_ads_ad_user_adshow_h
 -- 目标表： ads.ads_ad_user_adshow_h
@@ -9,6 +20,7 @@
 
 delete from ads.ads_ad_user_adshow_h where dt >= '${bf_1_dt}';
 
+-- SQL语句
 insert into ads.ads_ad_user_adshow_h
 -- 统计每日H5点击
 with ad_click_count as (

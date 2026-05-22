@@ -1,11 +1,24 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_book_itemexposure_info
+-- workflow_version : 32
+-- create_user      : yanxh
+-- task_name        : ads_bi_book_itemexposure_info
+-- task_version     : 19
+-- update_time      : 2026-04-25 01:43:16
+-- sql_path         : \starrocks\tbl_ads_bi_book_itemexposure_info\ads_bi_book_itemexposure_info
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from  ads.ads_bi_book_itemexposure_info  where  dt>='${bf_3_dt}' and dt<'${dt}';
+
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海阅小说曝光点击事件数据
 -- 程序名： P_ads_bi_book_itemexposure_info
 -- 目标表： ads.ads_bi_book_itemexposure_info
 -- 负责人： qhr
--- 开发日期： 
+-- 开发日期：
 ----------------------------------------------------------------
-
 insert into ads.ads_bi_book_itemexposure_info
 with expo as (
     select a.dt
@@ -44,20 +57,20 @@ with expo as (
                                 when right(book_id, 3) = '433' then 12
                                 when right(book_id, 3) = '414' then 11
                                 when right(book_id, 3) = '419' then 9
-                                when right(book_id, 3) = '435' then 13   --越南语
+                                when right(book_id, 3) = '435' then 13
                                 when product_id = 3333         then 2    -- 繁体的书
-                                else current_language                    -- 剩余判断不出来的书归为上报的current_language语言
+                                else ifnull(current_language, -99)       -- 修复：current_language为NULL时兜底-99
                             end                             as book_lang_id
                           ,corever
                           ,book_id
                           ,user_id
                           ,coalesce(mt, '-99')              as mt
                       from dws.dws_flow_item_exposure_ed    as a
-                     where dt >= '${bf_3_dt}' 
-                       and dt < '${dt}' 
+                     where dt >= '${bf_3_dt}'
+                       and dt < '${dt}'
                        and user_id is not null
-                       and book_id > 0 
-                       and product_id is not null    -- 过滤掉非正常的数据
+                       and book_id > 0
+                       and product_id is not null
                    )                                        as a
               left join (select dt
                                ,Product_Id                  as product_id
@@ -116,9 +129,9 @@ with expo as (
                                 when right(book_id, 3) = '433' then 12
                                 when right(book_id, 3) = '414' then 11
                                 when right(book_id, 3) = '419' then 9
-                                when right(book_id, 3) = '435' then 13   --越南语
+                                when right(book_id, 3) = '435' then 13
                                 when app_product_id = 3333 then 2        -- 繁体的书
-                                else app_lang_id                         -- 剩余判断不出来的书归为上报的current_language语言
+                                else ifnull(app_lang_id, -99)            -- 修复：app_lang_id为NULL时兜底-99
                             end                          as book_lang_id
                           ,app_core_ver                  as corever
                           ,book_id
@@ -130,20 +143,20 @@ with expo as (
                        and identity_login_id is not null
                        and cast(identity_login_id AS BIGINT) > 0
                        and book_id > 0
-                       and app_product_id is not null                    -- 过滤掉非正常的数据
+                       and app_product_id is not null
                    )                                     as a
               left join (select dt
                                ,Product_Id               as product_id
                                ,user_id
                                ,last_bookid              as book_id
                            from dws.dws_user_market_channel_info_detail_td
-                          where dt >= '${bf_3_dt}' 
-                            and dt < '${dt}' 
+                          where dt >= '${bf_3_dt}'
+                            and dt < '${dt}'
                           group by 1, 2, 3, 4
                         )                                as b
                 on a.product_id = b.product_id
-               and a.user_id = b.user_id 
-               and a.dt = b.dt 
+               and a.user_id = b.user_id
+               and a.dt = b.dt
                and a.book_id = b.book_id
            )                                             as a
      where rn = 1

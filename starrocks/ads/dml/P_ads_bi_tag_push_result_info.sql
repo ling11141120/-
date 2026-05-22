@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_tag_push_result_info
+-- workflow_version : 14
+-- create_user      : yanxh
+-- task_name        : ads_bi_tag_push_result_info
+-- task_version     : 14
+-- update_time      : 2025-05-06 19:22:06
+-- sql_path         : \starrocks\tbl_ads_bi_tag_push_result_info\ads_bi_tag_push_result_info
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_bi_tag_push_result_info  where dt >='${bf_10_dt}' and dt<'${dt}';
+
+-- SQL语句
 insert into ads.ads_bi_tag_push_result_info
 
 with tmp_a AS (
@@ -96,7 +110,6 @@ where a.dt>='${bf_10_dt}'
 group by 1,2,3,4,5,6
     ) ,
 
-
     py as (
 -- ----------------获取push信息的 用户点击的明细数据------------------------
 select a.dt,a.app_product_id as product_id,a.push_id ,a.push_type ,d.strategy_id,d.book_id,count(distinct a.identity_login_id ) as click_unt,count(distinct py.user_id) as pay_unt,sum(py.pay_amt) pay_amt
@@ -150,4 +163,4 @@ from sd
                    left join csm
                              on rd.dt=csm.dt and  rd.product_id=csm.product_id and rd.push_id=csm.push_id  and rd.push_type=csm.push_type --   and rd.click_unt= csm.click_unt --  and rd.strategy_id=csm.strategy_id and rd.book_id=csm.book_id
      ) b
-     on sd.dt=b.dt and sd.product_id=b.product_id and sd.push_id=b.push_id
+     on sd.dt=b.dt and sd.product_id=b.product_id and sd.push_id=b.push_id;

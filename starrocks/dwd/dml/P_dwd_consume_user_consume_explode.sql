@@ -1,4 +1,18 @@
-insert into dwd.dwd_consume_user_consume_explode 
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_consume_user_consume_explode
+-- workflow_version : 6
+-- create_user      : linq
+-- task_name        : dwd_consume_user_consume_explode
+-- task_version     : 6
+-- update_time      : 2023-12-04 16:30:00
+-- sql_path         : \starrocks\tbl_dwd_consume_user_consume_explode\dwd_consume_user_consume_explode
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dwd.dwd_consume_user_consume_explode where dt >= '${bf_1_dt}';
+
+-- SQL语句
+insert into dwd.dwd_consume_user_consume_explode
 select dt,
        ProductId,
        Id                                           as auto_id,

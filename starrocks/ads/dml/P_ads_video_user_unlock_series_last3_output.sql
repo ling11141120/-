@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_video_user_unlock_series_last3
+-- workflow_version : 15
+-- create_user      : chenmo
+-- task_name        : ads_video_user_unlock_series_last3_output
+-- task_version     : 2
+-- update_time      : 2024-12-05 18:38:54
+-- sql_path         : \starrocks\tbl_ads_video_user_unlock_series_last3\ads_video_user_unlock_series_last3_output
+----------------------------------------------------------------
+-- SQL语句
+insert overwrite ads.ads_video_user_unlock_series_last3_output select * from ads.ads_video_user_unlock_series_last3 where date(etl_time) > '${bf_7_dt}';

@@ -1,5 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_read_action_info
+-- workflow_version : 8
+-- create_user      : yanxh
+-- task_name        : ads_report_read_action_info
+-- task_version     : 8
+-- update_time      : 2024-01-24 14:29:04
+-- sql_path         : \starrocks\tbl_ads_report_read_action_info\ads_report_read_action_info
+----------------------------------------------------------------
+-- SQL语句
 delete  from ads.ads_report_read_action_info where dt>='${bf_1_dt}' ;
 
+-- SQL语句
 insert into ads.ads_report_read_action_info
 with  action_1029 as
           (
@@ -57,7 +69,6 @@ with  action_1029 as
                   ) a group by 1,2 ,3
           ) ,
 
-
       read_info as (
           select  a.product_id,a.userid ,a.bookid,a.createtime from dwd.dwd_read_log_readreportedlog_view   a
           where a.dt >=date_sub('${dt}',interval 1 day)  and a.CreateTime <date_add('${dt}',interval 3 hour) and a.product_id in (3311,3322,3333,3366,3371,3388,3501,3511) and userid >0
@@ -67,8 +78,6 @@ with  action_1029 as
                                                                                           on a.deviceguid=b.device_guid and a.product_id =b.product_id
           where a.dt >=date_sub('${dt}',interval 1 day)  and a.CreateTime<date_add('${dt}',interval 3 hour) and a.product_id in (3311,3322,3333,3366,3371,3388,3501,3511) and (a.userid is null or a.userid='' or a.userid=0)
       )
-
-
 
 select a.dt,a.productid as product_id,a.action as actions ,a.userid as user_id,
        a.f3,a.bookid as book_id,a.imei,a.mt,a.corever,a.createtime as create_time,a.regdate as reg_date,

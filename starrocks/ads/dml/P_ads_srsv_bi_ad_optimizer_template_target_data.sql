@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_template_target_data
+-- workflow_version : 76
+-- create_user      : chenmo
+-- task_name        : ads_srsv_bi_ad_optimizer_template_target_data
+-- task_version     : 50
+-- update_time      : 2025-09-05 11:00:51
+-- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_template_target_data\ads_srsv_bi_ad_optimizer_template_target_data
+----------------------------------------------------------------
+-- SQL语句
 -- TODO 底表二
 insert into ads.ads_srsv_bi_ad_optimizer_template_target_data
 --  底表2，次日基建上限,
@@ -130,7 +141,6 @@ insert into ads.ads_srsv_bi_ad_optimizer_template_target_data
             from z8
         ) x
     )
-
 
     -- 未基建成功保留前日基建
         select date(hours_add(now(),-13)) as dt,

@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwm_ab_exp_recharge_data_di
+-- workflow_version : 5
+-- create_user      : hufengju
+-- task_name        : dwm_ab_exp_recharge_data_di
+-- task_version     : 5
+-- update_time      : 2025-05-07 15:49:47
+-- sql_path         : \starrocks\tbl_dwm_ab_exp_recharge_data_di\dwm_ab_exp_recharge_data_di
+----------------------------------------------------------------
+-- SQL语句
 insert into dwm.`dwm_ab_exp_recharge_data_di`
 with
 -- 充值数据与消费数据
@@ -172,7 +183,6 @@ z3 as (
 		group by 1,2,3,4,5,6
 )     -- select count(1) from z3 where exp_id=42 and exp_grp_id=700025 -- strategy_id=117349256963293517
 
-
 select dt,
 		exp_id,
 		exp_grp_id,
@@ -268,4 +278,4 @@ from (
 
 ) a
 -- where exp_id=42 and exp_grp_id=700025
-group by 1,2,3,4,5
+group by 1,2,3,4,5;

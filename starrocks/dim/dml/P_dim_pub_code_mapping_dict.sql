@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dim_pub_code_mapping_dict
+-- workflow_version : 10
+-- create_user      : qhr
+-- task_name        : P_dim_pub_code_mapping_dict
+-- task_version     : 9
+-- update_time      : 2025-12-15 11:37:35
+-- sql_path         : \starrocks\tbl_dim_pub_code_mapping_dict\P_dim_pub_code_mapping_dict
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 公共码表
 -- 程序名： P_dim_pub_code_mapping_dict
 -- 目标表： dim.dim_pub_code_mapping_dict

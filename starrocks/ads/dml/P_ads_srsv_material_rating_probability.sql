@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : sch_ads_srsv_material_rating_probability
+-- workflow_version : 73
+-- create_user      : chenmo
+-- task_name        : P_ads_srsv_material_rating_probability
+-- task_version     : 3
+-- update_time      : 2026-04-22 13:51:08
+-- sql_path         : \starrocks\sch_ads_srsv_material_rating_probability\P_ads_srsv_material_rating_probability
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_srsv_material_rating_probability
 
 -- 底表2
@@ -617,7 +628,6 @@ t1_1 as (
         where rn=1
     )
 
-
     -- 2、评分方案,汇总媒体评分
     , z16 as (
         select
@@ -805,7 +815,6 @@ t1_1 as (
         ) t
     )
 
-
     -- 剔除：新素材创编7次，暂时剔除，直到累计花费达到50
     , z21 as (
         select a.*
@@ -969,3 +978,67 @@ t1_1 as (
         'e106b7d6677b8afcfb7d7bf6b23bc1cf',
         '9c4ebdc117a1f1af4cd3f244422c7f9f'
     );
+
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : sch_ads_srsv_material_rating_probability
+-- workflow_version : 73
+-- create_user      : chenmo
+-- task_name        : dt_to_dt-1
+-- task_version     : 28
+-- update_time      : 2025-06-05 14:46:01
+-- sql_path         : \starrocks\sch_ads_srsv_material_rating_probability\dt_to_dt-1
+----------------------------------------------------------------
+-- SQL语句
+insert into ads.ads_srsv_material_rating_probability
+
+select date(hours_sub(now(),13+24)) as dt,
+       project_code,
+       asset_guid,
+       source_chl_type,
+       book_id,
+       material_name,
+       language_name,
+       code,
+       language_asset,
+       asset_type,
+       code_type,
+       material_type,
+       bm_compelete_time,
+       date_key,
+       grade_date,
+       first_date,
+       days,
+       level,
+       is_old_asset,
+       spend_dt_sum,
+       spend_sum,
+       impressions_sum,
+       clicks_sum,
+       link_clicks_sum,
+       installs_sum,
+       amount_sum,
+       grade_score_sum_raw,
+       grade_score_sum2,
+       odds,
+       need_mai,
+       odds_aeo,
+       grade_date_mai,
+       first_date_mai,
+       level_mai,
+       odds_mai,
+       spend_dt_sum_mai,
+       spend_sum_mai,
+       impressions_sum_mai,
+       clicks_sum_mai,
+       link_clicks_sum_mai,
+       installs_sum_mai,
+       amount_sum_mai,
+       grade_score_sum_raw_mai,
+       channel,
+       new_cid_name,
+       is_general_score,
+       bm_id,
+       etl_tm
+from ads.ads_srsv_material_rating_probability
+where dt=date(hours_sub(now(),13)) and ifnull(spend_sum, 0) = 0;

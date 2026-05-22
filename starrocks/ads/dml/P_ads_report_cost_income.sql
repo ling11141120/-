@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_cost_income
+-- workflow_version : 8
+-- create_user      : zhengtt
+-- task_name        : ads_report_cost_income
+-- task_version     : 8
+-- update_time      : 2025-09-28 17:41:39
+-- sql_path         : \starrocks\tbl_ads_report_cost_income\ads_report_cost_income
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_report_cost_income where product_id = 0 and dt = '${dt}';
+
+-- SQL语句
 insert into ads.ads_report_cost_income
 select 	'${dt}' as dates,ifnull(a.product_id,0) as product_id,a.book_id,a.book_name,a.origin_bookname,a.object_bookname,
           a.Promotion_status,a.object_book_type,a.is_cost_rate,a.cost_amt_7,c.amount_7,a.cost_amt_30,c.amount_30,

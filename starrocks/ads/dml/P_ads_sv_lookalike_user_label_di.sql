@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_lookalike_user_label_di
+-- workflow_version : 9
+-- create_user      : linq
+-- task_name        : P_ads_sv_lookalike_user_label_di
+-- task_version     : 8
+-- update_time      : 2026-01-15 23:28:36
+-- sql_path         : \starrocks\tbl_ads_sv_lookalike_user_label_di\P_ads_sv_lookalike_user_label_di
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能：用户分群lookalike标签表
 -- 程序名： P_ads_sv_lookalike_user_label_di
 -- 目标表： ads.ads_sv_lookalike_user_label_di

@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_ad_efficiency_report
+-- workflow_version : 19
+-- create_user      : chenmo
+-- task_name        : ads_sv_ad_efficiency_report
+-- task_version     : 15
+-- update_time      : 2026-04-29 10:18:06
+-- sql_path         : \starrocks\tbl_ads_sv_ad_efficiency_report\ads_sv_ad_efficiency_report
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 广告效能【海剧】
 -- 程序名： P_ads_sv_ad_efficiency_report
 -- 目标表： ads.ads_sv_ad_efficiency_report
@@ -94,7 +105,7 @@ with active as (
        and dt <= '${dt}'
      group by 1, 2, 3, 4, 5, 6, 7
 )
--- 广告解锁     
+-- 广告解锁
 , ad_unlock as (
     select a1.dt
           ,a1.product_id

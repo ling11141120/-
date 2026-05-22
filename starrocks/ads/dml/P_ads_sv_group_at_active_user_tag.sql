@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_group_at_active_user_tag
+-- workflow_version : 7
+-- create_user      : qhr
+-- task_name        : P_ads_sv_group_at_active_user_tag
+-- task_version     : 3
+-- update_time      : 2026-03-19 10:54:36
+-- sql_path         : \starrocks\tbl_ads_sv_group_at_active_user_tag\P_ads_sv_group_at_active_user_tag
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海剧人群标签表-提供给付费墙中台等使用
 -- 程序名： P_ads_sv_group_at_active_user_tag
 -- 目标表： ads.ads_sv_group_at_active_user_tag
@@ -128,7 +139,11 @@ with base_user as (
      where date(register_time) = '${bf_1_dt}'
 )
 select * from t1_data
+ where user_id is not null
  union all
 select * from t2_data
+ where user_id is not null
  union all
 select * from d0_data
+ where user_id is not null
+;

@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_growth_operations_weekly
+-- workflow_version : 36
+-- create_user      : linq
+-- task_name        : ads_bi_growth_operations_weekly
+-- task_version     : 36
+-- update_time      : 2026-04-14 14:37:32
+-- sql_path         : \starrocks\tbl_ads_bi_growth_operations_weekly\ads_bi_growth_operations_weekly
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_bi_growth_operations_weekly where dt = '${bf_1_dt}';
+
+-- SQL语句
 -- ----------------------------海阅的周报 20240925 新增的reg_country-----------------
 -- ----------------------------海阅的周报 20241214 新增的非引流指标-----------------
  insert into ads.ads_bi_growth_operations_weekly
@@ -167,7 +181,6 @@ with recharge_mode as (
 		group by 1,2 ,3
 	 )
 
-
 select dt,period_type,period_week,mt,country_level,reg_language,user_type,user_value,source_chl,corever,reg_country,vip_type,dau,recharge_amount,recharge_item_amt,
        recharge_normal_amt,recharge_cnt,vip_recharge_amt,limit_free_amt,consume_money,consume_pay_vip,consume_all,
        consume_money_cnt,consume_pay_vip_cnt,consume_all_cnt,consume_user_pay_cnt,consume_wide_all_cnt,ad_amt,natural_vip_recharge_amt,natural_consume_money,natural_presented_money,natural_limit_free_amt,natural_consume_money_all,natural_money_all,now() as etl_time
@@ -281,11 +294,3 @@ from (
      )a
 
 ;
-
-
-
-
-
-
-
-

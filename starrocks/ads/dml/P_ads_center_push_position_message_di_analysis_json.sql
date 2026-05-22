@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_center_push_position_message_di
+-- workflow_version : 20
+-- create_user      : hufengju
+-- task_name        : ads_center_push_position_message_di_analysis_json
+-- task_version     : 13
+-- update_time      : 2026-04-20 15:25:57
+-- sql_path         : \starrocks\tbl_dwd_center_push_position_message_di\ads_center_push_position_message_di_analysis_json
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_center_push_position_message_di_analysis_json
 select
     a.dt,

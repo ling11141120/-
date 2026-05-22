@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwm_video_short_video_user_fist_time_watch
+-- workflow_version : 5
+-- create_user      : zhengtt
+-- task_name        : dwm_video_short_video_user_fist_time_watch
+-- task_version     : 4
+-- update_time      : 2025-03-27 21:21:18
+-- sql_path         : \starrocks\tbl_dwm_video_short_video_user_fist_time_watch\dwm_video_short_video_user_fist_time_watch
+----------------------------------------------------------------
+-- SQL语句
 insert into dwm.dwm_video_short_video_user_fist_time_watch
 with tmp_data AS (
 select  date(hours_add(create_time,-13)) as dt,
