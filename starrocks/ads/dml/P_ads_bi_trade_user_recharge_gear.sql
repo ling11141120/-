@@ -7,6 +7,8 @@
 -- 版本号： v0.0.1
 ----------------------------------------------------------------
 
+delete from ads.ads_bi_trade_user_recharge_gear where dt ='${bf_1_dt}';
+
 insert into ads.ads_bi_trade_user_recharge_gear
 with source_chl as (
     select product_id
