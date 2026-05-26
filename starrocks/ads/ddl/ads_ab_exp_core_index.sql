@@ -83,7 +83,14 @@ create table ads.ads_ab_exp_core_index (
     ,version_start_time              datetime                 comment "版本开始时间"
     ,version_end_time                datetime                 comment "版本结束时间"
     ,watchEpisodeNumAvg              decimal(20, 6)           comment "人均观看集数"
-)
+    ,unlockCvr                       varchar(50)              comment "解锁转化率"
+    ,unlockCvrFenzi                  varchar(50)              comment "解锁转化率分子"
+    ,unlockCvrFenmu                  varchar(50)              comment "解锁转化率分母"
+    ,viewCvr                         varchar(50)              comment "观看转化率"
+    ,viewCvrFenzi                    varchar(50)              comment "观看转化率分子"
+    ,viewCvrFenmu                    varchar(50)              comment "观看转化率分母"
+    ,unlockedEpisodesPerExposedUser  varchar(50)              comment "每曝光用户解锁集数"
+    ,viewEpisodesPerExposedUser      varchar(50)              comment "每曝光用户观看集数"
 primary key(experimentId, experimentGroupId, dt, projectId, trackficVersion, windowNum)
 comment "AB实验核心指标表"
 distributed by hash(experimentId) buckets 6
