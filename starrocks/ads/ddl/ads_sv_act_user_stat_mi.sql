@@ -61,6 +61,12 @@ create table ads.ads_sv_act_user_stat_mi (
     ,watchEpisodeNumAvgMean      decimal(20, 6)           comment "人均观看集数均值"
     ,watchEpisodeNumAvgSt        decimal(20, 6)           comment "人均观看集数标准差"
     ,watchEpisodeNumAvgVar       decimal(20, 6)           comment "人均观看集数方差"
+    ,unlockCvrMean               varchar(50)              comment "解锁转化率均值"
+    ,unlockCvrSt                 varchar(50)              comment "解锁转化率标准差"
+    ,unlockCvrVar                varchar(50)              comment "解锁转化率方差"
+    ,viewCvrMean                 varchar(50)              comment "观看转化率均值"
+    ,viewCvrSt                   varchar(50)              comment "观看转化率标准差"
+    ,viewCvrVar                  varchar(50)              comment "观看转化率方差"
 )
 primary key(dt, projectId)
 comment "用户统计月度表"
