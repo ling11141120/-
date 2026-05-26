@@ -44,5 +44,5 @@ select dt
       ,get_json_string(SensorsData, '$.subscribe_mode')                                      as subscribe_mode
 from ods.ods_book_user_payorder
 where dt >= date_sub('${dt}',interval 1 day)
-  and dt < date_add('{dt}',interval 1 day )
+  and dt < date_add('${dt}',interval 1 day )
   and TestFlag=0;
