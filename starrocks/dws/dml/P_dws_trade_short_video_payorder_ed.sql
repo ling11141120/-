@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_trade_short_video_payorder_ed
+-- workflow_version : 4
+-- create_user      : zhengtt
+-- task_name        : dws_trade_short_video_payorder_ed
+-- task_version     : 4
+-- update_time      : 2024-01-25 19:04:30
+-- sql_path         : \starrocks\tbl_dws_trade_short_video_payorder_ed\dws_trade_short_video_payorder_ed
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_trade_short_video_payorder_ed
 select  dt,product_id,user_id,
         sum(if(status = 0 and item_count > 0,item_count,0)) as pay_amt,

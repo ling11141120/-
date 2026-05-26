@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_user_conversion_half_screen_store
+-- workflow_version : 7
+-- create_user      : chenmo
+-- task_name        : ads_sr_user_conversion_half_screen_store
+-- task_version     : 6
+-- update_time      : 2025-02-08 14:26:56
+-- sql_path         : \starrocks\tbl_ads_sr_user_conversion_half_screen_store\ads_sr_user_conversion_half_screen_store
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_sr_user_conversion_half_screen_store
 select
     t1.dt,

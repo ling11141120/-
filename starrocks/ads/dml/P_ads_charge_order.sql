@@ -1,11 +1,19 @@
+----------------------------------------------------------------
+-- 程序功能： 沙盘首页-海阅充值统计
+-- 程序名： P_ads_charge_order
+-- 目标表： ads.ads_charge_order
+-- 负责人： qhr
+-- 开发日期： 2026-05-25
+----------------------------------------------------------------
+
 -- 今天
 insert into ads.ads_charge_order
-select 1                             as datetypes
-     , sum(baseamount) / 100.0       as charge_money
-     , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
-     , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
-     , now()                         as etl_time
+select 1                         as datetypes
+     , sum(baseamount)/100.0     as charge_money
+     , sum(baseamount)/100.0*6.5 as charge_money_rmb
+     , count(1)                  as charge_order
+     , count(distinct(UserId))   as charge_num
+     , now()                     as etl_time
   from dwd.dwd_trade_user_payorder
  where dt >= curdate()
    and testflag = 0
@@ -14,12 +22,12 @@ select 1                             as datetypes
 
 -- 昨日同期
 insert into ads.ads_charge_order
-select 2                             as datetypes
-     , sum(baseamount) / 100.0       as charge_money
-     , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
-     , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
-     , now()                         as etl_time
+select 2                         as datetypes
+     , sum(baseamount)/100.0     as charge_money
+     , sum(baseamount)/100.0*6.5 as charge_money_rmb
+     , count(1)                  as charge_order
+     , count(distinct(UserId))   as charge_num
+     , now()                     as etl_time
   from dwd.dwd_trade_user_payorder
  where dt >= date_add(curdate(), interval -1 day)
    and CreateTime <= date_add(now(), interval -1 day)
@@ -33,7 +41,7 @@ select 3                             as datetypes
      , sum(baseamount) / 100.0       as charge_money
      , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
      , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
+     , count(distinct (UserId))      as charge_num
      , now()                         as etl_time
   from dwd.dwd_trade_user_payorder
  where dt >= date_sub(curdate(), interval dayofmonth(now()) - 1 day)
@@ -47,7 +55,7 @@ select 4                             as datetypes
      , sum(baseamount) / 100.0       as charge_money
      , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
      , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
+     , count(distinct (UserId))      as charge_num
      , now()                         as etl_time
   from dwd.dwd_trade_user_payorder
  where dt >= date_sub(date_sub(curdate(), interval day(curdate()) - 1 day), interval 1 month)
@@ -60,15 +68,15 @@ select 4                             as datetypes
 
 -- 本季度
 insert into ads.ads_charge_order
-select 5                             as datetypes
-     , sum(baseamount) / 100.0       as charge_money
-     , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
-     , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
-     , now()                         as etl_time
+select 5                         as datetypes
+     , sum(baseamount)/100.0     as charge_money
+     , sum(baseamount)/100.0*6.5 as charge_money_rmb
+     , count(1)                  as charge_order
+     , count(distinct(UserId))   as charge_num
+     , now()                     as etl_time
   from dwd.dwd_trade_user_payorder
- where dt >= date_sub(curdate(), interval 3 month)
-   and CreateTime > date_sub(now(), interval 3 month)
+ where dt >= date_sub(curdate() , interval 3 month )
+   and CreateTime > date_sub(now(), interval 3 month )
    and CreateTime < now()
    and quarter(CreateTime) = quarter(now())
    and testflag = 0
@@ -77,22 +85,22 @@ select 5                             as datetypes
 
 -- 上季度同期
 insert into ads.ads_charge_order
-select 6                             as datetypes
-     , sum(baseamount) / 100.0       as charge_money
-     , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
-     , count(1)                      as charge_order
-     , count(distinct(UserId))       as charge_num
-     , now()                         as etl_time
+select 6                         as datetypes
+     , sum(baseamount)/100.0     as charge_money
+     , sum(baseamount)/100.0*6.5 as charge_money_rmb
+     , count(1)                  as charge_order
+     , count(distinct(UserId))   as charge_num
+     , now()                     as etl_time
   from dwd.dwd_trade_user_payorder
- where dt >= date_sub(curdate(), interval 6 month)
-   and CreateTime > date_sub(now(), interval 6 month)
-   and CreateTime <= date_sub(now(), interval 3 month)
-   and quarter(CreateTime) = quarter(date_sub(now(), interval 3 month))
+ where dt >= date_sub(curdate() , interval 6 month )
+   and CreateTime > date_sub(now(), interval 6 month )
+   and CreateTime <= date_sub(now(), interval 3 month )
+   and quarter(CreateTime) = quarter(date_sub(now(),  interval 3 month))
    and testflag = 0
    and productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
 ;
 
--- 本季度完整
+-- 上季度全量
 insert into ads.ads_charge_order
 select datetypes
      , charge_money
@@ -100,15 +108,15 @@ select datetypes
      , charge_order
      , charge_num
      , etl_time
-  from (select 7                             as datetypes
-             , sum(baseamount) / 100.0       as charge_money
-             , sum(baseamount) / 100.0 * 6.5 as charge_money_rmb
-             , count(1)                      as charge_order
-             , count(distinct(UserId))       as charge_num
-             , now()                         as etl_time
+  from (select 7                         as datetypes
+             , sum(baseamount)/100.0     as charge_money
+             , sum(baseamount)/100.0*6.5 as charge_money_rmb
+             , count(1)                  as charge_order
+             , count(distinct(UserId))   as charge_num
+             , now()                     as etl_time
           from dwd.dwd_trade_user_payorder
-         where quarter(CreateTime) = quarter(date_sub(now(), interval 3 month))
-           and year(CreateTime) = year(date_sub(now(), interval 3 month))
+         where quarter(CreateTime) = quarter(date_sub(now(), interval 3 month ))
+           and year(CreateTime) = year(date_sub(now(), interval 3 month ))
            and testflag = 0
            and productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
        ) b

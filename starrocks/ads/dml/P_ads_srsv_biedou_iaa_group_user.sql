@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_biedou_iaa_group_user
+-- workflow_version : 2
+-- create_user      : chenmo
+-- task_name        : ads_srsv_biedou_iaa_group_user
+-- task_version     : 2
+-- update_time      : 2025-05-21 15:50:01
+-- sql_path         : \starrocks\tbl_ads_srsv_biedou_iaa_group_user\ads_srsv_biedou_iaa_group_user
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_srsv_biedou_iaa_group_user
 with iaa as (
     -- IAA人群包

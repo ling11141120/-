@@ -1,4 +1,18 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_third_party_payment_funnel
+-- workflow_version : 35
+-- create_user      : chenmo
+-- task_name        : P_ads_sv_third_party_payment_funnel_recharge
+-- task_version     : 1
+-- update_time      : 2025-11-03 16:37:00
+-- sql_path         : \starrocks\tbl_ads_sv_third_party_payment_funnel\P_ads_sv_third_party_payment_funnel_recharge
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_sv_third_party_payment_funnel_recharge where dt >= '${bf_1_dt}' and dt <= '${dt}';
+
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海剧三方支付漏斗报表-充值成功
 -- 程序名： P_ads_sv_third_party_payment_funnel_recharge
 -- 目标表： ads.ads_sv_third_party_payment_funnel_recharge
@@ -65,9 +79,9 @@ with active as(
                     ,case when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='201300' then '商店页'
                           when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200900' then '半屏'
                           when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='200800' and SPLIT(get_json_string(custom_data, '$.sendId'), '_')[2]='0' then '解锁页VIP'
-                          when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5' 
+                          when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1]='203300' then 'H5'
                           when SPLIT(get_json_string(custom_data, '$.sendId'), '_')[1] is null
-                               then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100 
+                               then (case when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
                                            and split(get_json_string(custom_data, '$.activityLink'), '_')[2] in (0,1) then '普通弹窗'
                                           when split(get_json_string(custom_data, '$.activityLink'), '_')[1]=202100
                                            and split(get_json_string(custom_data, '$.activityLink'), '_')[2]=3 then '充值返回推弹窗'

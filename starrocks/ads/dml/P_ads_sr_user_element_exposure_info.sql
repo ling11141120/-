@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_user_element_exposure_info
+-- workflow_version : 11
+-- create_user      : chenmo
+-- task_name        : ads_sr_user_element_exposure_info
+-- task_version     : 5
+-- update_time      : 2025-04-08 16:23:10
+-- sql_path         : \starrocks\tbl_ads_sr_user_element_exposure_info\ads_sr_user_element_exposure_info
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_sr_user_element_exposure_info
 select
     a.dt,

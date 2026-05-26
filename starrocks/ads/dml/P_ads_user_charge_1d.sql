@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_user_charge_1d
+-- workflow_version : 6
+-- create_user      : yanxh
+-- task_name        : tbl_ads_user_charge_1d
+-- task_version     : 6
+-- update_time      : 2024-10-16 15:44:07
+-- sql_path         : \starrocks\tbl_ads_user_charge_1d\tbl_ads_user_charge_1d
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_user_charge_1d where dt = '${bf_1_dt}';
+
+-- SQL语句
 insert into ads.ads_user_charge_1d
 select a.dt,a.productid,a.corever,a.CurrentLanguage,a.CurrentLanguage2,a.appver,a.mt,a.ver,a.regcountry,
  count(distinct userid ) charge_num,

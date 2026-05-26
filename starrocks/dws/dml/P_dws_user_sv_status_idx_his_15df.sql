@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_sv_status_idx_his_15df
+-- workflow_version : 4
+-- create_user      : qhr
+-- task_name        : P_dws_user_sv_status_idx_his_15df
+-- task_version     : 4
+-- update_time      : 2026-01-30 19:43:25
+-- sql_path         : \starrocks\tbl_dws_user_sv_status_idx_his_15df\P_dws_user_sv_status_idx_his_15df
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 用户域-海剧用户状态指标表-近15天全量
 -- 程序名： P_dws_user_sv_status_idx_his_15df
 -- 目标表： dws.dws_user_sv_status_idx_his_15df

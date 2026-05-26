@@ -1,9 +1,21 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_ad_product_user_income_h
+-- workflow_version : 15
+-- create_user      : xixg
+-- task_name        : P_dws_ad_product_user_income_h
+-- task_version     : 4
+-- update_time      : 2025-12-18 19:12:21
+-- sql_path         : \starrocks\tbl_dws_ad_product_user_income_h\P_dws_ad_product_user_income_h
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 广告域-产品用户广告收益-小时统计
 -- 程序名： P_dws_ad_product_user_income_h
 -- 目标表： dws.dws_ad_product_user_income_h
 -- 负责人： qhr
 -- 开发日期： 2025-11-23
+-- 版本号： v0.0.0
 ----------------------------------------------------------------
 
 insert into dws.dws_ad_product_user_income_h
@@ -181,7 +193,7 @@ select maind.dt                                 as dt            -- 日期
      , coalesce(maind.corever, usif.corever)    as corever       -- core
      , coalesce(maind.mt, usif.mt)              as mt            -- 平台
      , maind.user_id                            as user_id       -- 用户id
-     , maind.ads_name                           as ads_name      -- 广告来源
+     , coalesce(maind.ads_name,'-999')          as ads_name      -- 广告来源
      , sum(maind.amount)                        as amount        -- 广告收益
      , now()                                    as etl_tm        -- 清洗时间
   from (select date_trunc('hour', date_sub(aupap.create_tm,interval 13 hour))    as dt

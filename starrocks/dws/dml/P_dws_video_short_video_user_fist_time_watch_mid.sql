@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_video_short_video_user_fist_time_watch_mid
+-- workflow_version : 12
+-- create_user      : zhengtt
+-- task_name        : dws_video_short_video_user_fist_time_watch_mid
+-- task_version     : 12
+-- update_time      : 2025-09-23 14:38:02
+-- sql_path         : \starrocks\tbl_dws_video_short_video_user_fist_time_watch_mid\dws_video_short_video_user_fist_time_watch_mid
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_video_short_video_user_fist_time_watch_mid
 with a as (
          select  a.dt,a.user_id,a.series_id,a.epis_num,a.create_time,install_date,next_attribute_time,book_id,

@@ -1,48 +1,48 @@
 ----------------------------------------------------------------
--- 程序功能： 交易域用户充值事实表
+-- 程序功能： 交易域-支付成功充值订单
 -- 程序名： P_dwd_trade_user_payorder
 -- 目标表： dwd.dwd_trade_user_payorder
--- 开发人： qhr
--- 开发日期： 2023-10-26
+-- 开发人： xjc
+-- 开发日期： 2026-05-25
 ----------------------------------------------------------------
 
 insert into dwd.dwd_trade_user_payorder
 select dt
-      ,productid
-      ,id                                                                                       as autoid
-      ,if(userid is null or userid = '', -99, userid)                                           as userid
-      ,if(type is null or type = '', -99, type)                                                 as paychannelidid
-      ,if(used is null or used = '', -99, used)                                                 as used
-      ,if(orderid is null or orderid = '', -99, orderid)                                        as orderid
-      ,if(flag is null or flag = '', -99, flag)                                                 as flag
-      ,if(createtime is null or createtime = '', '1970-01-01 00:00:00', createtime)             as createtime
-      ,if(gettime is null or gettime = '', '1970-01-01 00:00:00', gettime)                      as gettime
-      ,if(actualamount > 0, actualamount, itemcount)                                            as itemcount
-      ,if(systemtype is null or systemtype = '', -99, systemtype)                               as systemtype
-      ,if(receivedate is null or receivedate = '', '1970-01-01 00:00:00', receivedate)          as receivedate
-      ,if(mt is null or mt = '', -99, mt)                                                       as mt
-      ,if(couponid is null or couponid = '', -99, couponid)                                     as couponid
-      ,if(packageid is null or packageid = '', -99, packageid)                                  as packageid
-      ,if(shopitem is null or shopitem = '', -99, shopitem)                                     as shopitem
-      ,if(extinfo is null or extinfo = '', -99, extinfo)                                        as extinfo
-      ,if(vipexpiretime is null or vipexpiretime = '', -99, vipexpiretime)                      as vipexpiretime
-      ,if(realmoney is null or realmoney = '', -99, realmoney)                                  as realmoney
-      ,if(givemoney is null or givemoney = '', -99, givemoney)                                  as awardmoney
-      ,if(payconfigid is null or payconfigid = '', -99, payconfigid)                            as payconfigid
-      ,if(corever is null or corever = '', -99, corever)                                        as corever
-      ,if(uniqueguid is null or uniqueguid = '', -99, uniqueguid)                               as deviceguid
-      ,if(testflag is null or testflag = '', -99, testflag)                                     as testflag
-      ,if(baseamount is null or baseamount = '', -99, baseamount)                               as baseamount
-      ,if(version is null or version = '', -99, version)                                        as version
-      ,if(subpaytype is null or subpaytype = '', -99, subpaytype)                               as subpaytype
-      ,if(giftmoney is null or giftmoney = '', -99, giftmoney)                                  as giftmoney
-      ,if(orderinittime is null or orderinittime = '', '1970-01-01 00:00:00', orderinittime)    as orderinittime
-      ,if(cooorderextinfo is null or cooorderextinfo = '', -99, cooorderextinfo)                as cooorderextinfo
-      ,productdata                                                                              as product_data
-      ,sensorsdata
-      ,now()                                                                                    as etl_time
-  from ods.ods_book_user_payorder
- where dt >= '${bf_1_dt}'
-   and dt < date(date_add('${bf_1_dt}', interval 1 day))
-   and testflag = 0
-;
+      ,ProductId
+      ,id                                                                                    as AutoId
+      ,if(UserId is null or UserId = '', -99, UserId)                                        as UserId
+      ,if(type is null or type = '', -99, type)                                              as PayChannelidId
+      ,if(Used is null or Used = '', -99, Used)                                              as Used
+      ,if(OrderId is null or OrderId = '', -99, OrderId)                                     as OrderId
+      ,if(Flag is null or Flag = '', -99, Flag)                                              as Flag
+      ,if(CreateTime is null or CreateTime = '', '1970-01-01 00:00:00', CreateTime)          as CreateTime
+      ,if(GetTime is null or GetTime = '', '1970-01-01 00:00:00', GetTime)                   as GetTime
+      ,if(ActualAmount > 0 , ActualAmount, ItemCount)                                        as ItemCount
+      ,if(SystemType is null or SystemType = '', -99, SystemType)                            as SystemType
+      ,if(ReceiveDate is null or ReceiveDate = '', '1970-01-01 00:00:00', ReceiveDate)       as ReceiveDate
+      ,if(MT is null or MT = '', -99, MT)                                                    as MT
+      ,if(CouponId is null or CouponId = '', -99, CouponId)                                  as CouponId
+      ,if(PackageId is null or PackageId = '', -99, PackageId)                               as PackageId
+      ,if(ShopItem is null or ShopItem = '', -99, ShopItem)                                  as ShopItem
+      ,if(ExtInfo is null or ExtInfo = '', -99, ExtInfo)                                     as ExtInfo
+      ,if(VipExpireTime is null or VipExpireTime = '', -99, VipExpireTime)                   as VipExpireTime
+      ,if(RealMoney is null or RealMoney = '', -99, RealMoney)                               as RealMoney
+      ,if(GiveMoney is null or GiveMoney = '', -99, GiveMoney)                               as AwardMoney
+      ,if(PayConfigId is null or PayConfigId = '', -99, PayConfigId)                         as PayConfigId
+      ,if(CoreVer is null or CoreVer = '', -99, CoreVer)                                     as CoreVer
+      ,if(UniqueGuid is null or UniqueGuid = '', -99, UniqueGuid)                            as DeviceGUID
+      ,if(TestFlag is null or TestFlag = '', -99, TestFlag)                                  as TestFlag
+      ,if(BaseAmount is null or BaseAmount = '', -99, BaseAmount)                            as BaseAmount
+      ,if(Version is null or Version = '', -99, Version)                                     as Version
+      ,if(SubPayType is null or SubPayType = '', -99, SubPayType)                            as SubPayType
+      ,if(GiftMoney is null or GiftMoney = '', -99, GiftMoney)                               as GiftMoney
+      ,if(OrderInitTime is null or OrderInitTime = '', '1970-01-01 00:00:00', OrderInitTime) as OrderInitTime
+      ,if(CooOrderExtInfo is null or CooOrderExtInfo = '', -99, CooOrderExtInfo)             as CooOrderExtInfo
+      ,ProductData                                                                           as product_data
+      ,SensorsData                                                                           as SensorsData
+      ,now()                                                                                 as etl_time
+      ,get_json_string(SensorsData, '$.subscribe_mode')                                      as subscribe_mode
+from ods.ods_book_user_payorder
+where dt >= date_sub('${dt}',interval 1 day)
+  and dt < date_add('${dt}',interval 1 day )
+  and TestFlag=0;

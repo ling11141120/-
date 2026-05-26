@@ -1,9 +1,9 @@
 ----------------------------------------------------------------
--- 程序功能： qa-海剧海阅充值曝光信息-小时增量
+-- 程序功能： 充值监控小时表
 -- 程序名： P_ads_qa_srsv_recharge_monitoring_info_hi
 -- 目标表： ads.ads_qa_srsv_recharge_monitoring_info_hi
--- 负责人： 050239
--- 开发日期：2026-05-19
+-- 负责人： xjc
+-- 开发日期：2026-05-25
 ----------------------------------------------------------------
 
 insert into ads.ads_qa_srsv_recharge_monitoring_info_hi
@@ -54,9 +54,7 @@ select a.dt
    and a.hour = b.hour
    and a.mt = b.mt
    and a.core = b.core
-
 union all
-
 select a.dt
      , a.hour
      , a.product_id
@@ -83,7 +81,7 @@ select a.dt
              , count(distinct login_id) as exposure_uv
           from ads.ads_sensors_production_rechargeexposure_view
          where app_product_id <> 6833
-           and app_product_id is not null
+           and cast(app_product_id as bigint) is not null
            and dt >= '${bf_3_dt}'
          group by 1, 2, 3, 4, 5
        ) a

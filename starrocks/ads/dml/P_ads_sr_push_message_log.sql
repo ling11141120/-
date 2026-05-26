@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_push_message_log
+-- workflow_version : 3
+-- create_user      : chenmo
+-- task_name        : ads_sr_push_message_log
+-- task_version     : 3
+-- update_time      : 2025-04-08 15:45:02
+-- sql_path         : \starrocks\tbl_ads_sr_push_message_log\ads_sr_push_message_log
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.`ads_sr_push_message_log`
 SELECT a.`dt`,
        a.`product_id`,

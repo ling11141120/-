@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_consume_user_consume
+-- workflow_version : 4
+-- create_user      : linq
+-- task_name        : dwd_consume_user_consume
+-- task_version     : 4
+-- update_time      : 2023-10-30 15:30:44
+-- sql_path         : \starrocks\tbl_dwd_consume_user_consume\dwd_consume_user_consume
+----------------------------------------------------------------
+-- SQL语句
 insert into dwd.dwd_consume_user_consume
 select dt,
        ProductId,

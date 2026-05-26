@@ -1,10 +1,24 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sv_third_party_payment_funnel
+-- workflow_version : 35
+-- create_user      : chenmo
+-- task_name        : ads_sv_third_party_payment_funnel_exposure
+-- task_version     : 4
+-- update_time      : 2025-11-06 11:42:06
+-- sql_path         : \starrocks\tbl_ads_sv_third_party_payment_funnel\ads_sv_third_party_payment_funnel_exposure
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_sv_third_party_payment_funnel_exposure where dt >= '${bf_1_dt}' and dt <= '${dt}';
+
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海剧三方支付漏斗报表-曝光
 -- 程序名： P_ads_sv_third_party_payment_funnel_exposure
 -- 目标表： ads.ads_sv_third_party_payment_funnel_exposure
 -- 负责人： wx
 -- 开发日期：2025-10-10
--- 版本号：v0.1.0
+-- 版本号：v0.1.1
 ----------------------------------------------------------------
 insert into ads.ads_sv_third_party_payment_funnel_exposure
 -- 活跃表
@@ -64,7 +78,13 @@ exposure as(
                 when os='Android' then 'Android'
                 else '其他'
             end        as mt
-          ,core
+          ,case
+                when app_id = 683001001 then '1'
+                when app_id = 683002001 then '2'
+                when app_id = 683003001 then '3'
+                when app_id = 683004001 then '4'
+                when app_core_ver=15 then '15'
+          end as core
           ,dt
       from ads.ads_sensors_cd_video_rechargeexposure_view
      where product_id = 6833

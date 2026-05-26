@@ -1,8 +1,20 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_flow_cv_exposure_recharge_di
+-- workflow_version : 14
+-- create_user      : yanxh
+-- task_name        : dws_flow_cv_exposure_recharge_di
+-- task_version     : 14
+-- update_time      : 2025-03-27 18:36:59
+-- sql_path         : \starrocks\tbl_dws_flow_cv_exposure_recharge_di\dws_flow_cv_exposure_recharge_di
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_flow_cv_exposure_recharge_di where dt='${bf_1_dt}';
 
+-- SQL语句
 insert into  dws.dws_flow_cv_exposure_recharge_di
 with exp_user as
 (
-
 
   select ex.dt,
        ex.cz_template_id,ex.cz_template_name,
@@ -69,7 +81,6 @@ on exp_user.user_id =ad.user_id
 
 )
 
-
 -- select * from ads order by 7
 ,
 
@@ -96,7 +107,6 @@ where a.dt='${bf_1_dt}'   and  a.coo_order_status = 1 and a.test_flag = 0
 
  )
 
-
   -- select  count(exp_user),count(recharge_user),count(distinct  recharge_user),sum(real_recharge),count(recharge_tps) from (
  -- select *from re
   select  ads.dt,
@@ -119,4 +129,4 @@ where a.dt='${bf_1_dt}'   and  a.coo_order_status = 1 and a.test_flag = 0
  -- and ads.ads_optimizer=re.ads_optimizer
  and ads.user_id=re.user_id
 and  ads.event_tm=re.event_tm
- --  vv
+ --  vv;

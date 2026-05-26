@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dwd_sr_read_abtest_pageid_detail_di
+-- workflow_version : 24
+-- create_user      : sjc
+-- task_name        : tbl_dwd_sr_read_abtest_pageid_detail_di_fbs2s
+-- task_version     : 22
+-- update_time      : 2025-02-07 16:02:38
+-- sql_path         : \starrocks\tbl_dwd_sr_read_abtest_pageid_detail_di\tbl_dwd_sr_read_abtest_pageid_detail_di_fbs2s
+----------------------------------------------------------------
+-- SQL语句
 -- 生成表明细表：分别是fbs2s，tt 用于分析
 
 insert into dwd.dwd_sr_read_abtest_pageid_detail_di

@@ -1,4 +1,18 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_bi_koc_attribution_result_data
+-- workflow_version : 17
+-- create_user      : hufengju
+-- task_name        : P_ads_srsv_bi_koc_attribution_result_data
+-- task_version     : 14
+-- update_time      : 2026-02-25 16:05:51
+-- sql_path         : \starrocks\tbl_ads_srsv_bi_koc_attribution_result_data\P_ads_srsv_bi_koc_attribution_result_data
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_srsv_bi_koc_attribution_result_data where dt >= '${bf_30_dt}'  and dt <= '${dt}';
+
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 海阅海剧koc用户数据报表
 -- 程序名： P_ads_srsv_bi_koc_attribution_result_data
 -- 目标表： ads.ads_srsv_bi_koc_attribution_result_data

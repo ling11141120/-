@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_video_user_watch_a
+-- workflow_version : 13
+-- create_user      : linq
+-- task_name        : dws_video_user_watch_new_epis_series_td_a 
+-- task_version     : 7
+-- update_time      : 2025-04-07 10:22:49
+-- sql_path         : \starrocks\tbl_dws_video_user_watch_a\dws_video_user_watch_new_epis_series_td_a 
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_video_user_watch_new_epis_series_td_a
 select t1.dt,t1.product_id,t1.user_id,fst_watch_tm,lst_watch_tm,t1.watch_days_td,
        t1.watch_cnt_td,t2.new_epis_series_td,now() as etl_time

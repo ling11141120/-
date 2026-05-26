@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sr_third_party_payment_exposure_order
+-- workflow_version : 7
+-- create_user      : chenmo
+-- task_name        : ads_sr_third_party_payment_exposure_order
+-- task_version     : 5
+-- update_time      : 2025-12-15 11:47:07
+-- sql_path         : \starrocks\tbl_ads_sr_third_party_payment_exposure_order\ads_sr_third_party_payment_exposure_order
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_sr_third_party_payment_exposure_order
 -- 曝光事件拆分
 with exposure_explode as (

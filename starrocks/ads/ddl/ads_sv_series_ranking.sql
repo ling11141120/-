@@ -9,6 +9,7 @@ create table ads.ads_sv_series_ranking (
     ,publish_status int                     comment "剧上架状态 (1 上架 2 下架)"
     ,consume_value  decimal(20, 6)          comment "消费数量"
     ,uv             bigint                  comment "播放量（UV）"
+    ,vip_unlock_episode_count bigint(20)    comment "VIP解锁集数"
     ,etl_time       datetime       not null comment "数据清洗时间"
 )
 primary key(dt, days, series_id)

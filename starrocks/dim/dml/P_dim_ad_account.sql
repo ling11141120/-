@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dim_ad_account
+-- workflow_version : 3
+-- create_user      : admin
+-- task_name        : dim_ad_account
+-- task_version     : 3
+-- update_time      : 2024-06-05 10:58:22
+-- sql_path         : \starrocks\tbl_dim_ad_account\dim_ad_account
+----------------------------------------------------------------
+-- SQL语句
 insert overwrite dim.dim_ad_account
 select  Id,1 as types,Account,Secret,PageId,AppId,AppUrl,CreatTime,ProductId,ProductName,Mt,
         Token,InsId,Status,AutoFillAd,UpdateStatus,Chl,Core,FbAdRuleId,AdAutoActive,

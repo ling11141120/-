@@ -34,6 +34,7 @@ create table dwd.dwd_trade_user_payorder (
     ,product_data          VARCHAR(1048576)                           comment "商品数据 发货成功后回写 json格式"
     ,SensorsData           VARCHAR(65533)                             comment "埋点信息"
     ,etl_time              DATETIME         default current_timestamp comment "etl清洗时间"
+    ,subscribe_mode        varchar(50)                                comment "订阅方式"
 )
 primary key(dt, ProductId, AutoId)
 comment "交易域用户充值事实表"

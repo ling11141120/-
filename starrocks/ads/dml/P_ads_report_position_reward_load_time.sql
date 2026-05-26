@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_report_position_reward_load_time
+-- workflow_version : 9
+-- create_user      : yanxh
+-- task_name        : ads_report_position_reward_load_time
+-- task_version     : 9
+-- update_time      : 2024-04-02 16:58:35
+-- sql_path         : \starrocks\tbl_ads_report_position_reward_load_time\ads_report_position_reward_load_time
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_report_position_reward_load_time  where  dt ='${bf_1_dt}';
+
+-- SQL语句
 -- 根据 DAS-189 号需求（广告时长统计的位置ID落表） 做以下调整
 -- 在 7.2.6 版本及以后，明细表 dwd_readerlog_commonactionlog_view 新增了位置ID信息，存储在字段 f1 上
 -- 所以这里新的取值逻辑为，位置ID != 0 则取新的位置ID，否则按之前的逻辑关联维度取值
@@ -108,4 +122,4 @@ select dt,
        1     as type,
        now() as etl_time,
        ad_plat_form
-from s0
+from s0;

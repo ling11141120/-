@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_sensors_production_element_transform_di
+-- workflow_version : 12
+-- create_user      : sjc
+-- task_name        : ads_sensors_production_element_transform_di
+-- task_version     : 12
+-- update_time      : 2025-06-05 18:20:42
+-- sql_path         : \starrocks\tbl_ads_sensors_production_element_transform_di\ads_sensors_production_element_transform_di
+----------------------------------------------------------------
+-- SQL语句
 insert into ads.ads_sensors_production_element_transform_di
 
 -- ### 曝光用户 ###

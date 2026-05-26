@@ -1,4 +1,15 @@
 ----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_template_target_data_1
+-- workflow_version : 37
+-- create_user      : qhr
+-- task_name        : P_ads_srsv_bi_ad_optimizer_template_target_data_1
+-- task_version     : 30
+-- update_time      : 2025-11-04 11:02:03
+-- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_template_target_data_1\P_ads_srsv_bi_ad_optimizer_template_target_data_1
+----------------------------------------------------------------
+-- SQL语句
+----------------------------------------------------------------
 -- 程序功能： 模板维度基建上限-底表一-临时
 -- 程序名： P_ads_srsv_bi_ad_optimizer_template_target_data_1
 -- 目标表： ads.ads_srsv_bi_ad_optimizer_template_target_data_1
@@ -101,7 +112,7 @@ with z6 as (
                            )    as  spend_rate
               from z6
            )                    as x
-) 
+)
 -- 计划1
 , z8 as (
     select *
@@ -146,7 +157,7 @@ with z6 as (
          )                                 as xxx
 )
 
--- 计算逻辑2，淘汰和老组保底，基建上限受达标率和老组花费    
+-- 计算逻辑2，淘汰和老组保底，基建上限受达标率和老组花费
 , z6_2 as (
     select *
           ,case when (adsetnum_2=0 or has_plan<>1)  and old_spend>500  and old_R0_bf1>=1 then greatest(1,adsetnum_2)   -- 老组达标率高，保底1
@@ -276,4 +287,6 @@ select date(hours_add('${dt_tm}',-13))    as dt
          and days_diff(hours_add('${dt_tm}',-13),dt)>=1
         )
 ;
+
+-- SQL语句
 commit;

@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_user_short_video_wide_active_period_west5_ed
+-- workflow_version : 1
+-- create_user      : xixg
+-- task_name        : dws_user_short_video_wide_active_period_west5_ed
+-- task_version     : 1
+-- update_time      : 2025-07-18 15:23:02
+-- sql_path         : \starrocks\tbl_dws_user_short_video_wide_active_period_west5_ed\dws_user_short_video_wide_active_period_west5_ed
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_user_short_video_wide_active_period_west5_ed
 -- -----------------------ctt活跃用户的主表 ------------------------
 with active as (
@@ -52,7 +63,6 @@ with active as (
                 if(b.user_id is not null,1,0) as is_rmt
          from active a left join rmt b on a.product_id=b.product_id and a.user_id=b.user_id
      )
-
 
 select a.dt,
        'ctt' as period_type,

@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_trade_user_shopitem_charge_ed
+-- workflow_version : 29
+-- create_user      : yanxh
+-- task_name        : dws_trade_user_recharge_temp
+-- task_version     : 15
+-- update_time      : 2026-04-10 10:21:07
+-- sql_path         : \starrocks\tbl_dws_trade_user_shopitem_charge_ed\dws_trade_user_recharge_temp
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_trade_user_recharge_temp where dt = '${bf_1_dt}';
+
+-- SQL语句
 insert into  dws.dws_trade_user_recharge_temp
 select '${bf_1_dt}' as dt,product_id,user_id, Firstchargeday,Firstchargemoney,Autoid
 from

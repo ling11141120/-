@@ -1,3 +1,14 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_trade_short_video_subscribe_payorder_a
+-- workflow_version : 6
+-- create_user      : zhengtt
+-- task_name        : dws_trade_short_video_subscribe_payorder_a
+-- task_version     : 6
+-- update_time      : 2024-10-16 12:01:43
+-- sql_path         : \starrocks\tbl_dws_trade_short_video_subscribe_payorder_a\dws_trade_short_video_subscribe_payorder_a
+----------------------------------------------------------------
+-- SQL语句
 insert into dws.dws_trade_short_video_subscribe_payorder_a
 with first as
          (   select  product_id,user_id,

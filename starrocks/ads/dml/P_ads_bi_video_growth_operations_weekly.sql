@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_ads_bi_video_growth_operations_weekly
+-- workflow_version : 43
+-- create_user      : linq
+-- task_name        : ads_bi_video_growth_operations_weekly
+-- task_version     : 43
+-- update_time      : 2026-01-26 17:00:41
+-- sql_path         : \starrocks\tbl_ads_bi_video_growth_operations_weekly\ads_bi_video_growth_operations_weekly
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from ads.ads_bi_video_growth_operations_weekly where dt='${bf_1_dt}';
+
+-- SQL语句
 -- =====================================================
 -- 问题2修复：周报充值逻辑（修正沙箱关联+新增退款过滤）
 -- 修改人：陈末
@@ -222,7 +236,6 @@ from(
     )s1
 where rn=1
     )
-
 
 select dt,md5(concat_ws('_',dt,product_id,period_type,period_week,mt,country_level,reg_language,user_type,user_value,chl2,chl,source_chl,corever,reg_country)) as md5_key,
        product_id,period_type,period_week,mt,country_level,reg_language,user_type,user_value,chl2,chl,source_chl,corever,reg_country,dau,recharge_amount,recharge_cnt,

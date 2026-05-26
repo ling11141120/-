@@ -7,6 +7,8 @@
 -- 版本号： v0.0.1
 ----------------------------------------------------------------
 
+delete from ads.ads_bi_trade_user_recharge_gear where dt ='${bf_1_dt}';
+
 insert into ads.ads_bi_trade_user_recharge_gear
 with source_chl as (
     select product_id
@@ -47,6 +49,7 @@ with source_chl as (
           ,max(subscribe_status)    as subscribe_status
           ,max(subpay_type)         as subpay_type
           ,item_type                as item_type
+          ,subscribe_mode           as subscribe_mode
       from (select b1.dt
                   ,b1.product_id
                   ,b1.user_id
@@ -74,6 +77,7 @@ with source_chl as (
                   ,b1.subscribe_status
                   ,b1.subpaytype                      as subpay_type
                   ,item_type
+                  ,b1.subscribe_mode
               from (select c1.dt
                           ,c1.productid     as product_id
                           ,c1.userid        as user_id
@@ -170,11 +174,12 @@ with source_chl as (
                           ,max(substring_index(substring_index(cooorderextinfo, '"SubscribeStatus":', -1), '}', 1))                     as subscribe_status
                           ,case when get_json_string(SensorsData,'$.subscription_period') = 1 then '周卡'
                                 when get_json_string(SensorsData,'$.subscription_period') = 2 then '月卡'
-                                when get_json_string(SensorsData,'$.subscription_period') = 3 then '季卡' 
-                                when get_json_string(SensorsData,'$.subscription_period') = 4 then '年卡' 
+                                when get_json_string(SensorsData,'$.subscription_period') = 3 then '季卡'
+                                when get_json_string(SensorsData,'$.subscription_period') = 4 then '年卡'
                                 when get_json_string(SensorsData,'$.subscription_period') = 5 then '天卡'
                                 else null
                             end                                                                                                         as item_type
+                          ,c1.subscribe_mode                                                                                            as subscribe_mode
                       from dwd.dwd_trade_user_payorder            as c1
                       left join dim.dim_user_account_info_view    as c2
                         on c1.productid = c2.product_id
@@ -183,7 +188,7 @@ with source_chl as (
                         on c1.productid = c3.product_id
                        and c1.userid = c3.user_id
                      where c1.dt = '${bf_1_dt}'
-                     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18
+                     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 18, 19
                    )         as b1
               left join (select product_id
                                ,user_id
@@ -239,7 +244,7 @@ with source_chl as (
                 on b1.item_id = b6.item_id
                and b1.subpaytype = b6.subpaytype
            )    as a1
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20 ,21, 25
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20 ,21, 25, 26
 )
 select a1.dt                       as dt                       -- 统计周期
       ,a1.product_id               as product_id               -- 产品id
@@ -269,6 +274,7 @@ select a1.dt                       as dt                       -- 统计周期
       ,a1.subpay_type              as subpay_type              -- 订阅支付类型
       ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
       ,a1.item_type                as item_type                -- 购买商品类型
+      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
   from maintab                              as a1
   left join (select dt
                    ,product_id
@@ -314,6 +320,7 @@ select a1.dt                       as dt                       -- 统计周期
       ,a1.subpay_type              as subpay_type              -- 订阅支付类型
       ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
       ,a1.item_type                as item_type                -- 购买商品类型
+      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
   from maintab                              as a1
   left join (select dt
                    ,product_id

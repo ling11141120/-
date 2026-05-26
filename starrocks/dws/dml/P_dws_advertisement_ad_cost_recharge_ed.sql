@@ -1,3 +1,17 @@
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_advertisement_ad_cost_recharge_ed
+-- workflow_version : 18
+-- create_user      : admin
+-- task_name        : dws_advertisement_ad_cost_recharge_ed_part1
+-- task_version     : 17
+-- update_time      : 2024-03-04 16:55:26
+-- sql_path         : \starrocks\tbl_dws_advertisement_ad_cost_recharge_ed\dws_advertisement_ad_cost_recharge_ed_part1
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_advertisement_ad_cost_recharge_ed where dt  >='${bf_180_dt}' and dt < '${dt}'  and product_id != 6883;
+
+-- SQL语句
 insert into dws.dws_advertisement_ad_cost_recharge_ed
 select  a.dt,a.product_id,a.ad_id,b.fb_account,b.source_chl,b.ads_type,b.ads_quality,b.ad_name,c.product_name,
         b.ad_campname,b.ad_camp_id,b.ad_set_id,b.ad_setname,b.book_id,b.book_name,
@@ -58,9 +72,22 @@ from dwd.dwd_advertisement_fbadroiinstallreferrer_view a
                          and optimizer_group_type = 1) d
                    on b.ad_optimizer_uid = d.ads_optimizer
 where a.dt >= '${bf_180_dt}' and a.dt < '${dt}' and (c.fb_account_type = 0 or c.fb_account_type is null) and a.product_id = 6833
-group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22
-;
+group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22;
 
+----------------------------------------------------------------
+-- project_name     : starrocks
+-- workflow_name    : tbl_dws_advertisement_ad_cost_recharge_ed
+-- workflow_version : 18
+-- create_user      : admin
+-- task_name        : dws_advertisement_ad_cost_recharge_ed_part2
+-- task_version     : 2
+-- update_time      : 2024-03-04 16:55:26
+-- sql_path         : \starrocks\tbl_dws_advertisement_ad_cost_recharge_ed\dws_advertisement_ad_cost_recharge_ed_part2
+----------------------------------------------------------------
+-- 前置SQL语句
+delete from dws.dws_advertisement_ad_cost_recharge_ed where dt  >='${bf_180_dt}' and dt < '${dt}' and product_id = 6883;
+
+-- SQL语句
 insert into dws.dws_advertisement_ad_cost_recharge_ed
 select  date(a.create_time) as dt,a.product_id,a.ad_id,b.fb_account,b.source_chl,b.ads_type,b.ads_quality,b.ad_name,c.product_name,
         b.ad_campname,b.ad_camp_id,b.ad_set_id,b.ad_setname,b.book_id,b.book_name,

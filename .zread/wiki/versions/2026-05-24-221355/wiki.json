@@ -1,0 +1,237 @@
+{
+  "id": "2026-05-24-221355",
+  "generated_at": "2026-05-24T14:13:55.9720222Z",
+  "language": "zh",
+  "pages": [
+    {
+      "slug": "1-gai-shu",
+      "title": "概述",
+      "file": "1-gai-shu.md",
+      "section": "Get Started",
+      "level": "Beginner"
+    },
+    {
+      "slug": "2-kuai-su-shang-shou",
+      "title": "快速上手",
+      "file": "2-kuai-su-shang-shou.md",
+      "section": "Get Started",
+      "level": "Beginner"
+    },
+    {
+      "slug": "3-cang-ku-jie-gou-zong-lan",
+      "title": "仓库结构总览",
+      "file": "3-cang-ku-jie-gou-zong-lan.md",
+      "section": "Get Started",
+      "group": "项目导览",
+      "level": "Beginner"
+    },
+    {
+      "slug": "4-ai-agent-gong-zuo-liu-ru-men",
+      "title": "AI Agent 工作流入门",
+      "file": "4-ai-agent-gong-zuo-liu-ru-men.md",
+      "section": "Get Started",
+      "group": "项目导览",
+      "level": "Beginner"
+    },
+    {
+      "slug": "5-fen-ceng-she-ji-li-nian-yu-shu-ju-liu-zhuan",
+      "title": "分层设计理念与数据流转",
+      "file": "5-fen-ceng-she-ji-li-nian-yu-shu-ju-liu-zhuan.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "6-ods-ceng-yuan-shi-shu-ju-jie-ru",
+      "title": "ODS 层：原始数据接入",
+      "file": "6-ods-ceng-yuan-shi-shu-ju-jie-ru.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "7-dwd-ceng-ming-xi-shu-ju-qing-xi-yu-biao-zhun-hua",
+      "title": "DWD 层：明细数据清洗与标准化",
+      "file": "7-dwd-ceng-ming-xi-shu-ju-qing-xi-yu-biao-zhun-hua.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "8-dwm-yu-dws-ceng-hui-zong-yu-kuan-biao-gou-jian",
+      "title": "DWM 与 DWS 层：汇总与宽表构建",
+      "file": "8-dwm-yu-dws-ceng-hui-zong-yu-kuan-biao-gou-jian.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "9-ads-ceng-mian-xiang-ye-wu-de-ying-yong-tong-ji",
+      "title": "ADS 层：面向业务的应用统计",
+      "file": "9-ads-ceng-mian-xiang-ye-wu-de-ying-yong-tong-ji.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "10-dim-ceng-wei-du-jian-mo-yu-wei-biao-guan-li",
+      "title": "DIM 层：维度建模与维表管理",
+      "file": "10-dim-ceng-wei-du-jian-mo-yu-wei-biao-guan-li.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "11-alg-ceng-suan-fa-te-zheng-gong-cheng-yu-tui-jian-shu-ju",
+      "title": "ALG 层：算法特征工程与推荐数据",
+      "file": "11-alg-ceng-suan-fa-te-zheng-gong-cheng-yu-tui-jian-shu-ju.md",
+      "section": "Deep Dive",
+      "group": "数仓分层架构",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "12-program-sheng-ming-zhou-qi-guan-li",
+      "title": "Program 生命周期管理",
+      "file": "12-program-sheng-ming-zhou-qi-guan-li.md",
+      "section": "Deep Dive",
+      "group": "开发工作流",
+      "level": "Advanced"
+    },
+    {
+      "slug": "13-plan-que-ren-liu-cheng-yu-dui-hua-xie-yi",
+      "title": "Plan 确认流程与对话协议",
+      "file": "13-plan-que-ren-liu-cheng-yu-dui-hua-xie-yi.md",
+      "section": "Deep Dive",
+      "group": "开发工作流",
+      "level": "Advanced"
+    },
+    {
+      "slug": "14-ddl-yu-dml-kai-fa-gui-fan",
+      "title": "DDL 与 DML 开发规范",
+      "file": "14-ddl-yu-dml-kai-fa-gui-fan.md",
+      "section": "Deep Dive",
+      "group": "开发工作流",
+      "level": "Advanced"
+    },
+    {
+      "slug": "15-sql-bian-ma-feng-ge-yu-shu-ju-zhi-liang-dou-di",
+      "title": "SQL 编码风格与数据质量兜底",
+      "file": "15-sql-bian-ma-feng-ge-yu-shu-ju-zhi-liang-dou-di.md",
+      "section": "Deep Dive",
+      "group": "开发工作流",
+      "level": "Advanced"
+    },
+    {
+      "slug": "16-fen-zhi-guan-li-yu-ci-cd-ji-cheng",
+      "title": "分支管理与 CI/CD 集成",
+      "file": "16-fen-zhi-guan-li-yu-ci-cd-ji-cheng.md",
+      "section": "Deep Dive",
+      "group": "开发工作流",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "17-sql-dai-ma-ge-shi-hua-ji-neng",
+      "title": "SQL 代码格式化技能",
+      "file": "17-sql-dai-ma-ge-shi-hua-ji-neng.md",
+      "section": "Deep Dive",
+      "group": "AI Agent 能力与技能",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "18-dolphinscheduler-dag-zi-dong-sheng-cheng",
+      "title": "DolphinScheduler DAG 自动生成",
+      "file": "18-dolphinscheduler-dag-zi-dong-sheng-cheng.md",
+      "section": "Deep Dive",
+      "group": "AI Agent 能力与技能",
+      "level": "Advanced"
+    },
+    {
+      "slug": "19-kua-hui-hua-shang-xia-wen-guan-li-yu-handoff-ji-zhi",
+      "title": "跨会话上下文管理与 HANDOFF 机制",
+      "file": "19-kua-hui-hua-shang-xia-wen-guan-li-yu-handoff-ji-zhi.md",
+      "section": "Deep Dive",
+      "group": "AI Agent 能力与技能",
+      "level": "Advanced"
+    },
+    {
+      "slug": "20-finebi-bao-biao-ying-yong-kai-fa",
+      "title": "FineBI 报表应用开发",
+      "file": "20-finebi-bao-biao-ying-yong-kai-fa.md",
+      "section": "Deep Dive",
+      "group": "业务应用与分析",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "21-finereport-shu-ju-kan-ban-yu-wen-ti-pai-cha",
+      "title": "FineReport 数据看板与问题排查",
+      "file": "21-finereport-shu-ju-kan-ban-yu-wen-ti-pai-cha.md",
+      "section": "Deep Dive",
+      "group": "业务应用与分析",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "22-shu-ju-zi-chan-deng-ji-hua-fen-yu-zhi-liang-zhi-li",
+      "title": "数据资产等级划分与质量治理",
+      "file": "22-shu-ju-zi-chan-deng-ji-hua-fen-yu-zhi-liang-zhi-li.md",
+      "section": "Deep Dive",
+      "group": "业务应用与分析",
+      "level": "Advanced"
+    },
+    {
+      "slug": "23-yan-gao-tou-fang-yu-roi-fen-xi",
+      "title": "广告投放与 ROI 分析",
+      "file": "23-yan-gao-tou-fang-yu-roi-fen-xi.md",
+      "section": "Deep Dive",
+      "group": "核心业务域",
+      "level": "Advanced"
+    },
+    {
+      "slug": "24-yong-hu-xing-wei-yu-liu-cun-fen-xi",
+      "title": "用户行为与留存分析",
+      "file": "24-yong-hu-xing-wei-yu-liu-cun-fen-xi.md",
+      "section": "Deep Dive",
+      "group": "核心业务域",
+      "level": "Advanced"
+    },
+    {
+      "slug": "25-nei-rong-xiao-fei-yu-shang-ye-hua-fen-xi",
+      "title": "内容消费与商业化分析",
+      "file": "25-nei-rong-xiao-fei-yu-shang-ye-hua-fen-xi.md",
+      "section": "Deep Dive",
+      "group": "核心业务域",
+      "level": "Advanced"
+    },
+    {
+      "slug": "26-a-b-shi-yan-yu-tui-jian-suan-fa-ping-gu",
+      "title": "A/B 实验与推荐算法评估",
+      "file": "26-a-b-shi-yan-yu-tui-jian-suan-fa-ping-gu.md",
+      "section": "Deep Dive",
+      "group": "核心业务域",
+      "level": "Advanced"
+    },
+    {
+      "slug": "27-dolphinscheduler-diao-du-can-shu-yu-ren-wu-bian-pai",
+      "title": "DolphinScheduler 调度参数与任务编排",
+      "file": "27-dolphinscheduler-diao-du-can-shu-yu-ren-wu-bian-pai.md",
+      "section": "Deep Dive",
+      "group": "基础设施与运维",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "28-starrocks-biao-mo-xing-yu-fen-qu-ce-lue",
+      "title": "StarRocks 表模型与分区策略",
+      "file": "28-starrocks-biao-mo-xing-yu-fen-qu-ce-lue.md",
+      "section": "Deep Dive",
+      "group": "基础设施与运维",
+      "level": "Intermediate"
+    },
+    {
+      "slug": "29-das-yuan-shu-ju-guan-li-gong-ju",
+      "title": "DAS 元数据管理工具",
+      "file": "29-das-yuan-shu-ju-guan-li-gong-ju.md",
+      "section": "Deep Dive",
+      "group": "基础设施与运维",
+      "level": "Intermediate"
+    }
+  ]
+}
