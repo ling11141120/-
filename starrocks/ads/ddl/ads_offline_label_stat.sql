@@ -76,7 +76,7 @@ CREATE TABLE `ads_offline_label_stat` (
   `total_read_days` bigint(20) NULL COMMENT "累计阅读天数",
   `new_chp_book_cnt` bigint(20) NULL COMMENT "阅读到最新章节的书本数",
   `new_chp_bookid_chpid` array<varchar(65533)> NULL COMMENT "阅读的最新章节",
-  `read_time_da_avg` decimal(10, 2) NULL COMMENT "日均阅读时长",
+  `read_time_da_avg` decimal(15, 2) NULL COMMENT "日均阅读时长",
   `start_subscribe` int(11) NULL COMMENT "首次订阅金额",
   `start_subscribe_type` varchar(65533) NULL COMMENT "首次订阅类型",
   `start_subscribe_time` datetime NULL COMMENT "首次订阅时间",
