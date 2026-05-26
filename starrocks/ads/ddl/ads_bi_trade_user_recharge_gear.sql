@@ -28,6 +28,7 @@ create table ads.ads_bi_trade_user_recharge_gear (
     ,subpay_type                                varchar(65533)    comment "支付渠道"
     ,user_ad_source                             int               comment "广告投流用户：0：正常用户，1：vip投流用户"
     ,item_id                                    varchar(50)       comment "充值商品周期类型-天卡/周卡/月卡/季卡/年卡"
+    ,subscribe_mode                             varchar(50)       comment "订阅方式"
     ,index index_which_weeks (which_weeks)      using bitmap      comment 'index_which_weeks'
     ,index index_which_months (which_months)    using bitmap      comment 'index_which_months'
 )
