@@ -43,6 +43,6 @@ select dt
       ,now()                                                                                 as etl_time
       ,get_json_string(SensorsData, '$.subscribe_mode')                                      as subscribe_mode
 from ods.ods_book_user_payorder
-where dt >= '${bf_1_dt}'
-  and dt < date(date_add('${bf_1_dt}',interval 1 day ))
+where dt >= date_sub('${dt}',interval 1 day)
+  and dt < date_add('{dt}',interval 1 day )
   and TestFlag=0;
