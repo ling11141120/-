@@ -1,20 +1,15 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_target_data
--- workflow_version : 18
--- create_user      : hufengju
--- task_name        : ads_srsv_bi_ad_optimizer_target_data
--- task_version     : 5
--- update_time      : 2025-01-06 18:08:33
--- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_target_data\ads_srsv_bi_ad_optimizer_target_data
+-- 程序功能： 海阅海剧 广告基建，优化师每日基建达标情况2
+-- 程序名： P_ads_srsv_bi_ad_optimizer_target_data
+-- 目标表： ads.ads_srsv_bi_ad_optimizer_target_data
+-- 负责人： 050239
+-- 开发日期：2026-05-26
 ----------------------------------------------------------------
--- 前置SQL语句
-delete from  ads.ads_srsv_bi_ad_optimizer_target_data where dt>='${bf_9_dt}'  and dt<='${dt}';
 
--- SQL语句
+delete from ads.ads_srsv_bi_ad_optimizer_target_data where dt >= '${bf_9_dt}' and dt <= '${dt}'
+
 -- 底表1：预处理
 insert into  ads.ads_srsv_bi_ad_optimizer_target_data
-    -- 维度:日期、新老组，书籍，mt，优化师&组
     with z1 as (
         select a.source_chl
             ,a.product_id
