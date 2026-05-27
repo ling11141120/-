@@ -6,7 +6,7 @@
 -- 开发日期：2026-05-26
 ----------------------------------------------------------------
 
-delete from ads.ads_srsv_bi_ad_optimizer_target_data where dt >= '${bf_9_dt}' and dt <= '${dt}'
+delete from ads.ads_srsv_bi_ad_optimizer_target_data where dt >= '${bf_9_dt}' and dt <= '${dt}';
 
 -- 底表1：预处理
 insert into  ads.ads_srsv_bi_ad_optimizer_target_data
