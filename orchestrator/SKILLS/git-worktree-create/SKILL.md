@@ -1,11 +1,11 @@
 ---
 name: git-worktree-create
-description: 基于 dev 分支创建 git worktree。当用户说"创建 worktree"、"通过 dev 创建 worktree"、"新建 worktree"、"git worktree"等语句时触发。自动询问开发人名称和分支名称，然后在本地 dev 分支最新代码基础上创建新的 feature 分支 worktree。
+description: 基于 master 分支创建 git worktree。当用户说"创建 worktree"、"通过 master 创建 worktree"、"新建 worktree"、"git worktree"等语句时触发。自动询问开发人名称和分支名称，然后在本地 master 分支最新代码基础上创建新的 feature 分支 worktree。
 ---
 
 # Git Worktree 创建
 
-基于 `dev` 分支创建 git worktree，用于快速搭建独立的功能开发环境。
+基于 `master` 分支创建 git worktree，用于快速搭建独立的功能开发环境。
 
 ## 工作流程
 
@@ -44,23 +44,23 @@ FEATURE_BRANCH="feature/${DEVELOPER}/${BRANCH}"
 # 关键：worktree 路径必须在已挂载的 D:\Develop 下，对应沙箱 /sessions/sharp-friendly-ride/mnt/Develop/
 WORKTREE_PATH="/sessions/sharp-friendly-ride/mnt/Develop/kunlun-dolphinscheduler-${BRANCH}"
 
-# 步骤 1：进入仓库并切换到 dev 分支
+# 步骤 1：进入仓库并切换到 master 分支
 cd "${REPO_PATH}"
-git checkout dev
+git checkout master
 
-# 步骤 2：尝试拉取远程 dev 分支最新代码
+# 步骤 2：尝试拉取远程 master 分支最新代码
 # 注意：沙箱网络可能受限，如果 pull 失败（如 HTTP 403），提示用户手动在 Windows 终端执行 git pull
-git pull origin dev || echo "⚠️ git pull 失败，请手动在 Windows 终端执行: cd D:\\Develop\\kunlun-dolphinscheduler && git pull origin dev"
+git pull origin master || echo "⚠️ git pull 失败，请手动在 Windows 终端执行: cd D:\\Develop\\kunlun-dolphinscheduler && git pull origin master"
 
-# 步骤 3：基于 dev 创建 worktree，同时创建新分支
-git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" dev
+# 步骤 3：基于 master 创建 worktree，同时创建新分支
+git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" master
 ```
 
 ### 命令说明
 
-- `git checkout dev` — 切换到本地 dev 分支
-- `git pull origin dev` — 尝试从远程拉取 dev 最新代码；沙箱网络受限时改为提示用户手动 pull
-- `git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" dev` — 基于 dev 创建新 worktree，同时新建 `feature/{开发人}/{分支名}` 分支，工作目录放在 `D:\Develop\kunlun-dolphinscheduler-{分支名}`
+- `git checkout master` — 切换到本地 master 分支
+- `git pull origin master` — 尝试从远程拉取 master 最新代码；沙箱网络受限时改为提示用户手动 pull
+- `git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" master` — 基于 master 创建新 worktree，同时新建 `feature/{开发人}/{分支名}` 分支，工作目录放在 `D:\Develop\kunlun-dolphinscheduler-{分支名}`
 
 ## 错误处理
 
@@ -69,7 +69,7 @@ git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" dev
 | 主仓库未挂载 | 使用 `request_cowork_directory` 申请 `D:\Develop\kunlun-dolphinscheduler` |
 | `D:\Develop` 未挂载 | 使用 `request_cowork_directory` 申请 `D:\Develop` |
 | 本地有未提交的修改导致 checkout 失败 | 提示用户先 `git stash` 或提交修改后再试 |
-| `git pull` 因网络受限失败 | 提示用户在 Windows 终端手动执行 `git pull origin dev`，完成后告知继续 |
+| `git pull` 因网络受限失败 | 提示用户在 Windows 终端手动执行 `git pull origin master`，完成后告知继续 |
 | worktree 目标路径已存在 | 先 `git worktree remove` 清理，再删除同名分支后重建 |
 | 分支名 `feature/{开发人}/{分支名}` 已存在 | 先 `git branch -D` 删除，再重新创建 |
 | `.git/index.lock` 残留导致 git 命令失败 | 使用 `allow_cowork_file_delete` 后删除锁文件 |
@@ -80,4 +80,4 @@ git worktree add -b "${FEATURE_BRANCH}" "${WORKTREE_PATH}" dev
 
 - 新分支全名：`feature/{开发人}/{分支名}`
 - worktree 本地路径：`D:\Develop\kunlun-dolphinscheduler-{分支名}`
-- 基于分支：`dev`（附带最新 commit 的简短 hash）
+- 基于分支：`master`（附带最新 commit 的简短 hash）
