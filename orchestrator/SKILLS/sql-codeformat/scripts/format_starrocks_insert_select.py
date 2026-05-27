@@ -30,9 +30,12 @@ SQL_KEYWORDS = (
 )
 
 FUNCTION_NAMES = (
-    "abs", "avg", "bitmap_count", "cast", "coalesce", "concat",
+    "abs", "avg", "bitmap_count", "cast", "ceiling", "coalesce", "concat",
     "count", "date", "date_add", "date_sub", "datediff",
-    "hours_add", "if", "ifnull", "max", "min", "round", "sum", "variance",
+    "days_add", "days_diff", "dayofweek", "dense_rank", "first_value",
+    "hours_add", "if", "ifnull", "lag", "lead", "least", "lower",
+    "max", "max_by", "min", "now", "pow", "rank", "row_number",
+    "round", "sum", "upper", "variance",
 )
 
 TYPE_KEYWORDS = (
@@ -257,10 +260,11 @@ class FromJoinItem(Clause):
         self.alias: str = ""
         self.subquery: SelectStatement | None = None
         self.on_conditions: list[list[Token]] = []
+        self.comments_before: list[str] = []
 
 class SelectStatement(Clause):
     def __init__(self):
-        self.ctes: list[tuple[str, SelectStatement]] = []
+        self.ctes: list[tuple[str, SelectStatement, list[str]]] = []
         self.select_list: list[list[Token]] = []
         self.from_join: FromJoinBlock | None = None
         self.where_conditions: list[list[Token]] = []
@@ -268,6 +272,7 @@ class SelectStatement(Clause):
         self.order_by_tokens: list[Token] = []
         self.having_tokens: list[Token] = []
         self.unions: list[SelectStatement] = []
+        self.comments_before: list[str] = []
 
 
 def strip_ws_tokens(tokens: list[Token]) -> list[Token]:
@@ -291,41 +296,61 @@ def compact_ws_tokens(tokens: list[Token]) -> list[Token]:
 
 def normalize_spacing(tokens: list[Token]) -> list[Token]:
     COMPARISON_OPS = frozenset({">=", "<=", "<>", "!=", "=", "<", ">"})
+    ARITHMETIC_OPS = frozenset({"+", "-", "*", "/", "%"})
+    LPAREN_SPACE_KW = frozenset({"over"})
     result: list[Token] = []
-    func_paren_depth = 0
     for i, t in enumerate(tokens):
         if t.kind == "lparen":
-            # Only count as function parens if preceded by a function token
-            if result and (
-                (result[-1].kind == "function") or
-                (result[-1].kind == "whitespace" and len(result) >= 2 and result[-2].kind == "function")
-            ):
-                func_paren_depth += 1
-        elif t.kind == "rparen":
-            if func_paren_depth > 0:
-                func_paren_depth -= 1
-
-        if t.kind == "operator" and t.value in COMPARISON_OPS:
+            need_space = False
+            if result:
+                last = result[-1]
+                if last.kind == "whitespace" and len(result) >= 2:
+                    last = result[-2]
+                if last.kind in ("keyword", "function") and last.value.lower() in LPAREN_SPACE_KW:
+                    need_space = True
+            if need_space and result and result[-1].kind != "whitespace":
+                result.append(Token("whitespace", " ", t.pos))
+            result.append(t)
+        elif t.kind == "operator" and t.value in COMPARISON_OPS:
             if result and result[-1].kind not in ("whitespace", "lparen", "comma"):
                 result.append(Token("whitespace", " ", t.pos))
             result.append(t)
             next_is_ws = (i + 1 < len(tokens) and tokens[i + 1].kind == "whitespace")
             if not next_is_ws:
                 result.append(Token("whitespace", " ", t.pos))
-        elif t.kind == "comma":
+        elif t.kind == "operator" and t.value in ARITHMETIC_OPS:
+            if result and result[-1].kind not in ("whitespace", "lparen", "comma", "dot"):
+                result.append(Token("whitespace", " ", t.pos))
             result.append(t)
-            # Skip space after comma inside function call parens (e.g. round(x, 4))
-            if func_paren_depth == 0:
+            # Detect unary +/- : preceded by lparen, comma, or another operator
+            # In those cases, don't add space after (e.g., `-365`, not `- 365`)
+            prev_non_ws = None
+            if result:
+                j = len(result) - 2
+                while j >= 0 and result[j].kind == "whitespace":
+                    j -= 1
+                if j >= 0:
+                    prev_non_ws = result[j]
+            is_unary = (t.value in ("-", "+") and
+                        (prev_non_ws is None or
+                         prev_non_ws.kind in ("lparen", "comma", "operator")))
+            if not is_unary:
                 next_is_ws = (i + 1 < len(tokens) and tokens[i + 1].kind == "whitespace")
                 if not next_is_ws:
                     result.append(Token("whitespace", " ", t.pos))
+        elif t.kind == "comma":
+            result.append(t)
+            next_is_ws = (i + 1 < len(tokens) and tokens[i + 1].kind == "whitespace")
+            if not next_is_ws:
+                result.append(Token("whitespace", " ", t.pos))
         else:
             result.append(t)
     return result
 
 
 def clean_expr(expr: list[Token]) -> list[Token]:
-    return strip_ws_tokens(compact_ws_tokens(expr))
+    no_comments = [t for t in expr if t.kind != "comment"]
+    return strip_ws_tokens(compact_ws_tokens(no_comments))
 
 
 def is_case_expr(tokens: list[Token]) -> bool:
@@ -387,10 +412,13 @@ def fmt_case_when_multiline(
             end_indent = comma_indent + 3
             end_line = " " * end_indent + seg_text
             if as_part:
+                as_text = tokens_text(as_part).lstrip()
                 pad = as_col - end_indent - len(seg_text)
                 if pad > 0:
                     end_line += " " * pad
-                end_line += tokens_text(as_part)
+                else:
+                    end_line += " "
+                end_line += as_text
             lines.append(end_line)
         i += 1
     return lines
@@ -410,6 +438,29 @@ def split_as_expr(tokens: list[Token]) -> tuple[list[Token], list[Token]]:
     for i, t in enumerate(tokens):
         if t.kind == "keyword" and t.value == "as":
             return tokens[:i], tokens[i:]
+    # Detect implicit alias: expression ends with a standalone identifier
+    # after ), end, or null
+    cleaned = [t for t in tokens if t.kind != "whitespace"]
+    if len(cleaned) >= 2:
+        last = cleaned[-1]
+        prev = cleaned[-2]
+        if last.kind == "identifier":
+            implicit = (
+                prev.kind == "rparen" or
+                (prev.kind == "keyword" and prev.value in ("end", "null"))
+            )
+            if implicit:
+                # Find the split point before the last identifier in original tokens
+                alias_start = len(tokens) - 1
+                while alias_start >= 0 and tokens[alias_start].kind != "identifier":
+                    alias_start -= 1
+                as_token = Token("keyword", "as", -1)
+                ws_token = Token("whitespace", " ", -1)
+                # Skip leading whitespace in the alias suffix
+                suffix_start = alias_start
+                while suffix_start < len(tokens) and tokens[suffix_start].kind == "whitespace":
+                    suffix_start += 1
+                return tokens[:alias_start], [as_token, ws_token] + tokens[suffix_start:]
     return tokens, []
 
 
@@ -421,27 +472,51 @@ def fmt_select_list(
     cleaned_exprs = [clean_expr(e) for e in expressions]
     split_exprs = [split_as_expr(e) for e in cleaned_exprs]
 
+    def _contains_case(tokens: list[Token]) -> bool:
+        return any(t.kind == "keyword" and t.value == "case" for t in tokens)
+
     max_before_as = 0
     for before, after in split_exprs:
-        if not is_case_expr(before):
+        if not is_case_expr(before) and not _contains_case(before):
             w = expr_text_width(before)
             if w > max_before_as: max_before_as = w
 
     as_col = select_indent + len("select ") + max_before_as + 1
     comma_indent = select_indent + 5
 
+    def _case_is_single_line(before: list[Token]) -> bool:
+        """Check if a case expression has only one WHEN and should stay on one line."""
+        when_count = sum(1 for t in before if t.kind == "keyword" and t.value == "when")
+        return when_count == 1
+
+    def _render_case_oneline(expr_orig: list[Token], before: list[Token], after: list[Token], prefix: str) -> str:
+        """Render a simple case expression on a single line."""
+        case_text = tokens_text(before).rstrip()
+        line = prefix + case_text
+        if after:
+            after_text = tokens_text(after)
+            line += " " + after_text.lstrip()
+        return line
+
     # First expression
     first_before, first_after = split_exprs[0]
     if is_case_expr(first_before):
-        case_lines = fmt_case_when_multiline(expressions[0], comma_indent, as_col, is_first=True)
-        lines.extend(case_lines)
+        if _case_is_single_line(first_before):
+            prefix = " " * select_indent + "select "
+            lines.append(_render_case_oneline(expressions[0], first_before, first_after, prefix))
+        else:
+            case_lines = fmt_case_when_multiline(expressions[0], comma_indent, as_col, is_first=True)
+            lines.extend(case_lines)
     else:
         first_text = tokens_text(first_before).rstrip()
         first_as = tokens_text(first_after) if first_after else ""
-        first_line = "select " + first_text
+        first_line = " " * select_indent + "select " + first_text
         if first_as:
             pad = as_col - select_indent - len("select ") - expr_text_width(first_before)
-            if pad > 0: first_line += " " * pad
+            if pad > 0:
+                first_line += " " * pad
+            else:
+                first_line += " "
             first_line += first_as
         lines.append(first_line)
 
@@ -449,15 +524,22 @@ def fmt_select_list(
 
     for idx, (expr_orig, (before, after)) in enumerate(zip(expressions[1:], split_exprs[1:]), start=1):
         if is_case_expr(before):
-            case_lines = fmt_case_when_multiline(expressions[idx], comma_indent, as_col, is_first=False)
-            lines.extend(case_lines)
+            if _case_is_single_line(before):
+                prefix = " " * comma_indent + ", "
+                lines.append(_render_case_oneline(expressions[idx], before, after, prefix))
+            else:
+                case_lines = fmt_case_when_multiline(expressions[idx], comma_indent, as_col, is_first=False)
+                lines.extend(case_lines)
         else:
             before_text = tokens_text(before).rstrip()
             after_text = tokens_text(after) if after else ""
             line = " " * comma_indent + ", " + before_text
             if after_text:
                 pad = as_col - comma_indent - 2 - expr_text_width(before)
-                if pad > 0: line += " " * pad
+                if pad > 0:
+                    line += " " * pad
+                else:
+                    line += " "
                 line += after_text
             lines.append(line)
     return lines
@@ -466,6 +548,8 @@ def fmt_select_list(
 def fmt_join_item(item: FromJoinItem, select_indent: int) -> list[str]:
     lines: list[str] = []
     join_indent = select_indent + 2
+    for cmt in item.comments_before:
+        lines.append(f"{' ' * join_indent}{cmt}")
     join_kw = item.join_type
     if item.subquery:
         inner_select_indent = join_indent + len(join_kw) + 2
@@ -475,7 +559,7 @@ def fmt_join_item(item: FromJoinItem, select_indent: int) -> list[str]:
         for iline in inner[1:]:
             lines.append(iline)
         paren_pos = join_indent + len(join_kw) + 1
-        alias_str = f" {item.alias}" if item.alias else ""
+        alias_str = f" as {item.alias}" if item.alias else ""
         lines.append(f"{' ' * paren_pos}){alias_str}")
     else:
         src_str = tokens_text(item.source_tokens).strip()
@@ -497,9 +581,14 @@ def fmt_join_item(item: FromJoinItem, select_indent: int) -> list[str]:
 
 def fmt_statement_lines(stmt: SelectStatement, select_indent: int) -> list[str]:
     lines: list[str] = []
-    for cte_name, cte_body in stmt.ctes:
-        lines.append(f"{' ' * select_indent}with {cte_name} as (")
-        inner = fmt_statement_lines(cte_body, select_indent + 5)
+    for ci, (cte_name, cte_body, cte_comments) in enumerate(stmt.ctes):
+        for cmt in cte_comments:
+            lines.append(f"{' ' * select_indent}{cmt}")
+        if ci == 0:
+            lines.append(f"{' ' * select_indent}with {cte_name} as (")
+        else:
+            lines.append(f", {cte_name} as (")
+        inner = fmt_statement_lines(cte_body, select_indent + 4)
         lines.extend(inner)
         lines.append(f"{' ' * select_indent})")
     select_lines = fmt_select_list(stmt.select_list, select_indent)
@@ -529,7 +618,8 @@ def fmt_statement_lines(stmt: SelectStatement, select_indent: int) -> list[str]:
         lines.append(f"{' ' * (select_indent + 1)}order by {tokens_text(ob_clean)}")
     for union_stmt in stmt.unions:
         lines.append("")
-        lines.append("union all")
+        union_type = getattr(union_stmt, "_union_type", "union all")
+        lines.append(union_type)
         lines.append("")
         union_lines = fmt_statement_lines(union_stmt, select_indent)
         lines.extend(union_lines)
@@ -540,6 +630,7 @@ class StreamParser:
     def __init__(self, tokens: list[Token]):
         self.tokens = tokens
         self.pos = 0
+        self._captured: list[str] = []
     def peek(self) -> Token | None:
         if self.pos < len(self.tokens): return self.tokens[self.pos]
         return None
@@ -550,7 +641,14 @@ class StreamParser:
     def skip_ws(self):
         while self.peek() and self.peek().kind == "whitespace": self.pos += 1
     def skip_ws_and_comments(self):
-        while self.peek() and self.peek().kind in ("whitespace", "comment"): self.pos += 1
+        while self.peek() and self.peek().kind in ("whitespace", "comment"):
+            if self.peek().kind == "comment":
+                self._captured.append(self.peek().value)
+            self.pos += 1
+    def take_comments(self) -> list[str]:
+        c = self._captured
+        self._captured = []
+        return c
     def kw_val(self) -> str | None:
         t = self.peek()
         if t and t.kind in ("keyword", "identifier"): return t.value.lower()
@@ -559,6 +657,7 @@ class StreamParser:
 
 class SelectBodyParser(StreamParser):
     def parse_select_statement(self, select_indent: int = 0) -> SelectStatement:
+        self.skip_ws_and_comments()
         stmt = SelectStatement()
         if self.kw_val() == "with": self.parse_ctes(stmt)
         self.expect_and_consume("select")
@@ -572,10 +671,16 @@ class SelectBodyParser(StreamParser):
         if self.kw_val() == "having": stmt.having_tokens = self.parse_group_order("having")
         if self.kw_val() == "order": stmt.order_by_tokens = self.parse_group_order("order")
         while self.kw_val() == "union":
-            self.expect_and_consume("union", "all")
+            self.expect_and_consume("union")
+            union_type = "union all"
+            if self.kw_val() == "all":
+                self.expect_and_consume("all")
+            else:
+                union_type = "union"
             union_body = SelectBodyParser(self.tokens)
             union_body.pos = self.pos
             union_stmt = union_body.parse_select_statement()
+            union_stmt._union_type = union_type
             stmt.unions.append(union_stmt)
             self.pos = union_body.pos
         return stmt
@@ -591,6 +696,7 @@ class SelectBodyParser(StreamParser):
     def parse_ctes(self, stmt: SelectStatement):
         self.expect_and_consume("with")
         while True:
+            comments = self.take_comments()
             name_t = self.next()
             if not name_t: break
             cte_name = name_t.value.lower()
@@ -608,9 +714,10 @@ class SelectBodyParser(StreamParser):
             inner_parser = SelectBodyParser(inner_tokens)
             inner_parser.pos = 0
             inner_stmt = inner_parser.parse_select_statement()
-            stmt.ctes.append((cte_name, inner_stmt))
+            stmt.ctes.append((cte_name, inner_stmt, comments))
             self.skip_ws_and_comments()
-            if self.kw_val() != ",": break
+            next_tok = self.peek()
+            if not next_tok or next_tok.kind != "comma": break
             self.pos += 1
             self.skip_ws_and_comments()
 
@@ -626,6 +733,16 @@ class SelectBodyParser(StreamParser):
                 if v in ("from", "where", "group", "having", "order", "union",
                          "left", "right", "full", "cross", "inner", "join",
                          "on", "limit", "offset"):
+                    # Check if this is actually a function call (e.g., left(...))
+                    if v in ("left", "right", "full", "cross", "inner"):
+                        save = self.pos
+                        self.pos += 1
+                        self.skip_ws()
+                        nxt = self.peek()
+                        self.pos = save
+                        if nxt and nxt.kind == "lparen":
+                            current.append(self.next())
+                            continue
                     if current: expressions.append(current)
                     return expressions
             if t.kind == "lparen":
@@ -634,6 +751,9 @@ class SelectBodyParser(StreamParser):
                 continue
             if t.kind == "rparen":
                 paren_depth -= 1
+                if paren_depth < 0:
+                    if current: expressions.append(current)
+                    return expressions
                 current.append(self.next())
                 continue
             if t.kind == "comma" and paren_depth == 0:
@@ -653,6 +773,7 @@ class SelectBodyParser(StreamParser):
         block.items.append(item)
         while True:
             self.skip_ws_and_comments()
+            comments_before = self.take_comments()
             kw = self.kw_val()
             if kw is None: break
             if kw in ("left", "right", "full", "cross", "inner"):
@@ -673,6 +794,7 @@ class SelectBodyParser(StreamParser):
                 break
             item = self.parse_join_source()
             item.join_type = join_type
+            item.comments_before = comments_before
             block.items.append(item)
         return block
 
@@ -760,6 +882,9 @@ class SelectBodyParser(StreamParser):
                 continue
             if t.kind == "rparen":
                 paren_depth -= 1
+                if paren_depth < 0:
+                    if current: conditions.append(current)
+                    return conditions
                 current.append(self.next())
                 continue
             if paren_depth == 0 and t.kind in ("keyword", "identifier"):
@@ -771,6 +896,16 @@ class SelectBodyParser(StreamParser):
                 if v in ("group", "having", "order", "union", "limit",
                          "left", "right", "full", "cross", "inner", "join",
                          "from", "select", "offset"):
+                    # Check if this is actually a function call (e.g., left(...))
+                    if v in ("left", "right"):
+                        save = self.pos
+                        self.pos += 1
+                        self.skip_ws()
+                        nxt = self.peek()
+                        self.pos = save
+                        if nxt and nxt.kind == "lparen":
+                            current.append(self.next())
+                            continue
                     if current: conditions.append(current)
                     return conditions
             current.append(self.next())
@@ -790,6 +925,16 @@ class SelectBodyParser(StreamParser):
                 if v in ("union", "limit", "offset", "select", "from",
                          "where", "left", "right", "full", "cross", "inner",
                          "join", "on", "and", "or"):
+                    # Check if this is actually a function call (e.g., left(...))
+                    if v in ("left", "right", "full", "cross", "inner"):
+                        save = self.pos
+                        self.pos += 1
+                        self.skip_ws()
+                        nxt = self.peek()
+                        self.pos = save
+                        if nxt and nxt.kind == "lparen":
+                            tokens.append(self.next())
+                            continue
                     break
             if t.kind == "semicolon": break
             tokens.append(self.next())
@@ -803,13 +948,57 @@ def has_header(sql: str) -> bool:
     return bool(HEADER_PATTERN.search(sql[:2000]))
 
 
+def strip_header(sql: str) -> str:
+    """Remove any existing header block (delimited by ---- lines) from the SQL text."""
+    lines = sql.split("\n")
+    start = -1
+    end = -1
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("-") and len(stripped) >= 60 and all(c == "-" for c in stripped):
+            if start == -1:
+                start = i
+            else:
+                end = i
+                break
+    if start != -1 and end != -1:
+        return "\n".join(lines[:start] + lines[end + 1:]).strip()
+    return sql
+
+
+def detect_old_header_info(sql: str) -> dict:
+    """Extract info from an old-style project header for migration."""
+    info = {}
+    for line in sql.split("\n")[:15]:
+        line = line.strip()
+        if line.startswith("-- "):
+            content = line[3:]
+            if ":" in content:
+                key, _, val = content.partition(":")
+                key = key.strip().lower()
+                val = val.strip()
+                if key == "project_name":
+                    info["project"] = val
+                elif key == "task_name":
+                    info["task_name"] = val
+    return info
+
+
 def generate_header(file_path: Path, function_desc: str, owner: str) -> str:
     program_name = file_path.stem
     layer = file_path.parent.parent.name if file_path.parent.name == "dml" else ""
-    if layer and program_name.startswith(f"P_{layer}_"):
-        table_name = f"{layer}.{layer}_{program_name[len(f'P_{layer}_'):]}"
+    # Try to detect layer from program name: P_{layer}_{table}
+    if program_name.startswith("P_"):
+        rest = program_name[2:]  # e.g., "ads_srsv_bi_ad_optimizer_target_data"
+        inferred_layer = rest.split("_")[0] if "_" in rest else ""
+        if inferred_layer and inferred_layer != layer:
+            table_name = f"{inferred_layer}.{rest}"
+        elif layer and program_name.startswith(f"P_{layer}_"):
+            table_name = f"{layer}.{layer}_{program_name[len(f'P_{layer}_'):]}"
+        else:
+            table_name = f"{inferred_layer}.{rest}" if inferred_layer else f"unknown.{rest}"
     else:
-        table_name = f"unknown.{program_name[2:]}" if program_name.startswith("P_") else program_name
+        table_name = program_name
     today = date.today().isoformat()
     sep = "-" * 64
     return f"""{sep}
@@ -858,34 +1047,22 @@ def format_insert_select(
 ) -> str:
     body = sql.replace("\r\n", "\n").replace("\r", "\n").strip()
     if not body: return ""
-    header = ""
-    body_without_header = body
-    if has_header(body):
-        lines = body.split("\n")
-        header_end = 0
-        in_header = False
-        for i, line in enumerate(lines):
-            if line.strip().startswith("-") and len(line.strip()) >= 60:
-                in_header = not in_header
-                header_end = i + 1
-                if not in_header: break
-            elif in_header: header_end = i + 1
-        header = "\n".join(lines[:header_end]) + "\n\n"
-        body_without_header = "\n".join(lines[header_end:]).strip()
-    elif file_path and function_desc and owner:
-        header = generate_header(file_path, function_desc, owner)
+    body_without_header = strip_header(body)
+    if file_path:
+        header = generate_header(file_path, function_desc or "", owner or "")
+    else:
+        header = ""
     statements = split_statements(body_without_header)
     formatted_stmts: list[str] = []
     for stmt_raw in statements:
         stmt = stmt_raw.strip()
         if not stmt: continue
         stmt_lower = stmt.lower().strip()
-        insert_match = re.match(r"((?:insert\s+(?:into|overwrite))\s+\S+)", stmt_lower)
+        insert_match = re.search(r"((?:insert\s+(?:into|overwrite))\s+\S+)", stmt_lower)
         if insert_match and re.search(r"\b(select|with)\b", stmt_lower):
             insert_line_raw = insert_match.group(1).strip()
-            ins_tokens = tokenize(insert_line_raw)
-            ins_tokens = remove_backticks(ins_tokens)
-            insert_line = tokens_text(ins_tokens).strip()
+            insert_line = re.sub(r"[ \t]+", " ", insert_line_raw)
+            before_insert = stmt[:insert_match.start()].strip()
             select_body = stmt[insert_match.end():].strip()
             tokens = tokenize(select_body)
             tokens = remove_backticks(tokens)
@@ -901,7 +1078,10 @@ def format_insert_select(
                 formatted_stmts.append(f"{insert_line}\n{text}\n;")
                 continue
             select_lines = fmt_statement_lines(parsed, select_indent=0)
-            result_lines = [insert_line]
+            result_lines = []
+            if before_insert:
+                result_lines.append(before_insert)
+            result_lines.append(insert_line)
             result_lines.extend(select_lines)
             result_lines.append(";")
             formatted_stmts.append("\n".join(result_lines))
@@ -911,7 +1091,7 @@ def format_insert_select(
             tokens = normalize_keywords_in_tokens(tokens)
             text = tokens_text(tokens).strip()
             text = re.sub(r"[ \t]+", " ", text)
-            formatted_stmts.append(text)
+            formatted_stmts.append(text + ";")
     result = header + "\n\n".join(formatted_stmts)
     if not result.endswith("\n"): result += "\n"
     return result

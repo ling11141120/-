@@ -52,3 +52,26 @@
 - [AI] 基于海阅三方支付漏斗链路报表 V3 脚本内部三表（dws_user_wide_active_period_ed / ads_bi_sr_third_payment_exposure_pv_di / ads_trade_user_payorder_view）重构海阅 T+1 分析 SQL，独立 CTE 防 fan-out，新增 period_type=''ctt'' 过滤
 - [人工] 在 StarRocks 执行两条 SQL 验证，确认字段口径和输出结果满足要求
 - [AI] 更新 PROGRAM.md / SCOPE.yml / STATUS.yml / PLAN.md 配套文档
+
+---
+## dev+qhr+P-20260526-dml-format-optimization | 负责人: qhr | 周期: 2026-05-26 ~ 2026-05-27
+
+### 2026-05-26
+- [AI] 分析 ori.sql vs ai-old.sql vs correct.sql，识别 24 个差异点，分为 6 组（A-F），制定改造方案写入 PLAN.md
+- [AI] 改造 A 组（文件头重新生成、分号保留、函数参数逗号加空格）
+- [AI] 改造 B/C 组（函数名全小写、逗号/运算符/over/partition by/cast 空格规范化）
+- [AI] 改造 D 组（CTE 列0、CTE 逗号列0、子查询缩进、left/right 函数识别、注释保留、parse_conditions 右括号修复）
+- [AI] 改造 E/F 组（as 显式添加、表别名 as、单行 case-when、clean_expr 剥离注释、as 前空格保证）
+- [AI] 修复 13 项 bug（CTE 逗号检测 kw_val→peek().kind、select 缩进前缀空格、CTE 内部缩进 +5→+4、split_as_expr 双空格移除回溯、insert_line 规范化用 re.sub、单行 case-when 检测与渲染、left/right 函数后跟 ( 时不作为子句边界、parse_conditions 右括号 paren_depth<0 正确 return、注释保留 StreamParser._captured、文件头从 P_ads_... 推断 layer、clean_expr 剥离 comment token、as 前始终保证空格、_contains_case 排除 case 表达式避免极端 as 填充）
+- [人工] 修复 correct.sql 第 112 行 ON 条件合行错误
+- [人工] 审核 diff 结果（632→321 行，-49%），确认剩余差异为 as 对齐列宽/注释策略/子查询闭括号对齐等规则偏好非 bug，决定就此收尾
+
+### 2026-05-27
+- [AI] 诊断 as_col 公式差异，逐层对比 37 个 select block 的 max_before_as 值，确认 34 个完全一致，排除此前怀疑的"224 vs 72"为 case 表达式宽度已被正确排除
+- [AI] 修复一元负号/正号空格（normalize_spacing 检测 unary +/-，-365 不再被格式化为 - 365）
+- [AI] 修复 union 解析，支持 bare union（不含 all），解决 regression 测试中文件解析失败
+- [AI] 更新 dml-format-rules.md 至 v2（新增一元负号、union、显式 as、注释保留、隐式别名、函数调用无空格等规则，末尾增加变更记录表）
+- [AI] 执行回归测试，24 个 DML 文件随机抽样全部格式化解析通过（含之前 bare union 失败文件）
+- [AI] 更新 PROGRAM.md / STATUS.yml / memory
+- [人工] 确认 left(a.code_value, 2) 无空格为正确格式
+- [人工] 确认 diff 318 行状态可接受，审批收尾
