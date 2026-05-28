@@ -12,43 +12,51 @@ delete from ads.ads_bi_trade_user_recharge_gear where dt ='${bf_1_dt}';
 insert into ads.ads_bi_trade_user_recharge_gear
 with source_chl as (
     select product_id
-          ,user_id
-          ,source_chl
-      from (select product_id
-                  ,user_id
-                  ,source                                                                            as source_chl
-                  ,row_number() over (partition by product_id, user_id order by create_time desc)    as rn
-              from dwd.dwd_user_install_info_ed_view
-             where product_id not in (6833)
-           )    as a1
-     where rn = 1
+         ,user_id
+         ,source_chl
+    from (select product_id
+               ,user_id
+               ,source                                                                            as source_chl
+               ,row_number() over (partition by product_id, user_id order by create_time desc)    as rn
+          from dwd.dwd_user_install_info_ed_view
+          where product_id not in (6833)
+         )    as a1
+    where rn = 1
 )
-, maintab as (
+   , maintab as (
     select dt
-          ,product_id
-          ,user_id
-          ,weekofyear(dt)           as which_weeks
-          ,month(dt)                as which_months
-          ,current_language2
-          ,source_chl
-          ,reg_country
-          ,country_level
-          ,mt
-          ,corever
-          ,source
-          ,shop_item
-          ,recharge_gear
-          ,is_first_charge
-          ,sum(charge_cnt)          as charge_cnt
-          ,sum(before_charge)       as before_charge
-          ,sum(after_charge)        as after_charge
-          ,now()                    as etl_time
-          ,is_valid
-          ,is_first_subscription
-          ,max(autorenew_times)     as autorenew_times
-          ,max(subscribe_status)    as subscribe_status
-          ,max(subpay_type)         as subpay_type
-          ,item_type                as item_type
+         ,product_id
+         ,user_id
+         ,weekofyear(dt)           as which_weeks
+         ,month(dt)                as which_months
+   ,current_language2
+   ,source_chl
+   ,reg_country
+   ,country_level
+   ,mt
+   ,corever
+   ,source
+   ,shop_item
+   ,recharge_gear
+   ,is_first_charge
+   ,sum(charge_cnt)          as charge_cnt
+   ,sum(before_charge)       as before_charge
+   ,sum(after_charge)        as after_charge
+   ,now()                    as etl_time
+   ,is_valid
+   ,is_first_subscription
+   ,max(autorenew_times)     as autorenew_times
+   ,max(subscribe_status)    as subscribe_status
+   ,max(subpay_type)         as subpay_type
+   ,case
+    when subscribe_mode = '分期支付'
+    then case
+    when b6.installment_period = 3 then '季卡'
+    when b6.installment_period = 12 then '年卡'
+    else item_type
+end
+else item_type
+end                      as item_type
           ,subscribe_mode           as subscribe_mode
       from (select b1.dt
                   ,b1.product_id
@@ -238,8 +246,9 @@ with source_chl as (
                                      when pay_type = 5 then 'AppGallery'
                                      when pay_type = 9 then 'PayPalV2'
                                  end    as subpaytype
+                               ,installment_period
                            from dim.dim_trade_pay_item_info_view
-                          group by item_id, pay_type
+                          group by item_id, pay_type, installment_period
                         )    as b6
                 on b1.item_id = b6.item_id
                and b1.subpaytype = b6.subpaytype
@@ -247,94 +256,94 @@ with source_chl as (
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20 ,21, 25, 26
 )
 select a1.dt                       as dt                       -- 统计周期
-      ,a1.product_id               as product_id               -- 产品id
-      ,a1.user_id                  as user_id                  -- 用户id
-      ,'ctt'                       as period_type              -- 统计周期类型,ctt/rmt,rmt(拉活用户)
-      ,a2.user_type                as user_type                -- 用户类型
-      ,a1.which_weeks              as which_weeks              -- 对应日期的周数
-      ,a1.which_months             as which_months             -- 对应日期的月份
-      ,a1.current_language2        as current_language2        -- 投放语言（注册语言）
-      ,a1.source_chl               as source_chl               -- 最新渠道
-      ,a1.reg_country              as reg_country              -- 注册国家
-      ,a1.country_level            as country_level            -- 国家等级
-      ,a1.mt                       as mt                       -- 媒体类型
-      ,a1.corever                  as corever                  -- core版本
-      ,a1.source                   as source                   -- 来源
-      ,a1.shop_item                as shop_item                -- 购买商品
-      ,a1.recharge_gear            as recharge_gear            -- 充值档位
-      ,a1.is_first_charge          as is_first_charge          -- 是否首充
-      ,a1.charge_cnt               as charge_cnt               -- 充值次数
-      ,a1.before_charge            as before_charge            -- 充值前金额
-      ,a1.after_charge             as after_charge             -- 充值后金额
-      ,a1.etl_time                 as etl_time                 -- etl时间
-      ,a1.is_valid                 as is_valid                 -- 是否有效
-      ,a1.is_first_subscription    as is_first_subscription    -- 是否首购
-      ,a1.autorenew_times          as autorenew_times          -- 自动续费次数
-      ,a1.subscribe_status         as subscribe_status         -- 订阅状态
-      ,a1.subpay_type              as subpay_type              -- 订阅支付类型
-      ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
-      ,a1.item_type                as item_type                -- 购买商品类型
-      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
-  from maintab                              as a1
-  left join (select dt
-                   ,product_id
-                   ,user_id
-                   ,period_type
-                   ,user_type
-               from dws.dws_user_wide_active_period_ed
-              where dt = '${bf_1_dt}'
-                and period_type = 'ctt'
-            )                               as a2
-    on a1.dt = a2.dt
-   and a1.product_id = a2.product_id
-   and a1.user_id = a2.user_id
-  left join dim.dim_user_other_info_view    as a3
-    on a1.product_id = a3.product_id
-   and a1.user_id = a3.id
- union all
+     ,a1.product_id               as product_id               -- 产品id
+     ,a1.user_id                  as user_id                  -- 用户id
+     ,'ctt'                       as period_type              -- 统计周期类型,ctt/rmt,rmt(拉活用户)
+     ,a2.user_type                as user_type                -- 用户类型
+     ,a1.which_weeks              as which_weeks              -- 对应日期的周数
+     ,a1.which_months             as which_months             -- 对应日期的月份
+     ,a1.current_language2        as current_language2        -- 投放语言（注册语言）
+     ,a1.source_chl               as source_chl               -- 最新渠道
+     ,a1.reg_country              as reg_country              -- 注册国家
+     ,a1.country_level            as country_level            -- 国家等级
+     ,a1.mt                       as mt                       -- 媒体类型
+     ,a1.corever                  as corever                  -- core版本
+     ,a1.source                   as source                   -- 来源
+     ,a1.shop_item                as shop_item                -- 购买商品
+     ,a1.recharge_gear            as recharge_gear            -- 充值档位
+     ,a1.is_first_charge          as is_first_charge          -- 是否首充
+     ,a1.charge_cnt               as charge_cnt               -- 充值次数
+     ,a1.before_charge            as before_charge            -- 充值前金额
+     ,a1.after_charge             as after_charge             -- 充值后金额
+     ,a1.etl_time                 as etl_time                 -- etl时间
+     ,a1.is_valid                 as is_valid                 -- 是否有效
+     ,a1.is_first_subscription    as is_first_subscription    -- 是否首购
+     ,a1.autorenew_times          as autorenew_times          -- 自动续费次数
+     ,a1.subscribe_status         as subscribe_status         -- 订阅状态
+     ,a1.subpay_type              as subpay_type              -- 订阅支付类型
+     ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
+     ,a1.item_type                as item_type                -- 购买商品类型
+     ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
+from maintab                              as a1
+         left join (select dt
+                         ,product_id
+                         ,user_id
+                         ,period_type
+                         ,user_type
+                    from dws.dws_user_wide_active_period_ed
+                    where dt = '${bf_1_dt}'
+                      and period_type = 'ctt'
+)                               as a2
+                   on a1.dt = a2.dt
+                       and a1.product_id = a2.product_id
+                       and a1.user_id = a2.user_id
+         left join dim.dim_user_other_info_view    as a3
+                   on a1.product_id = a3.product_id
+                       and a1.user_id = a3.id
+union all
 select a1.dt                       as dt                       -- 统计周期
-      ,a1.product_id               as product_id               -- 产品id
-      ,a1.user_id                  as user_id                  -- 用户id
-      ,'rmt'                       as period_type              -- 统计周期类型/rmt,rmt(拉活用户)
-      ,a2.user_type                as user_type                -- 用户类型
-      ,a1.which_weeks              as which_weeks              -- 对应日期的周数
-      ,a1.which_months             as which_months             -- 对应日期的月份
-      ,a1.current_language2        as current_language2        -- 投放语言（注册语言）
-      ,a1.source_chl               as source_chl               -- 最新渠道
-      ,a1.reg_country              as reg_country              -- 注册国家
-      ,a1.country_level            as country_level            -- 国家等级
-      ,a1.mt                       as mt                       -- 媒体类型
-      ,a1.corever                  as corever                  -- core版本
-      ,a1.source                   as source                   -- 来源
-      ,a1.shop_item                as shop_item                -- 购买商品
-      ,a1.recharge_gear            as recharge_gear            -- 充值档位
-      ,a1.is_first_charge          as is_first_charge          -- 是否首充
-      ,a1.charge_cnt               as charge_cnt               -- 充值次数
-      ,a1.before_charge            as before_charge            -- 充值前金额
-      ,a1.after_charge             as after_charge             -- 充值后金额
-      ,a1.etl_time                 as etl_time                 -- etl时间
-      ,a1.is_valid                 as is_valid                 -- 是否有效
-      ,a1.is_first_subscription    as is_first_subscription    -- 是否首购
-      ,a1.autorenew_times          as autorenew_times          -- 自动续费次数
-      ,a1.subscribe_status         as subscribe_status         -- 订阅状态
-      ,a1.subpay_type              as subpay_type              -- 订阅支付类型
-      ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
-      ,a1.item_type                as item_type                -- 购买商品类型
-      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
-  from maintab                              as a1
-  left join (select dt
-                   ,product_id
-                   ,user_id
-                   ,period_type
-                   ,user_type
-               from dws.dws_user_wide_active_period_ed
-              where dt = '${bf_1_dt}'
-                and period_type = 'rmt'
-            )                               as a2
+     ,a1.product_id               as product_id               -- 产品id
+     ,a1.user_id                  as user_id                  -- 用户id
+     ,'rmt'                       as period_type              -- 统计周期类型/rmt,rmt(拉活用户)
+     ,a2.user_type                as user_type                -- 用户类型
+     ,a1.which_weeks              as which_weeks              -- 对应日期的周数
+     ,a1.which_months             as which_months             -- 对应日期的月份
+     ,a1.current_language2        as current_language2        -- 投放语言（注册语言）
+     ,a1.source_chl               as source_chl               -- 最新渠道
+     ,a1.reg_country              as reg_country              -- 注册国家
+     ,a1.country_level            as country_level            -- 国家等级
+     ,a1.mt                       as mt                       -- 媒体类型
+     ,a1.corever                  as corever                  -- core版本
+     ,a1.source                   as source                   -- 来源
+     ,a1.shop_item                as shop_item                -- 购买商品
+     ,a1.recharge_gear            as recharge_gear            -- 充值档位
+     ,a1.is_first_charge          as is_first_charge          -- 是否首充
+     ,a1.charge_cnt               as charge_cnt               -- 充值次数
+     ,a1.before_charge            as before_charge            -- 充值前金额
+     ,a1.after_charge             as after_charge             -- 充值后金额
+     ,a1.etl_time                 as etl_time                 -- etl时间
+     ,a1.is_valid                 as is_valid                 -- 是否有效
+     ,a1.is_first_subscription    as is_first_subscription    -- 是否首购
+     ,a1.autorenew_times          as autorenew_times          -- 自动续费次数
+     ,a1.subscribe_status         as subscribe_status         -- 订阅状态
+     ,a1.subpay_type              as subpay_type              -- 订阅支付类型
+     ,a3.user_ad_source           as user_ad_source           -- 用户广告来源
+     ,a1.item_type                as item_type                -- 购买商品类型
+     ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
+from maintab                              as a1
+         left join (select dt
+                         ,product_id
+                         ,user_id
+                         ,period_type
+                         ,user_type
+                    from dws.dws_user_wide_active_period_ed
+                    where dt = '${bf_1_dt}'
+                    and period_type = 'rmt'
+        )                               as a2
     on a1.dt = a2.dt
-   and a1.product_id = a2.product_id
-   and a1.user_id = a2.user_id
-  left join dim.dim_user_other_info_view    as a3
-    on a1.product_id = a3.product_id
-   and a1.user_id = a3.id
+    and a1.product_id = a2.product_id
+    and a1.user_id = a2.user_id
+    left join dim.dim_user_other_info_view    as a3
+      on a1.product_id = a3.product_id
+    and a1.user_id = a3.id
 ;
