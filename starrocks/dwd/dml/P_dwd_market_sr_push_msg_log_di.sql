@@ -8,7 +8,7 @@
 
 insert into dwd.dwd_market_sr_push_msg_log_di
 select a.dt                                                         as dt            -- 分区日期
-     , a.ProductId                                                  as product_id    -- product_id
+     , b.ProductId                                                  as product_id    -- 产品ID
      , a.Id                                                         as id            -- Id
      , a.CreateTime                                                 as create_time   -- 插入时间
      , a.AccountId                                                  as user_id       -- 用户Id
@@ -33,8 +33,8 @@ select a.dt                                                         as dt       
             else null
         end                                                         as image_url     -- 图片地址
      , now()                                                        as etl_time      -- etl写入时间
-  from ods.ods_tidb_unifypush_log_log_pushlog_sr   as a
-  left join ods.ods_tidb_unifypush_log_apps        as b
+  from ods.ods_tidb_unifypush_log_log_pushlog_sr as a
+  left join ods.ods_tidb_unifypush_log_apps      as b
     on a.AppId = b.Id
  where a.dt = '${bf_1_dt}'
 ;
