@@ -11,6 +11,7 @@ create table ads.ads_user_paywall_metrics_df (
     ,max_active_time             datetime                                 comment "最大活跃时间"
     ,etl_time                    datetime    default current_timestamp    comment "清洗时间"
     ,recharge_amt                decimal(18, 2)                           comment "前3d充值金额"
+    ,max_exp_strategy_id         varchar(128)                             comment "前3d曝光次数最多的半屏策略id"
 )
 primary key(dt, user_id)
 comment "付费墙用户行为指标"

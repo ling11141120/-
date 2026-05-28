@@ -100,6 +100,39 @@ with active_user as (
        and a2.test_flag = 0
      group by 1, 2
 )
+, strategy_exposure_base as (
+    select a1.dt
+          ,a1.user_id
+          ,trim(a2.event_strategy_id)    as strategy_id
+          ,count(*)               as exposure_cnt
+          ,max(a2.event_tm)       as last_exposure_time
+      from active_user as a1
+      join ads.ads_sensors_cd_video_rechargeexposure_view as a2
+        on a2.login_id = a1.user_id
+       and a2.event_tm >= date_sub('${cur_time}', interval 72 hour)
+       and a2.event_tm < '${cur_time}'
+       and a2.dt >= '${bf_4_dt}'
+       and a2.dt <= '${dt}'
+       and a2.element_name regexp '半屏充值'
+       and a2.event_strategy_id is not null
+       and lower(trim(a2.event_strategy_id)) not in ('', '0', 'null')
+     group by 1, 2, 3
+)
+, max_exp_strategy_agg as (
+    select dt
+          ,user_id
+          ,strategy_id    as max_exp_strategy_id
+      from (select dt
+                  ,user_id
+                  ,strategy_id
+                  ,row_number() over (
+                       partition by dt, user_id
+                           order by exposure_cnt desc, last_exposure_time desc, strategy_id desc
+                   )    as rn
+              from strategy_exposure_base
+           ) as a
+     where rn = 1
+)
 select a1.dt                                     as dt
       ,a1.user_id                                as user_id
       ,ifnull(a2.recharge_unlock_epis_cnt, 0)    as recharge_unlock_epis_cnt
@@ -111,6 +144,7 @@ select a1.dt                                     as dt
       ,a1.max_active_time                        as max_active_time
       ,now()                                     as etl_time
       ,ifnull(a5.recharge_amt, 0)                as recharge_amt
+      ,a6.max_exp_strategy_id                    as max_exp_strategy_id
   from active_user as a1
   left join unlock_agg as a2
     on a1.dt = a2.dt
@@ -124,4 +158,7 @@ select a1.dt                                     as dt
   left join recharge_amt_agg as a5
     on a1.dt = a5.dt
    and a1.user_id = a5.user_id
+  left join max_exp_strategy_agg as a6
+    on a1.dt = a6.dt
+   and a1.user_id = a6.user_id
 ;
