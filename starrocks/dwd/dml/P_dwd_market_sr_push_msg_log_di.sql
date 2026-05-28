@@ -8,7 +8,7 @@
 
 insert into dwd.dwd_market_sr_push_msg_log_di
 select a.dt                                                         as dt            -- 分区日期
-     , a.ProductId                                                  as product_id    -- product_id
+     , b.ProductId                                                    as product_id    -- 产品ID（取自apps表的真实ProductId，与旧readerlog对齐）
      , a.Id                                                         as id            -- Id
      , a.CreateTime                                                 as create_time   -- 插入时间
      , a.AccountId                                                  as user_id       -- 用户Id
