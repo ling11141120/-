@@ -21,7 +21,7 @@ create table if not exists ods.ods_tidb_unifypush_log_log_pushlog_sr (
     ,Id             bigint        not null                           comment "自增Id"
     ,product_id     int           not null                           comment "product_id"
     ,CreateTime     datetime                                         comment "入库时间"
-    ,AppId          int                                     comment "app_id"
+    ,AppId          int                                              comment "app_id"
     ,BatchId        bigint                                           comment "batch_id"
     ,AccountId      bigint                                           comment "账号Id"
     ,DeviceId       bigint                                           comment "设备Id"
