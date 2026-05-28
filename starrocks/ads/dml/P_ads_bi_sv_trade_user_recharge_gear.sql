@@ -116,4 +116,3 @@ select a.dt
     on a.product_id = b.product_id
    and a.user_id = b.user_id
 ;
-

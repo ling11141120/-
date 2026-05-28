@@ -338,4 +338,3 @@ select a1.dt                       as dt                       -- 统计周期
     on a1.product_id = a3.product_id
    and a1.user_id = a3.id
 ;
-
