@@ -45,7 +45,7 @@ partition by date_trunc('day', dt)
 distributed by hash(dt, Id)
 properties (
     "replication_num" = "3",
-    "bloom_filter_columns" = "dt, AccountId, DeviceId, CreateTime, BatchId, Id",
+    "bloom_filter_columns" = "AccountId, AppId",
     "in_memory" = "false",
     "enable_persistent_index" = "true",
     "replicated_storage" = "true",
