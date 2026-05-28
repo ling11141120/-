@@ -56,41 +56,41 @@ with base as ( -- 1.获取订单明细信息--
                else '非分期支付'
         end                                                                                                      as subscribe_mode
     from base                                      as a    -- 2.关联账户表，获取用户基础信息-------------------
-             left join dim.dim_short_video_user_accountinfo as b
-                       on a.product_id = b.product_id
-                           and a.user_id = b.user_id
+      left join dim.dim_short_video_user_accountinfo as b
+        on a.product_id = b.product_id
+       and a.user_id = b.user_id
         -- 3.获取首次充值时间
-             left join (
+      left join (
         select product_id
              ,user_id
              ,min(dt)    as fst_recharege_dt
-        from base
-        group by 1, 2
-    )                                     as c
-                       on a.product_id = c.product_id
-                           and a.user_id = c.user_id
+          from base
+         group by 1, 2
+       )                                     as c
+        on a.product_id = c.product_id
+       and a.user_id = c.user_id
         -- 4.获取国家等级字段
-             left join (
+      left join (
         select product_id
              ,short_name
              ,level
-        from dim.dim_countrylevel
-        where product_id = 6833
-    )                                     as d
-                       on b.product_id = d.product_id
-                           and b.reg_country = d.short_name
+          from dim.dim_countrylevel
+         where product_id = 6833
+       )                                     as d
+        on b.product_id = d.product_id
+       and b.reg_country = d.short_name
         -- 5.获取vip充值的类型 '1 月卡 2 季卡 3 年卡 4 周卡'
-             left join (
+      left join (
         select pay_config_id
              ,is_on_off
              ,vip_type
              ,installment_count
-        from dim.dim_sv_recharge_item_info_view
-        where pay_config_id is not null
-            qualify row_number() over(partition by pay_config_id order by is_on_off desc) = 1
-        order by 1
-    )                                     as e
-                       on a.pay_config_id = e.pay_config_id
+          from dim.dim_sv_recharge_item_info_view
+         where pay_config_id is not null
+       qualify row_number() over(partition by pay_config_id order by is_on_off desc) = 1
+         order by 1
+       )                                     as e
+        on a.pay_config_id = e.pay_config_id
     where a.dt = '${bf_1_dt}'
     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17
 )
@@ -115,14 +115,14 @@ select a.dt
      ,now()             as etl_tm
      ,a.subscribe_mode
 from payorder                                   as a
-         left join (
+  left join (
     select product_id
          ,user_id
          ,period_type
          ,user_type
-    from dws.dws_user_short_video_wide_active_period_ed
-    where dt = '${bf_1_dt}'
-)                                    as b
-                   on a.product_id = b.product_id
-                       and a.user_id = b.user_id
+      from dws.dws_user_short_video_wide_active_period_ed
+     where dt = '${bf_1_dt}'
+   )                                    as b
+    on a.product_id = b.product_id
+   and a.user_id = b.user_id
 ;

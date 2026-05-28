@@ -29,35 +29,35 @@ with source_chl as (
          ,user_id
          ,weekofyear(dt)           as which_weeks
          ,month(dt)                as which_months
-   ,current_language2
-   ,source_chl
-   ,reg_country
-   ,country_level
-   ,mt
-   ,corever
-   ,source
-   ,shop_item
-   ,recharge_gear
-   ,is_first_charge
-   ,sum(charge_cnt)          as charge_cnt
-   ,sum(before_charge)       as before_charge
-   ,sum(after_charge)        as after_charge
-   ,now()                    as etl_time
-   ,is_valid
-   ,is_first_subscription
-   ,max(autorenew_times)     as autorenew_times
-   ,max(subscribe_status)    as subscribe_status
-   ,max(subpay_type)         as subpay_type
-   ,case
-    when subscribe_mode = '分期支付'
-    then case
-    when b6.installment_period = 3 then '季卡'
-    when b6.installment_period = 12 then '年卡'
-    else item_type
-end
-else item_type
-end                      as item_type
-          ,subscribe_mode           as subscribe_mode
+         ,current_language2
+         ,source_chl
+         ,reg_country
+         ,country_level
+         ,mt
+         ,corever
+         ,source
+         ,shop_item
+         ,recharge_gear
+         ,is_first_charge
+         ,sum(charge_cnt)          as charge_cnt
+         ,sum(before_charge)       as before_charge
+         ,sum(after_charge)        as after_charge
+         ,now()                    as etl_time
+         ,is_valid
+         ,is_first_subscription
+         ,max(autorenew_times)     as autorenew_times
+         ,max(subscribe_status)    as subscribe_status
+         ,max(subpay_type)         as subpay_type
+         ,case
+              when subscribe_mode = '分期支付'
+              then case
+                       when b6.installment_period = 3 then '季卡'
+                       when b6.installment_period = 12 then '年卡'
+                       else item_type
+                   end
+              else item_type
+          end                      as item_type
+         ,subscribe_mode           as subscribe_mode
       from (select b1.dt
                   ,b1.product_id
                   ,b1.user_id
@@ -285,21 +285,21 @@ select a1.dt                       as dt                       -- 统计周期
      ,a1.item_type                as item_type                -- 购买商品类型
      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
 from maintab                              as a1
-         left join (select dt
-                         ,product_id
-                         ,user_id
-                         ,period_type
-                         ,user_type
-                    from dws.dws_user_wide_active_period_ed
-                    where dt = '${bf_1_dt}'
-                      and period_type = 'ctt'
-)                               as a2
-                   on a1.dt = a2.dt
-                       and a1.product_id = a2.product_id
-                       and a1.user_id = a2.user_id
-         left join dim.dim_user_other_info_view    as a3
-                   on a1.product_id = a3.product_id
-                       and a1.user_id = a3.id
+  left join (select dt
+                  ,product_id
+                  ,user_id
+                  ,period_type
+                  ,user_type
+               from dws.dws_user_wide_active_period_ed
+              where dt = '${bf_1_dt}'
+                and period_type = 'ctt'
+            )                               as a2
+    on a1.dt = a2.dt
+   and a1.product_id = a2.product_id
+   and a1.user_id = a2.user_id
+  left join dim.dim_user_other_info_view    as a3
+    on a1.product_id = a3.product_id
+   and a1.user_id = a3.id
 union all
 select a1.dt                       as dt                       -- 统计周期
      ,a1.product_id               as product_id               -- 产品id
@@ -331,19 +331,19 @@ select a1.dt                       as dt                       -- 统计周期
      ,a1.item_type                as item_type                -- 购买商品类型
      ,a1.subscribe_mode           as subscribe_mode           -- 订阅方式
 from maintab                              as a1
-         left join (select dt
-                         ,product_id
-                         ,user_id
-                         ,period_type
-                         ,user_type
-                    from dws.dws_user_wide_active_period_ed
-                    where dt = '${bf_1_dt}'
-                    and period_type = 'rmt'
-        )                               as a2
+  left join (select dt
+                  ,product_id
+                  ,user_id
+                  ,period_type
+                  ,user_type
+               from dws.dws_user_wide_active_period_ed
+              where dt = '${bf_1_dt}'
+                and period_type = 'rmt'
+            )                               as a2
     on a1.dt = a2.dt
-    and a1.product_id = a2.product_id
-    and a1.user_id = a2.user_id
-    left join dim.dim_user_other_info_view    as a3
-      on a1.product_id = a3.product_id
-    and a1.user_id = a3.id
+   and a1.product_id = a2.product_id
+   and a1.user_id = a2.user_id
+  left join dim.dim_user_other_info_view    as a3
+    on a1.product_id = a3.product_id
+   and a1.user_id = a3.id
 ;
