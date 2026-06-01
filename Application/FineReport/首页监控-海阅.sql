@@ -1,27 +1,23 @@
 ------------------------------------------------
 -- title：【沙盘海阅】当日充值金额统计异常
 -- level：P1
--- 浮动值差异 <= 5
+-- 浮动值差异 <= 5%
 -- 频率：0 6/30 * * * ?
 ------------------------------------------------
 
--- 源表配置
-select sum(baseamount)/100.0 as charge_money
-  from dwd.dwd_trade_user_payorder
- where dt >= current_date
-   and testflag = 0
-   and productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
-;
--- 目标表配置
-select charge_money
-  from ads.ads_charge_order
- where datetypes = 1
-;
+select round(abs(cast((t1.charge_money - t2.charge_money) / t2.charge_money * 100 as double)), 2) as ratio
+  from (select sum(baseamount)/100.0 as charge_money
+          from dwd.dwd_trade_user_payorder
+         where dt >= current_date
+           and testflag = 0
+           and productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
+       ) as t1
+      ,(select charge_money from ads.ads_charge_order where datetypes = 1) as t2
 
 ------------------------------------------------
 -- title：分层质量监控(dwd)
 -- level：P1
--- 浮动值差异 <= 5
+-- 浮动值差异 <= 5%
 -- 频率：0 4/30 * * * ?
 ------------------------------------------------
 select abs(cast((a1.baseamount - a2.baseamount) / a2.baseamount * 100 as double)) as ratio
