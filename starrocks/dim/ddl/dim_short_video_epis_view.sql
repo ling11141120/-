@@ -1,4 +1,4 @@
-create view dim.dim_short_video_epis_view(
+create or replace view dim.dim_short_video_epis_view(
      epis_id                       comment "单集id"
     ,series_id                     comment "剧集id"
     ,create_tm                     comment "创建时间"
@@ -90,6 +90,7 @@ select a.EpisId
           left join ods.ods_tidb_short_video_series    as b
             on a.SeriesId = b.SeriesId
          where a.IsDelete = 0
+           and b.AppType = 1
          union
         select EpisId
               ,SeriesId
@@ -119,6 +120,6 @@ select a.EpisId
               ,sr_createtime
               ,sr_updatetime
           from ods.ods_tidb_short_video_epis
-         where ods.ods_tidb_short_video_epis.IsDelete != 0
+         where IsDelete != 0
        )                                               as a
 ;
