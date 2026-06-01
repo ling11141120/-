@@ -71,4 +71,5 @@ select a1.SeriesId               as series_id          -- id
   from ods.ods_tidb_short_video_series                      as a1
   left join ods.ods_tidb_short_video_admin_source_series    as a2
     on a1.SourceSeriesId = a2.SeriesId
+ where a1.AppType = 1
 ;
