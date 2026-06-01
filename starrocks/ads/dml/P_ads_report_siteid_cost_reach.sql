@@ -1,13 +1,11 @@
 ----------------------------------------------------------------
--- project_name : starrocks
--- workflow_name : tbl_ads_report_siteid_cost_reach
--- workflow_version : 3
--- create_user : zhengtt
--- task_name : ads_report_siteid_cost_reach
--- task_version : 3
--- update_time : 2026-05-21 16:40:40
--- sql_path : \starrocks\tbl_ads_report_siteid_cost_reach\ads_report_siteid_cost_reach
+-- 程序功能： 站点成本达成率报表
+-- 程序名： P_ads_report_siteid_cost_reach
+-- 目标表： ads.ads_report_siteid_cost_reach
+-- 负责人： tyg
+-- 开发日期：2026-06-01
 ----------------------------------------------------------------
+
 -- SQL语句
 insert into ads.ads_report_siteid_cost_reach
 select '${dt}'                                    as dt
