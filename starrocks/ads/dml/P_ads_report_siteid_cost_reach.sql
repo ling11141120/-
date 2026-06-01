@@ -54,7 +54,7 @@ select '${dt}'                                           as dt
           on t1.book_id = t2.book_id
         left join dim.dim_shuangwen_book_read_consume_info  as t3
           on t1.book_id = t3.book_id
-       where t2.book_id is null
+        where t2.book_id is null
          and t3.font_length >= 100000
        group by t1.site_id
      )                                                      as b
