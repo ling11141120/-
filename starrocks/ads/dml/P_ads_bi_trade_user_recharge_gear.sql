@@ -1,10 +1,9 @@
-----------------------------------------------------------------
+﻿----------------------------------------------------------------
 -- 程序功能： 用户域登录阅读充值消耗汇总活跃表
 -- 程序名： P_ads_bi_trade_user_recharge_gear
 -- 目标表： ads.ads_bi_trade_user_recharge_gear
 -- 负责人： xjc
 -- 开发日期： 2026-03-03
--- 版本号： v0.0.1
 ----------------------------------------------------------------
 
 delete from ads.ads_bi_trade_user_recharge_gear where dt ='${bf_1_dt}';
@@ -48,15 +47,7 @@ with source_chl as (
          ,max(autorenew_times)     as autorenew_times
          ,max(subscribe_status)    as subscribe_status
          ,max(subpay_type)         as subpay_type
-         ,case
-              when subscribe_mode = '分期支付'
-              then case
-                       when b6.installment_period = 3 then '季卡'
-                       when b6.installment_period = 12 then '年卡'
-                       else item_type
-                   end
-              else item_type
-          end                      as item_type
+         ,a1.item_type             as item_type
          ,subscribe_mode           as subscribe_mode
       from (select b1.dt
                   ,b1.product_id
@@ -84,7 +75,13 @@ with source_chl as (
                   ,b1.autorenew_times
                   ,b1.subscribe_status
                   ,b1.subpaytype                      as subpay_type
-                  ,item_type
+                  ,case when b1.subscribe_mode = '分期支付'
+                        then case when b6.installment_period = 3 then '季卡'
+                                  when b6.installment_period = 12 then '年卡'
+                                  else item_type
+                              end
+                        else item_type
+                    end                               as item_type
                   ,b1.subscribe_mode
               from (select c1.dt
                           ,c1.productid     as product_id
@@ -241,14 +238,15 @@ with source_chl as (
                and b1.shop_item = b5.shopitem
                and b1.subpaytype = b5.subpaytype
               left join (select item_id
-                               ,case when pay_type = 2 then 'GooglePlay'
-                                     when pay_type = 1 then 'AppStore'
-                                     when pay_type = 5 then 'AppGallery'
-                                     when pay_type = 9 then 'PayPalV2'
-                                 end    as subpaytype
-                               ,installment_period
+                               ,max(case when pay_type = 2 then 'GooglePlay'
+                                         when pay_type = 1 then 'AppStore'
+                                         when pay_type = 5 then 'AppGallery'
+                                         when pay_type = 9 then 'PayPalV2'
+                                     end
+                                   ) as subpaytype
+                               ,max(installment_period) as installment_period
                            from dim.dim_trade_pay_item_info_view
-                          group by item_id, pay_type, installment_period
+                          group by item_id
                         )    as b6
                 on b1.item_id = b6.item_id
                and b1.subpaytype = b6.subpaytype
@@ -347,3 +345,4 @@ from maintab                              as a1
     on a1.product_id = a3.product_id
    and a1.user_id = a3.id
 ;
+
