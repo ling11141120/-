@@ -52,3 +52,12 @@
 - [AI] 基于海阅三方支付漏斗链路报表 V3 脚本内部三表（dws_user_wide_active_period_ed / ads_bi_sr_third_payment_exposure_pv_di / ads_trade_user_payorder_view）重构海阅 T+1 分析 SQL，独立 CTE 防 fan-out，新增 period_type=''ctt'' 过滤
 - [人工] 在 StarRocks 执行两条 SQL 验证，确认字段口径和输出结果满足要求
 - [AI] 更新 PROGRAM.md / SCOPE.yml / STATUS.yml / PLAN.md 配套文档
+
+---
+## dev+lwb+RTM-40733+三方支付实时监控 | 负责人: qhr | 周期: 2026-05-25 ~ 进行中
+
+### 2026-05-25
+- [AI] 分析三方支付实时监控需求，确认指标口径（曝光UV、三方曝光UV、入包UV、三方充值UV、三方充值金额、原生充值金额）
+- [AI] 确认技术方案：PRIMARY KEY + BITMAP 模型，小时累计（参考 ads_srsv_bi_mt_cli_push_mon），回溯上游埋点视图做 event_tm/create_time 过滤
+- [AI] 编写 DDL：ads_sv_third_payment_realtime_mon（PRIMARY KEY 表，BITMAP UV + DECIMAL 金额）
+- [AI] 编写 DML：海剧段（product_id=6833）+ 海阅段（product_id=6883）UNION ALL
