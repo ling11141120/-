@@ -17,8 +17,10 @@ create table if not exists dwd.dwd_market_sr_push_msg_log_di (
     ,schedule_time datetime                               comment "计划推送时间"
     ,err_msg_id    string                                 comment "消息ID用于标识消息（FCM使用）"
     ,task_type     int                                    comment "任务类型"
-    ,image_url     string                                 comment "图片地址"
-    ,etl_time      datetime                               comment "etl写入时间"
+    ,image_url       string                                 comment "图片地址"
+    ,push_title_id   bigint                                 comment "push标题ID，解析自Body.aps.attributes.extData"
+    ,push_content_id bigint                                 comment "push内容ID，解析自Body.aps.attributes.extData"
+    ,etl_time        datetime                               comment "etl写入时间"
 )
 primary key(dt, product_id, id)
 comment "营销域-海阅push资源位消息推送日志"
