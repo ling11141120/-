@@ -32,6 +32,8 @@ select a.dt                                                         as dt       
             when b.MT = 4 then get_json_string(a.Body, '$.Notification.ImageUrl')
             else null
         end                                                         as image_url     -- 图片地址
+     , cast(get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_title_id') as bigint)    as push_title_id     -- push标题ID
+     , cast(get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_content_id') as bigint)  as push_content_id  -- push内容ID
      , now()                                                        as etl_time      -- etl写入时间
   from ods.ods_tidb_unifypush_log_log_pushlog_sr as a
   left join ods.ods_tidb_unifypush_log_apps      as b
