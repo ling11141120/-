@@ -33,6 +33,8 @@ select a.dt
      , a.image_url
      , null               as is_silent
      , now()              as etl_time
+     , a.push_title_id
+     , a.push_content_id
   from dwd.dwd_market_sr_push_msg_log_di as a
   left join (select dt
                   , user_id

@@ -25,6 +25,8 @@ create table if not exists ads.ads_sr_push_message_log (
     ,image_url      string                                 comment ""
     ,is_silent      tinyint                                comment ""
     ,etl_time       datetime     default current_timestamp comment "ETL时间"
+    ,push_title_id  string                                 comment "push标题ID"
+    ,push_content_id string                                comment "push内容ID"
     ,index index_productid (product_id) using bitmap       comment 'index_productid'
     ,index index_state (state)          using bitmap       comment 'index_state'
 )
