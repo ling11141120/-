@@ -1,4 +1,3 @@
--- 对外列名保持不变，底表切到 ods.ods_tidb_short_video_series
 create or replace view ads.ads_series_view (
      SeriesId         comment "id"
     ,Language         comment "语言"
@@ -65,4 +64,5 @@ select SeriesId
       ,Core
   from ods.ods_tidb_short_video_series
  where IsDelete = 0
+   and AppType = 1
 ;

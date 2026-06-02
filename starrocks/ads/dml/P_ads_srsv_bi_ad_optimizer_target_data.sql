@@ -1,20 +1,15 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_target_data
--- workflow_version : 18
--- create_user      : hufengju
--- task_name        : ads_srsv_bi_ad_optimizer_target_data
--- task_version     : 5
--- update_time      : 2025-01-06 18:08:33
--- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_target_data\ads_srsv_bi_ad_optimizer_target_data
+-- 程序功能： 海阅海剧 广告基建，优化师每日基建达标情况2
+-- 程序名： P_ads_srsv_bi_ad_optimizer_target_data
+-- 目标表： ads.ads_srsv_bi_ad_optimizer_target_data
+-- 负责人： 050239
+-- 开发日期：2026-05-26
 ----------------------------------------------------------------
--- 前置SQL语句
-delete from  ads.ads_srsv_bi_ad_optimizer_target_data where dt>='${bf_9_dt}'  and dt<='${dt}';
 
--- SQL语句
+delete from ads.ads_srsv_bi_ad_optimizer_target_data where dt >= '${bf_9_dt}' and dt <= '${dt}';
+
 -- 底表1：预处理
 insert into  ads.ads_srsv_bi_ad_optimizer_target_data
-    -- 维度:日期、新老组，书籍，mt，优化师&组
     with z1 as (
         select a.source_chl
             ,a.product_id
@@ -402,179 +397,174 @@ insert into  ads.ads_srsv_bi_ad_optimizer_target_data
         group by 1,2,3,4,5,6,7,8,9,10
     )
 
-    -- data1:每日基建data
-    -- 专属组处理
-    , frt_group as (
+-- data1:每日基建data
+-- 专属组处理
+, frt_group as (
+    select a.dt
+        ,if(a.product=1,'海阅','海剧') as product
+        ,a.source2
+        ,a.book_id as code_id
+        ,a.code_stage
+        ,a.code_lv
+        ,a.test_status
+        ,a.begin_date
+        ,a.end_date
+        ,a.book_code
+        ,a.languageid
+        ,a.weekdays
+        ,a.current_language2 as current_language
+        ,a.nick_name
+        ,a.ad_optimizer_uid
+        ,a.ad_optimizer_group
+        ,a.adset_num
+        ,a.spend
+        ,a.d0_amt
+        ,a.std_amt
+        ,a.reg_num
+        ,a.reg_num_all
+        ,a.reg_num_new
+        ,a.regnum_new_7d
+        ,a.regnum_all_7d
+        ,a.spend_10d
+        ,a.adset_num_10d
+        ,a.days_10d
+        ,a.d0_amt_10d
+        ,a.std_amt_10d
+        ,a.d0_amt_all
+        ,a.std_amt_all
+        ,a.d0_amt_pow
+        ,a.std_amt_pow
+        ,a.d0_amt_pow_old
+        ,a.std_amt_pow_old
+        ,a.frt_nickname
+        ,a.nick_name_max
+        ,b.frt_group
+        ,case when a.source2='tiktok' or a.code_stage<=1 or (a.product=1 and a.code_stage=2 and days_diff(a.dt,ifnull(a.first_time,'2050-01-01'))<29) then b.frt_group
+            when b.end_date2>a.dt then b.frt_group
+            else '' end as is_frt_group
+        ,case when (a.d0_amt_pow_old+a.d0_amt_pow)/(a.std_amt_pow_old+a.std_amt_pow)>0.9 then null
+            when a.days_10d>=if(a.product=2,3,4) and a.adset_num_10d>=if(a.product=2,6,10) and a.d0_amt_10d/a.std_amt_10d<if(a.source2='meta',if(a.product=2,0.7,0.65),0.77) then a.dt
+            else null end as off_begindate
+        ,date(days_add(case when (a.d0_amt_pow_old+a.d0_amt_pow)/(a.std_amt_pow_old+a.std_amt_pow)>0.9 then null
+                        when a.days_10d>=if(a.product=2,3,4) and a.adset_num_10d>=if(a.product=2,6,10) and a.d0_amt_10d/a.std_amt_10d<if(a.source2='meta',if(a.product=2,0.7,0.65),0.77) then a.dt
+                        else null end
+                        ,7)
+                        ) as off_enddate
+        ,now() as etl_tm
+    from z5  a
+    -- 每日专属组标签
+    left join book_group2 b on a.product=b.product and a.source2=b.source2 and a.book_id=b.book_id and a.dt=b.dt
+)
+-- 无基建书籍，近2天B级或禁投书过滤
+, z6 as (
+    select dt
+        ,product
+        ,source2
+        ,x.code_id
+        ,code_stage
+        ,code_lv
+        ,test_status
+        ,begin_date
+        ,end_date
+        ,book_code
+        ,languageid
+        ,if(dayofweek(dt)=1,7,dayofweek(dt)-1)  as weekdays
+        ,current_language
+        ,null nick_name
+        ,null ad_optimizer_uid
+        ,null ad_optimizer_group
+        ,null adset_num
+        ,null spend
+        ,null d0_amt
+        ,null std_amt
+        ,null reg_num
+        ,null reg_num_all
+        ,null reg_num_new
+        ,null regnum_new_7d
+        ,null regnum_all_7d
+        ,null spend_10d
+        ,null adset_num_10d
+        ,null days_10d
+        ,null d0_amt_10d
+        ,null std_amt_10d
+        ,null d0_amt_all
+        ,null std_amt_all
+        ,null d0_amt_pow
+        ,null std_amt_pow
+        ,null d0_amt_pow_old
+        ,null std_amt_pow_old
+        ,frt_nickname
+        ,nick_name_max
+        ,frt_group
+        ,is_frt_group
+        ,null off_begindate
+        ,null off_enddate
+        ,now() as etl_tm
+    from (
         select a.dt
-            ,if(a.product=1,'海阅','海剧') as product
-            ,a.source2
-            ,a.book_id as code_id
-            ,a.code_stage
-            ,a.code_lv
-            ,a.test_status
-            ,a.begin_date
-            ,a.end_date
-            ,a.book_code
-            ,a.languageid
-            ,a.weekdays
-            ,a.current_language2 as current_language
-            ,a.nick_name
-            ,a.ad_optimizer_uid
-            ,a.ad_optimizer_group
-            ,a.adset_num
-            ,a.spend
-            ,a.d0_amt
-            ,a.std_amt
-            ,a.reg_num
-            ,a.reg_num_all
-            ,a.reg_num_new
-            ,a.regnum_new_7d
-            ,a.regnum_all_7d
-            ,a.spend_10d
-            ,a.adset_num_10d
-            ,a.days_10d
-            ,a.d0_amt_10d
-            ,a.std_amt_10d
-            ,a.d0_amt_all
-            ,a.std_amt_all
-            ,a.d0_amt_pow
-            ,a.std_amt_pow
-            ,a.d0_amt_pow_old
-            ,a.std_amt_pow_old
-            ,a.frt_nickname
-            ,a.nick_name_max
-            ,b.frt_group
-            -- ,if((b.end_date2>a.dt or (a.product=1 and a.code_stage=2 and days_diff(a.dt,ifnull(a.first_time,'2050-01-01'))<29))
-            --     ,if(a.source2='tiktok' and ((a.product=2 and a.code_stage=2) or (a.product=1 and a.code_stage=3)),"",b.frt_group)
-            --     ,"") as is_frt_group  --专属
-            ,case when a.source2='tiktok' or a.code_stage<=1 or (a.product=1 and a.code_stage=2 and days_diff(a.dt,ifnull(a.first_time,'2050-01-01'))<29) then b.frt_group
-                when b.end_date2>a.dt then b.frt_group
-                else '' end as is_frt_group
-            ,case when (a.d0_amt_pow_old+a.d0_amt_pow)/(a.std_amt_pow_old+a.std_amt_pow)>0.9 then null
-                when a.days_10d>=if(a.product=2,3,4) and a.adset_num_10d>=if(a.product=2,6,10) and a.d0_amt_10d/a.std_amt_10d<if(a.source2='meta',if(a.product=2,0.7,0.65),0.77) then a.dt
-                else null end as off_begindate
-            ,date(days_add(case when (a.d0_amt_pow_old+a.d0_amt_pow)/(a.std_amt_pow_old+a.std_amt_pow)>0.9 then null
-                            when a.days_10d>=if(a.product=2,3,4) and a.adset_num_10d>=if(a.product=2,6,10) and a.d0_amt_10d/a.std_amt_10d<if(a.source2='meta',if(a.product=2,0.7,0.65),0.77) then a.dt
-                            else null end
-                            ,7)
-                            ) as off_enddate
-            ,now() as etl_tm
-        from z5  a
-        -- 每日专属组标签
-        left join book_group2 b on a.product=b.product and a.source2=b.source2 and a.book_id=b.book_id and a.dt=b.dt
-    )
-
-    -- 无基建书籍，近2天B级或禁投书过滤
-    , z6 as (
-        select dt
-            ,product
-            ,source2
-            ,x.code_id
-            ,code_stage
-            ,code_lv
-            ,test_status
-            ,begin_date
-            ,end_date
-            ,book_code
-            ,languageid
-            ,if(dayofweek(dt)=1,7,dayofweek(dt)-1)  as weekdays
-            ,current_language
-            ,null nick_name
-            ,null ad_optimizer_uid
-            ,null ad_optimizer_group
-            ,null adset_num
-            ,null spend
-            ,null d0_amt
-            ,null std_amt
-            ,null reg_num
-            ,null reg_num_all
-            ,null reg_num_new
-            ,null regnum_new_7d
-            ,null regnum_all_7d
-            ,null spend_10d
-            ,null adset_num_10d
-            ,null days_10d
-            ,null d0_amt_10d
-            ,null std_amt_10d
-            ,null d0_amt_all
-            ,null std_amt_all
-            ,null d0_amt_pow
-            ,null std_amt_pow
-            ,null d0_amt_pow_old
-            ,null std_amt_pow_old
-            ,frt_nickname
-            ,nick_name_max
-            ,frt_group
-            ,is_frt_group
-            ,null off_begindate
-            ,null off_enddate
-            ,now() as etl_tm
+            ,c.*
+            ,row_number() over(partition by concat(a.dt,c.product,c.source2,c.code_id,c.begin_date) order by dt_max desc) as rn
         from (
-            select a.dt
-                ,c.*
-                ,row_number() over(partition by concat(a.dt,c.product,c.source2,c.code_id,c.begin_date) order by dt_max desc) as rn
-            from (
-                -- 日期
-                select distinct dt
-                from frt_group
-            ) a
-            -- 测试排期
-            join (
-                select code_id
-                    ,if(project_code=1,'海阅','海剧') as project_code
-                    ,case when source_chl in ('fb') then 'meta'
-                        when source_chl in('tt') then 'tiktok'
-                        else source_chl end as source2
-                    ,update_time
-                    ,begin_date
-                    ,end_date
-                    ,code_stage
-                    ,code_lv
-                    ,test_status
-                from ads.ads_srsv_ads_marketing_plan_view
-                where is_del=0 and source_chl <>''
-            ) p on a.dt>=p.begin_date and a.dt<=p.end_date and if(days_diff(a.dt,p.update_time)>=0,code_lv,'') not in('B') and if(days_diff(a.dt,p.update_time)>=0,test_status,0) <2  -- 进阶日前一天数据
-            -- 书籍每日花费
-            left join (
-                select product
-                    ,dt
-                    ,source2
-                    ,code_id
-                    ,sum(adset_num) as adset_num
-                from frt_group
-                group by 1,2,3,4
-            ) b on a.dt=b.dt and p.project_code=b.product and p.code_id=b.code_id and p.source2=b.source2
-            join (
-                select product
-                    ,source2
-                    ,code_id
-                    ,code_stage
-                    ,code_lv
-                    ,test_status
-                    ,begin_date
-                    ,end_date
-                    ,book_code
-                    ,languageid
-                    ,current_language
-                    ,frt_nickname
-                    ,nick_name_max
-                    ,frt_group
-                    ,is_frt_group  --专属
-                    ,min(dt) as dt_min
-                    ,max(dt) as dt_max
-                from frt_group
-                group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
-            ) c on a.dt>=c.dt_min and if(a.dt<=c.dt_max,a.dt<=c.dt_max,(a.dt<c.end_date and a.dt>c.dt_max)) and p.project_code=c.product and p.code_id=c.code_id and p.source2=c.source2
-            where b.code_id is null or b.adset_num=0
-        ) x
-        where rn=1
-    )
-
-    -- 昨日基建 + 兜底数据
-    , r as (
-        select * from z6
-        union all
-        select * from frt_group
-    )
-
- select * from r;
+            -- 日期
+            select distinct dt
+            from frt_group
+        ) a
+        -- 测试排期
+        join (
+            select code_id
+                ,if(project_code=1,'海阅','海剧') as project_code
+                ,case when source_chl in ('fb') then 'meta'
+                    when source_chl in('tt') then 'tiktok'
+                    else source_chl end as source2
+                ,update_time
+                ,begin_date
+                ,end_date
+                ,code_stage
+                ,code_lv
+                ,test_status
+            from ads.ads_srsv_ads_marketing_plan_view
+            where is_del=0 and source_chl <>''
+        ) p on a.dt>=p.begin_date and a.dt<=p.end_date and if(days_diff(a.dt,p.update_time)>=0,code_lv,'') not in('B') and if(days_diff(a.dt,p.update_time)>=0,test_status,0) <2  -- 进阶日前一天数据
+        -- 书籍每日花费
+        left join (
+            select product
+                ,dt
+                ,source2
+                ,code_id
+                ,sum(adset_num) as adset_num
+            from frt_group
+            group by 1,2,3,4
+        ) b on a.dt=b.dt and p.project_code=b.product and p.code_id=b.code_id and p.source2=b.source2
+        join (
+            select product
+                ,source2
+                ,code_id
+                ,code_stage
+                ,code_lv
+                ,test_status
+                ,begin_date
+                ,end_date
+                ,book_code
+                ,languageid
+                ,current_language
+                ,frt_nickname
+                ,nick_name_max
+                ,frt_group
+                ,is_frt_group  --专属
+                ,min(dt) as dt_min
+                ,max(dt) as dt_max
+            from frt_group
+            group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+        ) c on a.dt>=c.dt_min and if(a.dt<=c.dt_max,a.dt<=c.dt_max,(a.dt<c.end_date and a.dt>c.dt_max)) and p.project_code=c.product and p.code_id=c.code_id and p.source2=c.source2
+        where b.code_id is null or b.adset_num=0
+    ) x
+    where rn=1
+)
+-- 昨日基建 + 兜底数据
+, r as (
+    select * from z6
+    union all
+    select * from frt_group
+)
+select * from r
+;

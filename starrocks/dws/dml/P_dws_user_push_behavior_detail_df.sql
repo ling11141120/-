@@ -25,7 +25,7 @@ with p_info as (
           ,case when task_type = '3' then '章节更新'
                 else '-'
             end        as push_name
-      from ads.ads_sr_push_message_log    as a1
+      from dwd.dwd_market_sr_push_msg_log_di    as a1
      where a1.dt >= '${bf_9_dt}'
        and a1.dt <= '${bf_1_dt}'
        and task_type <> 4
@@ -60,19 +60,18 @@ with p_info as (
           ,a1.product_id
           ,a1.task_type
           ,a1.msg_on
-      from (select date(b1.update_time)    as dt
+      from (select b1.dt
                   ,b1.id
                   ,b1.batch_id             as push_id
                   ,b1.user_id              as user_id
                   ,b1.product_id
                   ,b1.task_type
                   ,2                       as msg_on
-              from ads.ads_sr_push_message_log    as b1
-             where b1.state = 3
+              from dwd.dwd_market_sr_push_msg_log_di    as b1
+             where b1.is_success = 1
                and b1.product_id not in (6833, 6883)
                and b1.dt >= '${bf_2_dt}'
                and b1.dt <= '${bf_1_dt}'
-               and date(b1.update_time) = '${bf_1_dt}'
                and user_id is not null
                and batch_id is not null
            )    as a1
@@ -106,19 +105,17 @@ with p_info as (
                        and date(event_time) >= '${bf_9_dt}'
                        and date(event_time) <= '${bf_1_dt}'
                    )    as b1
-              left join (select message_id
+              left join (select err_msg_id as message_id
                                ,batch_id
                                ,user_id
                                ,product_id
                                ,task_type
                                ,split_part(token, ':', 1) as instance_id
                                ,dt
-                           from ads.ads_sr_push_message_log
+                           from dwd.dwd_market_sr_push_msg_log_di
                           where dt >= '${bf_15_dt}'
                             and dt <= '${bf_1_dt}'
-                            and update_time >= '${bf_15_dt}'
-                            and update_time <= '${bf_1_dt}'
-                            and state = 3
+                            and is_success = 1
                             and product_id not in (6833, 6883)
                           group by 1,2,3,4,5,6,7
                         )   as b2

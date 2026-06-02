@@ -1,2 +1,62 @@
-CREATE VIEW `ads_short_video_series_view` (`series_code` COMMENT "短剧编号", `series_id` COMMENT "id", `language` COMMENT "语言", `series_name` COMMENT "名称", `description` COMMENT "短剧简介", `coverurl` COMMENT "封面", `create_time` COMMENT "创建时间", `update_time` COMMENT "修改时间", `create_user` COMMENT "上传人", `publish_status` COMMENT "上架状态(1上架 2下架)", `publishe_dat` COMMENT "上架时间", `unpublishe_dat` COMMENT "下架时间", `last_epis` COMMENT "更新至第几集", `all_epis` COMMENT "总集数", `pay_epis_from` COMMENT "收费起始集数", `is_delete` COMMENT "是否删除", `producer` COMMENT "制片人", `recommend` COMMENT "推荐文案", `source_series_id` COMMENT "源语言短剧", `price` COMMENT "单集价格（分）", `ending` COMMENT "完结状态（1连载中 2已完结）", `series_name_key` COMMENT "剧集名称key", `description_key` COMMENT "短剧简介转换key", `recommend_key` COMMENT "推荐文案转换key", `series_level` COMMENT "等级 1.S 2.A 3.B 4.C", `sr_updatetime` COMMENT "ods同步时间", `sr_createtime` COMMENT "starrocks数据注入时间") AS (SELECT `ods`.`b`.`seriescode` AS `series_code`, `ods`.`a`.`seriesid` AS `series_id`, `ods`.`a`.`language`, `ods`.`a`.`seriesname` AS `series_name`, `ods`.`a`.`description`, `ods`.`a`.`coverurl`, `ods`.`a`.`createtime` AS `create_time`, `ods`.`a`.`updatetime` AS `update_time`, `ods`.`a`.`createuser` AS `create_user`, `ods`.`a`.`publishstatus` AS `publish_status`, `ods`.`a`.`publishedat` AS `publishe_dat`, `ods`.`a`.`unpublishedat` AS `unpublishe_dat`, `ods`.`a`.`lastepis` AS `last_epis`, `ods`.`a`.`allepis` AS `all_epis`, `ods`.`a`.`payepisfrom` AS `pay_epis_from`, `ods`.`a`.`isdelete` AS `is_delete`, `ods`.`a`.`producer`, `ods`.`a`.`recommend`, `ods`.`a`.`sourceseriesid` AS `source_series_id`, `ods`.`a`.`price`, `ods`.`a`.`ending`, `ods`.`a`.`seriesnamekey` AS `series_name_key`, `ods`.`a`.`descriptionkey` AS `description_key`, `ods`.`a`.`recommendkey` AS `recommend_key`, `ods`.`a`.`SeriesLevel` AS `series_level`, `ods`.`a`.`sr_updatetime`, `ods`.`a`.`sr_createtime`
-FROM `ods`.`ods_tidb_short_video_series` AS `a` LEFT OUTER JOIN `ods`.`ods_tidb_short_video_admin_source_series` AS `b` ON `ods`.`a`.`sourceseriesid` = `ods`.`b`.`seriesid`);
+create or replace view ads.ads_short_video_series_view (
+     series_code      comment "短剧编号"
+    ,series_id        comment "id"
+    ,language         comment "语言"
+    ,series_name      comment "名称"
+    ,description      comment "短剧简介"
+    ,coverurl         comment "封面"
+    ,create_time      comment "创建时间"
+    ,update_time      comment "修改时间"
+    ,create_user      comment "上传人"
+    ,publish_status   comment "上架状态(1上架 2下架)"
+    ,publishe_dat     comment "上架时间"
+    ,unpublishe_dat   comment "下架时间"
+    ,last_epis        comment "更新至第几集"
+    ,all_epis         comment "总集数"
+    ,pay_epis_from    comment "收费起始集数"
+    ,is_delete        comment "是否删除"
+    ,producer         comment "制片人"
+    ,recommend        comment "推荐文案"
+    ,source_series_id comment "源语言短剧"
+    ,price            comment "单集价格（分）"
+    ,ending           comment "完结状态（1连载中 2已完结）"
+    ,series_name_key  comment "剧集名称key"
+    ,description_key  comment "短剧简介转换key"
+    ,recommend_key    comment "推荐文案转换key"
+    ,series_level     comment "等级 1.s 2.a 3.b 4.c"
+    ,sr_updatetime    comment "ods同步时间"
+    ,sr_createtime    comment "starrocks数据注入时间"
+)
+as
+select b.seriescode      as series_code
+     , a.seriesid        as series_id
+     , a.language
+     , a.seriesname      as series_name
+     , a.description
+     , a.coverurl
+     , a.createtime      as create_time
+     , a.updatetime      as update_time
+     , a.createuser      as create_user
+     , a.publishstatus   as publish_status
+     , a.publishedat     as publishe_dat
+     , a.unpublishedat   as unpublishe_dat
+     , a.lastepis        as last_epis
+     , a.allepis         as all_epis
+     , a.payepisfrom     as pay_epis_from
+     , a.isdelete        as is_delete
+     , a.producer
+     , a.recommend
+     , a.sourceseriesid  as source_series_id
+     , a.price
+     , a.ending
+     , a.seriesnamekey   as series_name_key
+     , a.descriptionkey  as description_key
+     , a.recommendkey    as recommend_key
+     , a.SeriesLevel     as series_level
+     , a.sr_updatetime
+     , a.sr_createtime
+  from ods.ods_tidb_short_video_series                   as a
+  left join ods.ods_tidb_short_video_admin_source_series as b
+    on a.sourceseriesid = b.seriesid
+ where a.AppType = 1
+;
