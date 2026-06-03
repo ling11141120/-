@@ -1,5 +1,5 @@
 ----------------------------------------------------------------
--- 程序功能： 
+-- 程序功能：海剧-用户订阅状态日表
 -- 程序名： P_ads_sv_user_subscribe_status_di
 -- 目标表： ads.ads_sv_user_subscribe_status_di
 -- 负责人： tyg
