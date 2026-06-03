@@ -75,3 +75,32 @@
 - [AI] 更新 PROGRAM.md / STATUS.yml / memory
 - [人工] 确认 left(a.code_value, 2) 无空格为正确格式
 - [人工] 确认 diff 318 行状态可接受，审批收尾
+
+---
+## dev+tyg+RTM-41982+push推送用户订阅状态功能-短剧系统 | 负责人: tyg | 周期: 2026-05-29 ~ 2026-06-03
+
+### 2026-05-29
+- [人工] 与业务方沟通海剧push推送用户订阅状态功能需求，确认拆两张表方案（频控表+订阅状态表）
+- [人工] 确认频控查询模式（accountId+pushId点查）和订阅状态查询模式（只查最近几天）
+
+### 2026-06-01
+- [AI] 扫描数仓现有 ads_sv_ 表结构，确定高频通用维度字段（core/mt/lang_id/reg_country）
+- [AI] 编写 ads_sv_user_push_click_di 和 ads_sv_user_subscribe_status_di DDL 建表语句
+- [AI] 编写 accountinfo / commandtask 数据源测试探查SQL
+- [人工] 确认 isdelete/hasdelete 过滤口径
+- [人工] 数据量探查验证
+
+### 2026-06-02
+- [AI] 编写 P_ads_sv_user_push_click_di DML（max聚合取最新点击初版）
+- [AI] 编写 P_ads_sv_user_subscribe_status_di DML（三部分union：即将到期+已过期+续费失败）
+- [AI] 输出测试验证SQL文件（频控/订阅状态各2份）
+- [人工] 与业务方确认 is_expiring_soon（3日内到期）和 is_expired（昨日过期）口径
+- [人工] 确认续费失败 Args.UserId 关联 accountinfo 补全维度逻辑
+
+### 2026-06-03
+- [人工] 排查 is_expired 数据量差距根因（isdelete过滤导致，仅hasdelete=0）
+- [AI] 修正 DML 过滤条件，治理 select * 写法，规范化子查询别名和表别名
+- [AI] 补充主键非空过滤（id is not null、identity_user_id/push_id is not null）
+- [AI] 生成 MySQL 版本 DDL，补充普通索引（index_user_id、index_expire_time等）
+- [AI] 使用项目 sql-codeformat 脚本格式化四个 SQL 文件
+- [人工] 测试环境建表验证，DML 单天数据验证通过
