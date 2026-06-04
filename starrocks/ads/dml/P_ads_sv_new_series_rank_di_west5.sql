@@ -411,7 +411,7 @@ period_cfg as (
     , (
       case
         when total_income is null then 10
-        when total_income_pct >= 0.95 then 200
+        when total_income_pct >= 0.95 then 400
         when total_income_pct >= 0.80 then 100
         when total_income_pct >= 0.60 then 60
         when total_income_pct >= 0.40 then 40
