@@ -307,7 +307,7 @@ select '${bf_1_dt}'                                 as dt                  -- æ—
   left join tag                                                    as a5
     on a1.book_id = a5.bookid
    and a1.product_id = a5.product_id
-  left join ods_tidb_readernovel_tidb_en_novel_bookcategory_new    as a6
+  left join ods.ods_tidb_readernovel_tidb_en_novel_bookcategory_new    as a6
     on a1.NewCID = a6.CID
    and a6.productid in(3366,3333)
    and a1.product_id = a6.productid
