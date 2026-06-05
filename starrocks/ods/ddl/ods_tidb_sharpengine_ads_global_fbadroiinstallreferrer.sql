@@ -1,544 +1,474 @@
-CREATE TABLE `ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer` (
-  `Id` bigint(20) NOT NULL COMMENT "",
-  `dt` date NOT NULL COMMENT "createtime 分区",
-  `AdId` varchar(250) NULL COMMENT "",
-  `CreateTime` varchar(50) NULL COMMENT "",
-  `PayList` varchar(65533) NULL COMMENT "",
-  `RegNum` int(11) NULL COMMENT "",
-  `Impressions` bigint(20) NULL COMMENT "曝光量",
-  `LinkClicks` bigint(20) NULL COMMENT "点击量",
-  `Installs` bigint(20) NULL COMMENT "安装量",
-  `CostAmount` decimal(10, 2) NULL COMMENT "",
-  `ProductId` int(11) NULL COMMENT "",
-  `PayNum` int(11) NULL COMMENT "",
-  `UpdateTime` datetime NULL COMMENT "",
-  `PayListByDays` varchar(65533) NULL COMMENT "",
-  `CheckSum` bigint(20) NULL COMMENT "",
-  `LoginNum2` int(11) NULL COMMENT "",
-  `LoginNum3` int(11) NULL COMMENT "",
-  `LoginNum7` int(11) NULL COMMENT "",
-  `Core` int(11) NULL COMMENT "",
-  `Mt` int(11) NULL COMMENT "",
-  `FbAccount` varchar(50) NULL COMMENT "",
-  `AdSetId` varchar(255) NULL COMMENT "",
-  `AdCampId` varchar(255) NULL COMMENT "",
-  `DevNum` int(11) NULL COMMENT "",
-  `GroupId` int(11) NULL COMMENT "",
-  `SourceChl` varchar(128) NULL COMMENT "",
-  `Chl2` varchar(128) NULL COMMENT "",
-  `RowVersion` bigint(20) NULL COMMENT "",
-  `CurrentLanguage2` int(11) NULL COMMENT "",
-  `AdsQuality` int(11) NULL DEFAULT "0" COMMENT "",
-  `Updater` varchar(255) NULL COMMENT "",
-  `Day0Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day1Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day2Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day3Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day4Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day5Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day6Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day7Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day8Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day9Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day10Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day11Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day12Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day13Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day14Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day15Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day16Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day17Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day18Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day19Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day20Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day21Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day22Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day23Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day24Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day25Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day26Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day27Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day28Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day29Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day30Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day31Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day32Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day33Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day34Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day35Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day36Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day37Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day38Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day39Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day40Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day41Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day42Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day43Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day44Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day45Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day46Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day47Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day48Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day49Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day50Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day51Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day52Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day53Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day54Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day55Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day56Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day57Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day58Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day59Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day60Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day61Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day62Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day63Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day64Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day65Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day66Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day67Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day68Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day69Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day70Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day71Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day72Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day73Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day74Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day75Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day76Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day77Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day78Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day79Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day80Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day81Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day82Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day83Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day84Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day85Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day86Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day87Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day88Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day89Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day90Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day120Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day150Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day180Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day210Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day240Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day270Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day300Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day330Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day360Amount` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day0AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day1AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day2AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day3AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day4AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day5AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day6AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day7AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day8AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day9AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day10AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day11AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day12AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day13AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day14AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day15AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day16AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day17AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day18AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day19AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day20AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day21AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day22AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day23AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day24AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day25AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day26AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day27AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day28AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day29AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day30AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day31AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day32AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day33AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day34AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day35AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day36AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day37AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day38AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day39AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day40AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day41AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day42AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day43AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day44AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day45AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day46AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day47AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day48AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day49AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day50AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day51AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day52AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day53AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day54AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day55AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day56AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day57AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day58AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day59AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day60AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day61AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day62AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day63AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day64AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day65AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day66AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day67AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day68AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day69AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day70AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day71AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day72AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day73AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day74AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day75AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day76AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day77AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day78AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day79AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day80AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day81AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day82AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day83AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day84AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day85AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day86AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day87AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day88AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day89AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day90AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day120AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day150AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day180AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day210AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day240AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day270AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day300AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day330AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day360AmountByAd` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day0FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day1FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day2FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day3FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day4FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day5FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day6FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day7FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day8FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day9FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day10FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day11FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day12FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day13FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day14FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day15FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day16FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day17FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day18FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day19FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day20FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day21FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day22FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day23FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day24FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day25FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day26FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day27FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day28FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day29FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day30FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day31FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day32FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day33FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day34FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day35FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day36FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day37FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day38FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day39FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day40FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day41FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day42FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day43FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day44FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day45FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day46FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day47FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day48FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day49FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day50FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day51FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day52FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day53FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day54FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day55FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day56FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day57FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day58FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day59FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day60FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day61FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day62FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day63FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day64FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day65FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day66FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day67FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day68FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day69FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day70FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day71FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day72FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day73FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day74FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day75FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day76FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day77FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day78FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day79FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day80FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day81FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day82FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day83FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day84FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day85FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day86FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day87FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day88FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day89FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day90FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day120FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day150FirstPayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day180FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day210FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day240FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day270FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day300FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day330FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day360FirstPayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day0PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day1PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day2PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day3PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day4PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day5PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day6PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day7PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day8PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day9PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day10PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day11PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day12PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day13PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day14PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day15PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day16PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day17PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day18PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day19PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day20PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day21PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day22PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day23PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day24PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day25PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day26PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day27PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day28PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day29PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day30PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day31PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day32PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day33PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day34PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day35PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day36PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day37PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day38PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day39PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day40PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day41PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day42PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day43PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day44PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day45PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day46PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day47PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day48PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day49PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day50PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day51PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day52PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day53PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day54PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day55PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day56PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day57PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day58PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day59PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day60PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day61PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day62PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day63PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day64PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day65PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day66PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day67PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day68PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day69PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day70PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day71PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day72PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day73PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day74PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day75PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day76PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day77PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day78PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day79PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day80PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day81PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day82PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day83PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day84PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day85PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day86PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day87PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day88PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day89PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day90PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day120PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day150PayNum` int(11) NULL DEFAULT "0" COMMENT "",
-  `Day180PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day210PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day240PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day270PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day300PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day330PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `Day360PayNum` decimal(10, 4) NULL DEFAULT "0" COMMENT "",
-  `PayNumByAt` int(11) NULL COMMENT "",
-  `PayUserByAt` int(11) NULL COMMENT "",
-  `Day0FirstPayTimes` int(11) NULL COMMENT "",
-  `sr_createtime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据注入时间",
-  `sr_updatetime` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "starrocks数据更新时间",
-  INDEX idx_ProductId (`ProductId`) USING BITMAP COMMENT '语言ID索引'
-) ENGINE=OLAP 
-PRIMARY KEY(`Id`, `dt`)
-COMMENT "OLAP"
-PARTITION BY RANGE(`dt`)
-(PARTITION p201909 VALUES [("2019-09-01"), ("2019-10-01")),
-PARTITION p201910 VALUES [("2019-10-01"), ("2019-11-01")),
-PARTITION p201911 VALUES [("2019-11-01"), ("2019-12-01")),
-PARTITION p201912 VALUES [("2019-12-01"), ("2020-01-01")),
-PARTITION p202001 VALUES [("2020-01-01"), ("2020-02-01")),
-PARTITION p202002 VALUES [("2020-02-01"), ("2020-03-01")),
-PARTITION p202003 VALUES [("2020-03-01"), ("2020-04-01")),
-PARTITION p202004 VALUES [("2020-04-01"), ("2020-05-01")),
-PARTITION p202005 VALUES [("2020-05-01"), ("2020-06-01")),
-PARTITION p202006 VALUES [("2020-06-01"), ("2020-07-01")),
-PARTITION p202007 VALUES [("2020-07-01"), ("2020-08-01")),
-PARTITION p202008 VALUES [("2020-08-01"), ("2020-09-01")),
-PARTITION p202009 VALUES [("2020-09-01"), ("2020-10-01")),
-PARTITION p202010 VALUES [("2020-10-01"), ("2020-11-01")),
-PARTITION p202011 VALUES [("2020-11-01"), ("2020-12-01")),
-PARTITION p202012 VALUES [("2020-12-01"), ("2021-01-01")),
-PARTITION p202101 VALUES [("2021-01-01"), ("2021-02-01")),
-PARTITION p202102 VALUES [("2021-02-01"), ("2021-03-01")),
-PARTITION p202103 VALUES [("2021-03-01"), ("2021-04-01")),
-PARTITION p202104 VALUES [("2021-04-01"), ("2021-05-01")),
-PARTITION p202105 VALUES [("2021-05-01"), ("2021-06-01")),
-PARTITION p202106 VALUES [("2021-06-01"), ("2021-07-01")),
-PARTITION p202107 VALUES [("2021-07-01"), ("2021-08-01")),
-PARTITION p202108 VALUES [("2021-08-01"), ("2021-09-01")),
-PARTITION p202109 VALUES [("2021-09-01"), ("2021-10-01")),
-PARTITION p202110 VALUES [("2021-10-01"), ("2021-11-01")),
-PARTITION p202111 VALUES [("2021-11-01"), ("2021-12-01")),
-PARTITION p202112 VALUES [("2021-12-01"), ("2022-01-01")),
-PARTITION p202201 VALUES [("2022-01-01"), ("2022-02-01")),
-PARTITION p202202 VALUES [("2022-02-01"), ("2022-03-01")),
-PARTITION p202203 VALUES [("2022-03-01"), ("2022-04-01")),
-PARTITION p202204 VALUES [("2022-04-01"), ("2022-05-01")),
-PARTITION p202205 VALUES [("2022-05-01"), ("2022-06-01")),
-PARTITION p202206 VALUES [("2022-06-01"), ("2022-07-01")),
-PARTITION p202207 VALUES [("2022-07-01"), ("2022-08-01")),
-PARTITION p202208 VALUES [("2022-08-01"), ("2022-09-01")),
-PARTITION p202209 VALUES [("2022-09-01"), ("2022-10-01")),
-PARTITION p202210 VALUES [("2022-10-01"), ("2022-11-01")),
-PARTITION p202211 VALUES [("2022-11-01"), ("2022-12-01")),
-PARTITION p202212 VALUES [("2022-12-01"), ("2023-01-01")),
-PARTITION p202301 VALUES [("2023-01-01"), ("2023-02-01")),
-PARTITION p202302 VALUES [("2023-02-01"), ("2023-03-01")),
-PARTITION p202303 VALUES [("2023-03-01"), ("2023-04-01")),
-PARTITION p202304 VALUES [("2023-04-01"), ("2023-05-01")),
-PARTITION p202305 VALUES [("2023-05-01"), ("2023-06-01")),
-PARTITION p202306 VALUES [("2023-06-01"), ("2023-07-01")),
-PARTITION p202307 VALUES [("2023-07-01"), ("2023-08-01")),
-PARTITION p202308 VALUES [("2023-08-01"), ("2023-09-01")),
-PARTITION p202309 VALUES [("2023-09-01"), ("2023-10-01")),
-PARTITION p202310 VALUES [("2023-10-01"), ("2023-11-01")),
-PARTITION p202311 VALUES [("2023-11-01"), ("2023-12-01")),
-PARTITION p202312 VALUES [("2023-12-01"), ("2024-01-01")),
-PARTITION p202401 VALUES [("2024-01-01"), ("2024-02-01")),
-PARTITION p202402 VALUES [("2024-02-01"), ("2024-03-01")),
-PARTITION p202403 VALUES [("2024-03-01"), ("2024-04-01")),
-PARTITION p202404 VALUES [("2024-04-01"), ("2024-05-01")),
-PARTITION p202405 VALUES [("2024-05-01"), ("2024-06-01")),
-PARTITION p202406 VALUES [("2024-06-01"), ("2024-07-01")),
-PARTITION p202407 VALUES [("2024-07-01"), ("2024-08-01")),
-PARTITION p202408 VALUES [("2024-08-01"), ("2024-09-01")),
-PARTITION p202409 VALUES [("2024-09-01"), ("2024-10-01")),
-PARTITION p202410 VALUES [("2024-10-01"), ("2024-11-01")),
-PARTITION p202411 VALUES [("2024-11-01"), ("2024-12-01")),
-PARTITION p202412 VALUES [("2024-12-01"), ("2025-01-01")),
-PARTITION p202501 VALUES [("2025-01-01"), ("2025-02-01")),
-PARTITION p202502 VALUES [("2025-02-01"), ("2025-03-01")),
-PARTITION p202503 VALUES [("2025-03-01"), ("2025-04-01")),
-PARTITION p202504 VALUES [("2025-04-01"), ("2025-05-01")),
-PARTITION p202505 VALUES [("2025-05-01"), ("2025-06-01")),
-PARTITION p202506 VALUES [("2025-06-01"), ("2025-07-01")),
-PARTITION p202507 VALUES [("2025-07-01"), ("2025-08-01")),
-PARTITION p202508 VALUES [("2025-08-01"), ("2025-09-01")),
-PARTITION p202509 VALUES [("2025-09-01"), ("2025-10-01")),
-PARTITION p202510 VALUES [("2025-10-01"), ("2025-11-01")),
-PARTITION p202511 VALUES [("2025-11-01"), ("2025-12-01")),
-PARTITION p202512 VALUES [("2025-12-01"), ("2026-01-01")),
-PARTITION p202601 VALUES [("2026-01-01"), ("2026-02-01")),
-PARTITION p202602 VALUES [("2026-02-01"), ("2026-03-01")),
-PARTITION p202603 VALUES [("2026-03-01"), ("2026-04-01")),
-PARTITION p202604 VALUES [("2026-04-01"), ("2026-05-01")),
-PARTITION p202605 VALUES [("2026-05-01"), ("2026-06-01")),
-PARTITION p202606 VALUES [("2026-06-01"), ("2026-07-01")),
-PARTITION p202607 VALUES [("2026-07-01"), ("2026-08-01")),
-PARTITION p202608 VALUES [("2026-08-01"), ("2026-09-01")))
-DISTRIBUTED BY HASH(`Id`) BUCKETS 1 
-PROPERTIES (
-"replication_num" = "3",
-"bloom_filter_columns" = "AdId, CreateTime",
-"dynamic_partition.enable" = "true",
-"dynamic_partition.time_unit" = "Month",
-"dynamic_partition.time_zone" = "Asia/Shanghai",
-"dynamic_partition.start" = "-2147483648",
-"dynamic_partition.end" = "3",
-"dynamic_partition.prefix" = "p",
-"dynamic_partition.buckets" = "1",
-"dynamic_partition.history_partition_num" = "0",
-"dynamic_partition.start_day_of_month" = "1",
-"in_memory" = "false",
-"enable_persistent_index" = "true",
-"replicated_storage" = "true",
-"compression" = "LZ4"
-);
+----------------------------------------------------------------
+-- 目标表：ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer
+-- 来源实例：new_tidb_source
+-- 来源表：sharpengine_ads_global.FbAdRoiInstallReferrer
+-- 来源负责人：
+-- 开发人：xjc
+-- 开发日期：2026-06-01
+----------------------------------------------------------------
+
+create table if not exists ods.ods_tidb_sharpengine_ads_global_fbadroiinstallreferrer (
+     Id                bigint         not null                  comment ""
+    ,dt                date           not null                  comment "createtime 分区"
+    ,AdId              varchar(250)                             comment ""
+    ,CreateTime        varchar(50)                              comment ""
+    ,PayList           string                                   comment ""
+    ,RegNum            int                                      comment ""
+    ,Impressions       bigint                                   comment "曝光量"
+    ,LinkClicks        bigint                                   comment "点击量"
+    ,Installs          bigint                                   comment "安装量"
+    ,CostAmount        decimal(10, 2)                           comment ""
+    ,ProductId         int                                      comment ""
+    ,PayNum            int                                      comment ""
+    ,UpdateTime        datetime                                 comment ""
+    ,PayListByDays     string                                   comment ""
+    ,CheckSum          bigint                                   comment ""
+    ,LoginNum2         int                                      comment ""
+    ,LoginNum3         int                                      comment ""
+    ,LoginNum7         int                                      comment ""
+    ,Core              int                                      comment ""
+    ,Mt                int                                      comment ""
+    ,FbAccount         varchar(50)                              comment ""
+    ,AdSetId           varchar(255)                             comment ""
+    ,AdCampId          varchar(255)                             comment ""
+    ,DevNum            int                                      comment ""
+    ,GroupId           int                                      comment ""
+    ,SourceChl         varchar(128)                             comment ""
+    ,Chl2              varchar(128)                             comment ""
+    ,RowVersion        bigint                                   comment ""
+    ,CurrentLanguage2  int                                      comment ""
+    ,AdsQuality        int            default "0"               comment ""
+    ,Updater           varchar(255)                             comment ""
+    ,Day0Amount        decimal(10, 4) default "0"               comment ""
+    ,Day1Amount        decimal(10, 4) default "0"               comment ""
+    ,Day2Amount        decimal(10, 4) default "0"               comment ""
+    ,Day3Amount        decimal(10, 4) default "0"               comment ""
+    ,Day4Amount        decimal(10, 4) default "0"               comment ""
+    ,Day5Amount        decimal(10, 4) default "0"               comment ""
+    ,Day6Amount        decimal(10, 4) default "0"               comment ""
+    ,Day7Amount        decimal(10, 4) default "0"               comment ""
+    ,Day8Amount        decimal(10, 4) default "0"               comment ""
+    ,Day9Amount        decimal(10, 4) default "0"               comment ""
+    ,Day10Amount       decimal(10, 4) default "0"               comment ""
+    ,Day11Amount       decimal(10, 4) default "0"               comment ""
+    ,Day12Amount       decimal(10, 4) default "0"               comment ""
+    ,Day13Amount       decimal(10, 4) default "0"               comment ""
+    ,Day14Amount       decimal(10, 4) default "0"               comment ""
+    ,Day15Amount       decimal(10, 4) default "0"               comment ""
+    ,Day16Amount       decimal(10, 4) default "0"               comment ""
+    ,Day17Amount       decimal(10, 4) default "0"               comment ""
+    ,Day18Amount       decimal(10, 4) default "0"               comment ""
+    ,Day19Amount       decimal(10, 4) default "0"               comment ""
+    ,Day20Amount       decimal(10, 4) default "0"               comment ""
+    ,Day21Amount       decimal(10, 4) default "0"               comment ""
+    ,Day22Amount       decimal(10, 4) default "0"               comment ""
+    ,Day23Amount       decimal(10, 4) default "0"               comment ""
+    ,Day24Amount       decimal(10, 4) default "0"               comment ""
+    ,Day25Amount       decimal(10, 4) default "0"               comment ""
+    ,Day26Amount       decimal(10, 4) default "0"               comment ""
+    ,Day27Amount       decimal(10, 4) default "0"               comment ""
+    ,Day28Amount       decimal(10, 4) default "0"               comment ""
+    ,Day29Amount       decimal(10, 4) default "0"               comment ""
+    ,Day30Amount       decimal(10, 4) default "0"               comment ""
+    ,Day31Amount       decimal(10, 4) default "0"               comment ""
+    ,Day32Amount       decimal(10, 4) default "0"               comment ""
+    ,Day33Amount       decimal(10, 4) default "0"               comment ""
+    ,Day34Amount       decimal(10, 4) default "0"               comment ""
+    ,Day35Amount       decimal(10, 4) default "0"               comment ""
+    ,Day36Amount       decimal(10, 4) default "0"               comment ""
+    ,Day37Amount       decimal(10, 4) default "0"               comment ""
+    ,Day38Amount       decimal(10, 4) default "0"               comment ""
+    ,Day39Amount       decimal(10, 4) default "0"               comment ""
+    ,Day40Amount       decimal(10, 4) default "0"               comment ""
+    ,Day41Amount       decimal(10, 4) default "0"               comment ""
+    ,Day42Amount       decimal(10, 4) default "0"               comment ""
+    ,Day43Amount       decimal(10, 4) default "0"               comment ""
+    ,Day44Amount       decimal(10, 4) default "0"               comment ""
+    ,Day45Amount       decimal(10, 4) default "0"               comment ""
+    ,Day46Amount       decimal(10, 4) default "0"               comment ""
+    ,Day47Amount       decimal(10, 4) default "0"               comment ""
+    ,Day48Amount       decimal(10, 4) default "0"               comment ""
+    ,Day49Amount       decimal(10, 4) default "0"               comment ""
+    ,Day50Amount       decimal(10, 4) default "0"               comment ""
+    ,Day51Amount       decimal(10, 4) default "0"               comment ""
+    ,Day52Amount       decimal(10, 4) default "0"               comment ""
+    ,Day53Amount       decimal(10, 4) default "0"               comment ""
+    ,Day54Amount       decimal(10, 4) default "0"               comment ""
+    ,Day55Amount       decimal(10, 4) default "0"               comment ""
+    ,Day56Amount       decimal(10, 4) default "0"               comment ""
+    ,Day57Amount       decimal(10, 4) default "0"               comment ""
+    ,Day58Amount       decimal(10, 4) default "0"               comment ""
+    ,Day59Amount       decimal(10, 4) default "0"               comment ""
+    ,Day60Amount       decimal(10, 4) default "0"               comment ""
+    ,Day61Amount       decimal(10, 4) default "0"               comment ""
+    ,Day62Amount       decimal(10, 4) default "0"               comment ""
+    ,Day63Amount       decimal(10, 4) default "0"               comment ""
+    ,Day64Amount       decimal(10, 4) default "0"               comment ""
+    ,Day65Amount       decimal(10, 4) default "0"               comment ""
+    ,Day66Amount       decimal(10, 4) default "0"               comment ""
+    ,Day67Amount       decimal(10, 4) default "0"               comment ""
+    ,Day68Amount       decimal(10, 4) default "0"               comment ""
+    ,Day69Amount       decimal(10, 4) default "0"               comment ""
+    ,Day70Amount       decimal(10, 4) default "0"               comment ""
+    ,Day71Amount       decimal(10, 4) default "0"               comment ""
+    ,Day72Amount       decimal(10, 4) default "0"               comment ""
+    ,Day73Amount       decimal(10, 4) default "0"               comment ""
+    ,Day74Amount       decimal(10, 4) default "0"               comment ""
+    ,Day75Amount       decimal(10, 4) default "0"               comment ""
+    ,Day76Amount       decimal(10, 4) default "0"               comment ""
+    ,Day77Amount       decimal(10, 4) default "0"               comment ""
+    ,Day78Amount       decimal(10, 4) default "0"               comment ""
+    ,Day79Amount       decimal(10, 4) default "0"               comment ""
+    ,Day80Amount       decimal(10, 4) default "0"               comment ""
+    ,Day81Amount       decimal(10, 4) default "0"               comment ""
+    ,Day82Amount       decimal(10, 4) default "0"               comment ""
+    ,Day83Amount       decimal(10, 4) default "0"               comment ""
+    ,Day84Amount       decimal(10, 4) default "0"               comment ""
+    ,Day85Amount       decimal(10, 4) default "0"               comment ""
+    ,Day86Amount       decimal(10, 4) default "0"               comment ""
+    ,Day87Amount       decimal(10, 4) default "0"               comment ""
+    ,Day88Amount       decimal(10, 4) default "0"               comment ""
+    ,Day89Amount       decimal(10, 4) default "0"               comment ""
+    ,Day90Amount       decimal(10, 4) default "0"               comment ""
+    ,Day120Amount      decimal(10, 4) default "0"               comment ""
+    ,Day150Amount      decimal(10, 4) default "0"               comment ""
+    ,Day180Amount      decimal(10, 4) default "0"               comment ""
+    ,Day210Amount      decimal(10, 4) default "0"               comment ""
+    ,Day240Amount      decimal(10, 4) default "0"               comment ""
+    ,Day270Amount      decimal(10, 4) default "0"               comment ""
+    ,Day300Amount      decimal(10, 4) default "0"               comment ""
+    ,Day330Amount      decimal(10, 4) default "0"               comment ""
+    ,Day360Amount      decimal(10, 4) default "0"               comment ""
+    ,Day0AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day1AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day2AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day3AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day4AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day5AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day6AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day7AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day8AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day9AmountByAd    decimal(10, 4) default "0"               comment ""
+    ,Day10AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day11AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day12AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day13AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day14AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day15AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day16AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day17AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day18AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day19AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day20AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day21AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day22AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day23AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day24AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day25AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day26AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day27AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day28AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day29AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day30AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day31AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day32AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day33AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day34AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day35AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day36AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day37AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day38AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day39AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day40AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day41AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day42AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day43AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day44AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day45AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day46AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day47AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day48AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day49AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day50AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day51AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day52AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day53AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day54AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day55AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day56AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day57AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day58AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day59AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day60AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day61AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day62AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day63AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day64AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day65AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day66AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day67AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day68AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day69AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day70AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day71AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day72AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day73AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day74AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day75AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day76AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day77AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day78AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day79AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day80AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day81AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day82AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day83AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day84AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day85AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day86AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day87AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day88AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day89AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day90AmountByAd   decimal(10, 4) default "0"               comment ""
+    ,Day120AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day150AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day180AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day210AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day240AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day270AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day300AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day330AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day360AmountByAd  decimal(10, 4) default "0"               comment ""
+    ,Day0FirstPayNum   int            default "0"               comment ""
+    ,Day1FirstPayNum   int            default "0"               comment ""
+    ,Day2FirstPayNum   int            default "0"               comment ""
+    ,Day3FirstPayNum   int            default "0"               comment ""
+    ,Day4FirstPayNum   int            default "0"               comment ""
+    ,Day5FirstPayNum   int            default "0"               comment ""
+    ,Day6FirstPayNum   int            default "0"               comment ""
+    ,Day7FirstPayNum   int            default "0"               comment ""
+    ,Day8FirstPayNum   int            default "0"               comment ""
+    ,Day9FirstPayNum   int            default "0"               comment ""
+    ,Day10FirstPayNum  int            default "0"               comment ""
+    ,Day11FirstPayNum  int            default "0"               comment ""
+    ,Day12FirstPayNum  int            default "0"               comment ""
+    ,Day13FirstPayNum  int            default "0"               comment ""
+    ,Day14FirstPayNum  int            default "0"               comment ""
+    ,Day15FirstPayNum  int            default "0"               comment ""
+    ,Day16FirstPayNum  int            default "0"               comment ""
+    ,Day17FirstPayNum  int            default "0"               comment ""
+    ,Day18FirstPayNum  int            default "0"               comment ""
+    ,Day19FirstPayNum  int            default "0"               comment ""
+    ,Day20FirstPayNum  int            default "0"               comment ""
+    ,Day21FirstPayNum  int            default "0"               comment ""
+    ,Day22FirstPayNum  int            default "0"               comment ""
+    ,Day23FirstPayNum  int            default "0"               comment ""
+    ,Day24FirstPayNum  int            default "0"               comment ""
+    ,Day25FirstPayNum  int            default "0"               comment ""
+    ,Day26FirstPayNum  int            default "0"               comment ""
+    ,Day27FirstPayNum  int            default "0"               comment ""
+    ,Day28FirstPayNum  int            default "0"               comment ""
+    ,Day29FirstPayNum  int            default "0"               comment ""
+    ,Day30FirstPayNum  int            default "0"               comment ""
+    ,Day31FirstPayNum  int            default "0"               comment ""
+    ,Day32FirstPayNum  int            default "0"               comment ""
+    ,Day33FirstPayNum  int            default "0"               comment ""
+    ,Day34FirstPayNum  int            default "0"               comment ""
+    ,Day35FirstPayNum  int            default "0"               comment ""
+    ,Day36FirstPayNum  int            default "0"               comment ""
+    ,Day37FirstPayNum  int            default "0"               comment ""
+    ,Day38FirstPayNum  int            default "0"               comment ""
+    ,Day39FirstPayNum  int            default "0"               comment ""
+    ,Day40FirstPayNum  int            default "0"               comment ""
+    ,Day41FirstPayNum  int            default "0"               comment ""
+    ,Day42FirstPayNum  int            default "0"               comment ""
+    ,Day43FirstPayNum  int            default "0"               comment ""
+    ,Day44FirstPayNum  int            default "0"               comment ""
+    ,Day45FirstPayNum  int            default "0"               comment ""
+    ,Day46FirstPayNum  int            default "0"               comment ""
+    ,Day47FirstPayNum  int            default "0"               comment ""
+    ,Day48FirstPayNum  int            default "0"               comment ""
+    ,Day49FirstPayNum  int            default "0"               comment ""
+    ,Day50FirstPayNum  int            default "0"               comment ""
+    ,Day51FirstPayNum  int            default "0"               comment ""
+    ,Day52FirstPayNum  int            default "0"               comment ""
+    ,Day53FirstPayNum  int            default "0"               comment ""
+    ,Day54FirstPayNum  int            default "0"               comment ""
+    ,Day55FirstPayNum  int            default "0"               comment ""
+    ,Day56FirstPayNum  int            default "0"               comment ""
+    ,Day57FirstPayNum  int            default "0"               comment ""
+    ,Day58FirstPayNum  int            default "0"               comment ""
+    ,Day59FirstPayNum  int            default "0"               comment ""
+    ,Day60FirstPayNum  int            default "0"               comment ""
+    ,Day61FirstPayNum  int            default "0"               comment ""
+    ,Day62FirstPayNum  int            default "0"               comment ""
+    ,Day63FirstPayNum  int            default "0"               comment ""
+    ,Day64FirstPayNum  int            default "0"               comment ""
+    ,Day65FirstPayNum  int            default "0"               comment ""
+    ,Day66FirstPayNum  int            default "0"               comment ""
+    ,Day67FirstPayNum  int            default "0"               comment ""
+    ,Day68FirstPayNum  int            default "0"               comment ""
+    ,Day69FirstPayNum  int            default "0"               comment ""
+    ,Day70FirstPayNum  int            default "0"               comment ""
+    ,Day71FirstPayNum  int            default "0"               comment ""
+    ,Day72FirstPayNum  int            default "0"               comment ""
+    ,Day73FirstPayNum  int            default "0"               comment ""
+    ,Day74FirstPayNum  int            default "0"               comment ""
+    ,Day75FirstPayNum  int            default "0"               comment ""
+    ,Day76FirstPayNum  int            default "0"               comment ""
+    ,Day77FirstPayNum  int            default "0"               comment ""
+    ,Day78FirstPayNum  int            default "0"               comment ""
+    ,Day79FirstPayNum  int            default "0"               comment ""
+    ,Day80FirstPayNum  int            default "0"               comment ""
+    ,Day81FirstPayNum  int            default "0"               comment ""
+    ,Day82FirstPayNum  int            default "0"               comment ""
+    ,Day83FirstPayNum  int            default "0"               comment ""
+    ,Day84FirstPayNum  int            default "0"               comment ""
+    ,Day85FirstPayNum  int            default "0"               comment ""
+    ,Day86FirstPayNum  int            default "0"               comment ""
+    ,Day87FirstPayNum  int            default "0"               comment ""
+    ,Day88FirstPayNum  int            default "0"               comment ""
+    ,Day89FirstPayNum  int            default "0"               comment ""
+    ,Day90FirstPayNum  int            default "0"               comment ""
+    ,Day120FirstPayNum int            default "0"               comment ""
+    ,Day150FirstPayNum int            default "0"               comment ""
+    ,Day180FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day210FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day240FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day270FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day300FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day330FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day360FirstPayNum decimal(10, 4) default "0"               comment ""
+    ,Day0PayNum        int            default "0"               comment ""
+    ,Day1PayNum        int            default "0"               comment ""
+    ,Day2PayNum        int            default "0"               comment ""
+    ,Day3PayNum        int            default "0"               comment ""
+    ,Day4PayNum        int            default "0"               comment ""
+    ,Day5PayNum        int            default "0"               comment ""
+    ,Day6PayNum        int            default "0"               comment ""
+    ,Day7PayNum        int            default "0"               comment ""
+    ,Day8PayNum        int            default "0"               comment ""
+    ,Day9PayNum        int            default "0"               comment ""
+    ,Day10PayNum       int            default "0"               comment ""
+    ,Day11PayNum       int            default "0"               comment ""
+    ,Day12PayNum       int            default "0"               comment ""
+    ,Day13PayNum       int            default "0"               comment ""
+    ,Day14PayNum       int            default "0"               comment ""
+    ,Day15PayNum       int            default "0"               comment ""
+    ,Day16PayNum       int            default "0"               comment ""
+    ,Day17PayNum       int            default "0"               comment ""
+    ,Day18PayNum       int            default "0"               comment ""
+    ,Day19PayNum       int            default "0"               comment ""
+    ,Day20PayNum       int            default "0"               comment ""
+    ,Day21PayNum       int            default "0"               comment ""
+    ,Day22PayNum       int            default "0"               comment ""
+    ,Day23PayNum       int            default "0"               comment ""
+    ,Day24PayNum       int            default "0"               comment ""
+    ,Day25PayNum       int            default "0"               comment ""
+    ,Day26PayNum       int            default "0"               comment ""
+    ,Day27PayNum       int            default "0"               comment ""
+    ,Day28PayNum       int            default "0"               comment ""
+    ,Day29PayNum       int            default "0"               comment ""
+    ,Day30PayNum       int            default "0"               comment ""
+    ,Day31PayNum       int            default "0"               comment ""
+    ,Day32PayNum       int            default "0"               comment ""
+    ,Day33PayNum       int            default "0"               comment ""
+    ,Day34PayNum       int            default "0"               comment ""
+    ,Day35PayNum       int            default "0"               comment ""
+    ,Day36PayNum       int            default "0"               comment ""
+    ,Day37PayNum       int            default "0"               comment ""
+    ,Day38PayNum       int            default "0"               comment ""
+    ,Day39PayNum       int            default "0"               comment ""
+    ,Day40PayNum       int            default "0"               comment ""
+    ,Day41PayNum       int            default "0"               comment ""
+    ,Day42PayNum       int            default "0"               comment ""
+    ,Day43PayNum       int            default "0"               comment ""
+    ,Day44PayNum       int            default "0"               comment ""
+    ,Day45PayNum       int            default "0"               comment ""
+    ,Day46PayNum       int            default "0"               comment ""
+    ,Day47PayNum       int            default "0"               comment ""
+    ,Day48PayNum       int            default "0"               comment ""
+    ,Day49PayNum       int            default "0"               comment ""
+    ,Day50PayNum       int            default "0"               comment ""
+    ,Day51PayNum       int            default "0"               comment ""
+    ,Day52PayNum       int            default "0"               comment ""
+    ,Day53PayNum       int            default "0"               comment ""
+    ,Day54PayNum       int            default "0"               comment ""
+    ,Day55PayNum       int            default "0"               comment ""
+    ,Day56PayNum       int            default "0"               comment ""
+    ,Day57PayNum       int            default "0"               comment ""
+    ,Day58PayNum       int            default "0"               comment ""
+    ,Day59PayNum       int            default "0"               comment ""
+    ,Day60PayNum       int            default "0"               comment ""
+    ,Day61PayNum       int            default "0"               comment ""
+    ,Day62PayNum       int            default "0"               comment ""
+    ,Day63PayNum       int            default "0"               comment ""
+    ,Day64PayNum       int            default "0"               comment ""
+    ,Day65PayNum       int            default "0"               comment ""
+    ,Day66PayNum       int            default "0"               comment ""
+    ,Day67PayNum       int            default "0"               comment ""
+    ,Day68PayNum       int            default "0"               comment ""
+    ,Day69PayNum       int            default "0"               comment ""
+    ,Day70PayNum       int            default "0"               comment ""
+    ,Day71PayNum       int            default "0"               comment ""
+    ,Day72PayNum       int            default "0"               comment ""
+    ,Day73PayNum       int            default "0"               comment ""
+    ,Day74PayNum       int            default "0"               comment ""
+    ,Day75PayNum       int            default "0"               comment ""
+    ,Day76PayNum       int            default "0"               comment ""
+    ,Day77PayNum       int            default "0"               comment ""
+    ,Day78PayNum       int            default "0"               comment ""
+    ,Day79PayNum       int            default "0"               comment ""
+    ,Day80PayNum       int            default "0"               comment ""
+    ,Day81PayNum       int            default "0"               comment ""
+    ,Day82PayNum       int            default "0"               comment ""
+    ,Day83PayNum       int            default "0"               comment ""
+    ,Day84PayNum       int            default "0"               comment ""
+    ,Day85PayNum       int            default "0"               comment ""
+    ,Day86PayNum       int            default "0"               comment ""
+    ,Day87PayNum       int            default "0"               comment ""
+    ,Day88PayNum       int            default "0"               comment ""
+    ,Day89PayNum       int            default "0"               comment ""
+    ,Day90PayNum       int            default "0"               comment ""
+    ,Day120PayNum      int            default "0"               comment ""
+    ,Day150PayNum      int            default "0"               comment ""
+    ,Day180PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day210PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day240PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day270PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day300PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day330PayNum      decimal(10, 4) default "0"               comment ""
+    ,Day360PayNum      decimal(10, 4) default "0"               comment ""
+    ,PayNumByAt        int                                      comment ""
+    ,PayUserByAt       int                                      comment ""
+    ,Day0FirstPayTimes int                                      comment ""
+    ,sr_createtime     datetime       default current_timestamp comment "starrocks数据注入时间"
+    ,sr_updatetime     datetime       default current_timestamp comment "starrocks数据更新时间"
+    ,Day0AmountAdMob   decimal(10, 4)                           comment ""
+    ,Day0AmountMax     decimal(10, 4)                           comment ""
+    ,Day0AmountH5      decimal(10, 4)                           comment ""
+    ,index idx_productid (productid) using bitmap comment '语言ID索引'
+)
+primary key(id, dt)
+comment "OLAP"
+partition by range(dt)
+(partition p202606 values less than ("2026-07-01"))
+distributed by hash(id) buckets 1
+properties (
+    "replication_num" = "3",
+    "bloom_filter_columns" = "AdId, CreateTime",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "Month",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-2147483648",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "1",
+    "dynamic_partition.history_partition_num" = "0",
+    "dynamic_partition.start_day_of_month" = "1",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
+)
+;
