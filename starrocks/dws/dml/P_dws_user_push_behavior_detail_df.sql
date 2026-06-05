@@ -9,7 +9,7 @@
 insert into dws.dws_user_push_behavior_detail_df
 -- 海阅推送行为明细数据
 with p_info as (
-    select push_id     as push_id
+    select batch_id    as push_id
           ,task_type
           ,case when task_type = '0' then '通知类'
                 when task_type = '1' then '全站/指定推送'
