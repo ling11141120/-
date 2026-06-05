@@ -62,7 +62,7 @@ with p_info as (
           ,a1.msg_on
       from (select b1.dt
                   ,b1.id
-                  ,b1.batch_id             as push_id
+                  ,b1.push_id              as push_id
                   ,b1.user_id              as user_id
                   ,b1.product_id
                   ,b1.task_type
@@ -73,7 +73,7 @@ with p_info as (
                and b1.dt >= '${bf_2_dt}'
                and b1.dt <= '${bf_1_dt}'
                and user_id is not null
-               and batch_id is not null
+               and push_id is not null
            )    as a1
 )
 , push_send_result as (
@@ -87,7 +87,7 @@ with p_info as (
           ,a1.msg_on
       from (select date(b1.event_time)    as dt
                   ,b1.id
-                  ,b2.batch_id            as push_id
+                  ,b2.push_id             as push_id
                   ,b2.user_id
                   ,b2.product_id
                   ,b2.task_type
@@ -106,7 +106,7 @@ with p_info as (
                        and date(event_time) <= '${bf_1_dt}'
                    )    as b1
               left join (select err_msg_id as message_id
-                               ,batch_id
+                               ,push_id
                                ,user_id
                                ,product_id
                                ,task_type

@@ -14,6 +14,7 @@ create table if not exists dwd.dwd_market_sr_push_msg_log_di (
     ,batch_id      bigint                                 comment "批次Id"
     ,is_success    int                                    comment "是否推送成功"
     ,push_type     int                                    comment "推送类型"
+    ,push_id       bigint                                 comment "push_id，解析自customers JSON"
     ,schedule_time datetime                               comment "计划推送时间"
     ,err_msg_id    string                                 comment "消息ID用于标识消息（FCM使用）"
     ,task_type     int                                    comment "任务类型"
