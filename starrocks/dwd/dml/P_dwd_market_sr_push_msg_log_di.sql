@@ -25,6 +25,7 @@ select a.dt                                                         as dt       
      , a.BatchId                                                    as batch_id      -- 批次Id
      , a.IsSuccess                                                  as is_success    -- 是否推送成功
      , cast(get_json_string(a.CustomData, '$.push_type') as int)    as push_type     -- 推送类型
+     , cast(get_json_string(a.CustomData, '$.push_id') as bigint)   as push_id       -- push_id
      , a.ScheduleTime                                               as schedule_time -- 计划推送时间
      , a.ErrorMessage                                               as err_msg_id    -- 消息ID
      , cast(get_json_string(a.CustomData, '$.task_type') as int)    as task_type     -- 任务类型

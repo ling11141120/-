@@ -1,57 +1,59 @@
 create or replace view ads.ads_sensors_production_rechargeexposure_view (
-     dt
-    ,id
-    ,track_id
-    ,rid
-    ,event_tm
-    ,device_id
-    ,login_id
-    ,identity_login_id
-    ,device_lang
-    ,event
-    ,distinct_id
-    ,identity_user_id
-    ,app_product_id
-    ,send_id
-    ,app_core_ver
-    ,app_channel
-    ,app_product_x
-    ,app_lang_id
-    ,page_name
-    ,page_id
-    ,element_name
-    ,element_id
-    ,recharge_type
-    ,book_id
-    ,chapter_id
-    ,recharge_amount
-    ,present_gift
-    ,countdown
-    ,real_recharge
-    ,list_sort
-    ,is_available
-    ,event_strategy_id
-    ,app_module
-    ,element_type
-    ,czlx
-    ,subscription_days
-    ,mt
-    ,programme_id
-    ,cz_template_id
-    ,cz_template_name
-    ,task_current_progress
-    ,task_max_progress
-    ,app_id
-    ,app_version
-    ,product_id
-    ,os
-    ,ip
-    ,city
-    ,province
-    ,country
-    ,lib
-    ,lib_version
-    ,project_id
+     dt                   comment "分区日期"
+    ,id                   comment "nvl(rid,track_id)"
+    ,track_id             comment "track_id"
+    ,rid                  comment "记录ID"
+    ,event_tm             comment "事件时间"
+    ,device_id            comment "设备id"
+    ,login_id             comment "login_id"
+    ,identity_login_id    comment "identity_login_id"
+    ,device_lang          comment "设备语言"
+    ,event                comment "事件"
+    ,distinct_id          comment "distinct_id"
+    ,identity_user_id     comment "identity_userid"
+    ,app_product_id       comment "包体ID"
+    ,send_id              comment "转化来源"
+    ,app_core_ver         comment "core"
+    ,app_channel          comment "渠道编号"
+    ,app_product_x        comment "应用程序ID"
+    ,app_lang_id          comment "界面语言"
+    ,page_name            comment "页面名称"
+    ,page_id              comment "页面ID"
+    ,element_name         comment "控件名称"
+    ,element_id           comment "控件ID"
+    ,recharge_type        comment "充值类型"
+    ,book_id              comment "小说ID"
+    ,chapter_id           comment "章节id"
+    ,recharge_amount      comment "充值货币金额"
+    ,present_gift         comment "赠送货币金额"
+    ,countdown            comment "倒计时标签时长"
+    ,real_recharge        comment "支付金额"
+    ,list_sort            comment "列表位置"
+    ,is_available         comment "是否可用"
+    ,event_strategy_id    comment "策略id"
+    ,app_module           comment "模块"
+    ,element_type         comment "控件类型"
+    ,czlx                 comment "充值类型"
+    ,subscription_days    comment "订阅天数"
+    ,mt                   comment "平台"
+    ,subscribe_mode       comment "订阅模式"
+    ,total_periods        comment "总期数"
+    ,programme_id         comment "方案ID"
+    ,cz_template_id       comment "充值模板ID"
+    ,cz_template_name     comment "充值模板名称"
+    ,task_current_progress comment "当前任务进度"
+    ,task_max_progress    comment "任务最大进度"
+    ,app_id               comment "app ID"
+    ,app_version          comment "应用版本"
+    ,product_id           comment "产品ID"
+    ,os                   comment "操作系统"
+    ,ip                   comment "IP"
+    ,city                 comment "城市"
+    ,province             comment "省份"
+    ,country              comment "国家"
+    ,lib                  comment "lib"
+    ,lib_version          comment "5阅读 8短剧"
+    ,project_id           comment "5阅读 8短剧"
     ,activity_link        comment "活动链路"
     ,pay_link             comment "支付链路"
     ,activity_id          comment "活动id"
@@ -66,7 +68,7 @@ create or replace view ads.ads_sensors_production_rechargeexposure_view (
     ,is_subscription      comment "是否续订"
     ,zffs_id_list         comment "支付方式ID列表"
     ,zffs_strategy_id     comment "支付方式策略ID"
-    ,etl_tm
+    ,etl_tm               comment "ETL时间"
 )
 as
 select a.dt
@@ -106,6 +108,8 @@ select a.dt
      , a.czlx
      , a.subscription_days
      , a.mt
+     , a.subscribe_mode
+     , a.total_periods
      , a.programme_id
      , a.cz_template_id
      , a.cz_template_name
