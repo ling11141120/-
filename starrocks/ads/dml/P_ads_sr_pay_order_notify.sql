@@ -45,6 +45,7 @@ with new as (
                     when lower(PayType) = 'payermax' and NotifyType like '%SUBSCRIPTION(CANCEL)%' then 3
                     when lower(PayType) = 'payermax' and NotifyType like '%SUBSCRIPTION(TERMINATE)%' then 3
                     when lower(PayType) = 'airwallex' and NotifyType like '%subscription.cancelled%' then 3
+                    when lower(PayType) = 'breeze' and NotifyType like '%CANCELED%' then 3
                     else NotifyType
                 end
             ) as notify_type
