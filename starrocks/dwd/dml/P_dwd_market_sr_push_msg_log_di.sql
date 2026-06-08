@@ -1,13 +1,15 @@
 ----------------------------------------------------------------
 -- 程序功能：营销域-海阅push资源位消息推送日志
--- 程序名：P_dwd_market_sr_push_msg_log_di
--- 目标表：dwd.dwd_market_sr_push_msg_log_di
--- 负责人：qhr
--- 开发日期：2026-05-09
+-- 程序名： P_dwd_market_sr_push_msg_log_di
+-- 目标表： dwd.dwd_market_sr_push_msg_log_di
+-- 负责人： qhr
+-- 开发日期： 2026-05-09
 ----------------------------------------------------------------
 
 insert into dwd.dwd_market_sr_push_msg_log_di
--- 新推送表数据
+-- ============================================
+-- 新推送表 unifypush
+-- ============================================
 select a.dt                                                         as dt            -- 分区日期
      , b.ProductId                                                  as product_id    -- 产品ID
      , a.Id                                                         as id            -- Id
@@ -29,7 +31,7 @@ select a.dt                                                         as dt       
      , coalesce(
          get_json_string(a.Body, '$.aps.attributes.pushId'),
          get_json_string(a.CustomData, '$.push_id')
-       )                                                               as push_id       -- push_id，Body/CustomData互补
+       )                                                            as push_id       -- push_id，Body/CustomData互补
      , a.ScheduleTime                                               as schedule_time -- 计划推送时间
      , a.ErrorMessage                                               as err_msg_id    -- 消息ID
      , cast(get_json_string(a.CustomData, '$.task_type') as int)    as task_type     -- 任务类型
@@ -37,8 +39,8 @@ select a.dt                                                         as dt       
             when b.MT = 4 then get_json_string(a.Body, '$.Notification.ImageUrl')
             else null
         end                                                         as image_url     -- 图片地址
-     , get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_title_id')    as push_title_id     -- push标题ID
-     , get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_content_id')  as push_content_id   -- push内容ID
+     , get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_title_id')   as push_title_id     -- push标题ID
+     , get_json_string(get_json_string(a.Body, '$.aps.attributes.extData'), '$.push_content_id') as push_content_id   -- push内容ID
      , now()                                                        as etl_time      -- etl写入时间
   from ods.ods_tidb_unifypush_log_log_pushlog_sr as a
   left join ods.ods_tidb_unifypush_log_apps      as b
@@ -46,7 +48,10 @@ select a.dt                                                         as dt       
  where a.dt = '${bf_1_dt}'
 
  union all
--- 旧readerlog数据
+
+-- ============================================
+-- 旧推送表 readerlog
+-- ============================================
 select dt                                                        as dt
      , product_id                                                as product_id
      , id                                                        as id
@@ -90,8 +95,8 @@ select dt                                                        as dt
              , r.MessageId                                        as err_msg_id
              , r.TaskType                                         as task_type
              , r.ImageUrl                                         as image_url
-             , get_json_string(get_json_string(r.Customers, '$.sensorsdata'), '$.push_title_id')    as push_title_id
-             , get_json_string(get_json_string(r.Customers, '$.sensorsdata'), '$.push_content_id')  as push_content_id
+             , get_json_string(get_json_string(r.Customers, '$.sensorsdata'), '$.push_title_id')   as push_title_id
+             , get_json_string(get_json_string(r.Customers, '$.sensorsdata'), '$.push_content_id') as push_content_id
              , now()                                              as etl_time
              , row_number() over (partition by r.dt, r.product_id, r.Id order by r.CreateTime desc) as rn
           from ods_log.ods_tidb_readerlog_Log_PushMessageLog as r
