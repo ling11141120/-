@@ -14,13 +14,13 @@ create table if not exists dwd.dwd_market_sr_push_msg_log_di (
     ,batch_id      bigint                                 comment "批次Id"
     ,is_success    int                                    comment "是否推送成功"
     ,push_type     int                                    comment "推送类型"
-    ,push_id       bigint                                 comment "push_id，解析自customers JSON"
+    ,push_id       varchar(255)                             comment "push_id，解析自Body/CustomData"
     ,schedule_time datetime                               comment "计划推送时间"
     ,err_msg_id    string                                 comment "消息ID用于标识消息（FCM使用）"
     ,task_type     int                                    comment "任务类型"
     ,image_url       string                                 comment "图片地址"
-    ,push_title_id   bigint                                 comment "push标题ID，解析自Body.aps.attributes.extData"
-    ,push_content_id bigint                                 comment "push内容ID，解析自Body.aps.attributes.extData"
+    ,push_title_id   string                                 comment "push标题ID，解析自Body.aps.attributes.extData"
+    ,push_content_id string                                 comment "push内容ID，解析自Body.aps.attributes.extData"
     ,etl_time        datetime                               comment "etl写入时间"
 )
 primary key(dt, product_id, id)
