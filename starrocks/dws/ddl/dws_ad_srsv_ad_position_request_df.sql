@@ -22,7 +22,7 @@ create table dws.dws_ad_srsv_ad_position_request_df (
 )
 primary key(dt, event_name, id)
 comment "广告域-ADRequest/ADInvocation/ADShow/ADTrigger事件广告位置请求明细数据表"
-partition by date_trunc("month", dt)
+partition by date_trunc("day", dt)
 distributed by hash(dt, event_name, id)
 properties (
     "replication_num" = "3"
@@ -30,6 +30,7 @@ properties (
    ,"enable_persistent_index" = "true"
    ,"replicated_storage" = "true"
    ,"compression" = "LZ4"
+   ,"partition_live_number" = "7"
 )
 ;
 
