@@ -1,12 +1,13 @@
 ----------------------------------------------------------------
--- 程序功能：财务书籍充值消耗明细初次导入
--- 程序名：P_ads_sr_finance_book_recharge_consume_info_1.sql
+-- 程序功能：财务书籍充值消耗明细二次导入
+-- 程序名：P_ads_sr_finance_book_recharge_consume_info_2.sql
 -- 目标表：ads.ads_sr_finance_book_recharge_consume_info
 -- 负责人：xjc
 -- 开发日期：2026-06-08
 ----------------------------------------------------------------
 
-delete from ads.ads_sr_finance_book_recharge_consume_info where dt >= '$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}';
+delete from ads.ads_sr_finance_book_recharge_consume_info where dt >= '$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}'
+;
 
 insert into ads.ads_sr_finance_book_recharge_consume_info
 select
@@ -133,4 +134,6 @@ from (
          where dt >= date_format(date_sub('${dt}', interval 1 month), '%Y-%m-01')
            and dt <= last_day(date_sub('${dt}', interval 1 month))
      ) a where del_col1='leave' and corp ='MOBOREADER'
+-- 剔除重复订单id
+           and order_id not in(select order_id from ads.ads_sr_finance_book_recharge_consume_info_delete)
 ;

@@ -15,22 +15,22 @@ create table ads.ads_user_push_behavior_df (
    ,is_click                           tinyint                                      comment "是否点击,1:是, null:否"
    ,app_notify_msg_on                  tinyint                                      comment "是否开启消息通知,1:是, null:否"
    ,etl_tm                             datetime        default current_timestamp    comment "etl清洗时间"
-   ,index idx_core (core)              using bitmap                                 comment 'core bitmap索引'
-   ,index idx_mt (mt)                  using bitmap                                 comment 'mt bitmap索引'
-   ,index idx_push_type (push_type)    using bitmap                                 comment '推送类型 bitmap索引'
-   ,index idx_push_name (push_name)    using bitmap                                 comment '推送名称 bitmap索引'
+   ,index idx_core (core)              using bitmap                                 comment "core bitmap索引"
+   ,index idx_mt (mt)                  using bitmap                                 comment "mt bitmap索引"
+   ,index idx_push_type (push_type)    using bitmap                                 comment "推送类型 bitmap索引"
+   ,index idx_push_name (push_name)    using bitmap                                 comment "推送名称 bitmap索引"
 ) 
 primary key (dt, project_id, md5_key)
 comment "用户推送行为标签表"
-partition by date_trunc("month", dt)
-distributed by hash(md5_key)
+partition by date_trunc("day", dt)
+distributed by hash(md5_key) buckets 10
 properties (
     "replication_num" = "3"
    ,"in_memory" = "false"
    ,"enable_persistent_index" = "true"
    ,"replicated_storage" = "true"
    ,"compression" = "lz4"
-   ,"partition_live_number" = "6"
+   ,"partition_live_number" = "180"
    ,"bloom_filter_columns" = "push_id, user_id"
 )
 ;

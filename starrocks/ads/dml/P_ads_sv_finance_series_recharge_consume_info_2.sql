@@ -1,12 +1,12 @@
 ----------------------------------------------------------------
--- 程序功能：海剧上月数据初次导入
+-- 程序功能：海剧循环删除逻辑初次导入
 -- 程序名：P_ads_sv_finance_series_recharge_consume_info
 -- 目标表：ads.ads_sv_finance_series_recharge_consume_info
 -- 负责人：xjc
 -- 开发日期：2026-06-09
 ----------------------------------------------------------------
 
-delete from ads.ads_sv_finance_series_recharge_consume_info where dt >='$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}';
+delete from ads.ads_sv_finance_series_recharge_consume_info where dt >= '$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}';
 
 insert into ads.ads_sv_finance_series_recharge_consume_info
 select
@@ -141,4 +141,6 @@ from (
     group by user_id
 ) b on a.user_id = b.user_id
 where del_col1='leave' and corp ='MOBOREADER'
+-- 剔除重复订单id
+  and order_id not in(select order_id from ads.ads_sv_finance_series_recharge_consume_info_delete)
 ;

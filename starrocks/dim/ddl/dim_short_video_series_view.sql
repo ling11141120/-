@@ -30,6 +30,7 @@ create or replace view dim.dim_short_video_series_view (
     ,list_recommend_key comment "轮播榜单推荐语key"
     ,list_recommend     comment "轮播榜单推荐语"
     ,core               comment "Core ，多个用逗号隔开(1core1，2core2，3core3，4core4)"
+    ,is_ai              comment "是否是ai短剧,1是 0否,目前规则仅财务定义"
     ,sr_updatetime      comment "ods同步时间"
     ,sr_createtime      comment "starrocks数据注入时间"
 )
@@ -66,8 +67,12 @@ select a1.SeriesId               as series_id          -- id
       ,a1.ListRecommendKey       as list_recommend_key -- 轮播榜单推荐语key
       ,a1.ListRecommend          as list_recommend     -- 轮播榜单推荐语
       ,a1.Core                   as core               -- Core ，多个用逗号隔开(1core1，2core2，3core3，4core4)
+      ,case when a2.LocalType in(4,5) or a2.LocalSubType in(1,7) then 1
+            else 0
+        end                      as is_ai              -- 是否是ai短剧
       ,a1.sr_updatetime          as sr_updatetime      -- ods同步时间
       ,a1.sr_createtime          as sr_createtime      -- starrocks数据注入时间
+
   from ods.ods_tidb_short_video_series                      as a1
   left join ods.ods_tidb_short_video_admin_source_series    as a2
     on a1.SourceSeriesId = a2.SeriesId
