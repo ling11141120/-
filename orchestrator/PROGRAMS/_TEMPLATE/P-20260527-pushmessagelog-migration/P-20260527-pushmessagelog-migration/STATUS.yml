@@ -1,0 +1,69 @@
+# ============================================================
+# Program 状态跟踪 — P-2026-005-pushmessagelog-migration
+# ============================================================
+
+program: P-20260527-pushmessagelog-migration
+name: pushmessagelog 迁移
+type: development
+subtype: none
+phase: review
+status: active
+last_updated: 2026-06-01
+
+# ==================== 任务列表 ====================
+tasks:
+  - id: t1
+    name: 代码改造 Review
+    status: done
+    checkpoint: 5 个文件改造完成。product_id 已修正为 b.ProductId，ODS bloom filter 精简为 AccountId+AppId，NOT NULL 回退
+    blockers:
+    next_action:
+
+  - id: t2
+    name: ODS 层数据验证
+    status: done
+    checkpoint: ru/id/jp/th 合入 fr/ft。新旧 ODS 量级差两个数量级，unifypush_log 未全量
+    blockers:
+    next_action:
+
+  - id: t3
+    name: DWD 表上线 & 验证
+    status: done
+    checkpoint: 用户已验证 DWD 解析正确性。已知问题：1) CustomData 5/26 前为空（上游未全量）；2) AccountId 10-15% 为空。决策：接受现状，继续推进
+
+  - id: t4
+    name: 下游 ADS/DWS 表上线 & 验证
+    status: in-progress
+    checkpoint:
+    blockers:
+    next_action: 用户需在 DolphinScheduler 更新下游 3 个任务配置，执行首跑后反馈验证结果
+
+  - id: t5
+    name: 下线 dwd_market_log_pushmessagelog_view
+    status: pending
+    checkpoint:
+    blockers: 需新链路稳定运行 3-7 天
+    next_action:
+
+  - id: t6
+    name: 代码提交 & MR
+    status: pending
+    checkpoint: 2 个 commit 待用户本地 push（VM 代理拦截 GitLab）
+    blockers:
+    next_action: 本地执行 git push
+
+# ==================== 产物清单 ====================
+artifacts:
+  plan: workspace/PLAN.md
+  ddl:
+    - starrocks/ods/ddl/ods_tidb_unifypush_log_log_pushlog_sr.sql
+    - starrocks/dwd/ddl/dwd_market_sr_push_msg_log_di.sql
+  dml:
+    - starrocks/dwd/dml/P_dwd_market_sr_push_msg_log_di.sql
+    - starrocks/ads/dml/P_ads_sr_push_message_log.sql
+    - starrocks/ads/dml/P_ads_bi_tag_push_result_info.sql
+    - starrocks/dws/dml/P_dws_user_push_behavior_detail_df.sql
+  validation:
+    - workspace/validation/ods_check.sql
+    - workspace/validation/dwd_check.sql
+    - workspace/validation/downstream_check.sql

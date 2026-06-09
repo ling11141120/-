@@ -1,0 +1,15 @@
+project: P-20260608-roistdconfig-replace
+title: RoiStdConfigDaily 替换 RoiStdCfgDaily 标准关联修改
+status: plan
+created: 2026-06-08T11:37
+owner: 何妨
+participants:
+  - 雷雪津
+  - 瞿昊然
+phase: analysis
+notes: |
+  何妨 2026-06-08 要求：先准备好修改的 SQL，暂不执行生产替换（配置还没跑完）。
+  改变：用 RoiStdConfigDaily 替换 RoiStdCfgDaily，删除 RoiStdCfgFlowTag 关联。
+  海阅新增 BookSeriesTypeDaily 关联，海剧新增 ProductId 条件。
+  已出方案文档 PLAN.md，涉及4个直接DML + 6个间接DML + 4个VIEW。
+  阻塞项：等待新表数据就绪 + 何妨确认。
