@@ -1,3 +1,4 @@
+drop table if exists ads.ads_bi_sv_trade_user_recharge_gear;
 create table ads.ads_bi_sv_trade_user_recharge_gear (
      dt              date           comment "统计周期"
     ,period_type     varchar(20)    comment "统计周期类型,ctt/rmt,rmt(拉活用户)"

@@ -1,78 +1,41 @@
-CREATE TABLE `ads_sv_finance_series_recharge_consume_info` (
-  `dt` date NULL COMMENT "日期",
-  `product_id` int(11) NULL COMMENT "产品id",
-  `user_id` bigint(20) NULL COMMENT "用户id",
-  `series_id` bigint(20) NULL COMMENT "短剧id",
-  `order_id` varchar(255) NULL COMMENT "订单id",
-  `coo_order_id` varchar(255) NULL COMMENT "coo_订单id",
-  `shop_item_id` varchar(50) NULL COMMENT "coo_订单id",
-  `report_type` int(11) NULL COMMENT "数据类型（1充值，2消耗）",
-  `amount` decimal(12, 2) NULL COMMENT "花费金额(观看币)",
-  `remain_amount` decimal(12, 2) NULL COMMENT "剩余金额(观看币)-根据mobo订单处理后",
-  `remain_amount_all` decimal(12, 2) NULL COMMENT "剩余金额(观看币)-原始全量流水(不更新该字段)",
-  `cost` decimal(12, 2) NULL COMMENT "流水金额",
-  `test_flag` int(11) NULL COMMENT "测试标识（0非测试，1测试）",
-  `order_time` datetime NULL COMMENT "订单时间",
-  `expiration_time` datetime NULL COMMENT "到期时间",
-  `duration_time` int(11) NULL COMMENT "订单持续时间(到期时间-订单时间)",
-  `etl_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT "etl时间"
-) ENGINE=OLAP 
-DUPLICATE KEY(`dt`)
-COMMENT "财务-短剧用户进销存明细"
-PARTITION BY RANGE(`dt`)
-(PARTITION p202306 VALUES [("2023-06-01"), ("2023-07-01")),
-PARTITION p202307 VALUES [("2023-07-01"), ("2023-08-01")),
-PARTITION p202308 VALUES [("2023-08-01"), ("2023-09-01")),
-PARTITION p202309 VALUES [("2023-09-01"), ("2023-10-01")),
-PARTITION p202310 VALUES [("2023-10-01"), ("2023-11-01")),
-PARTITION p202311 VALUES [("2023-11-01"), ("2023-12-01")),
-PARTITION p202312 VALUES [("2023-12-01"), ("2024-01-01")),
-PARTITION p202401 VALUES [("2024-01-01"), ("2024-02-01")),
-PARTITION p202402 VALUES [("2024-02-01"), ("2024-03-01")),
-PARTITION p202403 VALUES [("2024-03-01"), ("2024-04-01")),
-PARTITION p202404 VALUES [("2024-04-01"), ("2024-05-01")),
-PARTITION p202405 VALUES [("2024-05-01"), ("2024-06-01")),
-PARTITION p202406 VALUES [("2024-06-01"), ("2024-07-01")),
-PARTITION p202407 VALUES [("2024-07-01"), ("2024-08-01")),
-PARTITION p202408 VALUES [("2024-08-01"), ("2024-09-01")),
-PARTITION p202409 VALUES [("2024-09-01"), ("2024-10-01")),
-PARTITION p202410 VALUES [("2024-10-01"), ("2024-11-01")),
-PARTITION p202411 VALUES [("2024-11-01"), ("2024-12-01")),
-PARTITION p202412 VALUES [("2024-12-01"), ("2025-01-01")),
-PARTITION p202501 VALUES [("2025-01-01"), ("2025-02-01")),
-PARTITION p202502 VALUES [("2025-02-01"), ("2025-03-01")),
-PARTITION p202503 VALUES [("2025-03-01"), ("2025-04-01")),
-PARTITION p202504 VALUES [("2025-04-01"), ("2025-05-01")),
-PARTITION p202505 VALUES [("2025-05-01"), ("2025-06-01")),
-PARTITION p202506 VALUES [("2025-06-01"), ("2025-07-01")),
-PARTITION p202507 VALUES [("2025-07-01"), ("2025-08-01")),
-PARTITION p202508 VALUES [("2025-08-01"), ("2025-09-01")),
-PARTITION p202509 VALUES [("2025-09-01"), ("2025-10-01")),
-PARTITION p202510 VALUES [("2025-10-01"), ("2025-11-01")),
-PARTITION p202511 VALUES [("2025-11-01"), ("2025-12-01")),
-PARTITION p202512 VALUES [("2025-12-01"), ("2026-01-01")),
-PARTITION p202601 VALUES [("2026-01-01"), ("2026-02-01")),
-PARTITION p202602 VALUES [("2026-02-01"), ("2026-03-01")),
-PARTITION p202603 VALUES [("2026-03-01"), ("2026-04-01")),
-PARTITION p202604 VALUES [("2026-04-01"), ("2026-05-01")),
-PARTITION p202605 VALUES [("2026-05-01"), ("2026-06-01")),
-PARTITION p202606 VALUES [("2026-06-01"), ("2026-07-01")),
-PARTITION p202607 VALUES [("2026-07-01"), ("2026-08-01")),
-PARTITION p202608 VALUES [("2026-08-01"), ("2026-09-01")))
-DISTRIBUTED BY HASH(`dt`) BUCKETS 3 
-PROPERTIES (
-"replication_num" = "3",
-"dynamic_partition.enable" = "true",
-"dynamic_partition.time_unit" = "month",
-"dynamic_partition.time_zone" = "Asia/Shanghai",
-"dynamic_partition.start" = "-2147483648",
-"dynamic_partition.end" = "3",
-"dynamic_partition.prefix" = "p",
-"dynamic_partition.buckets" = "1",
-"dynamic_partition.history_partition_num" = "0",
-"dynamic_partition.start_day_of_month" = "1",
-"in_memory" = "false",
-"enable_persistent_index" = "true",
-"replicated_storage" = "true",
-"compression" = "LZ4"
-);
+create table if not exists ads.ads_sv_finance_series_recharge_consume_info (
+     dt                date                                     comment "日期"
+    ,product_id        int                                      comment "产品id"
+    ,user_id           bigint                                   comment "用户id"
+    ,series_id         bigint                                   comment "短剧id"
+    ,order_id          varchar(255)                             comment "订单id"
+    ,coo_order_id      varchar(255)                             comment "coo_订单id"
+    ,shop_item_id      varchar(50)                              comment "coo_订单id"
+    ,report_type       int                                      comment "数据类型（1充值，2消耗）"
+    ,amount            decimal(12, 2)                           comment "花费金额(观看币)"
+    ,remain_amount     decimal(12, 2)                           comment "剩余金额(观看币)-根据mobo订单处理后"
+    ,remain_amount_all decimal(12, 2)                           comment "剩余金额(观看币)-原始全量流水(不更新该字段)"
+    ,cost              decimal(12, 2)                           comment "流水金额"
+    ,test_flag         int                                      comment "测试标识（0非测试，1测试）"
+    ,order_time        datetime                                 comment "订单时间"
+    ,expiration_time   datetime                                 comment "到期时间"
+    ,duration_time     int                                      comment "订单持续时间(到期时间-订单时间)"
+    ,etl_time          datetime       default current_timestamp comment "etl时间"
+)
+duplicate key(dt)
+comment "财务-短剧用户进销存明细"
+partition by range(dt)
+(partition p202606 values less than ("2026-07-01"))
+distributed by hash(dt) buckets 3
+properties (
+    "replication_num" = "3",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "month",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-2147483648",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "1",
+    "dynamic_partition.history_partition_num" = "0",
+    "dynamic_partition.start_day_of_month" = "1",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
+)
+;
