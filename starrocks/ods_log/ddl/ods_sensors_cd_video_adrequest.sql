@@ -1,15 +1,13 @@
 ----------------------------------------------------------------
--- 目标表： ods_log.ods_sensors_cd_video_adrequest
--- 来源实例： 
--- 来源表： 
--- 来源负责： 
--- 采集工具： 极光-实时映射
--- 开发人： qhr
--- 开发日期： 2025-10-22
+-- 目标表：ods_log.ods_sensors_cd_video_adrequest
+-- 来源实例：神策埋点
+-- 来源表：event=ADRequest
+-- 来源负责人：无
+-- 开发人：qhr
+-- 开发日期：2026-06-09
 ----------------------------------------------------------------
 
-drop table if exists ods_log.ods_sensors_cd_video_adrequest;
-create table ods_log.ods_sensors_cd_video_adrequest (
+create table if not exists ods_log.ods_sensors_cd_video_adrequest (
      dt                date           not null comment "分区日期"
     ,id                string         not null comment "nvl(rid,track_id)"
     ,track_id          string                  comment "唯一追踪ID"
@@ -45,16 +43,20 @@ create table ods_log.ods_sensors_cd_video_adrequest (
     ,ad_type           int                     comment "广告类型"
     ,main_strategy_id  string                  comment "主策略ID"
     ,event_strategy_id string                  comment "策略ID"
+    ,project_id        varchar(30)             comment "5阅读 8 短剧"
+    ,ad_position_id    varchar(30)             comment "广告位置ID"
+    ,appId             string                  comment "海阅app_id"
+    ,dollar_app_id     string                  comment "$app_id，海剧海阅共有"
 )
 primary key(dt, id)
 comment "event=ADRequest 广告请求事件"
 partition by date_trunc('day', dt)
 distributed by hash(dt, id)
 properties (
-    "replication_num" = "3"
-    ,"in_memory" = "false"
-    ,"enable_persistent_index" = "true"
-    ,"replicated_storage" = "true"
-    ,"compression" = "ZSTD"
+    "replication_num" = "3",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "ZSTD"
 )
 ;
