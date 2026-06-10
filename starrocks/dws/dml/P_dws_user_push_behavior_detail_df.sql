@@ -33,7 +33,8 @@ with p_info as (
      union
     select id      as push_id
           ,4       as task_type
-          ,case when action_type = 1 then 'PUSH-定向充值'
+          ,case when a1.notification_type =1 then 'Live通知' 
+                when action_type = 1 then 'PUSH-定向充值'
                 when action_type = 2 then 'PUSH-PUSH活动'
                 when action_type = 4 then 'PUSH-推书（指定书籍）'
                 when action_type = 5 then 'PUSH-其他活动'
@@ -185,14 +186,14 @@ with p_info as (
     select event
           ,a1.dt
           ,a1.id
-          ,if(event='点击'
+           ,if(event='点击'
              ,a1.task_type_name
-             ,a5.task_type_name
+            ,coalesce(a5.task_type_name, a6.task_type_name)
              )     as push_type
           ,a1.push_id
-          ,if(event='点击'
+           ,if(event='点击'
              ,a1.push_name
-             ,a5.push_name
+             ,coalesce(a5.push_name, a6.push_name)
              )     as push_name
           ,if(event='送达'
              ,case when a4.corever = 2 and a4.app_ver >= '3.9.5' then a1.user_id
@@ -266,6 +267,9 @@ with p_info as (
       left join p_info                                     as a5
         on a1.push_id = a5.push_id
        and a1.task_type = a5.task_type
+       and a1.event in('下发','送达')
+      left join p_info                                     as a6
+        on a1.push_id = a6.push_id
        and a1.event in('下发','送达')
 )
 select dt
