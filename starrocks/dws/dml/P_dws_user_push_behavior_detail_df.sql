@@ -52,6 +52,14 @@ with p_info as (
      where id > 1000
      group by 1, 2, 3, 4
 )
+
+, live_push_info as (
+    select id as push_id
+      from dim.dim_tag_center_activity_push_view
+     where id > 1000
+       and notification_type = 1
+     group by 1
+)
 , send_view as (
     select '下发'    as event
           ,a1.dt
@@ -66,15 +74,20 @@ with p_info as (
                   ,b1.push_id              as push_id
                   ,b1.user_id              as user_id
                   ,b1.product_id
-                  ,b1.task_type
+                     ,case when b1.task_type is null and b2.push_id is not null then 4
+                        else b1.task_type
+                   end as task_type  
                   ,2                       as msg_on
               from dwd.dwd_market_sr_push_msg_log_di    as b1
+              left join 
+              live_push_info b2 
+              on b1.push_id=b2.push_id 
              where b1.is_success = 1
                and b1.product_id not in (6833, 6883)
                and b1.dt >= '${bf_2_dt}'
                and b1.dt <= '${bf_1_dt}'
-               and user_id is not null
-               and push_id is not null
+               and b1.user_id is not null
+               and b1.push_id is not null
            )    as a1
 )
 , push_send_result as (
@@ -188,12 +201,12 @@ with p_info as (
           ,a1.id
            ,if(event='点击'
              ,a1.task_type_name
-            ,coalesce(a5.task_type_name, a6.task_type_name)
+            ,a5.task_type_name
              )     as push_type
           ,a1.push_id
            ,if(event='点击'
              ,a1.push_name
-             ,coalesce(a5.push_name, a6.push_name)
+             ,a5.push_name
              )     as push_name
           ,if(event='送达'
              ,case when a4.corever = 2 and a4.app_ver >= '3.9.5' then a1.user_id
@@ -267,10 +280,7 @@ with p_info as (
       left join p_info                                     as a5
         on a1.push_id = a5.push_id
        and a1.task_type = a5.task_type
-       and a1.event in('下发','送达')
-      left join p_info                                     as a6
-        on a1.push_id = a6.push_id
-       and a1.event in('下发','送达')
+       and a1.event in('下发','送达')     
 )
 select dt
       ,ifnull(cast(product_id as int),-99)    as product_id            -- 产品id
