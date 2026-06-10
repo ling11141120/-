@@ -6,7 +6,7 @@
 -- 开发日期： 2026-03-05
 ----------------------------------------------------------------
 
-insert into tmp.dws_user_push_behavior_detail_df
+insert into dws.dws_user_push_behavior_detail_df
 -- 海阅推送行为明细数据
 with p_info as (
     select push_id     as push_id
