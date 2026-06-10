@@ -61,7 +61,8 @@ select a1.dt                                                     as dt          
          where c1.begin_time >= date_sub(b2.dt, interval 1 year)
            and c1.begin_time <= b2.dt                                     -- KOC窗口：每个日期取自己往前1年
          group by 1, 2, 3
-       )                                                          as a1
+       ) 
+        -- 海剧观看                                                         as a1
   left join (select b3.dt
                   ,b3.usr_id
                   ,2                                              as prj_type_cd
@@ -75,7 +76,6 @@ select a1.dt                                                     as dt          
                         and c3.dt <= '${bf_1_dt}'
                       group by 1, 2
                     )                                              as b3
-               -- 海剧观看
                left join (select c4.dt
                                ,c4.usr_id
                                ,count(1)                          as ttl_view_min
@@ -94,6 +94,7 @@ select a1.dt                                                     as dt          
             )                                                      as a2
     on a1.dt = a2.dt
    and a1.usr_id = a2.usr_id
+      -- 海阅观看
   left join (select b5.dt
                   ,b5.usr_id
                   ,1                                              as prj_type_cd
@@ -107,7 +108,6 @@ select a1.dt                                                     as dt          
                         and c5.dt <= '${bf_1_dt}'
                       group by 1, 2
                     )                                              as b5
-               -- 海阅观看
                left join (select c6.dt
                                ,c6.usr_id
                                ,count(1)                          as ttl_view_min
