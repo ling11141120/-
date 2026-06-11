@@ -110,7 +110,16 @@ nxt_watch_tmp as (
     group by 1, 2, 3, 4, 5, 6, 7
 ),
 
--- 用户是否观看了下一集(两集间隔在2小时以内，支持跨天)
+-- 短剧最后一集信息，最后一集不计入流失观看用户
+series_epis_boundary as (
+    select series_id
+         , max(epis_num) as last_epis_num
+    from dim.dim_short_video_epis_view
+    where is_delete = 0
+    group by series_id
+),
+
+-- 用户是否观看了下一集(沿用24小时续看窗口，支持跨天)
 user_next_epis as (
     select a.dt
          , a.user_id
@@ -127,9 +136,12 @@ user_next_epis as (
                when e.duration is null then 0
                else a.max_watch_stamp end                    as capped_watch_stamp
          , case when n.next_min_create_time is not null then 1 else 0 end as has_next_epis
+         , case when a.epis_num = b.last_epis_num then 1 else 0 end       as is_last_epis
     from user_epis_watch a
     left join dim.dim_short_video_epis_view e
       on a.series_id = e.series_id and a.epis_id = e.epis_id
+    left join series_epis_boundary b
+      on a.series_id = b.series_id
     left join epis_time_agg cur
       on a.dt = cur.dt and a.user_id = cur.user_id and a.series_id = cur.series_id
      and a.core = cur.core and a.acquisition_source_cd = cur.acquisition_source_cd and a.language_code = cur.language_code and a.epis_num = cur.epis_num
@@ -162,6 +174,9 @@ epis_stat as (
          , bitmap_agg(case when max_watch_stamp >= 50 and max_watch_stamp < 60 then user_id end)                as exit_50_60s_user
          , bitmap_agg(case when max_watch_stamp >= 60 then user_id end)                                         as exit_60s_plus_user
          , bitmap_agg(user_id)                                                                                  as epis_watch_user
+         , count(1)                                                                                             as play_count
+         , bitmap_agg(case when max_watch_stamp > 5 then user_id end)                                           as effective_watch_user
+         , bitmap_agg(case when max_watch_stamp > 5 and has_next_epis = 0 and is_last_epis = 0 then user_id end) as loss_watch_user
     from user_next_epis
     group by 1, 2, 3, 4, 5, 6
 )
@@ -190,6 +205,9 @@ select s.dt
      , s.exit_50_60s_user
      , s.exit_60s_plus_user
      , s.epis_watch_user
+     , s.play_count
+     , s.effective_watch_user
+     , s.loss_watch_user
      , now() as etl_time
 from epis_stat s
 left join dim.dim_short_video_series_view v

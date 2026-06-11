@@ -76,6 +76,43 @@ watch_base as (
       on ew.series_id = s.series_id
 ),
 
+-- 续看用：按用户+剧+集聚合最早观看时间，沿用每集表续看口径
+watch_time_agg as (
+    select dt
+         , user_id
+         , series_id
+         , core
+         , acquisition_source_cd
+         , language_code
+         , epis_num
+         , min(create_time) as min_create_time
+    from watch_base
+    group by 1, 2, 3, 4, 5, 6, 7
+),
+
+-- 本集观看日后任意dt内、24小时内观看下一集的记录
+next_watch_tmp as (
+    select cur.dt
+         , cur.user_id
+         , cur.series_id
+         , cur.core
+         , cur.acquisition_source_cd
+         , cur.language_code
+         , cur.epis_num
+         , min(nxt.min_create_time) as next_min_create_time
+    from watch_time_agg cur
+    inner join watch_time_agg nxt
+      on cur.user_id = nxt.user_id
+     and cur.series_id = nxt.series_id
+     and cur.core = nxt.core
+     and cur.acquisition_source_cd = nxt.acquisition_source_cd
+     and cur.language_code = nxt.language_code
+     and nxt.epis_num = cur.epis_num + 1
+     and nxt.min_create_time >= cur.min_create_time
+     and nxt.min_create_time <= hours_add(cur.min_create_time, 24)
+    group by 1, 2, 3, 4, 5, 6, 7
+),
+
 -- 短剧每集时长信息
 epis_duration as (
     select series_id
@@ -285,9 +322,33 @@ series_pay_boundary as (
     select series_id
          , sum(duration)                                as series_duration
          , min(case when is_free = 0 then epis_num end) as first_pay_epis_num
+         , max(epis_num)                                as last_epis_num
     from dim.dim_short_video_epis_view
     where is_delete = 0
     group by series_id
+),
+
+marketing_plan as (
+    select code_id
+         , code_stage
+         , plan_round
+         , begin_date
+         , spend
+         , d0_amount
+    from (
+        select *
+             , row_number() over (
+                   partition by code_id
+                   order by (case when code_stage = -1 then 4 else code_stage end) desc
+                          , plan_round desc
+               ) as rn
+        from ads.ads_srsv_ads_marketing_plan_view
+        where project_code = 2
+          and code_id <> ''
+          and source_chl = ''
+          and is_del = 0
+    ) mp
+    where rn = 1
 ),
 
 loss_stat_raw as (
@@ -325,6 +386,31 @@ loss_stat as (
          , paid_start_watch_user
          , bitmap_andnot(paid_prev_watch_user, paid_start_watch_user) as paid_loss_user
     from loss_stat_raw
+),
+
+effective_loss_stat as (
+    select w.dt
+         , w.core
+         , w.acquisition_source_cd
+         , w.language_code
+         , w.series_id
+         , bitmap_agg(case when w.is_free = 1 and w.max_watch_stamp > 5 then w.user_id end)                                    as free_effective_watch_user
+         , bitmap_agg(case when w.is_free = 1 and w.max_watch_stamp > 5 and n.next_min_create_time is null and w.epis_num < pb.last_epis_num then w.user_id end) as free_loss_watch_user
+         , bitmap_agg(case when w.is_free = 0 and w.max_watch_stamp > 5 then w.user_id end)                                    as paid_effective_watch_user
+         , bitmap_agg(case when w.is_free = 0 and w.max_watch_stamp > 5 and n.next_min_create_time is null and w.epis_num < pb.last_epis_num then w.user_id end) as paid_loss_watch_user
+    from watch_base w
+    left join next_watch_tmp n
+      on w.dt = n.dt
+     and w.user_id = n.user_id
+     and w.series_id = n.series_id
+     and w.core = n.core
+     and w.acquisition_source_cd = n.acquisition_source_cd
+     and w.language_code = n.language_code
+     and w.epis_num = n.epis_num
+    left join series_pay_boundary pb
+      on w.series_id = pb.series_id
+    where w.series_id is not null
+    group by 1, 2, 3, 4, 5
 ),
 
 -- 解锁明细(广告解锁 + 币券解锁 + VIP解锁)
@@ -423,6 +509,11 @@ select s.dt                                 as dt
      , v.publish_edat                       as publish_time
      , se.series_duration                   as series_duration
      , se.first_pay_epis_num                as first_pay_epis_num
+     , hours_add(mp.begin_date, 13)         as placement_time
+     , mp.code_stage                        as code_stage
+     , mp.plan_round                        as plan_round
+     , mp.spend                             as spend
+     , mp.d0_amount                         as income_amt
      , ls.epis3_watch_user
      , ls.epis3_loss_user
      , ls.paid_prev_watch_user
@@ -445,6 +536,10 @@ select s.dt                                 as dt
      , coalesce(s.total_play_duration, 0)   as total_play_duration
      , s.play_user
      , coalesce(p.play_count, 0)            as play_count
+     , els.free_effective_watch_user
+     , els.free_loss_watch_user
+     , els.paid_effective_watch_user
+     , els.paid_loss_watch_user
      , es.unlock_user                       as series_unlock_user
      , us.series_charge_user
      , es.unlock_epis                       as total_unlock_epis_cnt
@@ -485,10 +580,18 @@ left join unlock_stat us
  and s.series_id = us.series_id
 left join series_pay_boundary se
   on s.series_id = se.series_id
+left join marketing_plan mp
+  on cast(s.series_id as string) = mp.code_id
 left join loss_stat ls
   on s.dt = ls.dt
  and s.core = ls.core
  and s.acquisition_source_cd = ls.acquisition_source_cd
  and s.language_code = ls.language_code
  and s.series_id = ls.series_id
+left join effective_loss_stat els
+  on s.dt = els.dt
+ and s.core = els.core
+ and s.acquisition_source_cd = els.acquisition_source_cd
+ and s.language_code = els.language_code
+ and s.series_id = els.series_id
 ;
