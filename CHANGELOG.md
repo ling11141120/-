@@ -104,3 +104,25 @@
 - [AI] 生成 MySQL 版本 DDL，补充普通索引（index_user_id、index_expire_time等）
 - [AI] 使用项目 sql-codeformat 脚本格式化四个 SQL 文件
 - [人工] 测试环境建表验证，DML 单天数据验证通过
+
+---
+## dev+roger+RTM-43047+短剧内容完播中台迭代 | 负责人: roger | 周期: 2026-06-09 ~ 2026-06-11
+
+### 2026-06-09
+- [人工] 确认短剧完播中台新增字段范围、播放量口径不改原始 PV、不新增 ROI 字段
+- [AI] 分析两张北斗 ADS 表 DDL/DML 与营销计划视图口径，生成测试 DDL 和字段缺口清单
+- [AI] 改造 ads_sv_beidou_series_epis_stat_di DDL/DML，新增每集播放量、有效观看用户、流失观看用户
+- [AI] 改造 ads_sv_beidou_series_daily_stat_di DDL/DML，新增投放字段和免费/付费有效观看、流失观看指标
+- [人工] 确认 placement_time 需从西五区 begin_date 转换为东八区，调整和修正口径
+
+### 2026-06-10
+- [人工] 确认最后一集不计入流失观看用户，播放量保持去重观看记录计数口径
+- [AI] 调整每集和每日 DML，排除最后一集流失观看用户
+- [人工] 对比 tmp 与 ads 在 2026-06-08 同批次数据，验证主键覆盖、旧字段一致性、新增字段覆盖和最后一集流失规则
+- [AI] 生成生产 ALTER TABLE ADD COLUMN 工单 SQL，并校验字段顺序
+- [人工] 重跑测试表与生产 ADS 数据，确认验证结论
+
+### 2026-06-11
+- [人工] 业务需求变更，确认 dim_sv_beidou_serices_detail_df 需补充 placement_time，用 MarketingPlan BeginDate 加 13 小时转换为东八区
+- [人工] 改造 dim_sv_beidou_serices_detail_df DDL/DML，新增 placement_time 并关联营销计划来源
+- [AI] 补充 dim.dim_sv_beidou_serices_detail_df 的生产 ALTER TABLE ADD COLUMN 工单 SQL
