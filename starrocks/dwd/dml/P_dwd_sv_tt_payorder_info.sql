@@ -13,6 +13,7 @@ with refund_order as (
           get_json_string(content, '$.trade_order_id')              as trade_order_id
         , max(if(event_type in(9, 10), 1, 0))                       as is_refund
         , max(if(get_json_string(content, '$.is_sandbox'), 1, 0))   as is_sandbox
+        , max(if(get_json_string(content, '$.pay_type') = 'ACA', 1, 0)) as is_aca
     from ods.ods_tidb_short_video_tt_vip_subscribe_event_log
     where create_time >= date_trunc('month', date_sub('${dt}', interval 5 month))  -- 退款沙盒订单处理周期
       and create_time < date_add(date_trunc('month', '${dt}'), interval 1 month)
@@ -28,9 +29,10 @@ with refund_order as (
         , cast(price_title as decimal(10, 2))                       as recharge_amt
         , cast(price_title as decimal(10, 2)) * if(mt = 4, 0.85, 0.7) as net_amt
         , if(vip_type in(1, 4), 1, effective_time)                  as effective_time
-    from dim.dim_short_video_goods_view
-    where core = 16
-      and is_remove = 0
+    from dim.dim_short_video_goods_view                            as a1
+    join ods.ods_tidb_sharpengine_ads_global_tiktokminiscorecfg    as a2    -- 20260611新增，限制core值
+      on a1.core = a2.core
+    where is_remove = 0
 )
 -- tt订阅订单
 select
@@ -47,8 +49,8 @@ select
     , null                                                          as series_id
     , d.recharge_amt
     , d.recharge_amt / d.effective_time                             as monthly_recharge_amt
-    , d.net_amt
-    , d.net_amt / d.effective_time                                  as monthly_net_amt
+    , if(b.is_aca = 1 and d.mt = 1, d.recharge_amt * 0.85, d.net_amt) as net_amt     -- 20260611新增，pay_type='ACA' and mt=1按照0.85算
+    , if(b.is_aca = 1 and d.mt = 1, d.recharge_amt * 0.85, d.net_amt) / d.effective_time as monthly_net_amt
     , ifnull(b.is_refund, 0)                                        as is_refund
     , ifnull(b.is_sandbox, 0)                                       as is_sandbox
     , a.create_time
