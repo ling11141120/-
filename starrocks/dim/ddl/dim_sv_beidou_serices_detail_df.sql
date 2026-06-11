@@ -11,6 +11,7 @@ create table dim.dim_sv_beidou_serices_detail_df
     ,all_epis        int comment "短剧集数"
     ,cover_url       varchar(512) comment "短剧封面"
     ,publish_time    datetime comment "发布时间"
+    ,placement_time  datetime comment "投放时间(东八区)"
     ,series_duration bigint comment "短剧总时长(单位: 秒)"
     ,etl_time        datetime comment "数据清洗时间"
 ) engine = OLAP

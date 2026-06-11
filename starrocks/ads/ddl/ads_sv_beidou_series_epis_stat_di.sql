@@ -29,6 +29,10 @@ create table ads.ads_sv_beidou_series_epis_stat_di
     ,exit_60s_plus_user      bitmap                comment ">=60s跳出用户"
     -- 本集总观看用户 (bitmap)
     ,epis_watch_user         bitmap                comment "本集观看总用户"
+    -- 本次迭代新增指标
+    ,play_count              bigint                comment "每集播放量"
+    ,effective_watch_user    bitmap                comment "每集有效观看用户"
+    ,loss_watch_user         bitmap                comment "每集流失观看用户"
     ,etl_time                datetime              comment "数据清洗时间"
 ) engine = OLAP
     primary key(dt, core, acquisition_source_cd, language_code, series_id, epis_id)
