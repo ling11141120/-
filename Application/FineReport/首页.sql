@@ -197,17 +197,26 @@ select date_format(concat(month, 11), '%y-%m') as month2
 ;
 
 -- 全部-表格-不含分销广告收入
-select date_format(dt, '%y-%m') as month2
-     , sum(amt)                 as `广告收入`
-  from dws.dws_advertisement_user_position_amt_ed
- where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
-   and (    product_id <> 6833
-         or (    product_id = 6833
-             and coalesce(core, -1) not in (2, 3)
-            )
-       )
- group by 1
- order by 1 desc
+select month2
+     , sum(`广告收入`) as `广告收入`
+  from (select date_format(dt, '%y-%m') as month2
+             , sum(amt)                 as `广告收入`
+          from dws.dws_advertisement_user_position_amt_ed
+         where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
+           and (    product_id <> 6833
+                 or (    product_id = 6833
+                     and coalesce(core, -1) not in (2, 3)
+                    )
+               )
+         group by 1
+         union all
+         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+              , sum(IaaRevenue)                                              as `广告收入`
+           from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
+           group by 1
+       ) t
+group by 1
+order by 1 desc
 ;
 
 -- 全部-表格-不含分销畅读收入
@@ -410,13 +419,23 @@ select date_format(concat(month, 11), '%y-%m') as month2
 
 -- 海外阅读-表格-不含分销广告收入
 -- 对应数据集：阅读-畅读月度指标-sr
-select date_format(dt, '%y-%m') as month2
-     , sum(amt)                 as `广告收入`
-  from dws.dws_advertisement_user_position_amt_ed
- where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
-   and product_id in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
- group by 1
- order by 1 desc
+select month2
+     , sum(`广告收入`) as `广告收入`
+  from (select date_format(dt, '%y-%m') as month2
+             , sum(amt)                 as `广告收入`
+          from dws.dws_advertisement_user_position_amt_ed
+         where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
+           and product_id in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
+         group by 1
+         union all
+         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+              , sum(IaaRevenue)                                              as `广告收入`
+           from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
+          where productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
+           group by 1
+       ) t
+group by 1
+order by 1 desc
 ;
 
 -- 海外阅读-表格-不含分销畅读收入
@@ -564,14 +583,24 @@ select date_format(concat(month, 11), '%y-%m') as month2
 
 -- 海外短剧-表格-不含分销广告收入
 -- 对应数据集：短剧-畅读月度指标-sr
-select date_format(dt, '%y-%m') as month2
-     , sum(amt)                 as `广告收入`
-  from dws.dws_advertisement_user_position_amt_ed
- where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
-   and product_id = 6833
-   and coalesce(core, -1) not in (2, 3)
- group by 1
- order by 1 desc
+select month2
+     , sum(`广告收入`) as `广告收入`
+  from (select date_format(dt, '%y-%m') as month2
+             , sum(amt)                 as `广告收入`
+          from dws.dws_advertisement_user_position_amt_ed
+         where dt >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
+           and product_id = 6833
+           and coalesce(core, -1) not in (2, 3)
+         group by 1
+         union all
+         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+              , sum(IaaRevenue)                                              as `广告收入`
+           from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
+          where productid = 6833
+           group by 1
+       ) t
+group by 1
+order by 1 desc
 ;
 
 -- 海外短剧-表格-不含分销畅读收入
