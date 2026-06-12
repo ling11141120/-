@@ -105,7 +105,7 @@ from (
                            left join dim.dim_sr_recharge_sdk_exclude d
                                      on a.order_id = d.order_number
                   where d.ym is null and a.coo_notify_time >= '2021-06-27'
-                    and a.product_id != 6833
+                    and a.product_id not in('6833','8211','2311')
                     and date(a.coo_notify_time) >= date_format(date_sub('${dt}', interval 1 month), '%Y-%m-01')
                     and date(a.coo_notify_time) <= last_day(date_sub('${dt}', interval 1 month))
               ) a
