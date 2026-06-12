@@ -47,6 +47,8 @@ select a.SeriesId         as series_id
      , d.Coef             as source_rights_holder_coef
      , d.LangIds          as source_rights_holder_lang_ids
      , now()              as etl_time
+     -- 06.12新增：海阅关联书籍id
+     , e.BookId           as book_id
   from ods.ods_tidb_short_video_series                   as a
   left join ods.ods_tidb_short_video_admin_source_series as b
     on a.SourceSeriesId = b.SeriesId
@@ -61,5 +63,9 @@ select a.SeriesId         as series_id
     on a.SeriesId = c.SeriesId
   left join ods.ods_tidb_short_video_admin_rights_holder as d
     on b.RightsHolderId = d.Id
+    -- 新增关联：海阅关联书籍id
+  left join ods.ods_tidb_short_video_admin_series        as e
+    on a.SeriesId = e.SeriesId
  where a.AppType = 1
 ;
+
