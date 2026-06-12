@@ -26,6 +26,14 @@ dl_user_set as (
     group by 1, 2
 ),
 
+series_time_attr as (
+    select series_id
+         , max(publish_time)   as publish_time
+         , max(placement_time) as placement_time
+    from dim.dim_sv_beidou_serices_detail_df
+    group by series_id
+),
+
 -- 去重底表(endwatching 同用户+剧+集可能上报几百次，core 从 app_id 提取)
 epis_watch_view as (
     select ew.dt
@@ -192,6 +200,8 @@ select s.dt
      , dic.cd_val_desc  as language_name
      , v.series_code
      , v.series_name
+     , sta.publish_time
+     , sta.placement_time
      , s.next_epis_user
      , s.epis_complete_user
      , s.epis_total_watch_duration
@@ -212,6 +222,8 @@ select s.dt
 from epis_stat s
 left join dim.dim_short_video_series_view v
   on s.series_id = v.series_id
+left join series_time_attr sta
+  on s.series_id = sta.series_id
 left join dim.dim_pub_code_mapping_dict dic
   on dic.app_plat = 'pub'
  and dic.cd_col = 'lang_cd'
