@@ -106,7 +106,7 @@
 - [人工] 测试环境建表验证，DML 单天数据验证通过
 
 ---
-## dev+roger+RTM-43047+短剧内容完播中台迭代 | 负责人: roger | 周期: 2026-06-09 ~ 2026-06-11
+## dev+roger+RTM-43047+短剧内容完播中台迭代 | 负责人: roger | 周期: 2026-06-09 ~ 2026-06-12
 
 ### 2026-06-09
 - [人工] 确认短剧完播中台新增字段范围、播放量口径不改原始 PV、不新增 ROI 字段
@@ -126,3 +126,9 @@
 - [人工] 业务需求变更，确认 dim_sv_beidou_serices_detail_df 需补充 placement_time，用 MarketingPlan BeginDate 加 13 小时转换为东八区
 - [人工] 改造 dim_sv_beidou_serices_detail_df DDL/DML，新增 placement_time 并关联营销计划来源
 - [AI] 补充 dim.dim_sv_beidou_serices_detail_df 的生产 ALTER TABLE ADD COLUMN 工单 SQL
+
+### 2026-06-12
+- [人工] 确认 ads_sv_beidou_series_epis_stat_di、ads_sv_beidou_series_source_stat_di、ads_sv_beidou_series_user_type_di 需补充 publish_time 和 placement_time
+- [AI] 按计划改造 3 张 ADS 表 DDL/DML，统一从 dim_sv_beidou_serices_detail_df 聚合取发布时间和投放时间，避免维表多行放大
+- [AI] 补充 3 张 ADS 表生产 ALTER TABLE ADD COLUMNS 工单 SQL，字段统一放在 series_name 后
+- [人工] 重新刷 tmp 表 2026-06-10 ~ 2026-06-11 数据，用于和生产 ADS 同名表对比

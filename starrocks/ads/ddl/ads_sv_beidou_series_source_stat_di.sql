@@ -10,6 +10,8 @@ create table ads.ads_sv_beidou_series_source_stat_di
     ,language_name         varchar(100)      comment "语言名称"
     ,series_code           varchar(100)      comment "短剧代号"
     ,series_name           varchar(255)      comment "短剧名称"
+    ,publish_time          datetime          comment "发布时间"
+    ,placement_time        datetime          comment "投放时间(东八区)"
     ,startwatching_num     bigint            comment "观看量"
     ,exposure_num          bigint            comment "曝光量"
     ,etl_time              datetime          comment "数据清洗时间"
