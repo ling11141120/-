@@ -10,14 +10,14 @@ insert into dwd.dwd_sv_tt_payorder_info
 with refund_order as (
     -- 获取退款、沙盒订单的trade_order_id
     select
-          get_json_string(content, '$.trade_order_id')              as trade_order_id
+          trade_order_id
         , max(if(event_type in(9, 10), 1, 0))                       as is_refund
-        , max(if(get_json_string(content, '$.is_sandbox'), 1, 0))   as is_sandbox
-        , max(if(get_json_string(content, '$.pay_type') = 'ACA', 1, 0)) as is_aca
-    from ods.ods_tidb_short_video_tt_vip_subscribe_event_log
+        , max(is_sandbox)                                           as is_sandbox
+        , max(if(pay_type = 'ACA', 1, 0))                           as is_aca
+    from dwd.dwd_sv_tt_vip_subscribe_event_log_view
     where create_time >= date_trunc('month', date_sub('${dt}', interval 5 month))  -- 退款沙盒订单处理周期
       and create_time < date_add(date_trunc('month', '${dt}'), interval 1 month)
-      and get_json_string(content, '$.trade_order_id') is not null
+      and trade_order_id is not null
     group by 1
 )
 , goods as (
@@ -30,7 +30,7 @@ with refund_order as (
         , cast(price_title as decimal(10, 2)) * if(mt = 4, 0.85, 0.7) as net_amt
         , if(vip_type in(1, 4), 1, effective_time)                  as effective_time
     from dim.dim_short_video_goods_view                            as a1
-    join ods.ods_tidb_sharpengine_ads_global_tiktokminiscorecfg    as a2    -- 20260611新增，限制core值
+    join dim.dim_sv_tiktok_minis_core_cfg_view                    as a2    -- 20260611新增，限制core值
       on a1.core = a2.core
     where is_remove = 0
 )
@@ -56,7 +56,7 @@ select
     , a.create_time
     , date_add(a.create_time, interval e.generate_series month)      as settle_time
     , now()                                                         as etl_time
-from ods.ods_tidb_short_video_tt_vip_subscription_payorder a  -- 海剧tt订阅订单
+from dwd.dwd_sv_tt_vip_subscription_payorder_view a  -- 海剧tt订阅订单
 left join refund_order b
        on a.trade_order_id = b.trade_order_id  -- 退款、沙盒订单
 left join dim.dim_short_video_user_accountinfo c
@@ -93,7 +93,7 @@ select
     , a.create_time
     , a.create_time                                                 as settle_time
     , now()                                                         as etl_time
-from ods.ods_tidb_short_video_tt_payorder a  -- 海剧tt换币订单
+from dwd.dwd_sv_tt_payorder_view a  -- 海剧tt换币订单
 left join refund_order b
        on a.trade_order_id = b.trade_order_id
 left join dim.dim_short_video_user_accountinfo c
