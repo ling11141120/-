@@ -12,6 +12,8 @@ create table ads.ads_sv_beidou_series_epis_stat_di
     ,language_name           varchar(100)          comment "语言名称"
     ,series_code             varchar(100)          comment "短剧代号"
     ,series_name             varchar(255)          comment "短剧名称"
+    ,publish_time            datetime              comment "发布时间"
+    ,placement_time          datetime              comment "投放时间(东八区)"
     -- 续看指标 (bitmap)
     ,next_epis_user          bitmap                comment "下一集续看用户数"
     ,epis_complete_user      bitmap                comment "本集完播用户数(进度>=95%)"

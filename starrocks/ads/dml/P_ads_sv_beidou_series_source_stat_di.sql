@@ -19,6 +19,13 @@ with yinliu_tmp as (
       and lv.create_time <= cast('${dt}' as datetime)
     group by 1, 2
 ),
+series_time_attr as (
+    select series_id
+         , max(publish_time)   as publish_time
+         , max(placement_time) as placement_time
+    from dim.dim_sv_beidou_serices_detail_df
+    group by series_id
+),
 stat_tmp as (
     select dt
          , coalesce(core, 0)              as core
@@ -130,12 +137,16 @@ select s.dt
      , dic.cd_val_desc as language_name
      , v.series_code
      , v.series_name
+     , sta.publish_time
+     , sta.placement_time
      , s.startwatching_num
      , s.exposure_num
      , now()           as etl_time
 from stat_tmp s
      left join dim.dim_short_video_series_view v
         on s.series_id = v.series_id
+     left join series_time_attr sta
+        on cast(s.series_id as bigint) = sta.series_id
      left join dim.dim_pub_code_mapping_dict dic
         on dic.app_plat = 'pub'
        and dic.cd_col = 'lang_cd'
