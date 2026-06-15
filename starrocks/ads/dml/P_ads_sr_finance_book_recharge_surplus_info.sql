@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-08
 ----------------------------------------------------------------
 
-delete from ads.`ads_sr_finance_book_recharge_surplus_info` where aging_dt >= '${bf_1_month_1_dt}' and aging_dt <'cur_month_1_dt';
+delete from ads.`ads_sr_finance_book_recharge_surplus_info` where aging_dt >= '${bf_1_month_1_dt}' and aging_dt <'${cur_month_1_dt}';
 
 insert into ads.`ads_sr_finance_book_recharge_surplus_info`
 with recharge as (
