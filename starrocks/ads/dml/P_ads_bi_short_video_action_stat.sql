@@ -1,12 +1,9 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_bi_short_video_action_stat
--- workflow_version : 19
--- create_user      : zhengtt
--- task_name        : ads_bi_short_video_action_stat
--- task_version     : 17
--- update_time      : 2025-07-11 10:37:59
--- sql_path         : \starrocks\tbl_ads_bi_short_video_action_stat\ads_bi_short_video_action_stat
+-- 程序功能： 海外短剧行为统计表
+-- 程序名： P_ads_bi_short_video_action_stat
+-- 目标表： ads.ads_bi_short_video_action_stat
+-- 负责人： lwb
+-- 开发日期： 2026-06-15
 ----------------------------------------------------------------
 -- 前置SQL语句
 delete from ads.ads_bi_short_video_action_stat where dt >= date_sub('${dt}', interval 10 day) and dt < '${dt}';

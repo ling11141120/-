@@ -1,12 +1,9 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_bi_sv_recommendation_conversion_funnel
--- workflow_version : 9
--- create_user      : hufengju
--- task_name        : ads_bi_sv_recommendation_conversion_funnel
--- task_version     : 9
--- update_time      : 2026-05-14 19:32:42
--- sql_path         : \starrocks\tbl_ads_bi_sv_recommendation_conversion_funnel\ads_bi_sv_recommendation_conversion_funnel
+-- 程序功能： 海剧推荐页转化漏斗报表
+-- 程序名： P_ads_bi_sv_recommendation_conversion_funnel
+-- 目标表： ads.ads_bi_sv_recommendation_conversion_funnel
+-- 负责人： lwb
+-- 开发日期： 2026-06-15
 ----------------------------------------------------------------
 -- SQL语句
 insert into ads.ads_bi_sv_recommendation_conversion_funnel
