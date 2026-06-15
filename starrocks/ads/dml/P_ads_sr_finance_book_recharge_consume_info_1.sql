@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-08
 ----------------------------------------------------------------
 
-delete from ads.ads_sr_finance_book_recharge_consume_info where dt >= '$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}';
+delete from ads.ads_sr_finance_book_recharge_consume_info where dt >= '${bf_1_month_1_dt}' and dt <'cur_month_1_dt';
 
 insert into ads.ads_sr_finance_book_recharge_consume_info
 select
