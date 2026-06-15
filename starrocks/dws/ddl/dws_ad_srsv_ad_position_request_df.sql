@@ -12,7 +12,7 @@ create table dws.dws_ad_srsv_ad_position_request_df (
     ,core                 varchar(50)                           comment "core"
     ,mt                   varchar(20)                           comment "mt"
     ,language_id          varchar(20)                           comment "语言id"
-    ,reg_country          bigint                                comment "注册国家"
+    ,reg_country          varchar(50)                           comment "注册国家"
     ,project_id           bigint                                comment "5：海阅，8：海剧"
     ,app_ver              bigint                                comment "应用版本号"
     ,request_result       varchar(50)                           comment "广告请求结果"
