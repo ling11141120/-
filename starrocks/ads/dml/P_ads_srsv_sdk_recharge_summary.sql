@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-08
 ----------------------------------------------------------------
 
-delete from ads.ads_srsv_sdk_recharge_summary where dt >= '$[add_months(yyyy-MM, -1)]-01' and dt <='${last_day}';
+delete from ads.ads_srsv_sdk_recharge_summary where dt >= '${bf_1_month_1_dt}' and dt <'${cur_month_1_dt}';
 
 insert into ads.ads_srsv_sdk_recharge_summary
 with member as(
