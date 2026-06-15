@@ -1,36 +1,38 @@
-CREATE TABLE `ads_bi_sv_recommendation_conversion_funnel` (
-  `dt` date NOT NULL COMMENT "日期分区",
-  `position_type` varchar(300) NOT NULL COMMENT "场景",
-  `channel_id` varchar(100) NOT NULL COMMENT "频道id",
-  `list_id` varchar(100) NOT NULL COMMENT "榜单id",
-  `event_strategy_id` varchar(100) NOT NULL COMMENT "策略id",
-  `programme_id` varchar(100) NOT NULL COMMENT "方案id",
-  `exp_user_id` bigint(20) NOT NULL COMMENT "用户id",
-  `core` int(11) NOT NULL COMMENT "corever",
-  `mt` int(11) NOT NULL COMMENT "mt",
-  `current_language2` varchar(300) NOT NULL COMMENT "语言",
-  `channel_name` varchar(512) NULL COMMENT "频道名称",
-  `channel_sort` int(11) NULL COMMENT "频道位序",
-  `list_name` varchar(512) NULL COMMENT "榜单名称",
-  `list_sort` int(11) NULL COMMENT "榜单位序",
-  `exp_cnt` int(11) NULL COMMENT "曝光次数",
-  `clc_user_id` bigint(20) NULL COMMENT "点击用户",
-  `clc_cnt` int(11) NULL COMMENT "点击次数",
-  `watch_user_id` bigint(20) NULL COMMENT "观看用户",
-  `watch_epis` int(11) NULL COMMENT "观看集数",
-  `watch_all` int(11) NULL COMMENT "是否观看最后一集",
-  `watch_percent_20` int(11) NULL COMMENT "是否观看百分位20集",
-  `watch_percent_50` int(11) NULL COMMENT "是否观看百分位50集",
-  `unlock_user_id` bigint(20) NULL COMMENT "解锁用户",
-  `all_unlock_epis` int(11) NULL COMMENT "总解锁集数",
-  `unlock_epis` int(11) NULL COMMENT "付费解锁集数",
-  `unlock_amount` int(11) NULL COMMENT "解锁数量",
-  `all_epis` int(11) NULL COMMENT "解锁剧集所在剧总集数",
-  `etl_time` datetime NOT NULL COMMENT "数据清洗时间"
-) ENGINE=OLAP 
-PRIMARY KEY(`dt`, `position_type`, `channel_id`, `list_id`, `event_strategy_id`, `programme_id`, `exp_user_id`, `core`, `mt`, `current_language2`)
+CREATE TABLE ads_bi_sv_recommendation_conversion_funnel (
+     dt                   date         NOT NULL COMMENT "日期分区"
+    ,position_type        varchar(300) NOT NULL COMMENT "场景"
+    ,channel_id           varchar(100) NOT NULL COMMENT "频道id"
+    ,list_id              varchar(100) NOT NULL COMMENT "榜单id"
+    ,event_strategy_id    varchar(100) NOT NULL COMMENT "策略id"
+    ,programme_id         varchar(100) NOT NULL COMMENT "方案id"
+    ,exp_user_id          bigint(20)   NOT NULL COMMENT "用户id"
+    ,core                 int(11)      NOT NULL COMMENT "corever"
+    ,mt                   int(11)      NOT NULL COMMENT "mt"
+    ,current_language2    varchar(300) NOT NULL COMMENT "语言"
+    ,channel_name         varchar(512)          COMMENT "频道名称"
+    ,channel_sort         int(11)               COMMENT "频道位序"
+    ,list_name            varchar(512)          COMMENT "榜单名称"
+    ,list_sort            int(11)               COMMENT "榜单位序"
+    ,exp_cnt              int(11)               COMMENT "曝光次数"
+    ,clc_user_id          bigint(20)            COMMENT "点击用户"
+    ,clc_cnt              int(11)               COMMENT "点击次数"
+    ,watch_user_id        bigint(20)            COMMENT "观看用户"
+    ,watch_epis           int(11)               COMMENT "观看集数"
+    ,watch_all            int(11)               COMMENT "是否观看最后一集"
+    ,watch_percent_20     int(11)               COMMENT "是否观看百分位20集"
+    ,watch_percent_50     int(11)               COMMENT "是否观看百分位50集"
+    ,unlock_user_id       bigint(20)            COMMENT "解锁用户"
+    ,all_unlock_epis      int(11)               COMMENT "总解锁集数"
+    ,unlock_epis          int(11)               COMMENT "付费解锁集数"
+    ,unlock_amount        int(11)               COMMENT "解锁数量"
+    ,all_epis             int(11)               COMMENT "解锁剧集所在剧总集数"
+    ,is_super_drama       smallint(6)           COMMENT "是否超点剧：0=否，1=是"
+    ,user_subscribe_type  varchar(128)          COMMENT "用户订阅类型编码：810(SVIP)/860(NSVIP)/840(新福利包)/0(普通充值)/其他"
+    ,etl_time             datetime    NOT NULL  COMMENT "数据清洗时间"
+) ENGINE=OLAP
+PRIMARY KEY(dt, position_type, channel_id, list_id, event_strategy_id, programme_id, exp_user_id, core, mt, current_language2)
 COMMENT "海剧推荐页转化漏斗报表"
-PARTITION BY RANGE(`dt`)
+PARTITION BY RANGE(dt)
 (PARTITION p20260114 VALUES [("2026-01-14"), ("2026-01-15")),
 PARTITION p20260115 VALUES [("2026-01-15"), ("2026-01-16")),
 PARTITION p20260116 VALUES [("2026-01-16"), ("2026-01-17")),
@@ -155,20 +157,21 @@ PARTITION p20260514 VALUES [("2026-05-14"), ("2026-05-15")),
 PARTITION p20260515 VALUES [("2026-05-15"), ("2026-05-16")),
 PARTITION p20260516 VALUES [("2026-05-16"), ("2026-05-17")),
 PARTITION p20260517 VALUES [("2026-05-17"), ("2026-05-18")))
-DISTRIBUTED BY HASH(`event_strategy_id`, `exp_user_id`) BUCKETS 7 
+DISTRIBUTED BY HASH(event_strategy_id, exp_user_id) BUCKETS 7
 PROPERTIES (
-"replication_num" = "3",
-"bloom_filter_columns" = "exp_user_id",
-"dynamic_partition.enable" = "true",
-"dynamic_partition.time_unit" = "day",
-"dynamic_partition.time_zone" = "Asia/Shanghai",
-"dynamic_partition.start" = "-120",
-"dynamic_partition.end" = "3",
-"dynamic_partition.prefix" = "p",
-"dynamic_partition.buckets" = "1",
-"dynamic_partition.history_partition_num" = "0",
-"in_memory" = "false",
-"enable_persistent_index" = "true",
-"replicated_storage" = "true",
-"compression" = "LZ4"
-);
+    "replication_num" = "3",
+    "bloom_filter_columns" = "exp_user_id",
+    "dynamic_partition.enable" = "true",
+    "dynamic_partition.time_unit" = "day",
+    "dynamic_partition.time_zone" = "Asia/Shanghai",
+    "dynamic_partition.start" = "-120",
+    "dynamic_partition.end" = "3",
+    "dynamic_partition.prefix" = "p",
+    "dynamic_partition.buckets" = "1",
+    "dynamic_partition.history_partition_num" = "0",
+    "in_memory" = "false",
+    "enable_persistent_index" = "true",
+    "replicated_storage" = "true",
+    "compression" = "LZ4"
+)
+;
