@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-09
 ----------------------------------------------------------------
 
-delete from ads.ads_sv_finance_series_recharge_consume_info where dt >= '${bf_1_month_1_dt}' and dt <'cur_month_1_dt';
+delete from ads.ads_sv_finance_series_recharge_consume_info where dt >= '${bf_1_month_1_dt}' and dt <'${cur_month_1_dt}';
 
 insert into ads.ads_sv_finance_series_recharge_consume_info
 select
