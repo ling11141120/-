@@ -1,12 +1,9 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_bi_short_video_consume_stat
--- workflow_version : 10
--- create_user      : zhengtt
--- task_name        : ads_bi_short_video_consume_stat
--- task_version     : 8
--- update_time      : 2024-11-26 20:46:38
--- sql_path         : \starrocks\tbl_ads_bi_short_video_consume_stat\ads_bi_short_video_consume_stat
+-- 程序功能： 海外短剧剧集消费统计表
+-- 程序名： P_ads_bi_short_video_consume_stat
+-- 目标表： ads.ads_bi_short_video_consume_stat
+-- 负责人： lwb
+-- 开发日期： 2026-06-15
 ----------------------------------------------------------------
 -- 前置SQL语句
 delete from ads.ads_bi_short_video_consume_stat where dt = '${bf_1_dt}';
