@@ -7,7 +7,7 @@
 -- 开发日期：2026-06-09
 ----------------------------------------------------------------
 
-create table if not exists ods.ods_sensors_production_adpositionexposure (
+create table if not exists ods_log.ods_sensors_production_adpositionexposure (
      dt                date         not null comment "分区日期"
     ,id                string       not null comment "nvl(rid,track_id)"
     ,track_id          string                comment ""
