@@ -13,8 +13,6 @@
 --        readerlog_th.log_chapterreaderlog
 --        readerlog_and2_sync.log_chapterreaderlog
 --        readerlog_cd2_sync.log_chapterreaderlog
---        readerlog_and.log_chapterreaderlog
---        readerlog_cd.log_chapterreaderlog
 -- 来源负责： 
 -- 采集工具： SeaTunnel
 -- 开发人： qhr
