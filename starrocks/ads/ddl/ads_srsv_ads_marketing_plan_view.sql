@@ -40,53 +40,58 @@ create or replace view ads.ads_srsv_ads_marketing_plan_view (
     ,d0_std_amount        comment "Day0 标准收入"
     ,d7_std_amount        comment "Day0 标准收入"
     ,code_lv              comment "最高阶段投放等级 A|S|SS"
+    ,is_super_drama       comment "是否超点剧 0=否|1=是（仅海剧 project_code=2 生效）"
     ,sr_createtime        comment "sr 入库时间"
     ,sr_updatetime        comment "sr 更新时间"
 )
 comment "市场测推表"
 as
-select Id                    as id
-     , ProjectCode           as project_code
-     , CodeId                as code_id
-     , Code                  as code
-     , PutProductId          as put_product_id
-     , CurrentLanguage       as current_language
-     , SourceChl             as source_chl
-     , PlanRound             as plan_round
-     , DateSpan              as date_span
-     , BeginDate             as begin_date
-     , EndDate               as end_date
-     , PlanRemark            as plan_remark
-     , PlanStatus            as plan_status
-     , PlanDocsUrl           as plan_docs_url
-     , CreateTime            as create_time
-     , Creator               as creator
-     , CreatorUid            as creator_uid
-     , UpdateTime            as update_time
-     , Updater               as updater
-     , UpdaterUid            as updater_uid
-     , IsDel                 as is_del
-     , AssetNum              as asset_num
-     , Budget                as budget
-     , PlanStatusRemark      as plan_status_remark
-     , TestStatus            as test_status
-     , Spend                 as spend
-     , Amount                as amount
-     , D0Amount              as d0_amount
-     , Day0FirstPayNum       as day0_first_pay_num
-     , RegNum                as reg_num
-     , IsInit                as is_init
-     , BeginLength           as begin_length
-     , BeginPublishLength    as begin_publish_length
-     , BeginIsFull           as begin_is_full
-     , EndLength             as end_length
-     , EndPublishLength      as end_publish_length
-     , EndIsFull             as end_is_full
-     , CodeStage             as code_stage
-     , D0StdAmount           as d0_std_amount
-     , D7StdAmount           as d7_std_amount
-     , CodeLv                as code_lv
-     , sr_createtime
-     , sr_updatetime
-  from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan
+select mp.Id                as id
+     , mp.ProjectCode       as project_code
+     , mp.CodeId            as code_id
+     , mp.Code              as code
+     , mp.PutProductId      as put_product_id
+     , mp.CurrentLanguage   as current_language
+     , mp.SourceChl         as source_chl
+     , mp.PlanRound         as plan_round
+     , mp.DateSpan          as date_span
+     , mp.BeginDate         as begin_date
+     , mp.EndDate           as end_date
+     , mp.PlanRemark        as plan_remark
+     , mp.PlanStatus        as plan_status
+     , mp.PlanDocsUrl       as plan_docs_url
+     , mp.CreateTime        as create_time
+     , mp.Creator           as creator
+     , mp.CreatorUid        as creator_uid
+     , mp.UpdateTime        as update_time
+     , mp.Updater           as updater
+     , mp.UpdaterUid        as updater_uid
+     , mp.IsDel             as is_del
+     , mp.AssetNum          as asset_num
+     , mp.Budget            as budget
+     , mp.PlanStatusRemark  as plan_status_remark
+     , mp.TestStatus        as test_status
+     , mp.Spend             as spend
+     , mp.Amount            as amount
+     , mp.D0Amount          as d0_amount
+     , mp.Day0FirstPayNum   as day0_first_pay_num
+     , mp.RegNum            as reg_num
+     , mp.IsInit            as is_init
+     , mp.BeginLength       as begin_length
+     , mp.BeginPublishLength as begin_publish_length
+     , mp.BeginIsFull       as begin_is_full
+     , mp.EndLength         as end_length
+     , mp.EndPublishLength  as end_publish_length
+     , mp.EndIsFull         as end_is_full
+     , mp.CodeStage         as code_stage
+     , mp.D0StdAmount       as d0_std_amount
+     , mp.D7StdAmount       as d7_std_amount
+     , mp.CodeLv            as code_lv
+     , if(mp.ProjectCode = '2' and sds.SeriesId is not null, 1, 0) as is_super_drama
+     , mp.sr_createtime
+     , mp.sr_updatetime
+  from ods.ods_tidb_ad_sharpengine_ads_global_MarketingPlan mp
+  left join ods.ods_tidb_short_video_early_on_demand_series sds
+    on mp.CodeId = sds.SeriesId
+   and sds.Status = 1
 ;
