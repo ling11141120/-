@@ -20,7 +20,6 @@ with user_sub as (
      where product_id = 6833
        and recharge_type_cd != '0'
        and card_expire_time is not null
-       and create_time >= date_sub('${bf_1_dt}', interval 365 day)
        and create_time <= '${bf_1_dt}'
        and card_expire_time >= '${bf_1_dt}'
      group by 1, 2
