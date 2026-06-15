@@ -132,3 +132,13 @@
 - [AI] 按计划改造 3 张 ADS 表 DDL/DML，统一从 dim_sv_beidou_serices_detail_df 聚合取发布时间和投放时间，避免维表多行放大
 - [AI] 补充 3 张 ADS 表生产 ALTER TABLE ADD COLUMNS 工单 SQL，字段统一放在 series_name 后
 - [人工] 重新刷 tmp 表 2026-06-10 ~ 2026-06-11 数据，用于和生产 ADS 同名表对比
+
+---
+## feature/qhr/ads-payorder-view改造 | 负责人: qhr | 周期: 2026-06-15 ~ 进行中
+
+### 2026-06-15
+- [人工] 确认不改造 ads.ads_short_video_payorder_view，避免 DWD 字段缺失影响核心下游
+- [人工] 确认新增 TT payorder 视图字段范围和最新结算记录排序规则
+- [AI] 创建 Program 方案与写入范围，收窄目标为新增 ads.ads_trade_sv_tt_payorder_info_view
+- [AI] 新增 ads.ads_trade_sv_tt_payorder_info_view，按 dt、product_id、trade_order_id 取 settle_dt 最新记录
+- [AI] 编写视图字段、唯一性和最新结算记录验证 SQL

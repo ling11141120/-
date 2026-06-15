@@ -210,9 +210,10 @@ select month2
                )
          group by 1
          union all
-         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+         select date_format(date_add(date_start, interval 13 hour), '%y-%m') as month2
               , sum(IaaRevenue)                                              as `广告收入`
            from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
+          where date_add(date_start, interval 13 hour) >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
            group by 1
        ) t
 group by 1
@@ -428,10 +429,11 @@ select month2
            and product_id in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
          group by 1
          union all
-         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+         select date_format(date_add(date_start, interval 13 hour), '%y-%m') as month2
               , sum(IaaRevenue)                                              as `广告收入`
            from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
           where productid in (3311, 3322, 3333, 3366, 3371, 3388, 3501, 3511, 3399)
+            and date_add(date_start, interval 13 hour) >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
            group by 1
        ) t
 group by 1
@@ -593,10 +595,11 @@ select month2
            and coalesce(core, -1) not in (2, 3)
          group by 1
          union all
-         select date_format(date_sub(date_start, interval 13 hour), '%y-%m') as month2
+         select date_format(date_add(date_start, interval 13 hour), '%y-%m') as month2
               , sum(IaaRevenue)                                              as `广告收入`
            from ods.ods_tidb_sharpengine_ads_global_tiktokminisiaadailyinsightbyhour
           where productid = 6833
+            and date_add(date_start, interval 13 hour) >= date_format(date_sub(curdate(), interval 18 month), '%Y-%m-01')
            group by 1
        ) t
 group by 1
