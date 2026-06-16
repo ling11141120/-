@@ -38,7 +38,7 @@ with base as (
          , a.shop_item
          , a.item_count                        as recharge_gear
          , if(a.dt = c.fst_recharege_dt, 1, 0) as is_first_recharge
-         , case when     (a.mt = 1 and get_json_int(a.cooorder_extinfo, '$.totalBillingPeriods') >= 2)
+         , case when     (a.mt = 1 and get_json_int(a.cooorder_extinfo, '$.AppStoreCommitmentInfo.totalBillingPeriods') >= 2)
                       or ((a.mt <> 1 or a.mt is null) and get_json_int(a.cooorder_extinfo, '$.InitialCommittedPaymentsCount') >= 2)
                     then case when e.installment_count = 3 then 2
                               when e.installment_count = 12 then 3
@@ -49,7 +49,7 @@ with base as (
          , count(a.user_id)                    as charge_cnt
          , sum(item_count)                     as before_charge
          , sum(a.base_amount / 100)            as after_charge
-         , case when a.mt = 1 and get_json_int(a.cooorder_extinfo, '$.totalBillingPeriods') >= 2 then '分期支付'
+         , case when a.mt = 1 and get_json_int(a.cooorder_extinfo, '$.AppStoreCommitmentInfo.totalBillingPeriods') >= 2 then '分期支付'
                 when (a.mt <> 1 or a.mt is null) and get_json_int(a.cooorder_extinfo, '$.InitialCommittedPaymentsCount') >= 2 then '分期支付'
                 else '非分期支付'
             end                                as subscribe_mode
