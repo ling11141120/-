@@ -282,3 +282,18 @@
 - [AI] 创建 Program 方案与写入范围，收窄目标为新增 ads.ads_trade_sv_tt_payorder_info_view
 - [AI] 新增 ads.ads_trade_sv_tt_payorder_info_view，按 dt、product_id、trade_order_id 取 settle_dt 最新记录
 - [AI] 编写视图字段、唯一性和最新结算记录验证 SQL
+
+---
+## dev+xjc+RTM-44480+财务推广费用账号归属调整 | 负责人: xjc | 周期: 2026-06-16 ~ 2026-06-16 | 已完成
+
+### 2026-06-16
+- [人工] 提供新接入广告账号代理商归属历史表 TiDB DDL 和格式化要求
+- [AI] 创建 Program 方案、写入范围和验证记录
+- [AI] 将 ods_tidb_sharpengine_ads_global_adaccountagentrelationhistory 转换为 StarRocks ODS DDL
+- [AI] 使用项目 sql-codeformat 脚本格式化 DDL，并记录 ODS 表头校验非幂等问题
+- [AI] 新增 dim_ad_account_agent_relation_history_view 维度视图，标准化广告账号代理商归属历史字段
+- [AI] 改造 P_ads_ad_finance_promotion_reconciliation，保留原来源 CTE 口径，仅在结果层用历史配置覆盖供应商归属
+- [AI] 调整账号代理商历史归属去重位置，由 DIM 维表侧改为 ADS DML 消费侧 `relation_history` CTE，保持 DIM 视图历史明细语义
+- [人工] 补充最终过滤要求，财务推广对账结果剔除代理商 `Click Tech Limited` 数据
+- [人工] 使用测试表 `tmp.tmp_xjc_ads_ad_finance_promotion_reconciliation` 对比生产表，验证总金额、历史区间重叠、历史覆盖异常和代理商剔除结果
+- [AI] 完成项目交付文件补充：`starrocks/ods/ddl/ods_tidb_sharpengine_ads_global_adaccountagentrelationhistory.sql`、`starrocks/dim/ddl/dim_ad_account_agent_relation_history_view.sql`、`starrocks/ads/dml/P_ads_ad_finance_promotion_reconciliation.sql`
