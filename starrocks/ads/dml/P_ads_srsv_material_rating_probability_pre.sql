@@ -1,13 +1,12 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : sch_ads_srsv_material_rating_probability
--- workflow_version : 73
--- create_user      : chenmo
--- task_name        : ads_sr_material_rating_probability_pre
--- task_version     : 31
--- update_time      : 2025-11-24 15:57:03
--- sql_path         : \starrocks\sch_ads_srsv_material_rating_probability\ads_sr_material_rating_probability_pre
+-- 程序功能： 海阅海剧-素材评分和概率
+-- 程序名： P_ads_sr_material_rating_probability_pre
+-- 目标表： ads.ads_sr_material_rating_probability_pre
+-- 负责人： chenmo
+-- 开发日期： 2025-11-13
+-- 版本号： v0.3.2
 ----------------------------------------------------------------
+
 -- SQL语句
 insert into ads.ads_srsv_material_rating_probability_pre
 with z1 as (
@@ -48,7 +47,7 @@ with z1 as (
                     ,BookChannel
                     ,mt
                     ,round(avg(R0Std), 4) as r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily
                 where BookChannel=1 and ProjectCode = 1
                 group by 1,2,3
             ) r2 on b.book_language=r2.CurrentLanguage
@@ -88,8 +87,8 @@ with z1 as (
                     ,SourceChl
                     ,mt
                     ,round(avg(R0Std), 4) as r0_std
-                from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
-                where ProjectCode = 1 and days_diff(now(),DateKey)=1
+                from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily
+                where ProjectCode = 2 and days_diff(now(),DateKey)=1
                 group by 1, 2, 3
             ) r2 on b.language=r2.CurrentLanguage
             -- 短剧标准

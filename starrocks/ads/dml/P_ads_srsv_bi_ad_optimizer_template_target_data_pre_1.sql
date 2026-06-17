@@ -1,15 +1,4 @@
 ----------------------------------------------------------------
--- project_name     : starrocks
--- workflow_name    : tbl_ads_srsv_bi_ad_optimizer_template_target_data_pre_1
--- workflow_version : 22
--- create_user      : qhr
--- task_name        : P_ads_srsv_bi_ad_optimizer_template_target_data_pre_1
--- task_version     : 17
--- update_time      : 2026-04-29 19:27:35
--- sql_path         : \starrocks\tbl_ads_srsv_bi_ad_optimizer_template_target_data_pre_1\P_ads_srsv_bi_ad_optimizer_template_target_data_pre_1
-----------------------------------------------------------------
--- SQL语句
-----------------------------------------------------------------
 -- 程序功能： 模板维度基建上限前置表-底表一-临时
 -- 程序名： P_ads_srsv_bi_ad_optimizer_template_target_data_pre_1
 -- 目标表： ads.ads_srsv_bi_ad_optimizer_template_target_data_pre_1
@@ -17,7 +6,7 @@
 -- 开发日期： 2025-11-13
 -- 版本号： v0.3.2
 ----------------------------------------------------------------
-
+-- SQL语句
 -- 维度:日期、新老组，书籍，mt，优化师&组
 insert into ads.ads_srsv_bi_ad_optimizer_template_target_data_pre_1
 with z1 as (
@@ -39,6 +28,7 @@ with z1 as (
          ,e.ad_target                                  as ad_target
          ,e.book_channel                               as book_channel
          ,e.story_type                                 as story_type
+         ,e.book_series                                as book_series       -- [新增] 书籍系列
          ,sum(a.cost_amount)                           as cost_amount
          ,sum(a.reg_num)                               as reg_num
          ,sum(a.amount)                                as amount
@@ -88,22 +78,24 @@ with z1 as (
                         ,story_type
                         ,is_spc
                         ,max_by(book_id,cnt)                                   as book_id
+                        ,max_by(book_series,cnt)                               as book_series   -- [新增] 透传
                    from (select ad_set_id
                               ,product_id
                               ,book_id
                               ,ad_target
                               ,book_channel
                               ,story_type
+                              ,book_series                                                    -- [新增]
                               ,if(upper(ads_type) like '%SPC%','SPC', '')    as is_spc
                               ,count(1) cnt
                          from ads.ads_advertisement_adext_view
-                         group by 1,2,3,4,5,6,7
+                         group by 1,2,3,4,5,6,7,8
                         )                                                     as x
                    group by 1,2,3,4,5,6
     )                                                             as e
                   on a.product_id=e.product_id
                       and a.ad_set_id=e.ad_set_id
-    group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+    group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17                          -- [变更] 新增book_series
 )
 
 -- 语言，代号，创编模板
@@ -124,6 +116,7 @@ with z1 as (
          ,a.ad_target                                         as ad_target
          ,a.book_channel                                      as book_channel
          ,a.story_type                                        as story_type
+         ,a.book_series                                       as book_series        -- [新增] 透传
          ,a.cost_amount                                       as cost_amount
          ,a.reg_num                                           as reg_num
          ,a.amount                                            as amount
@@ -213,6 +206,7 @@ WHERE (t.ad_set_id IS NOT NULL OR t2.ad_set_id IS NOT NULL)
          ,a1.ad_target
          ,a1.book_channel
          ,a1.story_type
+         ,a1.book_series                                                              -- [新增] 透传
          ,a1.cost_amount
          ,a1.reg_num
          ,a1.amount
@@ -438,32 +432,34 @@ WHERE (t.ad_set_id IS NOT NULL OR t2.ad_set_id IS NOT NULL)
                            and r.SourceChl = a.source_chl
                            and IFNULL(r.AdTarget,'') = IFNULL(a.ad_target,'')
         -- 最新阅读大盘标准
-             left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_1
-                       on put_1.dt = a.dt
-                           and put_1.AdSetId = a.ad_set_id
+             left join ods.ods_ads_tidb_sharpengine_ads_global_BookSeriesTypeDaily    as bstd
+                       on bstd.DateKey = a.dt
+                           and bstd.BookSeries = a.book_series
              left join (select CurrentLanguage
                              ,DateKey
                              ,BookChannel
                              ,SourceChl
                              ,Core
-                             ,StdCode
                              ,AdTarget
                              ,BookType
+                             ,ProductId
+                             ,BookSeriesType
                              ,max(if(mt=1,R0Std,null))             as ios_r0_std
                              ,max(if(mt=4,R0Std,null))             as and_r0_std
                              ,max(if(mt=0,R0Std,null))			   as mt0_r0_std
-                        from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                        from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily
                         where ProjectCode = 1 and DateKey>days_add('${dt}',-360)
-                        group by 1, 2, 3, 4, 5, 6, 7, 8
+                        group by 1, 2, 3, 4, 5, 6, 7, 8, 9
     )                                            as put
-                       on put.CurrentLanguage=a.languageid
-                           and put.BookChannel = (if(a.book_channel not in (0, 1), 1, a.book_channel))
-                           and put.core = a.core
-                           and put.DateKey=a.dt
+                       on put.DateKey = a.dt
+                           and put.CurrentLanguage = a.languageid
                            and put.SourceChl = a.source_chl
+                           and put.Core = a.core
+                           and put.ProductId = a.product_id
                            and IFNULL(put.AdTarget,'') = IFNULL(a.ad_target,'')
-                           and IFNULL(put.StdCode,'') = IFNULL(put_1.StdCode,'')
+                           and put.BookChannel = (case when a.book_channel not in (0, 1) then 1 else a.book_channel end)
                            and put.BookType = a.story_type
+                           and put.BookSeriesType = IFNULL(bstd.BookSeriesType, 1)
         -- 海剧分剧标准
              left join (select DateKey
                              ,VideoId
@@ -481,29 +477,26 @@ WHERE (t.ad_set_id IS NOT NULL OR t2.ad_set_id IS NOT NULL)
                            and r2.DateKey=a.dt
                            and IFNULL(r2.AdTarget,'') = IFNULL(a.ad_target,'')
         -- 海剧标准
-             left join ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag    as put_2
-                       on put_2.dt = a.dt
-                           and put_2.AdSetId = a.ad_set_id
              left join (select DateKey
                              ,CurrentLanguage
                              ,SourceChl
                              ,Core
-                             ,StdCode
                              ,AdTarget
+                             ,ProductId
                              ,max(if(mt=1,R0Std,null))             as ios_r0_std
                              ,max(if(mt=4,R0Std,null))             as and_r0_std
                              ,max(if(mt=0,R0Std,null))			   as mt0_r0_std
-                        from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                        from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily
                         where ProjectCode = 2
                           and DateKey>days_add('${dt}',-360)
                         group by 1, 2, 3, 4, 5, 6
     )                                            as put2
-                       on put2.CurrentLanguage = a.languageid
+                       on put2.DateKey = a.dt
+                           and put2.CurrentLanguage = a.languageid
                            and put2.SourceChl = a.source_chl
-                           and put2.DateKey = a.dt
-                           and put2.core = a.core
+                           and put2.Core = a.core
+                           and put2.ProductId = a.product_id
                            and IFNULL(put2.AdTarget,'') = IFNULL(a.ad_target,'')
-                           and IFNULL(put2.StdCode,'')=IFNULL(put_2.StdCode,'')
 )
 -- 标准和指标处理,core过滤,book_id非null
 -- 优化师、创编模板、新老组汇总
