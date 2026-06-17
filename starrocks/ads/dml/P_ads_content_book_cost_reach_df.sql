@@ -53,14 +53,13 @@ with book_info as (
      where a1.DateKey between b1.min_begin_date and '${dt}'
      group by 1, 2, 3, 4, 5
 )
-, put_flow_tag as (
-    select a1.Dt           as dt
-         , a1.AdSetId      as ad_set_id
-         , max(a1.StdCode) as std_code
-      from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgFlowTag as a1
+, book_series_type as (
+    select a1.DateKey           as date_key
+         , a1.BookSeries        as book_series
+         , max(a1.BookSeriesType) as book_series_type
+      from ods.ods_ads_tidb_sharpengine_ads_global_BookSeriesTypeDaily as a1
      cross join stage1_bounds as b1
-     where a1.ProjectCode = 1
-       and a1.Dt between b1.min_begin_date and '${dt}'
+     where a1.DateKey between b1.min_begin_date and '${dt}'
      group by 1, 2
 )
 , put_std as (
@@ -69,16 +68,17 @@ with book_info as (
          , a1.BookChannel     as book_channel
          , a1.SourceChl       as source_chl
          , a1.Core            as core
-         , a1.StdCode         as std_code
          , a1.AdTarget        as ad_target
          , a1.BookType        as story_type
+         , a1.ProductId       as product_id
+         , a1.BookSeriesType  as book_series_type
          , a1.Mt              as mt
          , max(a1.R0Std)      as r0_std
-      from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily as a1
+      from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily as a1
      cross join stage1_bounds as b1
      where a1.ProjectCode = 1
        and a1.DateKey between b1.min_begin_date and '${dt}'
-     group by 1, 2, 3, 4, 5, 6, 7, 8, 9
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 )
 , iaa_scale as (
     select a1.ProductId
@@ -116,9 +116,9 @@ with book_info as (
        and date_format(date(a1.create_time), '%Y-%m-%d') = a4.AmountDate
       left join ods.ods_tidb_sharpengine_ads_global_FbAccount   as a5
         on a1.fb_account = a5.account
-      left join put_flow_tag                                    as a6
-        on a6.dt = date(a1.create_time)
-       and a6.ad_set_id = a1.ad_set_id
+      left join book_series_type                                as a_bs
+        on a_bs.date_key = date(a1.create_time)
+       and a_bs.book_series = a2.book_series
       left join book_std                                        as a7
         on a7.book_id = a2.book_id
        and a7.mt = a2.mt
@@ -133,8 +133,9 @@ with book_info as (
        and a8.core = a1.core
        and a8.mt = a2.mt
        and ifnull(a8.ad_target, '') = ifnull(a2.ad_target, '')
-       and ifnull(a8.std_code, '') = ifnull(a6.std_code, '')
        and a8.story_type = a2.story_type
+       and a8.product_id = a1.product_id
+       and a8.book_series_type = IFNULL(a_bs.book_series_type, 1)
      cross join stage1_bounds as b1
      where a1.dt between b1.min_begin_date and '${dt}'
        and (a5.fbaccounttype = 0 or a5.fbaccounttype is null)

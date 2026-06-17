@@ -58,6 +58,8 @@ with book_info as (
        and a.product_id = 6833
        and a.core in (1, 4, 15)
        and a.source_chl in ('fbs2s', 'facebook', 'tt', 'applovin_int', 'awords', 'snapchat')
+       and b.book_id is not null
+       and b.ad_optimizer_uid is not null
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 )
 , z3 as (
@@ -91,7 +93,7 @@ with book_info as (
                       , currentlanguage
                       , adtarget
                       , max(r0std)      as r0std
-                   from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdCfgDaily
+                   from ods.ods_ads_tidb_sharpengine_ads_global_RoiStdConfigDaily
                   where projectcode = 2
                   group by 1, 2, 3, 4, 5, 6, 7
                 ) as b
