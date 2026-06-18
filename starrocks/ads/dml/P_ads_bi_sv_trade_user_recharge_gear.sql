@@ -6,9 +6,9 @@
 -- 开发日期：2026-05-25
 ----------------------------------------------------------------
 
-delete from tmp.ads_bi_sv_trade_user_recharge_gear where dt = '${bf_1_dt}';
+delete from ads.ads_bi_sv_trade_user_recharge_gear where dt = '${bf_1_dt}';
 
-insert into tmp.ads_bi_sv_trade_user_recharge_gear
+insert into ads.ads_bi_sv_trade_user_recharge_gear
 -- 获取订单明细信息
 with base as (
     select dt
@@ -100,7 +100,7 @@ with base as (
          , base.mt                                     as mt
          , base.core                                   as corever
          , base.shop_item_id                           as shop_item
-         , cast(base.recharge_amt as int)              as recharge_gear -- todo: recharge_amt是decimal，payorder的item_count是int，直接转成int的精度损失不确定应用方是否认可
+         , cast(base.recharge_amt as int)              as recharge_gear
          , if(base.dt = fstchr.fst_recharege_dt, 1, 0) as is_first_recharge
          , base.vip_type                               as vip_type
          , count(base.user_id)                         as charge_cnt
