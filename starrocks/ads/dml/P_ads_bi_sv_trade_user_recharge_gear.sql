@@ -89,6 +89,95 @@ with base as (
      where a.dt = '${bf_1_dt}'
      group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17
 )
+, tt_payorder as (
+    select base.dt                                     as dt
+         , base.product_id                             as product_id
+         , base.user_id                                as user_id
+         , uifo.current_language2                      as reg_language
+         , uifo.source_chl                             as source_chl
+         , base.reg_country                            as reg_country
+         , ifnull(clvl.level, 2)                       as country_level
+         , base.mt                                     as mt
+         , base.core                                   as corever
+         , base.shop_item_id                           as shop_item
+         , cast(base.recharge_amt as int)              as recharge_gear
+         , if(base.dt = fstchr.fst_recharege_dt, 1, 0) as is_first_recharge
+         , base.vip_type                               as vip_type
+         , count(base.user_id)                         as charge_cnt
+         , sum(base.recharge_amt)                      as before_charge
+         , sum(base.net_amt)                           as after_charge
+      from (select dt
+                 , product_id
+                 , user_id
+                 , reg_country
+                 , mt
+                 , core
+                 , shop_item_id
+                 , vip_type
+                 , recharge_amt
+                 , net_amt
+              from dwd.dwd_sv_tt_payorder_info
+             where dt = '${bf_1_dt}'
+               and is_sandbox = 0
+               and is_refund = 0
+           qualify row_number() over (partition by dt, product_id, trade_order_id order by settle_dt desc, etl_time desc) = 1
+           )                                         as base
+      left join dim.dim_short_video_user_accountinfo as uifo
+        on base.user_id = uifo.user_id
+       and base.product_id = uifo.product_id
+      left join dim.dim_countrylevel                 as clvl
+        on base.product_id = clvl.product_id
+       and base.reg_country = clvl.short_name
+      left join (select user_id
+                      , min(dt) as fst_recharege_dt
+                   from dwd.dwd_sv_tt_payorder_info
+                  where dt <= '${bf_1_dt}'
+                    and is_sandbox = 0
+                    and is_refund = 0
+                  group by 1
+                )                                    as fstchr
+        on base.user_id = fstchr.user_id
+     group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+)
+, all_payorder as (
+    select dt
+         , product_id
+         , user_id
+         , reg_language
+         , source_chl
+         , reg_country
+         , country_level
+         , mt
+         , corever
+         , shop_item
+         , recharge_gear
+         , is_first_recharge
+         , vip_type
+         , subscribe_mode
+         , charge_cnt
+         , before_charge
+         , after_charge
+      from payorder
+     union all
+    select dt                as dt
+         , product_id        as product_id
+         , user_id           as user_id
+         , reg_language      as reg_language
+         , source_chl        as source_chl
+         , reg_country       as reg_country
+         , country_level     as country_level
+         , mt                as mt
+         , corever           as corever
+         , shop_item         as shop_item
+         , recharge_gear     as recharge_gear
+         , is_first_recharge as is_first_recharge
+         , vip_type          as vip_type
+         , null              as subscribe_mode -- todo: 不知道数据来源，先置空
+         , charge_cnt        as charge_cnt
+         , before_charge     as before_charge
+         , after_charge      as after_charge
+      from tt_payorder
+)
 select a.dt
      , b.period_type
      , a.product_id
@@ -109,14 +198,14 @@ select a.dt
      , a.after_charge
      , now()               as etl_tm
      , a.subscribe_mode
-  from payorder as a
+  from all_payorder as a
   left join (select product_id
                   , user_id
                   , period_type
                   , user_type
                from dws.dws_user_short_video_wide_active_period_ed
               where dt = '${bf_1_dt}'
-            )   as b
+            )       as b
     on a.product_id = b.product_id
    and a.user_id = b.user_id
 ;
