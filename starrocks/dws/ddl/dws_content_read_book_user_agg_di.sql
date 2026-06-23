@@ -18,7 +18,7 @@ properties (
     "replication_num" = "3",
     "partition_live_number" = "46",
     "in_memory" = "false",
-    "replicated_storage" = "false",
+    "replicated_storage" = "true",
     "compression" = "LZ4"
 )
 ;
