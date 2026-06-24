@@ -6,7 +6,11 @@
 -- 开发日期： 2026-06-09
 ----------------------------------------------------------------
 
-insert overwrite ads.ads_ad_finance_promotion_reconciliation
+delete from ads.ads_ad_finance_promotion_reconciliation
+ where dt >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+ and dt < date_add(date_trunc('month', '${dt}'), interval 1 month);
+
+insert into ads.ads_ad_finance_promotion_reconciliation
 with fb_account as (
     -- FbAccount
     select a2.dt
@@ -53,6 +57,8 @@ with fb_account as (
                  , b3.ads_optimizer
               from (select *
                       from dwd.dwd_advertisement_fbad_country_daily_insight_view
+                     where date_start >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+                       and date_start < date_add(date_trunc('month', '${dt}'), interval 1 month)
                    )                                                                    as b1
               left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap   as b2
                 on b1.fb_account_id = b2.Account
@@ -113,6 +119,8 @@ with fb_account as (
                  , b3.ads_optimizer
               from (select *
                       from dwd.dwd_advertisement_ltv_country_daily_insight_view
+                     where date_start >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+                       and date_start < date_add(date_trunc('month', '${dt}'), interval 1 month)
                    )                                                                    as b1
               left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap   as b2
                 on b1.Account = b2.Account
@@ -174,6 +182,8 @@ with fb_account as (
                  , b3.ads_optimizer
               from (select *
                       from dwd.dwd_advertisement_ltv_country_daily_insight_view
+                     where date_start >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+                       and date_start < date_add(date_trunc('month', '${dt}'), interval 1 month)
                    )                                                                    as b1
               left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap   as b2
                 on b1.Account = b2.Account
@@ -241,6 +251,8 @@ with fb_account as (
                  , b3.ads_optimizer
               from (select *
                       from dwd.dwd_advertisement_ltv_daily_insight_view
+                     where date_start >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+                       and date_start < date_add(date_trunc('month', '${dt}'), interval 1 month)
                    )                                                                    as b1
               left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap   as b2
                 on b1.Account = b2.Account
@@ -309,13 +321,15 @@ with fb_account as (
                  , b3.ads_optimizer
               from (select *
                       from dwd.dwd_advertisement_ltv_country_daily_insight_view
-                   ) as b1
-              left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap as b2
+                     where date_start >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
+                       and date_start < date_add(date_trunc('month', '${dt}'), interval 1 month)
+                   )                                                                    as b1
+              left join ods.ods_ads_tidb_sharpengine_ads_global_CompanyInfoAccountMap   as b2
                 on b1.Account = b2.Account
-              left join dwd.dwd_advertisement_adext_view as b3
+              left join dwd.dwd_advertisement_adext_view                                as b3
                 on b1.ad_id = b3.ad_id
              where if(b1.date_start >= b2.BeginTime and b1.date_start <= b2.EndTime, b2.CompanyId, 0) > 0
-           ) as a3
+           )    as a3
         on a2.adset_id = a3.ad_id
      group by a3.dt
             , a1.level2
