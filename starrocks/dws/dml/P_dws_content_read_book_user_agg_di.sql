@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-23
 ----------------------------------------------------------------
 
-truncate table dws.dws_content_read_book_user_agg_di partition (p${bf_1_dt_pname});
+delete from dws.dws_content_read_book_user_agg_di where dt = '${bf_1_dt}';
 
 insert into dws.dws_content_read_book_user_agg_di
 with day_detail as (
