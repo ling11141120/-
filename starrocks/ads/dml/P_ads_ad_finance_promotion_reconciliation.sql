@@ -7,8 +7,7 @@
 ----------------------------------------------------------------
 
 delete from ads.ads_ad_finance_promotion_reconciliation
- where dt >= date_sub(date_trunc('month', '${dt}'), interval 1 month)
- and dt < date_add(date_trunc('month', '${dt}'), interval 1 month);
+ where dt >= '${bf_1_month_1_dt}' and dt< '${af_1_month_dt}';
 
 insert into ads.ads_ad_finance_promotion_reconciliation
 with fb_account as (
