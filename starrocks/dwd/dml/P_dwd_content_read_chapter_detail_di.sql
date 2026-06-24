@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-16
 ----------------------------------------------------------------
 
-truncate table dwd.dwd_content_read_chapter_detail_di partition (${bf_1_dt_pname});
+truncate table dwd.dwd_content_read_chapter_detail_di partition (p${bf_1_dt_pname});
 
 insert into dwd.dwd_content_read_chapter_detail_di
 select dt

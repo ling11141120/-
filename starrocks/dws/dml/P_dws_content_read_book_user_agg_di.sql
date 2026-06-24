@@ -6,7 +6,7 @@
 -- 开发日期：2026-06-23
 ----------------------------------------------------------------
 
-truncate table dws.dws_content_read_book_user_agg_di partition (${bf_1_dt_pname});
+truncate table dws.dws_content_read_book_user_agg_di partition (p${bf_1_dt_pname});
 
 insert into dws.dws_content_read_book_user_agg_di
 with day_detail as (
@@ -53,7 +53,7 @@ with day_detail as (
       from timed_detail
    qualify row_number() over (partition by dt, product_id, user_id, book_id
                                  order by create_time, autoid
-                            ) = 1
+                             ) = 1
 )
 , last_read as (
     select dt
@@ -64,7 +64,7 @@ with day_detail as (
       from timed_detail
    qualify row_number() over (partition by dt, product_id, user_id, book_id
                                  order by create_time desc, autoid desc
-                            ) = 1
+                             ) = 1
 )
 select a.dt              -- 阅读日期
      , a.product_id      -- 产品id
