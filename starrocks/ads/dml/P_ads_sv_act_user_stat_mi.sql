@@ -1,72 +1,91 @@
 ----------------------------------------------------------------
--- 程序功能： 用户统计月度表（新增解锁转化率/观看转化率）
+-- 程序功能： 
 -- 程序名： P_ads_sv_act_user_stat_mi
 -- 目标表： ads.ads_sv_act_user_stat_mi
--- 负责人： qhr
--- 开发日期： 2026-03-09
--- 修改记录： 2026-05-26 新增 unlockCvr/viewCvr 均值/标准差/方差
+-- 负责人： tyg
+-- 开发日期：2026-06-25
 ----------------------------------------------------------------
 
 insert into ads.ads_sv_act_user_stat_mi
 -- 阅读用户
-with t3  as(
-    select date_format(a.dt, '%Y-%m-01')           as dt
-         , a.login_id                              as user_id
-         , count(distinct episode_id)              as watch_epis
-    from (select dt
-               , login_id
-               , event_tm
-               , episode_id
-               , split(activity_link, '_')[5]    as event_strategy_id
-               , split(activity_link, '_')[8]    as activity_or_shorplay
-          from ads.ads_sensors_cd_video_startwatching_view    as a1
-          where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-            and product_id = '6833'
-            and activity_link is not null
-         ) as a
-             join ods.ods_ab_hj_related            as b
-                  on a.event_strategy_id = b.strategy_id
-             join dwd.dwd_ab_exp_version_detail    as c
-                  on b.ab_id = c.exp_id
-                      and b.version_id = c.exp_grp_id
-                      and a.event_tm >= c.exp_start_time
-                      and c.exp_end_time > a.event_tm
-                      and a.event_tm >= c.start_time
-                      and c.end_time > a.event_tm
+with t3 as (
+    select date_format(a.dt, '%Y-%m-01') as dt
+         , a.login_id                    as user_id
+         , count(distinct episode_id)    as watch_epis
+      from (select dt
+                 , login_id
+                 , event_tm
+                 , episode_id
+                 , split(activity_link, '_')[5] as event_strategy_id
+                 , split(activity_link, '_')[8] as activity_or_shorplay
+              from ads.ads_sensors_cd_video_startwatching_view as a1
+             where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+               and product_id = '6833'
+               and activity_link is not null
+           ) as a
+      join ods.ods_ab_hj_related as b
+        on a.event_strategy_id = b.strategy_id
+      join dwd.dwd_ab_exp_version_detail as c
+        on b.ab_id = c.exp_id
+       and b.version_id = c.exp_grp_id
+       and a.event_tm >= c.exp_start_time
+       and c.exp_end_time > a.event_tm
+       and a.event_tm >= c.start_time
+       and c.end_time > a.event_tm
     where a.activity_or_shorplay != 0
-    group by 1, 2
+     group by 1, 2
+
+union all
+
+    select date_format(a.dt, '%Y-%m-01') as dt
+         , a.login_id                    as user_id
+         , count(1)                      as watch_epis
+      from ads.ads_sensors_production_startreadingchapter_view as a
+     where date_format(a.dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+       and a.activity_link is not null
+     group by 1, 2
 )
 -- 解锁用户
-   , t4 as (
-    select date_format(a.dt, '%Y-%m-01')                as dt
-         , a.login_id                                   as user_id
-         , sum(a.coin_consume) + sum(a.gift_consume)    as unlock_amount
-    from (select dt
-               , login_id
-               , event_tm
-               , unlock_type
-               , coin_consume
-               , gift_consume
-               , split(activity_link, '_')[5]    as event_strategy_id
-               , split(activity_link, '_')[8]    as activity_or_shorplay
-          from ads.ads_sensors_cd_video_unlockEpisode_view           as a1
-          where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-            and product_id = '6833'
-            and activity_link is not null
-            and unlock_type in ('1', '2', '3', '6', '9', '10', '11')
-         ) as a
-    join ods.ods_ab_hj_related            as b
-      on a.event_strategy_id = b.strategy_id
-    join dwd.dwd_ab_exp_version_detail    as c
-      on b.ab_id = c.exp_id
-     and b.version_id = c.exp_grp_id
-     and a.event_tm >= c.exp_start_time
-     and c.exp_end_time > a.event_tm
-     and a.event_tm >= c.start_time
-     and c.end_time > a.event_tm
+, t4 as (
+    select date_format(a.dt, '%Y-%m-01')             as dt
+         , a.login_id                                as user_id
+         , sum(a.coin_consume) + sum(a.gift_consume) as unlock_amount
+      from (select dt
+                 , login_id
+                 , event_tm
+                 , unlock_type
+                 , coin_consume
+                 , gift_consume
+                 , split(activity_link, '_')[5] as event_strategy_id
+                 , split(activity_link, '_')[8] as activity_or_shorplay
+              from ads.ads_sensors_cd_video_unlockEpisode_view as a1
+             where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+               and product_id = '6833'
+               and activity_link is not null
+               and unlock_type in ('1', '2', '3', '6', '9', '10', '11')
+           ) as a
+      join ods.ods_ab_hj_related as b
+        on a.event_strategy_id = b.strategy_id
+      join dwd.dwd_ab_exp_version_detail as c
+        on b.ab_id = c.exp_id
+       and b.version_id = c.exp_grp_id
+       and a.event_tm >= c.exp_start_time
+       and c.exp_end_time > a.event_tm
+       and a.event_tm >= c.start_time
+       and c.end_time > a.event_tm
     where a.unlock_type in ('1', '2', '3', '6', '9', '10', '11')
-      and a.activity_or_shorplay != 0
-    group by 1, 2
+       and a.activity_or_shorplay != 0
+     group by 1, 2
+
+union all
+
+    select date_format(a.dt, '%Y-%m-01') as dt
+         , a.identity_login_id           as user_id
+         , count(1)                      as unlock_amount
+      from ads.ads_sensors_production_unlockchapter_view as a
+     where date_format(a.dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+       and a.activity_link is not null
+     group by 1, 2
 )
 select date_format('${bf_1_dt}', '%Y-%m-01') as dt
      , product_id
@@ -129,99 +148,175 @@ select date_format('${bf_1_dt}', '%Y-%m-01') as dt
      , avg(watch_epis)                       as watchEpisodeNumAvgMean
      , stddev(watch_epis)                    as watchEpisodeNumAvgSt
      , variance(watch_epis)                  as watchEpisodeNumAvgVar
-     -- 新增：解锁转化率 / 观看转化率
      , avg(unlock_cvr)                       as unlockCvrMean
      , stddev(unlock_cvr)                    as unlockCvrSt
      , variance(unlock_cvr)                  as unlockCvrVar
      , avg(view_cvr)                         as viewCvrMean
      , stddev(view_cvr)                      as viewCvrSt
      , variance(view_cvr)                    as viewCvrVar
-from (select case when a.product_id = 6833 then 3 end                                                    as product_id
-           , a.dt
-           , a.user_id
-           , ifnull(b.recharge_amount, 0)                                                                as arpu
-           , if(b.user_id is not null, 1, 0)                                                             as pay_rate
-           , ifnull(c.ad_revenue_excluding_h5, 0)                                                        as ad_arpu
-           , ifnull(c.total_ad_revenue, 0)                                                               as total_ad_arpu
-           , if(d.user_id is not null, 1, 0)                                                             as ad_unlock_rate
-           , ifnull(d.unlock_cnt, 0)                                                                     as ad_unlock_episodes_rate
-           , ifnull(b.recharge_amount, 0)                                                                as oneExposureArpu
-           , ifnull(b.signin_recharge_amount + b.svip_recharge_amount, 0)                                as oneExposureArpuDingYue
-           , ifnull(b.normal_recharge_amount / b.recharge_amount, 0)                                     as oneRechargePercent
-           , ifnull((b.signin_recharge_amount + b.svip_recharge_amount) / b.recharge_amount,0)           as dingYueAmountPercent
-           , if(f.user_id is not null, 1, 0)                                                             as orderCreateRate
-           , ifnull(b.recharge_amount + (b.signin_recharge_amount + b.svip_recharge_amount) * 0.36,0)    as predictARPU
-           , ifnull(t4.unlock_amount, 0)                                                                 as unlockArppu
-           , ifnull(t3.watch_epis, 0)                                                                    as watch_epis
-           -- 新增：解锁转化率 / 观看转化率
-           , if(t4.user_id is not null, 1, 0)                                                            as unlock_cvr
-           , if(t3.user_id is not null, 1, 0)                                                            as view_cvr
-      from (select product_id
-                 , date_format(dt, '%Y-%m-01') as dt
-                 , user_id
-            from dws.dws_user_short_video_wide_active_period_ed    -- 活跃用户
-            where product_id = 6833
-              and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-            group by 1, 2, 3
-           ) as a
-               left join (select date_format(dt, '%Y-%m-01')                               as dt
-                               , user_id
-                               , sum(base_amount) / 100                                    as recharge_amount
-                               , sum(case when shop_item = 0 then base_amount end) / 100   as normal_recharge_amount
-                               , sum(case when shop_item = 840 then base_amount end) / 100 as signin_recharge_amount
-                               , sum(case when shop_item = 810 then base_amount end) / 100 as svip_recharge_amount
-                          from ads.ads_short_video_payorder_view -- 充值
-                          where test_flag = 0
-                            and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-                          group by 1, 2
-      ) as b
-                         on a.dt = b.dt
-                             and a.user_id = b.user_id
-               left join (select date_format(dt, '%Y-%m-01')                       as dt
-                               , user_id
-                               , sum(if(sv_adp.ad_show_type_name != 'H5', amt, 0)) as ad_revenue_excluding_h5
-                               , sum(amt)                                          as total_ad_revenue
-                          from dws.dws_advertisement_user_position_amt_ed as t1        -- 广告收入
-                                   left join dim.dim_sv_ads_position_view          as sv_adp    -- 广告位ID
-                                             on t1.positions = sv_adp.ad_position
+     , avg(case when is_exposed = 1 then unlockArppu end) as unlockedEpisodesPerExposedUserMean
+     , stddev(case when is_exposed = 1 then unlockArppu end) as unlockedEpisodesPerExposedUserSt
+     , variance(case when is_exposed = 1 then unlockArppu end) as unlockedEpisodesPerExposedUserVar
+     , avg(case when is_exposed = 1 then watch_epis end) as viewEpisodesPerExposedUserMean
+     , stddev(case when is_exposed = 1 then watch_epis end) as viewEpisodesPerExposedUserSt
+     , variance(case when is_exposed = 1 then watch_epis end) as viewEpisodesPerExposedUserVar
+     , avg(case when is_exposed = 1 then unlockArppu end) as unlockChapterPerExposedUserMean
+     , stddev(case when is_exposed = 1 then unlockArppu end) as unlockChapterPerExposedUserSt
+     , variance(case when is_exposed = 1 then unlockArppu end) as unlockChapterPerExposedUserVar
+  from (case when a.product_id = 6833 then 3
+                  when a.product_id = 5 then 1
+                end                                                                                      as product_id
+             , a.dt
+             , a.user_id
+             , ifnull(b.recharge_amount, 0)                                                              as arpu
+             , if(b.user_id is not null, 1, 0)                                                           as pay_rate
+             , ifnull(c.ad_revenue_excluding_h5, 0)                                                      as ad_arpu
+             , ifnull(c.total_ad_revenue, 0)                                                             as total_ad_arpu
+             , if(d.user_id is not null, 1, 0)                                                           as ad_unlock_rate
+             , ifnull(d.unlock_cnt, 0)                                                                   as ad_unlock_episodes_rate
+             , ifnull(b.recharge_amount, 0)                                                              as oneExposureArpu
+             , ifnull(b.signin_recharge_amount + b.svip_recharge_amount, 0)                              as oneExposureArpuDingYue
+             , ifnull(b.normal_recharge_amount / b.recharge_amount, 0)                                   as oneRechargePercent
+             , ifnull((b.signin_recharge_amount + b.svip_recharge_amount) / b.recharge_amount, 0)        as dingYueAmountPercent
+             , if(f.user_id is not null, 1, 0)                                                           as orderCreateRate
+             , ifnull(b.recharge_amount + (b.signin_recharge_amount + b.svip_recharge_amount) * 0.36, 0) as predictARPU
+             , ifnull(t4.unlock_amount, 0)                                                               as unlockArppu
+             , ifnull(t3.watch_epis, 0)                                                                  as watch_epis
+             , if(t4.user_id is not null, 1, 0)                                                          as unlock_cvr
+             , if(t3.user_id is not null, 1, 0)                                                          as view_cvr
+             , if(t5.user_id is not null, 1, 0)                                                          as is_exposed
+          from (select product_id
+                     , date_format(dt, '%Y-%m-01') as dt
+                     , user_id
+                  from dws.dws_user_short_video_wide_active_period_ed
+                 where product_id = 6833
+                   and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                 group by 1, 2, 3
+
+union all
+
+                select 5                           as product_id
+                     , date_format(dt, '%Y-%m-01') as dt
+                     , user_id
+                  from dws.dws_user_wide_active_period_ed
+                 where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                 group by 1, 2, 3
+               ) as a
+          left join (select date_format(dt, '%Y-%m-01') as dt
+                          , user_id
+                          , sum(base_amount) / 100      as recharge_amount
+                          , sum(case when shop_item = 0 then base_amount end) / 100 as normal_recharge_amount
+                          , sum(case when shop_item = 840 then base_amount end) / 100 as signin_recharge_amount
+                          , sum(case when shop_item = 810 then base_amount end) / 100 as svip_recharge_amount
+                       from ads.ads_short_video_payorder_view
+                      where test_flag = 0
+                        and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+
+union all
+
+                     select date_format(dt, '%Y-%m-01') as dt
+                          , user_id
+                          , sum(base_amount) / 100      as recharge_amount
+                          , sum(case when shop_item = 0 then base_amount end) / 100 as normal_recharge_amount
+                          , sum(case when shop_item = 840 then base_amount end) / 100 as signin_recharge_amount
+                          , sum(case when shop_item = 810 then base_amount end) / 100 as svip_recharge_amount
+                       from ads.ads_trade_user_payorder_view
+                      where test_flag = 0
+                        and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+                    ) as b
+            on a.dt = b.dt
+           and a.user_id = b.user_id
+          left join (select date_format(dt, '%Y-%m-01')                       as dt
+                          , user_id
+                          , sum(if(sv_adp.ad_show_type_name != 'H5', amt, 0)) as ad_revenue_excluding_h5
+                          , sum(amt)                                          as total_ad_revenue
+                       from dws.dws_advertisement_user_position_amt_ed as t1
+                       -- 广告收入
+                       left join dim.dim_sv_ads_position_view as sv_adp
+                         on t1.positions = sv_adp.ad_position
                           where product_id = 6833
-                            and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-                          group by 1, 2
-      ) as c
-                         on a.dt = c.dt
-                             and a.user_id = c.user_id
-               left join (select date_format(create_time, '%Y-%m-01') as dt
-                               , user_id
-                               , count(1)                             as unlock_cnt
-                          from ads.ads_short_video_series_unlock_view    -- 广告解锁
-                          where date_format(create_time, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-                            and not date_format(expire_time, '%Y%m%d%H%i%s') like '9999%'
-                          group by 1, 2
-      ) as d
-                         on a.dt = d.dt
-                             and a.user_id = d.user_id
-               left join (select date_format(event_tm, '%Y-%m-01') as dt
-                               , login_id                          as user_id
-                          from ads.ads_sensors_cd_video_rechargeexposure_view    -- 充值档位曝光
-                          where date_format(event_tm, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-                          group by 1, 2
-      ) as e
-                         on a.dt = e.dt
-                             and a.user_id = e.user_id
-               left join (select date_format(event_tm, '%Y-%m-01') as dt
-                               , login_id                          as user_id
-                          from ads.ads_sensors_cd_video_ordercreateaction_view    -- 创建订单用户
-                          where date_format(event_tm, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
-                          group by 1, 2
-      ) as f
-                         on a.dt = f.dt
-                             and a.user_id = f.user_id
-               left join t4
-                         on a.dt = t4.dt
-                             and a.user_id = t4.user_id
-               left join t3
-                         on a.dt = t3.dt
-                             and a.user_id = t3.user_id
-     ) a
+                        and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+
+union all
+
+                     select date_format(dt, '%Y-%m-01')                       as dt
+                          , user_id
+                          , sum(if(sv_adp.ad_show_type_name != 'H5', amt, 0)) as ad_revenue_excluding_h5
+                          , sum(amt)                                          as total_ad_revenue
+                       from dws.dws_advertisement_user_position_amt_ed as t1
+                       -- 海阅广告收入
+                       left join dim.dim_sv_ads_position_view as sv_adp
+                         on t1.positions = sv_adp.ad_position
+                          where product_id = 5
+                        and date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+                    ) as c
+            on a.dt = c.dt
+           and a.user_id = c.user_id
+          left join (select date_format(create_time, '%Y-%m-01') as dt
+                          , user_id
+                          , count(1)                             as unlock_cnt
+                       from ads.ads_short_video_series_unlock_view
+                      where date_format(create_time, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                        and not date_format(expire_time, '%Y%m%d%H%i%s') like '9999%'
+                      group by 1, 2
+                    ) as d
+            on a.dt = d.dt
+           and a.user_id = d.user_id
+          left join (select date_format(event_tm, '%Y-%m-01') as dt
+                          , login_id                          as user_id
+                       from ads.ads_sensors_cd_video_rechargeexposure_view
+                      where date_format(event_tm, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+
+union all
+
+                     select date_format(event_tm, '%Y-%m-01') as dt
+                          , login_id                          as user_id
+                       from ads.ads_sensors_production_rechargeexposure_view
+                      where date_format(event_tm, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                        and project_id = '5'
+                      group by 1, 2
+                    ) as e
+            on a.dt = e.dt
+           and a.user_id = e.user_id
+          left join (select date_format(event_tm, '%Y-%m-01') as dt
+                          , login_id                          as user_id
+                       from ads.ads_sensors_cd_video_ordercreateaction_view
+                      where date_format(event_tm, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                      group by 1, 2
+                    ) as f
+            on a.dt = f.dt
+           and a.user_id = f.user_id
+          left join (select date_format(dt, '%Y-%m-01') as dt
+                          , login_id                    as user_id
+                          , 1                           as is_exposed
+                       from ads.ads_sensors_cd_video_itemexposure_view
+                      where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                        and product_id = '6833'
+                      group by 1, 2
+
+union all
+
+                     select date_format(dt, '%Y-%m-01') as dt
+                          , login_id                    as user_id
+                          , 1                           as is_exposed
+                       from ads.ads_sensors_production_itemexposure_view
+                      where date_format(dt, '%Y-%m-01') = date_format('${bf_1_dt}', '%Y-%m-01')
+                        and project_id = '5'
+                      group by 1, 2
+                    ) as t5
+            on a.dt = t5.dt
+           and a.user_id = t5.user_id
+          left join t4
+            on a.dt = t4.dt
+           and a.user_id = t4.user_id
+          left join t3
+            on a.dt = t3.dt
+           and a.user_id = t3.user_id
+       ) as a
  group by 1, 2
 ;
