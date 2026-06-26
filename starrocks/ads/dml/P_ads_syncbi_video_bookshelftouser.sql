@@ -1,11 +1,12 @@
 ﻿----------------------------------------------------------------
 -- 程序功能： 海阅PWA用户书架同步至海剧
 -- 程序名： P_ads_syncbi_video_bookshelftouser
--- 目标表： ads.syncbi_video_bookshelftouser
+-- 目标表： ads.ads_syncbi_video_bookshelftouser
 -- 负责人：lwbl
 -- 开发日期： 2026-06-25
+--口径说明：全量只跑一次
 ----------------------------------------------------------------
-insert overwrite ads.syncbi_video_bookshelftouser (
+insert overwrite ads.ads_syncbi_video_bookshelftouser (
      Productid
     ,ID
     ,UserId

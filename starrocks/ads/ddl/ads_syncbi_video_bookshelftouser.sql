@@ -1,5 +1,5 @@
-drop table if exists ads.syncbi_video_bookshelftouser;
-create table ads.syncbi_video_bookshelftouser (
+drop table if exists ads.ads_syncbi_video_bookshelftouser;
+create table ads.ads_syncbi_video_bookshelftouser (
      Productid            int          not null    comment "产品id"
     ,ID                   bigint       not null    comment "自增id"
     ,UserId               bigint       not null    comment "用户id，海阅用户id映射后的海剧用户id"

@@ -1,5 +1,5 @@
-drop table if exists ads.syncbi_video_userdata;
-create table ads.syncbi_video_userdata (
+drop table if exists ads.ads_syncbi_video_userdata;
+create table ads.ads_syncbi_video_userdata (
      product_id                   int            not null                  comment "产品id"
     ,Id                           bigint         not null                  comment "用户id"
     ,HasDeviceCharge              tinyint                                  comment "设备是否充值"

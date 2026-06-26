@@ -1,5 +1,5 @@
-drop table if exists ads.syncbi_video_stat_data;
-create table ads.syncbi_video_stat_data (
+drop table if exists ads.ads_syncbi_video_stat_data;
+create table ads.ads_syncbi_video_stat_data (
      productid       int             not null    comment "产品id"
     ,AutoId          int             not null    comment "自增id"
     ,BookId          bigint          not null    comment "书籍id"

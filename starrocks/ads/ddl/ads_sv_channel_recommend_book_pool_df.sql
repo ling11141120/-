@@ -22,7 +22,7 @@ create table ads.ads_sv_channel_recommend_book_pool_df (
    ,index index_language_id (language_id) using bitmap comment "语言id索引"
 )
 primary key(language_id, book_id)
-comment "海剧频道推荐算法书池全量快照表，包含原书池与总消费排名前1000推荐池的并集，仅保存最新结果"
+comment "海剧频道推荐算法书池全量快照表，仅保存最新结果"
 distributed by hash(language_id, book_id) buckets 3
 properties (
     "replication_num" = "3"

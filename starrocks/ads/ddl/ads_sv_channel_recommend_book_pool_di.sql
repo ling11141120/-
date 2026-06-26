@@ -23,7 +23,8 @@ create table ads.ads_sv_channel_recommend_book_pool_di (
    ,index index_language_id (language_id) using bitmap comment "语言id索引"
 )
 primary key(dt, language_id, book_id)
-comment "海剧频道推荐算法书池日表，包含原书池（解说漫关联的上架原书）与推荐池（上架、无互斥或互斥主推、总消费排名前1000）的并集"
+comment "海剧频道推荐算法书池日表"
+partition by date_trunc('day', dt)
 distributed by hash(language_id, book_id) buckets 3
 properties (
     "replication_num" = "3"
@@ -31,4 +32,5 @@ properties (
    ,"enable_persistent_index" = "true"
    ,"replicated_storage" = "true"
    ,"compression" = "LZ4"
+   ,"partition_live_number" = "30"
 );

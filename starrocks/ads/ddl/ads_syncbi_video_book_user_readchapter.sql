@@ -1,5 +1,5 @@
-drop table if exists ads.syncbi_video_book_user_readchapter;
-create table ads.syncbi_video_book_user_readchapter (
+drop table if exists ads.ads_syncbi_video_book_user_readchapter;
+create table ads.ads_syncbi_video_book_user_readchapter (
      dt             date          not null                  comment "createtime 分区"
     ,Productid      int           not null                  comment "产品id"
     ,Id             bigint        not null                  comment "自增id"

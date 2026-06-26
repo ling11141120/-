@@ -1,11 +1,12 @@
 ﻿----------------------------------------------------------------
 -- 程序功能： 海阅PWA用户章节阅读时长同步至海剧
 -- 程序名： P_ads_syncbi_video_book_user_readchapter
--- 目标表： ads.syncbi_video_book_user_readchapter
+-- 目标表： ads.ads_syncbi_video_book_user_readchapter
 -- 负责人：lwbl
 -- 开发日期： 2026-06-25
+--口径说明：全量只跑一次
 ----------------------------------------------------------------
-insert overwrite ads.syncbi_video_book_user_readchapter (
+insert overwrite ads.ads_syncbi_video_book_user_readchapter (
      dt
     ,Productid
     ,Id

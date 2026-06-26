@@ -1,11 +1,12 @@
 ﻿----------------------------------------------------------------
 -- 程序功能： 海阅书籍阅读统计数据同步至海剧
 -- 程序名： P_ads_syncbi_video_stat_data
--- 目标表： ads.syncbi_video_stat_data
+-- 目标表： ads.ads_syncbi_video_stat_data
 -- 负责人：lwbl
 -- 开发日期： 2026-06-22
+--口径说明：全量只跑一次
 ----------------------------------------------------------------
-insert overwrite ads.syncbi_video_stat_data (
+insert overwrite ads.ads_syncbi_video_stat_data (
      productid
     ,AutoId
     ,BookId
