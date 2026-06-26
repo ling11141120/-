@@ -1,19 +1,19 @@
 ----------------------------------------------------------------
 -- 目标表： ods.ods_tidb_shuangwen_tidb_xx_tagconfig
 -- 来源实例： old_tidb_source
--- 来源表： shuangwen_fr.tagconfig
---         shuangwen_ft.tagconfig
---         shuangwen_pt.tagconfig
---         shuangwen_sp.tagconfig
---         shuangwen_en.tagconfig
+-- 来源表：
+--        shuangwen_tidb_fr.tagconfig
+--        shuangwen_tidb_ft.tagconfig
+--        shuangwen_tidb_pt.tagconfig
+--        shuangwen_tidb_sp.tagconfig
+--        shuangwen_tidb_en.tagconfig
 -- 来源负责：
 -- 采集工具： SeaTunnel
 -- 开发人：xjc
 -- 开发日期： 2026-03-02
 ----------------------------------------------------------------
 
-drop table if exists ods.ods_tidb_shuangwen_tidb_xx_tagconfig;
-create table ods.ods_tidb_shuangwen_tidb_xx_tagconfig (
+create table if not exists ods.ods_tidb_shuangwen_tidb_xx_tagconfig (
     product_id        int              not null                     comment "产品id"
    ,id                bigint           not null                     comment "id"
    ,category          varchar(765)                                  comment "类别"

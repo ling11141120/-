@@ -1,4 +1,160 @@
-CREATE VIEW `ads_user_install_info_view` (`id`, `dt`, `product_id`, `user_id`, `source`, `ad_id`, `ad_type`, `install_date`, `adaccount_id`, `adset_id`, `book_id`, `creative`, `install_original_request`, `login`, `unique_cdreaderid`, `country`, `mt`, `core`, `datainsert_date`, `network_name`, `chl2`, `create_time`, `adgroup_name`, `current_language2`, `remarketing_time`, `adquality_status`, `install_dateest`, `reinstall_date`, `analysis_server_status`, `next_attribute_time`, `next_attribute_adid`, `next_attribute_source`, `pre_attribute_time`, `pre_attribute_adid`, `pre_attribute_source`, `is_reinstall`, `pre_attribute_dataid`, `next_attribute_dataid`, `rawad_id`, `trace_id`, `pixel_id`, `at`, `is_remarketing`, `next_attribute_isremarketing`, `pre_attribute_isremarketing`, `remarktime_sendto_appserver`, `custom_audiences`, `isdelete`, `row_update_time`, `c2rtime`, `abtest_pageid`) AS SELECT `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`dt`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`productid` AS `product_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`userid` AS `user_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`source`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adid` AS `ad_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adtype` AS `ad_type`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`installdate` AS `install_date`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adaccountid` AS `adaccount_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adsetid` AS `adset_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`bookid` AS `book_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`creative`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`installoriginalrequest` AS `install_original_request`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`login`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`uniquecdreaderid` AS `unique_cdreaderid`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`country`, if((`ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`Mt` IS NOT NULL) AND (`ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`Mt` != 0), `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`Mt`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`RawMt`) AS `mt`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`core`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`datainsertdate` AS `datainsert_date`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`networkname` AS `network_name`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`chl2`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`createtime` AS `create_time`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adgroup_name`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`currentlanguage2` AS `current_language2`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`remarketingtime` AS `remarketing_time`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`adqualitystatus` AS `adquality_status`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`installdateest` AS `install_dateest`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`reinstalldate` AS `reinstall_date`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`analysisserverstatus` AS `analysis_server_status`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`nextattributetime` AS `next_attribute_time`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`nextattributeadid` AS `next_attribute_adid`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`nextattributesource` AS `next_attribute_source`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`preattributetime` AS `pre_attribute_time`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`preattributeadid` AS `pre_attribute_adid`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`preattributesource` AS `pre_attribute_source`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`isreinstall` AS `is_reinstall`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`preattributedataid` AS `pre_attribute_dataid`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`nextattributedataid` AS `next_attribute_dataid`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`rawadid` AS `rawad_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`traceid` AS `trace_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`pixelid` AS `pixel_id`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`at`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`isremarketing` AS `is_remarketing`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`nextattributeisremarketing` AS `next_attribute_isremarketing`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`preattributeisremarketing` AS `pre_attribute_isremarketing`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`remarktimesendtoappserver` AS `remarktime_sendto_appserver`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`customaudiences` AS `custom_audiences`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`isdelete`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`row_update_time`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`c2rtime`, `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`abtestpageid` AS `abtest_pageid`
-FROM `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`
-WHERE `ods`.`ods_sharpengine_ads_hk_bak_if_user_installreferrer`.`productid` NOT IN (6883) UNION ALL SELECT `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`id`, date(`ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`installdate`) AS `dt`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`productid` AS `product_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`userid` AS `user_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`source`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adid` AS `ad_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adtype` AS `ad_type`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`installdate` AS `install_date`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adaccountid` AS `adaccount_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adsetid` AS `adset_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`bookid` AS `book_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`creative`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`installoriginalrequest` AS `install_original_request`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`login`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`uniquecdreaderid` AS `unique_cdreaderid`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`country`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`mt`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`core`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`datainsertdate` AS `datainsert_date`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`networkname` AS `network_name`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`chl2`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`createtime` AS `create_time`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adgroup_name`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`currentlanguage2` AS `current_language2`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`remarketingtime` AS `remarketing_time`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`adqualitystatus` AS `adquality_status`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`installdateest` AS `install_dateest`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`reinstalldate` AS `reinstall_date`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`analysisserverstatus` AS `analysis_server_status`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`nextattributetime` AS `next_attribute_time`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`nextattributeadid` AS `next_attribute_adid`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`nextattributesource` AS `next_attribute_source`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`preattributetime` AS `pre_attribute_time`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`preattributeadid` AS `pre_attribute_adid`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`preattributesource` AS `pre_attribute_source`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`isreinstall` AS `is_reinstall`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`preattributedataid` AS `pre_attribute_dataid`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`nextattributedataid` AS `next_attribute_dataid`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`rawadid` AS `rawad_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`traceid` AS `trace_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`pixelid` AS `pixel_id`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`at`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`isremarketing` AS `is_remarketing`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`nextattributeisremarketing` AS `next_attribute_isremarketing`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`preattributeisremarketing` AS `pre_attribute_isremarketing`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`remarktimesendtoappserver` AS `remarktime_sendto_appserver`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`customaudiences` AS `custom_audiences`, `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`.`isdelete`, NULL AS `row_update_time`, NULL AS `c2rtime`, NULL AS `abtestpageid`
-FROM `ods`.`ods_tidb_cdvideo_tidb_xcx_user_attribution`;
+create or replace view ads.ads_user_install_info_view (
+     id
+    ,dt
+    ,product_id
+    ,user_id
+    ,source
+    ,ad_id
+    ,ad_type
+    ,install_date
+    ,adaccount_id
+    ,adset_id
+    ,book_id
+    ,creative
+    ,install_original_request
+    ,login
+    ,unique_cdreaderid
+    ,country
+    ,mt
+    ,core
+    ,datainsert_date
+    ,network_name
+    ,chl2
+    ,create_time
+    ,adgroup_name
+    ,current_language2
+    ,remarketing_time
+    ,adquality_status
+    ,install_dateest
+    ,reinstall_date
+    ,analysis_server_status
+    ,next_attribute_time
+    ,next_attribute_adid
+    ,next_attribute_source
+    ,pre_attribute_time
+    ,pre_attribute_adid
+    ,pre_attribute_source
+    ,is_reinstall
+    ,pre_attribute_dataid
+    ,next_attribute_dataid
+    ,rawad_id
+    ,trace_id
+    ,pixel_id
+    ,at
+    ,is_remarketing
+    ,next_attribute_isremarketing
+    ,pre_attribute_isremarketing
+    ,remarktime_sendto_appserver
+    ,custom_audiences
+    ,isdelete
+    ,row_update_time
+    ,c2rtime
+    ,abtest_pageid
+)
+as
+select id
+     , dt
+     , productid                                     as product_id
+     , userid                                        as user_id
+     , source
+     , adid                                          as ad_id
+     , adtype                                        as ad_type
+     , installdate                                   as install_date
+     , adaccountid                                   as adaccount_id
+     , adsetid                                       as adset_id
+     , bookid                                        as book_id
+     , creative
+     , installoriginalrequest                        as install_original_request
+     , login
+     , uniquecdreaderid                              as unique_cdreaderid
+     , country
+     , if((Mt is not null) and (Mt != 0), Mt, RawMt) as mt
+     , core
+     , datainsertdate                                as datainsert_date
+     , networkname                                   as network_name
+     , chl2
+     , createtime                                    as create_time
+     , adgroup_name
+     , currentlanguage2                              as current_language2
+     , remarketingtime                               as remarketing_time
+     , adqualitystatus                               as adquality_status
+     , installdateest                                as install_dateest
+     , reinstalldate                                 as reinstall_date
+     , analysisserverstatus                          as analysis_server_status
+     , nextattributetime                             as next_attribute_time
+     , nextattributeadid                             as next_attribute_adid
+     , nextattributesource                           as next_attribute_source
+     , preattributetime                              as pre_attribute_time
+     , preattributeadid                              as pre_attribute_adid
+     , preattributesource                            as pre_attribute_source
+     , isreinstall                                   as is_reinstall
+     , preattributedataid                            as pre_attribute_dataid
+     , nextattributedataid                           as next_attribute_dataid
+     , rawadid                                       as rawad_id
+     , traceid                                       as trace_id
+     , pixelid                                       as pixel_id
+     , at
+     , isremarketing                                 as is_remarketing
+     , nextattributeisremarketing                    as next_attribute_isremarketing
+     , preattributeisremarketing                     as pre_attribute_isremarketing
+     , remarktimesendtoappserver                     as remarktime_sendto_appserver
+     , customaudiences                               as custom_audiences
+     , isdelete
+     , row_update_time
+     , c2rtime
+     , abtestpageid                                  as abtest_pageid
+  from ods.ods_sharpengine_ads_hk_bak_if_user_installreferrer
+ where productid not in (6883)
+ union all
+select id
+     , date(installdate)          as dt
+     , productid                  as product_id
+     , userid                     as user_id
+     , source
+     , adid                       as ad_id
+     , adtype                     as ad_type
+     , installdate                as install_date
+     , adaccountid                as adaccount_id
+     , adsetid                    as adset_id
+     , bookid                     as book_id
+     , creative
+     , installoriginalrequest     as install_original_request
+     , login
+     , uniquecdreaderid           as unique_cdreaderid
+     , country
+     , mt
+     , core
+     , datainsertdate             as datainsert_date
+     , networkname                as network_name
+     , chl2
+     , createtime                 as create_time
+     , adgroup_name
+     , currentlanguage2           as current_language2
+     , remarketingtime            as remarketing_time
+     , adqualitystatus            as adquality_status
+     , installdateest             as install_dateest
+     , reinstalldate              as reinstall_date
+     , analysisserverstatus       as analysis_server_status
+     , nextattributetime          as next_attribute_time
+     , nextattributeadid          as next_attribute_adid
+     , nextattributesource        as next_attribute_source
+     , preattributetime           as pre_attribute_time
+     , preattributeadid           as pre_attribute_adid
+     , preattributesource         as pre_attribute_source
+     , isreinstall                as is_reinstall
+     , preattributedataid         as pre_attribute_dataid
+     , nextattributedataid        as next_attribute_dataid
+     , rawadid                    as rawad_id
+     , traceid                    as trace_id
+     , pixelid                    as pixel_id
+     , at
+     , isremarketing              as is_remarketing
+     , nextattributeisremarketing as next_attribute_isremarketing
+     , preattributeisremarketing  as pre_attribute_isremarketing
+     , remarktimesendtoappserver  as remarktime_sendto_appserver
+     , customaudiences            as custom_audiences
+     , isdelete
+     , null                       as row_update_time
+     , null                       as c2rtime
+     , null                       as abtestpageid
+  from ods.ods_tidb_cdvideo_tidb_xcx_user_attribution;
