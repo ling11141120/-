@@ -1,5 +1,84 @@
-CREATE VIEW `dwd_advertisement_video_cn_dailyinsightbyhour_view` (`dt` COMMENT "日期，根据date_start转换", `id` COMMENT "自增id", `ad_id` COMMENT "广告id", `ad_status` COMMENT "广告状态", `date_start` COMMENT "投放开始时间", `date_stop` COMMENT "投放结束时间", `ad_name` COMMENT "广告名", `spend` COMMENT "花费金额", `put_data` COMMENT "投放数据", `installs` COMMENT "安装数", `clicks` COMMENT "点击数", `impressions` COMMENT "展示数", `cpc` COMMENT "Cpc", `cpm` COMMENT "Cpm", `cpp` COMMENT "Cpp", `ctr` COMMENT "Ctr", `update_time` COMMENT "更新时间", `mt` COMMENT "平台", `core` COMMENT "core", `product_id` COMMENT "产品id", `roas` COMMENT "Roas", `ad_set_id` COMMENT "广告系列", `ad_camp_id` COMMENT "广告组", `country` COMMENT "国家", `amount` COMMENT "金额", `source_chl` COMMENT "来源渠道", `chl2` COMMENT "Chl2", `create_user`, `create_type`, `create_num`, `rowversion` COMMENT "数据更新版本", `current_language2` COMMENT "注册时语言", `is_remarketing` COMMENT "是否再营销", `account` COMMENT "广告所属账号", `link_click` COMMENT "链接点击数", `conversion` COMMENT "offset转换数", `registration`, `temp_state`, `account_id` COMMENT "广告投放账号ID")
-COMMENT "国内短剧投放小时统计试图" AS SELECT date(`ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`date_start`) AS `dt`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Id`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AdId` AS `ad_id`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AdStatus` AS `ad_status`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`date_start`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`date_stop`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AdName` AS `ad_name`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Spend`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`PutData` AS `put_data`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Installs`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Clicks`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Impressions`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Cpc`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Cpm`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Cpp`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Ctr`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`UpdateTime` AS `update_time`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Mt`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Core`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`ProductId` AS `product_id`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Roas`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AdSetId` AS `ad_set_id`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AdCampId` AS `ad_camp_id`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Country`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Amount`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`SourceChl` AS `source_chl`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Chl2`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`CreateUser` AS `create_user`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`CreateType` AS `create_type`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`CreateNum` AS `create_num`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`RowVersion`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`CurrentLanguage2` AS `current_language2`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`IsRemarketing` AS `is_remarketing`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Account`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`LinkClick` AS `link_click`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Conversion`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`Registration`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`TempState` AS `temp_state`, `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`.`AccountId` AS `account_id`
-FROM `ods`.`ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour`;
-utf8
-utf8_general_ci
+create or replace view dwd.dwd_advertisement_video_cn_dailyinsightbyhour_view (
+     dt                comment "日期，根据date_start转换"
+    ,id                comment "自增id"
+    ,ad_id             comment "广告id"
+    ,ad_status         comment "广告状态"
+    ,date_start        comment "投放开始时间"
+    ,date_stop         comment "投放结束时间"
+    ,ad_name           comment "广告名"
+    ,spend             comment "花费金额"
+    ,put_data          comment "投放数据"
+    ,installs          comment "安装数"
+    ,clicks            comment "点击数"
+    ,impressions       comment "展示数"
+    ,cpc               comment "Cpc"
+    ,cpm               comment "Cpm"
+    ,cpp               comment "Cpp"
+    ,ctr               comment "Ctr"
+    ,update_time       comment "更新时间"
+    ,mt                comment "平台"
+    ,core              comment "core"
+    ,product_id        comment "产品id"
+    ,roas              comment "Roas"
+    ,ad_set_id         comment "广告系列"
+    ,ad_camp_id        comment "广告组"
+    ,country           comment "国家"
+    ,amount            comment "金额"
+    ,source_chl        comment "来源渠道"
+    ,chl2              comment "Chl2"
+    ,create_user
+    ,create_type
+    ,create_num
+    ,rowversion        comment "数据更新版本"
+    ,current_language2 comment "注册时语言"
+    ,is_remarketing    comment "是否再营销"
+    ,account           comment "广告所属账号"
+    ,link_click        comment "链接点击数"
+    ,conversion        comment "offset转换数"
+    ,registration
+    ,temp_state
+    ,account_id        comment "广告投放账号ID"
+)
+comment "国内短剧投放小时统计试图"
+as
+select date(date_start) as dt
+     , Id
+     , AdId             as ad_id
+     , AdStatus         as ad_status
+     , date_start
+     , date_stop
+     , AdName           as ad_name
+     , Spend
+     , PutData          as put_data
+     , Installs
+     , Clicks
+     , Impressions
+     , Cpc
+     , Cpm
+     , Cpp
+     , Ctr
+     , UpdateTime       as update_time
+     , Mt
+     , Core
+     , ProductId        as product_id
+     , Roas
+     , AdSetId          as ad_set_id
+     , AdCampId         as ad_camp_id
+     , Country
+     , Amount
+     , SourceChl        as source_chl
+     , Chl2
+     , CreateUser       as create_user
+     , CreateType       as create_type
+     , CreateNum        as create_num
+     , RowVersion
+     , CurrentLanguage2 as current_language2
+     , IsRemarketing    as is_remarketing
+     , Account
+     , LinkClick        as link_click
+     , Conversion
+     , Registration
+     , TempState        as temp_state
+     , AccountId        as account_id
+  from ods.ods_tidb_sharpengine_ads_global_videoltvdailyinsightbyhour
+;

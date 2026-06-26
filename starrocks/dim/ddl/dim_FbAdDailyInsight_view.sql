@@ -1,4 +1,138 @@
-CREATE VIEW `dim_FbAdDailyInsight_view` (`Id` COMMENT "自增", `AdId` COMMENT "广告id", `AdStatus` COMMENT "广告状态", `FbAccountId` COMMENT "fb账号id", `date_start` COMMENT "投放开始时间(西五区)", `date_stop` COMMENT "投放结束时间", `AdName` COMMENT "广告名", `Spend` COMMENT "花费金额", `PutData` COMMENT "投放数据", `Installs` COMMENT "安装数", `Clicks` COMMENT "点击数", `Impressions` COMMENT "展示数", `Cpc` COMMENT "Cpc", `Cpm` COMMENT "Cpm", `Cpp` COMMENT "Cpp", `Ctr` COMMENT "Ctr", `UpdateTime` COMMENT "更新时间", `Mt` COMMENT "平台", `ProductId` COMMENT "产品id", `Roas` COMMENT "Roas", `AdSetId` COMMENT "广告系列", `AdCampId` COMMENT "广告组", `Amount` COMMENT "没什么用", `FbAmount` COMMENT "金额,废弃", `VideoViewCount` COMMENT "视频查看数", `Video10sViewCount` COMMENT "10秒查看数", `VideoAvgWatchedTime` COMMENT "平均视频查看时间", `Installs2`, `ImageId`, `RowVersion`, `CreateTime` COMMENT "采集时间", `LinkClick` COMMENT "Fb链接点击量", `video_p100_watched_actions` COMMENT "100%播放率", `video_p75_watched_actions` COMMENT "75%播放率", `video_p50_watched_actions` COMMENT "50%播放率", `video_p25_watched_actions` COMMENT "25%播放率", `video_p95_watched_actions` COMMENT "95%播放率", `Conversion` COMMENT "offsite转换数", `Registration` COMMENT "去重注册数", `ConvertSpend` COMMENT "广告投放花费（西五区）") AS SELECT `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`id`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdId`) AS `AdId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdStatus` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdStatus` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdStatus`) AS `AdStatus`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAccountId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAccountId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAccountId`) AS `FbAccountId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_start` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_start` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_start`) AS `date_start`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_stop` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_stop` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`date_stop`) AS `date_stop`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdName` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdName` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdName`) AS `AdName`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Spend` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Spend` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Spend`) AS `Spend`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`PutData` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`PutData` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`PutData`) AS `PutData`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs`) AS `Installs`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Clicks` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Clicks` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Clicks`) AS `Clicks`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Impressions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Impressions` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Impressions`) AS `Impressions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpc` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpc` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpc`) AS `Cpc`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpm` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpm` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpm`) AS `Cpm`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpp` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpp` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Cpp`) AS `Cpp`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Ctr` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Ctr` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Ctr`) AS `Ctr`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`UpdateTime` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`UpdateTime` = ''), '1970-01-01 00:00:00', `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`UpdateTime`) AS `UpdateTime`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Mt` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Mt` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Mt`) AS `Mt`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ProductId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ProductId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ProductId`) AS `ProductId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Roas` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Roas` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Roas`) AS `Roas`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdSetId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdSetId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdSetId`) AS `AdSetId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdCampId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdCampId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`AdCampId`) AS `AdCampId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Amount` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Amount` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Amount`) AS `Amount`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAmount` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAmount` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`FbAmount`) AS `FbAmount`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoViewCount` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoViewCount` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoViewCount`) AS `VideoViewCount`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Video10sViewCount` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Video10sViewCount` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Video10sViewCount`) AS `Video10sViewCount`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoAvgWatchedTime` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoAvgWatchedTime` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`VideoAvgWatchedTime`) AS `VideoAvgWatchedTime`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs2` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs2` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Installs2`) AS `Installs2`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ImageId` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ImageId` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ImageId`) AS `ImageId`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`RowVersion` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`RowVersion` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`RowVersion`) AS `RowVersion`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`CreateTime` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`CreateTime` = ''), '1970-01-01 00:00:00', `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`CreateTime`) AS `CreateTime`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`LinkClick` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`LinkClick` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`LinkClick`) AS `LinkClick`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p100_watched_actions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p100_watched_actions` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p100_watched_actions`) AS `video_p100_watched_actions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p75_watched_actions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p75_watched_actions` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p75_watched_actions`) AS `video_p75_watched_actions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p50_watched_actions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p50_watched_actions` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p50_watched_actions`) AS `video_p50_watched_actions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p25_watched_actions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p25_watched_actions` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p25_watched_actions`) AS `video_p25_watched_actions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p95_watched_actions` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p95_watched_actions` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`video_p95_watched_actions`) AS `video_p95_watched_actions`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Conversion` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Conversion` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Conversion`) AS `Conversion`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Registration` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Registration` = ''), -99, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`Registration`) AS `Registration`, if((`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ConvertSpend` IS NULL) OR (`ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ConvertSpend` = ''), 0, `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`.`ConvertSpend`) AS `Registration`
-FROM `ods`.`ods_tidb_sharpengine_ads_global_FbAdDailyInsight`;
-utf8
-utf8_general_ci
+create view dim_FbAdDailyInsight_view(
+                                      Id comment "自增", AdId comment "广告id", AdStatus comment "广告状态",
+                                      FbAccountId comment "fb账号id", date_start comment "投放开始时间(西五区)",
+                                      date_stop comment "投放结束时间", AdName comment "广告名",
+                                      Spend comment "花费金额",
+                                      PutData comment "投放数据", Installs comment "安装数", Clicks comment "点击数",
+                                      Impressions comment "展示数", Cpc comment "Cpc", Cpm comment "Cpm",
+                                      Cpp comment "Cpp",
+                                      Ctr comment "Ctr", UpdateTime comment "更新时间", Mt comment "平台",
+                                      ProductId comment "产品id",
+                                      Roas comment "Roas", AdSetId comment "广告系列", AdCampId comment "广告组",
+                                      Amount comment "没什么用", FbAmount comment "金额,废弃",
+                                      VideoViewCount comment "视频查看数",
+                                      Video10sViewCount comment "10秒查看数",
+                                      VideoAvgWatchedTime comment "平均视频查看时间", Installs2,
+                                      ImageId, RowVersion, CreateTime comment "采集时间",
+                                      LinkClick comment "Fb链接点击量",
+                                      video_p100_watched_actions comment "100%播放率",
+                                      video_p75_watched_actions comment "75%播放率",
+                                      video_p50_watched_actions comment "50%播放率",
+                                      video_p25_watched_actions comment "25%播放率",
+                                      video_p95_watched_actions comment "95%播放率", Conversion comment "offsite转换数",
+                                      Registration comment "去重注册数", ConvertSpend comment "广告投放花费（西五区）"
+)
+as
+select id
+     , if((AdId is null) or (AdId = ''), -99,AdId)                       as AdId
+     , if((AdStatus is null) or (AdStatus = ''), -99,AdStatus)                   as AdStatus
+     , if((FbAccountId is null) or (FbAccountId = ''), -99,FbAccountId)                as FbAccountId
+     , if((date_start is null) or
+          (date_start = ''), -99,
+          date_start)                 as date_start
+     , if((date_stop is null) or
+          (date_stop = ''), -99,
+          date_stop)                  as date_stop
+     , if((AdName is null) or
+          (AdName = ''), -99,
+          AdName)                     as AdName
+     , if((Spend is null) or
+          (Spend = ''), 0,
+          Spend)                      as Spend
+     , if((PutData is null) or
+          (PutData = ''), -99,
+          PutData)                    as PutData
+     , if((Installs is null) or
+          (Installs = ''), 0,
+          Installs)                   as Installs
+     , if((Clicks is null) or
+          (Clicks = ''), 0,
+          Clicks)                     as Clicks
+     , if((Impressions is null) or
+          (Impressions = ''), 0,
+          Impressions)                as Impressions
+     , if((Cpc is null) or
+          (Cpc = ''), -99,
+          Cpc)                        as Cpc
+     , if((Cpm is null) or
+          (Cpm = ''), -99,
+          Cpm)                        as Cpm
+     , if((Cpp is null) or
+          (Cpp = ''), -99,
+          Cpp)                        as Cpp
+     , if((Ctr is null) or
+          (Ctr = ''), -99,
+          Ctr)                        as Ctr
+     , if((UpdateTime is null) or
+          (UpdateTime = ''), '1970-01-01 00:00:00',
+          UpdateTime)                 as UpdateTime
+     , if((Mt is null) or
+          (Mt = ''), -99,
+          Mt)                         as Mt
+     , if((ProductId is null) or
+          (ProductId = ''), -99,
+          ProductId)                  as ProductId
+     , if((Roas is null) or
+          (Roas = ''), -99,
+          Roas)                       as Roas
+     , if((AdSetId is null) or
+          (AdSetId = ''), -99,
+          AdSetId)                    as AdSetId
+     , if((AdCampId is null) or
+          (AdCampId = ''), -99,
+          AdCampId)                   as AdCampId
+     , if((Amount is null) or
+          (Amount = ''), -99,
+          Amount)                     as Amount
+     , if((FbAmount is null) or
+          (FbAmount = ''), -99,
+          FbAmount)                   as FbAmount
+     , if((VideoViewCount is null) or
+          (VideoViewCount = ''), 0,
+          VideoViewCount)             as VideoViewCount
+     , if((Video10sViewCount is null) or
+          (Video10sViewCount = ''), 0,
+          Video10sViewCount)          as Video10sViewCount
+     , if((VideoAvgWatchedTime is null) or
+          (VideoAvgWatchedTime = ''), -99,
+          VideoAvgWatchedTime)        as VideoAvgWatchedTime
+     , if((Installs2 is null) or
+          (Installs2 = ''), -99,
+          Installs2)                  as Installs2
+     , if((ImageId is null) or
+          (ImageId = ''), -99,
+          ImageId)                    as ImageId
+     , if((RowVersion is null) or
+          (RowVersion = ''), -99,
+          RowVersion)                 as RowVersion
+     , if((CreateTime is null) or
+          (CreateTime = ''), '1970-01-01 00:00:00',
+          CreateTime)                 as CreateTime
+     , if((LinkClick is null) or
+          (LinkClick = ''), 0,
+          LinkClick)                  as LinkClick
+     , if((video_p100_watched_actions is null) or
+          (video_p100_watched_actions = ''), -99,
+          video_p100_watched_actions) as video_p100_watched_actions
+     , if((video_p75_watched_actions is null) or
+          (video_p75_watched_actions = ''), -99,
+          video_p75_watched_actions)  as video_p75_watched_actions
+     , if((video_p50_watched_actions is null) or
+          (video_p50_watched_actions = ''), -99,
+          video_p50_watched_actions)  as video_p50_watched_actions
+     , if((video_p25_watched_actions is null) or
+          (video_p25_watched_actions = ''), -99,
+          video_p25_watched_actions)  as video_p25_watched_actions
+     , if((video_p95_watched_actions is null) or
+          (video_p95_watched_actions = ''), -99,
+          video_p95_watched_actions)  as video_p95_watched_actions
+     , if((Conversion is null) or
+          (Conversion = ''), -99,
+          Conversion)                 as Conversion
+     , if((Registration is null) or
+          (Registration = ''), -99,
+          Registration)               as Registration
+     , if((ConvertSpend is null) or
+          (ConvertSpend = ''), 0,
+          ConvertSpend)               as Registration
+  from ods.ods_tidb_sharpengine_ads_global_FbAdDailyInsight;
